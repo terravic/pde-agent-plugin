@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "pde-engine": {
+      "command": ".venv/bin/python",
+      "args": [
+        "-m",
+        "pde_plugin.mcp_server"
+      ],
+      "cwd": ".",
+      "env": {
+        "PDE_ROOT": ".",
+        "PYTHONPATH": ".:./tools:./tools/vendor/hypex"
+      }
+    }
+  }
+}

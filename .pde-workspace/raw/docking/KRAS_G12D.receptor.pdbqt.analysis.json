@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/docking/KRAS_G12D.receptor.pdbqt",
+  "source_sha256": "dc018f89871e372ba5458543ae3828142edd3181c2d95305756ddcfad6212610",
+  "threshold_set": "docking-v1",
+  "work_order_id": "WO-004",
+  "analyzed_at": "2026-10-07T03:39:34Z",
+  "verdict": "pass",
+  "summary": "Prepared PDBQT receptor for KRAS G12D.",
+  "thresholds_applied": {},
+  "metrics": {},
+  "mandatory_relays": []
+}

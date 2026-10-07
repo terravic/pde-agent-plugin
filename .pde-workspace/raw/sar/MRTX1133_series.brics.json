@@ -1,0 +1,35 @@
+{
+  "series_name": "Pyridopyrimidine Switch-II Series",
+  "parent_compound": "MRTX1133",
+  "n_fragments": 4,
+  "fragments": [
+    {
+      "fragment_id": "FRAG-01",
+      "smiles": "[1*]N1CC2CCC1CN2",
+      "role": "Asp12 Salt-Bridge Warhead",
+      "kd_contribution_kcal": -4.8,
+      "frequency": 0.95
+    },
+    {
+      "fragment_id": "FRAG-02",
+      "smiles": "[3*]c1nc2cnc(F)cc2c([4*])n1",
+      "role": "8-Fluoropyrido[4,3-d]pyrimidine Core",
+      "kd_contribution_kcal": -3.6,
+      "frequency": 1.0
+    },
+    {
+      "fragment_id": "FRAG-03",
+      "smiles": "[8*]c1cccc2cccc(O)c12",
+      "role": "3-Hydroxynaphthyl His95/Tyr96 Clamp",
+      "kd_contribution_kcal": -3.2,
+      "frequency": 0.88
+    },
+    {
+      "fragment_id": "FRAG-04",
+      "smiles": "[14*]OCC12CCCN1CC2=CF",
+      "role": "Fluorinated Pyrrolizidine Solvent Tail",
+      "kd_contribution_kcal": -1.5,
+      "frequency": 0.72
+    }
+  ]
+}

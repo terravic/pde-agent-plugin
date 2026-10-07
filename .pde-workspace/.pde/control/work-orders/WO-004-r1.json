@@ -1,0 +1,40 @@
+{
+  "id": "WO-004",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Dock MRTX1133 into KRAS G12D Switch-II pocket and quantify Asp12 salt-bridge and His95/Tyr96 contacts.",
+  "requested_role": "computational-chemist",
+  "stage": 2,
+  "cycle": 1,
+  "context": {
+    "content": "Dock MRTX1133 into KRAS G12D Switch-II pocket and quantify Asp12 salt-bridge and His95/Tyr96 contacts.",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-004-r1.json",
+    "snapshot_sha256": "3ed3c553b827a13e30df013c9abdfbfbb5bffd30a4a3dc3b366490a411ee68dd"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "pde.docking",
+      "pde.bioactivity"
+    ],
+    "layer_1": [
+      "findings/computational-chemistry/mrtx1133-siip-docking.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-07T03:39:30Z",
+  "committed_at": "2026-10-07T03:39:30Z"
+}

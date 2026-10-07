@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde assay fetch MRTX1133 --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:34Z",
+  "work_order_id": "WO-004",
+  "outputs": [
+    {
+      "path": "raw/bioactivity/KRAS_G12D_panel.json",
+      "sha256": "51859e1004c75581e0277d713183e68a4ced240de42e992b77360997a96a539b",
+      "bytes": 134
+    }
+  ],
+  "mandatory_relays": []
+}

@@ -1,0 +1,39 @@
+{
+  "structure": "raw/structures/KRAS_G12D.cif",
+  "top_druggability_score": 0.84,
+  "pockets": [
+    {
+      "pocket_id": "POCKET_1_SIIP",
+      "name": "Switch-II Allosteric Pocket (SII-P)",
+      "druggability_score": 0.84,
+      "volume_a3": 542.6,
+      "hydrophobicity_score": 38.4,
+      "polar_sasa": 164.2,
+      "key_residues": [
+        "ASP12",
+        "GLY60",
+        "GLN61",
+        "GLU62",
+        "ARG68",
+        "HIS95",
+        "TYR96",
+        "GLN99"
+      ]
+    },
+    {
+      "pocket_id": "POCKET_2_GNBP",
+      "name": "GDP/GTP Nucleotide Site",
+      "druggability_score": 0.41,
+      "volume_a3": 388.0,
+      "hydrophobicity_score": 12.1,
+      "polar_sasa": 248.5,
+      "key_residues": [
+        "GLY13",
+        "VAL14",
+        "GLY15",
+        "LYS16",
+        "SER17"
+      ]
+    }
+  ]
+}

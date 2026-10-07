@@ -1,0 +1,153 @@
+{
+  "work_order_id": "WO-002",
+  "work_order_revision": 1,
+  "run_id": "RUN-002",
+  "validated_at": "2026-10-07T03:39:20Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "pde.structures",
+          "pde.pocket"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-002-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 3
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 4
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 4
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 2,
+        "codes_addressed": 2,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "result": "skip",
+      "status": "skip",
+      "kind": null,
+      "detail": "program.yaml not present \u2014 check deferred to a future program.yaml configuration issue"
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 5
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/structures/KRAS_G12D.afdb.json $.mean_plddt}",
+          "file": "findings/structural-biology/kras-g12d-structure-pockets.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "91.4",
+          "actual_value": "91.4",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/structures/KRAS_G12D.pae.json $.mean_pae}",
+          "file": "findings/structural-biology/kras-g12d-structure-pockets.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.18",
+          "actual_value": "3.18",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/structures/KRAS_G12D.afdb.json $.switch_ii_mean_plddt}",
+          "file": "findings/structural-biology/kras-g12d-structure-pockets.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "88.6",
+          "actual_value": "88.6",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/pocket/KRAS_G12D_SIIP.pockets.json $.top_druggability_score}",
+          "file": "findings/structural-biology/kras-g12d-structure-pockets.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.84",
+          "actual_value": "0.84",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/pocket/KRAS_G12D_SIIP.pockets.json $.pockets[0].volume_a3}",
+          "file": "findings/structural-biology/kras-g12d-structure-pockets.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "542.6",
+          "actual_value": "542.6",
+          "detail": "values match within tolerance"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

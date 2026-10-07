@@ -1,0 +1,13 @@
+{
+  "run_id": "RUN-002",
+  "work_order_id": "WO-002",
+  "work_order_revision": 1,
+  "state": "succeeded",
+  "attempt": 1,
+  "created_at": "2026-10-07T03:39:17Z",
+  "started_at": "2026-10-07T03:39:18Z",
+  "completed_at": "2026-10-07T03:39:20Z",
+  "result": "succeeded",
+  "failure_class": null,
+  "failure_detail": null
+}

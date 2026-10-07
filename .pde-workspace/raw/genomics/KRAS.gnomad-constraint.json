@@ -1,0 +1,26 @@
+{
+  "gene": "KRAS",
+  "ensembl_id": "ENSG00000133703",
+  "uniprot_id": "P01116",
+  "constraint": {
+    "pLI": 0.98,
+    "oe_lof_upper": 0.24,
+    "loeuf": 0.24,
+    "mis_z": 3.42,
+    "syn_z": 0.18
+  },
+  "disease_associations": [
+    {
+      "disease": "Pancreatic adenocarcinoma",
+      "overall_score": 0.94
+    },
+    {
+      "disease": "Colorectal adenocarcinoma",
+      "overall_score": 0.91
+    },
+    {
+      "disease": "Non-small cell lung carcinoma",
+      "overall_score": 0.89
+    }
+  ]
+}

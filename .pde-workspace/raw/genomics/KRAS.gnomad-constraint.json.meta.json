@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde genetics fetch KRAS --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:12Z",
+  "work_order_id": "WO-001",
+  "outputs": [
+    {
+      "path": "raw/genomics/KRAS.gnomad-constraint.json",
+      "sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f",
+      "bytes": 501
+    }
+  ],
+  "mandatory_relays": [
+    {
+      "code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED",
+      "target_role": "medicinal-chemist",
+      "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."
+    }
+  ]
+}

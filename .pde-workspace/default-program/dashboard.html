@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDE Unified Mission Control &amp; Scientific Dashboard — default-program</title>
+  <!-- Scientific & Math Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/3dmol@2.4.2/build/3Dmol-min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <style>
+    :root[data-theme="dark"] {
+      --bg-app: #0b0f19;
+      --bg-panel: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #26354d;
+      --bg-elevated: #0f172a;
+      --border-color: #2e3c56;
+      --border-subtle: #1e293b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-blue: #38bdf8;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #a855f7;
+      --graph-grid: rgba(148, 163, 184, 0.08);
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+    :root[data-theme="light"] {
+      --bg-app: #f1f5f9;
+      --bg-panel: #ffffff;
+      --bg-card: #f8fafc;
+      --bg-card-hover: #eff6ff;
+      --bg-elevated: #f8fafc;
+      --border-color: #cbd5e1;
+      --border-subtle: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-blue: #0284c7;
+      --accent-indigo: #4f46e5;
+      --accent-emerald: #059669;
+      --accent-amber: #d97706;
+      --accent-rose: #e11d48;
+      --accent-purple: #7c3aed;
+      --graph-grid: rgba(15, 23, 42, 0.06);
+      --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.06);
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-app); color: var(--text-primary);
+      display: flex; flex-direction: column;
+    }
+
+    /* Top Mission Control Bar */
+    .topbar {
+      height: 58px; flex-shrink: 0;
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; gap: 12px; z-index: 20;
+    }
+    .brand-group { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .brand-logo {
+      width: 34px; height: 34px; border-radius: 8px;
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 14px; color: #fff; letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+    .brand-title { font-weight: 700; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .brand-sub { font-size: 11px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; }
+    .stage-pill {
+      padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600;
+      background: rgba(99, 102, 241, 0.18); color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .kpi-strip { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; overflow-x: auto; }
+    .kpi-chip {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 6px; padding: 4px 10px; display: flex; flex-direction: column;
+      min-width: 82px;
+    }
+    .kpi-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-secondary); }
+    .kpi-val { font-size: 13px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 4px; }
+
+    .topbar-controls { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+    .mode-switcher {
+      display: inline-flex; background: var(--bg-elevated);
+      border: 1px solid var(--border-color); border-radius: 6px; padding: 2px;
+    }
+    .mode-btn {
+      background: transparent; border: none; color: var(--text-secondary);
+      padding: 5px 10px; font-size: 12px; font-weight: 600; border-radius: 4px;
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .mode-btn.active { background: var(--accent-indigo); color: #fff; }
+    .icon-btn {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-primary); border-radius: 6px; padding: 5px 8px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 14px; line-height: 1; cursor: pointer;
+    }
+    .icon-btn:hover { background: var(--bg-card-hover); }
+
+    .conn-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; padding: 4px 9px; border-radius: 999px;
+      border: 1px solid var(--border-color); background: var(--bg-card);
+    }
+    .conn-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); }
+    .conn-badge.live .conn-dot { animation: pulseDot 1.6s infinite; }
+    @keyframes pulseDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.3); }
+    }
+
+    /* Main Split Workspace */
+    .workspace {
+      flex: 1; display: grid;
+      grid-template-columns: minmax(0, 46%) minmax(0, 54%);
+      min-height: 0; width: 100%; overflow: hidden;
+    }
+    .workspace.mode-agentic { grid-template-columns: minmax(0, 1fr); }
+    .workspace.mode-agentic .right-pane { display: none; }
+    .workspace.mode-science { grid-template-columns: minmax(0, 1fr); }
+    .workspace.mode-science .left-pane { display: none; }
+
+    /* Left Pane: Multi-Agent Operations */
+    .left-pane {
+      border-right: 1px solid var(--border-color);
+      display: flex; flex-direction: column; min-height: 0; min-width: 0; width: 100%;
+      background: var(--bg-app);
+    }
+    .pane-header {
+      height: 42px; padding: 0 12px; flex-shrink: 0;
+      background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .pane-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--accent-blue); display: flex; align-items: center; gap: 6px; }
+    .toolbar-group { display: flex; align-items: center; gap: 5px; }
+    .mini-btn {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      color: var(--text-primary); border-radius: 4px; padding: 3px 8px;
+      font-size: 11px; font-weight: 600; cursor: pointer;
+    }
+    .mini-btn:hover, .mini-btn.active { background: var(--accent-indigo); color: #fff; border-color: var(--accent-indigo); }
+
+    /* SVG Lineage Graph Stage */
+    .graph-stage {
+      flex: 1; min-height: 220px; position: relative; overflow: hidden;
+      background-color: var(--bg-elevated);
+      background-image: radial-gradient(var(--graph-grid) 1px, transparent 1px);
+      background-size: 18px 18px;
+      cursor: grab;
+    }
+    .graph-stage:active { cursor: grabbing; }
+    #lineage-svg { width: 100%; height: 100%; display: block; user-select: none; }
+
+    .lease-overlay {
+      position: absolute; top: 8px; left: 8px; display: flex; gap: 6px; flex-wrap: wrap; pointer-events: none;
+    }
+    .lease-pill {
+      background: rgba(15, 23, 42, 0.85); border: 1px solid var(--border-color);
+      padding: 3px 8px; border-radius: 4px; font-size: 10px; color: var(--text-secondary);
+    }
+    .lease-pill.held { border-color: var(--accent-amber); color: var(--accent-amber); }
+
+    /* Agent Node & Inspector Drawer + Message Viewer Tabs */
+    .agent-bottom-dock {
+      height: 44%; min-height: 210px; flex-shrink: 0;
+      border-top: 1px solid var(--border-color);
+      background: var(--bg-panel);
+      display: flex; flex-direction: column;
+    }
+    .subtab-bar {
+      height: 36px; flex-shrink: 0; display: flex; align-items: center;
+      padding: 0 10px; gap: 4px; border-bottom: 1px solid var(--border-color);
+      background: var(--bg-elevated);
+    }
+    .subtab-btn {
+      background: transparent; border: none; color: var(--text-secondary);
+      padding: 6px 10px; font-size: 11px; font-weight: 600; cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .subtab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
+    .dock-body { flex: 1; overflow-y: auto; padding: 12px; font-size: 12px; }
+
+    /* Inspector styling */
+    .inspector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .inspector-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 6px; padding: 10px;
+    }
+    .inspector-card h4 { margin: 0 0 6px; font-size: 11px; text-transform: uppercase; color: var(--text-secondary); }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 5px; }
+    .skill-pill {
+      padding: 2px 8px; border-radius: 12px; font-size: 11px; font-family: monospace;
+      background: rgba(56, 189, 248, 0.14); color: var(--accent-blue);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .checks-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px;
+    }
+    .check-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 7px; border-radius: 4px; background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle); font-size: 11px;
+    }
+    .badge-pass { color: #10b981; font-weight: 700; }
+    .badge-warn { color: #f59e0b; font-weight: 700; }
+    .badge-fail { color: #f43f5e; font-weight: 700; }
+    .badge-skip { color: #64748b; font-weight: 600; }
+
+    /* Message Stream */
+    .msg-list { display: flex; flex-direction: column; gap: 6px; }
+    .msg-item {
+      padding: 7px 10px; border-radius: 6px; background: var(--bg-card);
+      border-left: 3px solid var(--accent-blue); font-size: 11.5px;
+    }
+    .msg-item.success { border-left-color: var(--accent-emerald); }
+    .msg-item.warn { border-left-color: var(--accent-amber); }
+    .msg-item.error { border-left-color: var(--accent-rose); }
+    .msg-meta { display: flex; justify-content: space-between; color: var(--text-secondary); font-size: 10.5px; margin-bottom: 3px; }
+    .msg-route { font-family: monospace; color: var(--accent-blue); font-weight: 600; }
+
+    /* Right Pane: Discovery & Findings */
+    .right-pane {
+      display: flex; flex-direction: column; min-height: 0; min-width: 0; width: 100%;
+      background: var(--bg-panel);
+    }
+    .sci-tabs {
+      height: 42px; flex-shrink: 0; display: flex; align-items: center;
+      padding: 0 12px; gap: 6px; background: var(--bg-panel);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .sci-tab {
+      background: transparent; border: none; color: var(--text-secondary);
+      padding: 8px 12px; font-size: 12px; font-weight: 700; cursor: pointer;
+      border-bottom: 2px solid transparent; display: flex; align-items: center; gap: 6px;
+    }
+    .sci-tab.active { color: var(--accent-emerald); border-bottom-color: var(--accent-emerald); }
+    .sci-content { flex: 1; overflow-y: auto; padding: 16px; min-height: 0; width: 100%; }
+
+    /* Cards & Tables in Science Pane */
+    .sci-section {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 14px 16px; margin-bottom: 14px;
+    }
+    .sci-section h3 { margin: 0 0 10px; font-size: 14px; color: var(--accent-blue); display: flex; align-items: center; justify-content: space-between; }
+    .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .data-table th, .data-table td {
+      padding: 7px 10px; border-bottom: 1px solid var(--border-color); text-align: left; vertical-align: top;
+    }
+    .data-table th { background: var(--bg-elevated); color: var(--text-secondary); font-weight: 600; cursor: pointer; }
+    .data-table tr:hover td { background: var(--bg-card-hover); }
+
+    /* Findings Reader */
+    .findings-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 500px; width: 100%; }
+    .findings-nav {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 8px; overflow-y: auto; min-width: 240px;
+    }
+    .finding-nav-item {
+      padding: 8px 10px; border-radius: 6px; cursor: pointer; margin-bottom: 4px;
+      border: 1px solid transparent;
+    }
+    .finding-nav-item:hover { background: var(--bg-card-hover); }
+    .finding-nav-item.active {
+      background: rgba(56, 189, 248, 0.14); border-color: rgba(56, 189, 248, 0.4);
+    }
+    .finding-reader {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 18px 22px; overflow-y: auto; line-height: 1.65; font-size: 13.5px; min-width: 0;
+    }
+    .finding-reader h1, .finding-reader h2, .finding-reader h3 { color: var(--text-primary); margin-top: 1.1em; }
+    .finding-reader table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 12.5px; }
+    .finding-reader th, .finding-reader td { border: 1px solid var(--border-color); padding: 6px 10px; }
+    .finding-reader pre { background: var(--bg-elevated); padding: 10px; border-radius: 6px; overflow-x: auto; }
+
+    /* Interactive {source:} and Relay Badges */
+    .pde-source-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 1px 7px; border-radius: 999px; font-size: 11px; font-family: monospace;
+      cursor: pointer; margin: 0 2px; vertical-align: baseline;
+      transition: transform 0.1s;
+    }
+    .pde-source-badge:hover { transform: translateY(-1px); }
+    .pde-source-badge.verified {
+      background: rgba(16, 185, 129, 0.16); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+    .pde-source-badge.warn {
+      background: rgba(245, 158, 11, 0.16); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+    .pde-source-badge.failed {
+      background: rgba(244, 63, 94, 0.16); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+    .pde-relay-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 9px; border-radius: 6px; font-size: 11.5px; font-weight: 700;
+      background: rgba(245, 158, 11, 0.18); color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.45);
+    }
+
+    /* Interactive Viewers Studio */
+    .studio-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 540px; width: 100%; }
+    .artifact-list-panel {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 8px; overflow-y: auto; max-height: calc(100vh - 150px); min-width: 240px;
+    }
+    .artifact-item {
+      padding: 8px 10px; border-radius: 6px; cursor: pointer; margin-bottom: 5px;
+      border: 1px solid transparent; font-size: 12px;
+    }
+    .artifact-item:hover { background: var(--bg-card-hover); }
+    .artifact-item.active {
+      background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.45);
+    }
+    .studio-stage {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 14px; display: flex; flex-direction: column; min-width: 0; width: 100%;
+    }
+    .viewer-stage-box {
+      width: 100%; min-height: 430px; position: relative;
+      background: #ffffff; color: #0f172a; border-radius: 6px;
+      border: 1px solid var(--border-color); overflow: hidden; padding: 10px;
+    }
+    .mol3d-box { width: 100%; height: 440px; position: relative; background: #ffffff; border-radius: 6px; }
+    .provenance-tabs { display: flex; gap: 6px; margin-top: 12px; margin-bottom: 8px; }
+    .prov-json-box {
+      background: var(--bg-elevated); border: 1px solid var(--border-color);
+      border-radius: 6px; padding: 10px; font-family: monospace; font-size: 11.5px;
+      max-height: 260px; overflow: auto; white-space: pre-wrap; color: var(--text-primary);
+    }
+
+    .status-pill {
+      display: inline-block; padding: 2px 7px; border-radius: 999px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    }
+    .st-accepted, .st-succeeded, .st-validated, .st-pass { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .st-running, .st-in_progress { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
+    .st-failed, .st-validation_failed { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
+    .st-idle, .st-queued { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+  </style>
+</head>
+<body>
+  <!-- Embedded Single-File PDE Bundle -->
+  <script id="pde-bundle-data" type="application/json">{"program": {"name": "default-program", "target": "", "indication": "", "modality": "", "stage": "Stage 0–1 Discovery", "project_root": ".pde-workspace/default-program", "cli_version": "0.3.0", "generated_at": "2026-10-07T15:58:42Z", "summary_metrics": {"n_agents": 4, "n_roles_available": 22, "n_work_orders": 0, "n_runs": 0, "n_validated": 0, "validation_pass_rate": 100.0, "total_checks_passed": 0, "total_checks_run": 0, "n_artifacts": 0, "n_findings": 0, "n_relays": 0, "n_relays_addressed": 0, "n_active_leases": 0, "n_concepts": 0, "n_assessments": 0, "n_decisions": 0, "n_retrospectives": 0}, "standalone_mode": true}, "agent_system": {"roles_catalog": {"admet-dmpk-scientist": {"role": "admet-dmpk-scientist", "display_name": "Admet Dmpk Scientist", "description": "ADMET/DMPK scientist for pharmacokinetic profiling, metabolite identification, and drug-drug interaction prediction", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "bioactivity-landscape", "in-vivo-pk-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "bootstrapper": {"role": "bootstrapper", "display_name": "Bootstrapper", "description": "Short-lived agent that provisions the PDE tools environment, runs doctor verification, and reports readiness", "category": "Operations", "skills": ["pharmakon-discovery-engine", "artifact-conventions"], "harness_config": "default"}, "computational-biologist": {"role": "computational-biologist", "display_name": "Computational Biologist", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "category": "Specialist", "skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "harness_config": "default"}, "computational-chemist": {"role": "computational-chemist", "display_name": "Computational Chemist", "description": "Computational chemist for virtual screening, molecular docking, cheminformatics, and QSAR modeling", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "compound-property-profile", "binding-mode-analysis", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "experimental-biologist": {"role": "experimental-biologist", "display_name": "Experimental Biologist", "description": "Experimental biologist for assay design, high-throughput screening, CRISPR validation, and cellular pharmacology", "category": "Specialist", "skills": ["citation-resolution", "bioactivity-landscape", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "finding-validator": {"role": "finding-validator", "display_name": "Finding Validator", "description": "Mechanical finding validator — checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "category": "Quality Gate", "skills": ["artifact-conventions"], "harness_config": "default"}, "head-of-discovery": {"role": "head-of-discovery", "display_name": "Head Of Discovery", "description": "Head of Discovery — persistent strategic advisor that monitors program trajectory and optionally counsels the Science Program Lead; holds no decision authority, blocks nothing, gates nothing", "category": "Advisory", "skills": ["artifact-conventions"], "harness_config": "default"}, "hypex-evolution": {"role": "hypex-evolution", "display_name": "Hypex Evolution", "description": "Hypothesis Evolution Agent - refines and combines tournament hypotheses using explicit lineage-preserving operators", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "evolution-operators", "hypothesis-schema", "hypex-tool-setup"], "harness_config": "default"}, "hypex-generation": {"role": "hypex-generation", "display_name": "Hypex Generation", "description": "Hypothesis Generation Agent — explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "hypothesis-schema", "debate-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-meta-review": {"role": "hypex-meta-review", "display_name": "Hypex Meta Review", "description": "Hypothesis Meta-Review Agent - synthesizes reviews into epoch steering and the final PDE research report", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "meta-review-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-proximity": {"role": "hypex-proximity", "display_name": "Hypex Proximity", "description": "Hypothesis Proximity Agent - clusters hypotheses and adjudicates near-duplicate candidates", "category": "Hypex Graph", "skills": ["artifact-conventions", "proximity-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-reflection": {"role": "hypex-reflection", "display_name": "Hypex Reflection", "description": "Hypothesis Reflection Agent — reviews hypotheses on correctness, novelty, testability, safety, goal alignment, and constraint compliance; screens for dual-use biosafety risk", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "review-rubric", "safety-screen", "hypex-tool-setup"], "harness_config": "default"}, "hypex-supervisor": {"role": "hypex-supervisor", "display_name": "Hypex Supervisor", "description": "Hypothesis-Explorer Supervisor - orchestrates PDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph", "category": "Hypex Graph", "skills": ["artifact-conventions", "hypothesis-run-corpus", "run-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-tournament": {"role": "hypex-tournament", "display_name": "Hypex Tournament", "description": "Hypothesis Tournament Agent — runs pairwise tournament matches between hypotheses, writes match records, and triggers Elo rating recomputation", "category": "Hypex Graph", "skills": ["artifact-conventions", "elo-tournament", "debate-protocol", "review-rubric", "hypex-tool-setup"], "harness_config": "default"}, "medicinal-chemist": {"role": "medicinal-chemist", "display_name": "Medicinal Chemist", "description": "Medicinal chemist for SAR analysis, analog design, scaffold optimization, and drug-likeness assessment", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "preclinical-toxicologist": {"role": "preclinical-toxicologist", "display_name": "Preclinical Toxicologist", "description": "Preclinical toxicologist for safety pharmacology, toxicology study design, and therapeutic index assessment", "category": "Specialist", "skills": ["tissue-expression-profile", "target-genetic-evidence", "preclinical-safety-assessment", "compound-property-profile", "admet-property-prediction", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "project-curator": {"role": "project-curator", "display_name": "Project Curator", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "category": "Presentation", "skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "harness_config": "default"}, "regulatory-scientist": {"role": "regulatory-scientist", "display_name": "Regulatory Scientist", "description": "Regulatory scientist for IND dossier assembly, eCTD compliance, and FDA/EMA regulatory strategy", "category": "Specialist", "skills": ["citation-resolution", "preclinical-safety-assessment", "in-vivo-pk-analysis", "compound-property-profile", "artifact-conventions"], "harness_config": "default"}, "research-operations-controller": {"role": "research-operations-controller", "display_name": "Research Operations Controller", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "harness_config": "default"}, "science-program-lead": {"role": "science-program-lead", "display_name": "Science Program Lead", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "harness_config": "default"}, "scientific-reviewer": {"role": "scientific-reviewer", "display_name": "Scientific Reviewer", "description": "Independent scientific reviewer — re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject", "category": "Quality Gate", "skills": ["citation-resolution", "tournament-corpus", "citation-verification", "artifact-conventions"], "harness_config": "default"}, "structural-biologist": {"role": "structural-biologist", "display_name": "Structural Biologist", "description": "Structural biologist for protein structure analysis, druggability assessment, and binding mode interpretation", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "binding-mode-analysis", "artifact-conventions"], "harness_config": "default"}}, "all_10_checks": [{"name": "deliverables_exist", "kind": "COMPLETENESS"}, {"name": "report_headings", "kind": "FORMAT"}, {"name": "paths_resolve", "kind": "COMPLETENESS"}, {"name": "provenance_valid", "kind": "DATA_INTEGRITY"}, {"name": "analysis_citations", "kind": "DATA_INTEGRITY"}, {"name": "relay_coverage", "kind": "COMPLETENESS"}, {"name": "version_policy", "kind": "CONSISTENCY"}, {"name": "findings_integrity", "kind": "DATA_INTEGRITY"}, {"name": "source_tags_resolve", "kind": "DATA_INTEGRITY"}, {"name": "unrecognized_json", "kind": "COMPLETENESS"}], "nodes": [{"id": "user", "name": "Scientist / User", "role": "user", "category": "User", "parentId": null, "ancestry": [], "state": "active", "wo_state": "active", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Program Charter & Discovery Objective", "description": "Principal Investigator / Interactive User Session", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard"], "validation": null, "deliverables": []}, {"id": "science-program-lead", "name": "Science Program Lead", "role": "science-program-lead", "category": "Orchestrator", "parentId": "user", "ancestry": ["user"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions.", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "validation": null, "deliverables": ["program-state/decision-log.md", "program-state/liability-tracker.md", "program-state/active-series.md", "program-state/open-questions.md", "executive/program-summary.md"]}, {"id": "research-operations-controller", "name": "Research Ops Controller", "role": "research-operations-controller", "category": "Orchestrator", "parentId": "science-program-lead", "ancestry": ["user", "science-program-lead"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Commit work orders, freeze context snapshots, manage single-flight resource leases, and enforce 10-check mechanical validation.", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "validation": null, "deliverables": [".pde/control/events.ndjson"]}, {"id": "project-curator-dashboard", "name": "Project Curator (Dashboard)", "role": "project-curator", "category": "Presentation", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "succeeded", "wo_state": "published", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Compile Unified Multi-Agent Graph + 14 PDE Scientific Viewers into Interactive Dashboard.", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "injected_skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "validation": null, "deliverables": ["dashboard.html"]}], "edges": [{"parentId": "user", "childId": "science-program-lead", "label": "charter", "state": "idle"}, {"parentId": "science-program-lead", "childId": "research-operations-controller", "label": "cohort-dispatch", "state": "idle"}, {"parentId": "research-operations-controller", "childId": "project-curator-dashboard", "label": "dashboard-build", "state": "succeeded"}], "work_orders": [], "contexts": [], "runs": [], "validations": [], "leases": [], "events": [], "messages": [], "retrospectives": [], "environment": {"cli_version": "0.3.0", "env_version": "sha256:e23e016d8", "project_root": ".pde-workspace/default-program", "binaries": [{"name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, {"name": "hypex", "description": "Hypex Hypothesis Store", "status": "optional_missing"}, {"name": "elo", "description": "Pairwise ELO Rating Engine", "status": "optional_missing"}, {"name": "prox", "description": "Proximity Clustering CLI", "status": "optional_missing"}, {"name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, {"name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}], "libraries": [{"name": "rdkit", "label": "RDKit Cheminformatics", "status": "missing"}, {"name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "missing"}, {"name": "biopython", "label": "BioPython Sequence & Structure", "status": "missing"}, {"name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "missing"}, {"name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, {"name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}], "credentials": [{"name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, {"name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, {"name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}], "cli_binaries": {"pde": {"available": true, "name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, "hypex": {"available": false, "name": "hypex", "description": "Hypex Hypothesis Store", "status": "optional_missing"}, "elo": {"available": false, "name": "elo", "description": "Pairwise ELO Rating Engine", "status": "optional_missing"}, "prox": {"available": false, "name": "prox", "description": "Proximity Clustering CLI", "status": "optional_missing"}, "fpocket": {"available": false, "name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, "vina": {"available": false, "name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}}, "python_libraries": {"rdkit": {"available": false, "name": "rdkit", "label": "RDKit Cheminformatics", "status": "missing"}, "gemmi": {"available": false, "name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "missing"}, "biopython": {"available": false, "name": "biopython", "label": "BioPython Sequence & Structure", "status": "missing"}, "scipy": {"available": false, "name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "missing"}, "jsonpath_ng": {"available": true, "name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, "mcp": {"available": true, "name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}}, "api_credentials": {"ALPHAGENOME_API_KEY": {"configured": false, "name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, "NCBI_API_KEY": {"configured": false, "name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, "CLOUD_APPLICATION_CREDENTIALS": {"configured": false, "name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}}, "bootstrap_ready": false}}, "science": {"executive": {"title": "Program Summary", "source_path": "executive/program-summary.md", "raw_markdown": "# Program Summary\n\nHigh-level program status and executive overview.\n", "html": "<h1>Program Summary<\/h1>\n<p>High-level program status and executive overview.<\/p>\n"}, "program_state": [{"name": "active-series.md", "stem": "active-series", "title": "Active Series", "source_file": "program-state/active-series.md", "raw_markdown": "# Active Series\n\nTrack active chemical series under investigation.\n", "html": "<h1>Active Series<\/h1>\n<p>Track active chemical series under investigation.<\/p>\n"}, {"name": "decision-log.md", "stem": "decision-log", "title": "Decision Log", "source_file": "program-state/decision-log.md", "raw_markdown": "# Decision Log\n\nChronological record of key program decisions.\n", "html": "<h1>Decision Log<\/h1>\n<p>Chronological record of key program decisions.<\/p>\n"}, {"name": "liability-tracker.md", "stem": "liability-tracker", "title": "Liability Tracker", "source_file": "program-state/liability-tracker.md", "raw_markdown": "# Liability Tracker\n\nRecord identified liabilities and their mitigation status.\n", "html": "<h1>Liability Tracker<\/h1>\n<p>Record identified liabilities and their mitigation status.<\/p>\n"}, {"name": "open-questions.md", "stem": "open-questions", "title": "Open Questions", "source_file": "program-state/open-questions.md", "raw_markdown": "# Open Questions\n\nOutstanding questions requiring resolution.\n", "html": "<h1>Open Questions<\/h1>\n<p>Outstanding questions requiring resolution.<\/p>\n"}], "triage_and_gates": {"concepts": [], "assessments": [], "decisions": [], "gates": []}, "findings": [], "mandatory_relays": [], "artifacts": [], "artifacts_by_class": {}}}</script>
+  <script>
+    window.__PDE_BUNDLE__ = JSON.parse(document.getElementById('pde-bundle-data').textContent);
+  </script>
+
+  <!-- Top Mission Control Bar -->
+  <header class="topbar">
+    <div class="brand-group">
+      <div class="brand-logo">PDE</div>
+      <div>
+        <div class="brand-title" id="hdr-program-name">default-program</div>
+        <div class="brand-sub">
+          <span class="stage-pill" id="hdr-stage">Stage 0–1 Discovery</span>
+          <span>CLI v0.3.0</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-strip">
+      <div class="kpi-chip">
+        <span class="kpi-label">Agents / WOs</span>
+        <span class="kpi-val" id="kpi-agents">0 / 0</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-label">10-Check Gate</span>
+        <span class="kpi-val" id="kpi-validation">100%</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-label">L0 Artifacts</span>
+        <span class="kpi-val" id="kpi-artifacts">0</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-label">L1 Findings</span>
+        <span class="kpi-val" id="kpi-findings">0</span>
+      </div>
+      <div class="kpi-chip">
+        <span class="kpi-label">Relays Covered</span>
+        <span class="kpi-val" id="kpi-relays">0 / 0</span>
+      </div>
+    </div>
+
+    <div class="topbar-controls">
+      <div class="mode-switcher" role="group" aria-label="View Mode">
+        <button class="mode-btn active" data-mode="split" onclick="setWorkspaceMode('split')">Split</button>
+        <button class="mode-btn" data-mode="agentic" onclick="setWorkspaceMode('agentic')">Agents</button>
+        <button class="mode-btn" data-mode="science" onclick="setWorkspaceMode('science')">Discovery</button>
+      </div>
+      <div class="conn-badge" id="conn-badge">
+        <span class="conn-dot"></span>
+        <span id="conn-text">STANDALONE SNAPSHOT</span>
+      </div>
+      <button class="icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Theme" aria-label="Toggle Dark/Light Theme">
+        <svg id="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg id="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="workspace" id="main-workspace">
+    <!-- LEFT PANE: Multi-Agent Lineage & Control Plane -->
+    <section class="left-pane">
+      <div class="pane-header">
+        <div class="pane-title">
+          <span>Multi-Agent Lineage Forest</span>
+          <span id="graph-node-count" style="color:var(--text-secondary);font-weight:500;"></span>
+        </div>
+        <div class="toolbar-group">
+          <button class="mini-btn" id="btn-orient" onclick="toggleOrientation()" title="Transpose Vertical/Horizontal (Shortcut: t)">Transpose (t)</button>
+          <button class="mini-btn" onclick="zoomGraph(1.2)" title="Zoom In">+</button>
+          <button class="mini-btn" onclick="zoomGraph(0.83)" title="Zoom Out">-</button>
+          <button class="mini-btn" onclick="fitGraphToScreen()" title="Fit to Screen (Shortcut: f)">Fit (f)</button>
+        </div>
+      </div>
+
+      <!-- Interactive SVG Agent Tree View -->
+      <div class="graph-stage" id="graph-stage">
+        <div class="lease-overlay" id="lease-overlay"></div>
+        <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <marker id="arrow-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+            </marker>
+            <marker id="arrow-run" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+            </marker>
+            <marker id="arrow-fail" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#f43f5e"/>
+            </marker>
+            <marker id="arrow-default" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b"/>
+            </marker>
+          </defs>
+          <g id="lineage-viewport"></g>
+        </svg>
+      </div>
+
+      <!-- Bottom Dock: Node Inspector + Inter-Agent Message Stream + 22 Role Catalog + Retrospectives & Readiness -->
+      <div class="agent-bottom-dock">
+        <div class="subtab-bar">
+          <button class="subtab-btn active" data-dock="inspector" onclick="switchDockTab('inspector')">Agent &amp; 10-Check Inspector</button>
+          <button class="subtab-btn" data-dock="messages" onclick="switchDockTab('messages')">Inter-Agent Event Stream (<span id="msg-count">0</span>)</button>
+          <button class="subtab-btn" data-dock="roles" onclick="switchDockTab('roles')">22 PDE Role &amp; Skill Lanes</button>
+          <button class="subtab-btn" data-dock="retros" onclick="switchDockTab('retros')">Retrospectives &amp; Readiness (<span id="retro-count">0</span>)</button>
+        </div>
+        <div class="dock-body" id="dock-inspector"></div>
+        <div class="dock-body" id="dock-messages" style="display:none;"></div>
+        <div class="dock-body" id="dock-roles" style="display:none;"></div>
+        <div class="dock-body" id="dock-retros" style="display:none;"></div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANE: PDE Scientific Output & 14 Interactive Viewers -->
+    <section class="right-pane">
+      <div class="sci-tabs">
+        <button class="sci-tab active" data-scitab="overview" onclick="switchSciTab('overview')">Overview, Gates &amp; Relays</button>
+        <button class="sci-tab" data-scitab="findings" onclick="switchSciTab('findings')">Specialist Findings (Layer 1)</button>
+        <button class="sci-tab" data-scitab="studio" onclick="switchSciTab('studio')">Interactive Viewers Studio (14+ Studios)</button>
+      </div>
+
+      <!-- Tab 1: Overview, Stage Gates, Program State & Mandatory Relays -->
+      <div class="sci-content" id="scitab-overview"></div>
+
+      <!-- Tab 2: Specialist Findings & Dossier Reader -->
+      <div class="sci-content" id="scitab-findings" style="display:none;"></div>
+
+      <!-- Tab 3: Interactive Scientific Viewers Studio (All 14 Viewers Inline) -->
+      <div class="sci-content" id="scitab-studio" style="display:none;"></div>
+    </section>
+  </main>
+
+  <script>
+    /* =========================================================================
+     * 1. AGENT LINEAGE FOREST LAYOUT ENGINE
+     * ========================================================================= */
+    const NODE_W = 180;
+    const NODE_H = 76;
+    const GAP_X = 28;
+    const GAP_Y = 56;
+    const H_GAP_X = 64;
+    const H_GAP_Y = 24;
+    const PAD = 36;
+
+    let currentOrientation = 'vertical'; // 'vertical' | 'horizontal'
+    let collapsedIds = new Set();
+    let selectedNodeId = null;
+    let selectedFindingId = null;
+    let selectedArtifactId = null;
+    let currentMsgFilter = 'all';
+    let forceRawJsonMode = false;
+    let panX = 20, panY = 20, scale = 1.0;
+    let isDragging = false, dragStartX = 0, dragStartY = 0;
+
+    function compareIds(a, b) {
+      return a < b ? -1 : a > b ? 1 : 0;
+    }
+
+    function edgeEndpoints(orientation, parent, child) {
+      if (orientation === 'horizontal') {
+        return {
+          x1: parent.px + NODE_W,
+          y1: parent.py + NODE_H / 2,
+          x2: child.px,
+          y2: child.py + NODE_H / 2
+        };
+      }
+      return {
+        x1: parent.px + NODE_W / 2,
+        y1: parent.py + NODE_H,
+        x2: child.px + NODE_W / 2,
+        y2: child.py
+      };
+    }
+
+    function buildLineageForest(agents) {
+      const byId = new Map();
+      for (const agent of agents) {
+        byId.set(agent.id, { agent, children: [], x: 0, depth: 0 });
+      }
+      const roots = [];
+      for (const node of byId.values()) {
+        const pid = node.agent.parentId;
+        const parent = pid ? byId.get(pid) : undefined;
+        if (parent && parent !== node) {
+          parent.children.push(node);
+        } else {
+          roots.push(node);
+        }
+      }
+      const byName = (a, b) =>
+        (a.agent.name || '').localeCompare(b.agent.name || '') || compareIds(a.agent.id, b.agent.id);
+      for (const node of byId.values()) node.children.sort(byName);
+      roots.sort(byName);
+
+      const visited = new Set();
+      const visit = (node, depth) => {
+        if (visited.has(node.agent.id)) return;
+        visited.add(node.agent.id);
+        node.depth = depth;
+        node.children = node.children.filter(c => !visited.has(c.agent.id));
+        for (const child of node.children) visit(child, depth + 1);
+      };
+      for (const root of roots) visit(root, 0);
+      return roots;
+    }
+
+    function layoutForest(roots, orientation) {
+      let nextLeafSlot = 0;
+      const assignSlots = (node) => {
+        if (collapsedIds.has(node.agent.id) || node.children.length === 0) {
+          node.x = nextLeafSlot++;
+          return;
+        }
+        for (const child of node.children) assignSlots(child);
+        node.x = (node.children[0].x + node.children[node.children.length - 1].x) / 2;
+      };
+      for (const r of roots) {
+        assignSlots(r);
+        nextLeafSlot += 0.4;
+      }
+
+      const nodes = [];
+      const posById = new Map();
+      const collect = (node) => {
+        const vx = PAD + node.x * (NODE_W + GAP_X);
+        const vy = PAD + node.depth * (NODE_H + GAP_Y);
+        const px = orientation === 'horizontal' ? (PAD + node.depth * (NODE_W + H_GAP_X)) : vx;
+        const py = orientation === 'horizontal' ? (PAD + node.x * (NODE_H + H_GAP_Y)) : vy;
+        const positioned = { agent: node.agent, px, py };
+        nodes.push(positioned);
+        posById.set(node.agent.id, positioned);
+        if (!collapsedIds.has(node.agent.id)) {
+          for (const c of node.children) collect(c);
+        }
+      };
+      for (const r of roots) collect(r);
+
+      const edges = [];
+      for (const n of nodes) {
+        const pid = n.agent.parentId;
+        if (pid && posById.has(pid)) {
+          const p = posById.get(pid);
+          edges.push({
+            ...edgeEndpoints(orientation, p, n),
+            parentId: pid,
+            childId: n.agent.id,
+            state: n.agent.state
+          });
+        }
+      }
+
+      let maxX = PAD + NODE_W, maxY = PAD + NODE_H;
+      for (const n of nodes) {
+        maxX = Math.max(maxX, n.px + NODE_W + PAD);
+        maxY = Math.max(maxY, n.py + NODE_H + PAD);
+      }
+      return { nodes, edges, width: maxX, height: maxY };
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function stateColor(st) {
+      const s = String(st || '').toLowerCase();
+      if (['scientifically_accepted', 'mechanically_validated', 'succeeded', 'pass', 'passed', 'active', 'published'].includes(s)) return '#10b981';
+      if (['running', 'in_progress', 'starting', 'under_scientific_review', 'fast_path'].includes(s)) return '#38bdf8';
+      if (['validation_failed', 'failed', 'scientifically_rejected', 'fail'].includes(s)) return '#f43f5e';
+      if (['queued', 'committed', 'proposed', 'warn', 'pass_with_warnings'].includes(s)) return '#f59e0b';
+      return '#64748b';
+    }
+
+    function applySvgTransform() {
+      const vp = document.getElementById('lineage-viewport');
+      if (vp) vp.setAttribute('transform', `translate(${panX},${panY}) scale(${scale})`);
+    }
+
+    function zoomGraph(factor, clientX, clientY) {
+      const stage = document.getElementById('graph-stage');
+      const oldScale = scale;
+      const newScale = Math.max(0.25, Math.min(2.5, oldScale * factor));
+      if (stage && newScale !== oldScale) {
+        const rect = stage.getBoundingClientRect();
+        const cx = (typeof clientX === 'number') ? (clientX - rect.left) : (rect.width / 2);
+        const cy = (typeof clientY === 'number') ? (clientY - rect.top) : (rect.height / 2);
+        const ratio = newScale / oldScale;
+        panX = cx - (cx - panX) * ratio;
+        panY = cy - (cy - panY) * ratio;
+      }
+      scale = newScale;
+      applySvgTransform();
+    }
+
+    function fitGraphToScreen() {
+      const stage = document.getElementById('graph-stage');
+      const bundle = window.__PDE_BUNDLE__;
+      if (!stage || !bundle) return;
+      const roots = buildLineageForest(bundle.agent_system.nodes || []);
+      const layout = layoutForest(roots, currentOrientation);
+      const sw = stage.clientWidth || 600;
+      const sh = stage.clientHeight || 360;
+      const sx = sw / Math.max(layout.width, 200);
+      const sy = sh / Math.max(layout.height, 200);
+      scale = Math.max(0.35, Math.min(1.15, Math.min(sx, sy) * 0.92));
+      panX = Math.max(12, (sw - layout.width * scale) / 2);
+      panY = Math.max(12, (sh - layout.height * scale) / 2);
+      applySvgTransform();
+    }
+
+    function toggleOrientation() {
+      currentOrientation = currentOrientation === 'vertical' ? 'horizontal' : 'vertical';
+      renderAgentGraph();
+      fitGraphToScreen();
+    }
+
+    function renderAgentGraph() {
+      const bundle = window.__PDE_BUNDLE__;
+      const nodesData = (bundle.agent_system && bundle.agent_system.nodes) || [];
+      document.getElementById('graph-node-count').textContent = `(${nodesData.length} nodes)`;
+
+      // Render active resource leases
+      const leases = (bundle.agent_system && bundle.agent_system.leases) || [];
+      const leaseOverlay = document.getElementById('lease-overlay');
+      if (leases.length === 0) {
+        leaseOverlay.innerHTML = `<span class="lease-pill">Leases: af3 (free) · hypex-supervisor (free)</span>`;
+      } else {
+        leaseOverlay.innerHTML = leases.map(l =>
+          `<span class="lease-pill ${l.state === 'held' ? 'held' : ''}">Lease ${escapeHtml(l.resource)}: ${escapeHtml(l.state)} (${escapeHtml(l.holder_agent || l.work_order_id || '')})</span>`
+        ).join('');
+      }
+
+      const roots = buildLineageForest(nodesData);
+      const layout = layoutForest(roots, currentOrientation);
+      const vp = document.getElementById('lineage-viewport');
+      let svgParts = [];
+
+      // Draw cubic Bezier edges
+      for (const e of layout.edges) {
+        const col = stateColor(e.state);
+        let d;
+        if (currentOrientation === 'horizontal') {
+          const mx = (e.x1 + e.x2) / 2;
+          d = `M ${e.x1} ${e.y1} C ${mx} ${e.y1}, ${mx} ${e.y2}, ${e.x2} ${e.y2}`;
+        } else {
+          const my = (e.y1 + e.y2) / 2;
+          d = `M ${e.x1} ${e.y1} C ${e.x1} ${my}, ${e.x2} ${my}, ${e.x2} ${e.y2}`;
+        }
+        svgParts.push(
+          `<path d="${d}" fill="none" stroke="${col}" stroke-width="2" stroke-opacity="0.75" />`
+        );
+      }
+
+      // Draw agent cards
+      for (const n of layout.nodes) {
+        const a = n.agent;
+        const col = stateColor(a.state);
+        const isSelected = a.id === selectedNodeId;
+        const strokeW = isSelected ? 2.8 : 1.5;
+        const strokeCol = isSelected ? '#38bdf8' : col;
+        const isRunning = ['running', 'in_progress', 'starting'].includes(String(a.state).toLowerCase());
+        const titleShort = (a.name || a.id).slice(0, 23);
+        const woBadge = a.work_order_id ? `${a.work_order_id}${a.revision ? '-r' + a.revision : ''}` : (a.category || 'Agent');
+        const skillsCount = (a.injected_skills || []).length;
+
+        let pulseRect = '';
+        if (isRunning) {
+          pulseRect = `<rect x="${n.px - 3}" y="${n.py - 3}" width="${NODE_W + 6}" height="${NODE_H + 6}" rx="10" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4 2" opacity="0.8"/>`;
+        }
+
+        svgParts.push(`
+          <g class="agent-node-group" transform="translate(0,0)" style="cursor:pointer" onclick="selectAgentNode('${escapeHtml(a.id)}')">
+            ${pulseRect}
+            <rect x="${n.px}" y="${n.py}" width="${NODE_W}" height="${NODE_H}" rx="8"
+                  fill="var(--bg-card)" stroke="${strokeCol}" stroke-width="${strokeW}" />
+            <rect x="${n.px}" y="${n.py}" width="5" height="${NODE_H}" rx="3" fill="${col}" />
+            <circle cx="${n.px + 16}" cy="${n.py + 18}" r="4.5" fill="${col}" />
+            <text x="${n.px + 26}" y="${n.py + 22}" fill="var(--text-primary)" font-size="11.5" font-weight="700">${escapeHtml(titleShort)}</text>
+            <text x="${n.px + 14}" y="${n.py + 41}" fill="var(--text-secondary)" font-size="10" font-family="monospace">${escapeHtml(woBadge)} · ${escapeHtml(String(a.state || 'idle'))}</text>
+            <text x="${n.px + 14}" y="${n.py + 60}" fill="var(--accent-blue)" font-size="9.5">${skillsCount} skills${a.validation ? ' · 10-check ' + a.validation.result.toUpperCase() : ''}</text>
+          </g>
+        `);
+      }
+
+      vp.innerHTML = svgParts.join('');
+      applySvgTransform();
+    }
+
+    function selectAgentNode(nodeId) {
+      selectedNodeId = nodeId;
+      renderAgentGraph();
+      renderInspector();
+      switchDockTab('inspector');
+    }
+
+    function renderInspector() {
+      const bundle = window.__PDE_BUNDLE__;
+      const nodes = (bundle.agent_system && bundle.agent_system.nodes) || [];
+      const node = nodes.find(n => n.id === selectedNodeId) || nodes.find(n => n.work_order_id) || nodes[1] || nodes[0];
+      const container = document.getElementById('dock-inspector');
+      if (!node) {
+        container.innerHTML = '<div style="color:var(--text-secondary)">No agent nodes available.</div>';
+        return;
+      }
+      selectedNodeId = node.id;
+
+      const skillsHtml = (node.injected_skills || []).map(s =>
+        `<span class="skill-pill">${escapeHtml(s)}</span>`
+      ).join('') || '<span style="color:var(--text-muted)">None</span>';
+
+      const all10 = (bundle.agent_system && bundle.agent_system.all_10_checks) || [];
+      const val = node.validation;
+      const checkMap = {};
+      if (val && Array.isArray(val.checks)) {
+        val.checks.forEach(c => { checkMap[c.name] = c; });
+      }
+
+      const checksHtml = all10.map((chk, idx) => {
+        const rec = checkMap[chk.name];
+        const res = rec ? (rec.result || rec.status || 'skip') : 'skip';
+        const cls = res === 'pass' ? 'badge-pass' : (res === 'pass_with_warnings' || res === 'warn' ? 'badge-warn' : (res === 'fail' ? 'badge-fail' : 'badge-skip'));
+        const detailText = rec && rec.detail ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;grid-column:1 / -1;">${escapeHtml(rec.detail)}</div>` : '';
+        return `
+          <div class="check-row" style="flex-wrap:wrap;" title="Defect class: ${escapeHtml(chk.kind)}${rec && rec.detail ? ' — ' + escapeHtml(rec.detail) : ''}">
+            <span>${idx + 1}. <code>${escapeHtml(chk.name)}</code> <span style="font-size:9.5px;color:var(--text-muted);">(${escapeHtml(chk.kind)})</span></span>
+            <span class="${cls}">${escapeHtml(res.toUpperCase())}</span>
+            ${detailText}
+          </div>
+        `;
+      }).join('');
+
+      const delivHtml = (node.deliverables || []).map(d => {
+        const isFinding = d.startsWith('findings/') && d.endsWith('.md');
+        const isRaw = d.startsWith('raw/');
+        const clickAttr = isFinding
+          ? `onclick="openFindingByPath('${escapeHtml(d)}')" style="cursor:pointer;color:var(--accent-blue);text-decoration:underline;"`
+          : (isRaw ? `onclick="openArtifactByPath('${escapeHtml(d)}')" style="cursor:pointer;color:var(--accent-blue);text-decoration:underline;"` : '');
+        return `<div ${clickAttr}>- <code>${escapeHtml(d)}</code></div>`;
+      }).join('') || '<div style="color:var(--text-muted)">No deliverables declared</div>';
+
+      const deps = node.dependencies || [];
+      const depsHtml = deps.length > 0
+        ? `<div style="font-size:11px;margin-bottom:6px;"><strong>Dependencies:</strong> ${deps.map(d => `<span class="stage-pill">${escapeHtml(d)}</span>`).join(' ')}</div>`
+        : '';
+
+      const criteria = node.acceptance_criteria || [];
+      const criteriaHtml = criteria.length > 0
+        ? `<div style="margin-top:6px;"><h4>Acceptance Criteria (${criteria.length})</h4><ul style="margin:2px 0 6px 16px;padding:0;font-size:11px;color:var(--text-secondary);">${criteria.map(c => `<li>${escapeHtml(c)}</li>`).join('')}</ul></div>`
+        : '';
+
+      const failureBanner = (node.failure_class || node.failure_detail)
+        ? `<div style="margin:6px 0;padding:6px 8px;border-radius:4px;background:rgba(244,63,94,0.12);border:1px solid #f43f5e;font-size:11px;color:#fda4af;">
+             <strong>Failure Class:</strong> <code>${escapeHtml(node.failure_class || 'error')}</code> ${escapeHtml(node.failure_detail || '')}
+           </div>`
+        : '';
+
+      const ctx = node.context_snapshot;
+      let ctxHtml = '';
+      if (ctx) {
+        const links = ctx.artifact_links || [];
+        const linksHtml = links.map(lk => {
+          const p = typeof lk === 'string' ? lk : (lk.path || lk.rel_path || JSON.stringify(lk));
+          const isF = String(p).startsWith('findings/');
+          const isR = String(p).startsWith('raw/');
+          const click = isF ? `onclick="openFindingByPath('${escapeHtml(p)}')" style="cursor:pointer;color:var(--accent-blue);"`
+                            : (isR ? `onclick="openArtifactByPath('${escapeHtml(p)}')" style="cursor:pointer;color:var(--accent-blue);"` : '');
+          return `<span class="skill-pill" ${click}>${escapeHtml(p)}</span>`;
+        }).join(' ');
+        ctxHtml = `
+          <details style="margin-top:8px;padding:6px 8px;background:var(--bg-primary);border:1px solid var(--border-subtle);border-radius:6px;font-size:11px;">
+            <summary style="cursor:pointer;font-weight:700;color:var(--accent-blue);">
+              Dispatch Context Snapshot (<code>${escapeHtml(ctx.work_order_id || node.work_order_id)}-r${escapeHtml(ctx.revision || node.revision || 1)}</code>) · SHA-256: <code>${escapeHtml(String(ctx.hash || '').slice(0, 12))}…</code>
+            </summary>
+            <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
+              <div><strong>Assembled:</strong> ${escapeHtml(ctx.assembled_at || '—')} · <strong>Full Hash:</strong> <code>${escapeHtml(ctx.hash || '—')}</code></div>
+              ${links.length ? `<div><strong>Input Artifact Links (${links.length}):</strong> <div class="skill-pills" style="margin-top:2px;">${linksHtml}</div></div>` : ''}
+              ${ctx.program_summary_excerpt ? `<div><strong>Program Summary Excerpt:</strong><div style="color:var(--text-secondary);margin-top:2px;white-space:pre-wrap;max-height:90px;overflow-y:auto;">${escapeHtml(ctx.program_summary_excerpt)}</div></div>` : ''}
+            </div>
+          </details>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="inspector-grid">
+          <div class="inspector-card">
+            <h4>Agent &amp; Work-Order Identity</h4>
+            <div style="font-size:13px;font-weight:700;margin-bottom:4px;">${escapeHtml(node.name)}</div>
+            <div style="color:var(--text-secondary);margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
+              <span>Role: <code>${escapeHtml(node.role)}</code></span>
+              <span>· State: <span class="status-pill st-${escapeHtml(node.state)}">${escapeHtml(node.state)}</span></span>
+              ${node.work_order_id ? `<span>· WO: <code>${escapeHtml(node.work_order_id)}-r${escapeHtml(node.revision || 1)}</code></span>` : ''}
+              ${node.run_id ? `<span>· Run: <code>${escapeHtml(node.run_id)}</code> (Attempt #${escapeHtml(node.attempt || 1)})</span>` : ''}
+              ${node.correction_cycle ? `<span class="badge-warn" title="Mechanical correction loops executed">Correction Cycle: ${escapeHtml(node.correction_cycle)}</span>` : ''}
+            </div>
+            ${failureBanner}
+            ${depsHtml}
+            <div style="font-size:11.5px;margin-bottom:8px;"><strong>Decision Question:</strong> ${escapeHtml(node.decision_question || node.description || '')}</div>
+            <h4>Injected Skills</h4>
+            <div class="skill-pills" style="margin-bottom:8px;">${skillsHtml}</div>
+            <h4>Deliverables</h4>
+            <div style="font-size:11px;">${delivHtml}</div>
+            ${criteriaHtml}
+            ${ctxHtml}
+          </div>
+          <div class="inspector-card">
+            <h4>10-Check Mechanical Validation Gate ${val ? `(${escapeHtml(val.result.toUpperCase())})` : '(Orchestrator / N/A)'}</h4>
+            <div class="checks-grid">${checksHtml}</div>
+          </div>
+        </div>
+      `;
+    }
+
+    function setMsgFilter(filter) {
+      currentMsgFilter = filter;
+      renderMessagesAndRoles();
+    }
+
+    function matchesMsgFilter(m, filter) {
+      if (!filter || filter === 'all') return true;
+      const t = String(m.type || '').toLowerCase();
+      if (filter === 'dispatch') return t.includes('dispatch') || t.includes('work_order') || t.includes('run');
+      if (filter === 'tools') return t.includes('tool_phase');
+      if (filter === 'validation') return t.includes('validation') || t.includes('correction') || t.includes('accepted') || t.includes('rejected');
+      if (filter === 'leases') return t.includes('lease');
+      return true;
+    }
+
+    function renderMessagesAndRoles() {
+      const bundle = window.__PDE_BUNDLE__;
+      const messages = (bundle.agent_system && bundle.agent_system.messages) || [];
+      document.getElementById('msg-count').textContent = String(messages.length);
+
+      const msgContainer = document.getElementById('dock-messages');
+      const filtered = messages.filter(m => matchesMsgFilter(m, currentMsgFilter));
+      const filterBtns = [
+        { id: 'all', label: `All (${messages.length})` },
+        { id: 'dispatch', label: 'Dispatches & Runs' },
+        { id: 'tools', label: 'Phase 1/2 Tools' },
+        { id: 'validation', label: '10-Check & Retries' },
+        { id: 'leases', label: 'Leases' }
+      ].map(f => `<button class="mini-btn ${currentMsgFilter === f.id ? 'active' : ''}" onclick="setMsgFilter('${f.id}')">${escapeHtml(f.label)}</button>`).join(' ');
+
+      if (messages.length === 0) {
+        msgContainer.innerHTML = '<div style="color:var(--text-secondary)">No inter-agent events recorded yet.</div>';
+      } else {
+        msgContainer.innerHTML = `
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;align-items:center;">
+            <span style="font-size:11px;color:var(--text-secondary);">Filter:</span>
+            ${filterBtns}
+          </div>
+          <div class="msg-list">
+            ${filtered.slice().reverse().map(m => {
+              const hasDetail = m.detail && typeof m.detail === 'object' && Object.keys(m.detail).length > 0;
+              const detailHtml = hasDetail
+                ? `<details style="margin-top:4px;font-size:10.5px;"><summary style="cursor:pointer;color:var(--accent-blue);">Inspect event payload</summary><pre style="margin:4px 0 0;padding:6px;background:var(--bg-primary);border-radius:4px;overflow-x:auto;">${escapeHtml(JSON.stringify(m.detail, null, 2))}</pre></details>`
+                : '';
+              return `
+                <div class="msg-item ${escapeHtml(m.level || 'info')}">
+                  <div class="msg-meta">
+                    <span class="msg-route">${escapeHtml(m.sender)} → ${escapeHtml(m.recipient)}</span>
+                    <span><code>${escapeHtml(m.type)}</code> · ${escapeHtml(m.timestamp || '')}</span>
+                  </div>
+                  <div>${escapeHtml(m.summary)}</div>
+                  ${detailHtml}
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+      }
+
+      const roles = Object.values((bundle.agent_system && bundle.agent_system.roles_catalog) || {});
+      const rolesContainer = document.getElementById('dock-roles');
+      rolesContainer.innerHTML = `
+        <table class="data-table">
+          <thead><tr><th>Role (pde-&lt;role&gt;)</th><th>Category</th><th>Assigned Skills</th></tr></thead>
+          <tbody>
+            ${roles.map(r => `
+              <tr>
+                <td><strong><code>pde-${escapeHtml(r.role)}</code></strong><br><span style="color:var(--text-secondary);font-size:11px;">${escapeHtml(r.description)}</span></td>
+                <td>${escapeHtml(r.category)}</td>
+                <td><div class="skill-pills">${(r.skills || []).map(s => `<span class="skill-pill">${escapeHtml(s)}</span>`).join('')}</div></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function renderRetrosAndEnv() {
+      const bundle = window.__PDE_BUNDLE__;
+      const retros = (bundle.agent_system && bundle.agent_system.retrospectives) || [];
+      const env = (bundle.agent_system && bundle.agent_system.environment) || {};
+      const retroCountEl = document.getElementById('retro-count');
+      if (retroCountEl) retroCountEl.textContent = String(retros.length);
+
+      const container = document.getElementById('dock-retros');
+      if (!container) return;
+
+      const cli = env.cli_binaries || {};
+      const libs = env.python_libraries || {};
+      const creds = env.api_credentials || {};
+
+      const renderBadges = (obj) => Object.keys(obj).map(k => {
+        const info = obj[k] || {};
+        const ok = Boolean(info.available || info.configured);
+        const cls = ok ? 'badge-pass' : 'badge-warn';
+        const statusText = ok ? 'READY' : 'OPTIONAL/MISSING';
+        return `<span class="check-row" style="display:inline-flex;gap:6px;padding:3px 8px;margin:2px;"><code>${escapeHtml(k)}</code> <span class="${cls}">${statusText}</span></span>`;
+      }).join('');
+
+      const retrosHtml = retros.length === 0
+        ? `<div style="color:var(--text-secondary);font-size:11.5px;">No subagent retrospectives recorded in <code>retrospectives/*.md</code> yet.</div>`
+        : retros.map(r => `
+            <div style="background:var(--bg-primary);border:1px solid var(--border-subtle);border-radius:6px;padding:8px 10px;margin-bottom:8px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                <strong style="color:var(--accent-blue);font-size:12px;">${escapeHtml(r.title)} (<code>${escapeHtml(r.source_path)}</code>)</strong>
+                <span style="font-size:10px;color:var(--text-muted);">${escapeHtml(r.updated_at || '')}</span>
+              </div>
+              <div style="font-size:11.5px;line-height:1.45;">${r.html}</div>
+            </div>
+          `).join('');
+
+      container.innerHTML = `
+        <div class="inspector-grid">
+          <div class="inspector-card">
+            <h4>Subagent Retrospectives (<code>retrospectives/*.md</code>)</h4>
+            ${retrosHtml}
+          </div>
+          <div class="inspector-card">
+            <h4>PDE Bootstrapper &amp; Tooling Readiness ${env.bootstrap_ready ? '<span class="badge-pass">READY</span>' : '<span class="badge-warn">PARTIAL</span>'}</h4>
+            <div style="font-size:11px;margin-bottom:6px;"><strong>CLI Binaries:</strong><div>${renderBadges(cli)}</div></div>
+            <div style="font-size:11px;margin-bottom:6px;"><strong>Python Science Libraries:</strong><div>${renderBadges(libs)}</div></div>
+            <div style="font-size:11px;"><strong>External API Credentials:</strong><div>${renderBadges(creds)}</div></div>
+          </div>
+        </div>
+      `;
+    }
+
+    /* =========================================================================
+     * 2. RIGHT PANE: SCIENTIFIC OVERVIEW, FINDINGS & 14 INTERACTIVE VIEWERS
+     * ========================================================================= */
+    function renderOverviewTab() {
+      const bundle = window.__PDE_BUNDLE__;
+      const sci = bundle.science || {};
+      const el = document.getElementById('scitab-overview');
+      let html = '';
+
+      // 1. Executive Summary
+      if (sci.executive && sci.executive.html) {
+        html += `
+          <div class="sci-section">
+            <h3><span>Executive Summary (Layer 4)</span><code>executive/program-summary.md</code></h3>
+            <div class="finding-reader" style="padding:10px 14px;border:none;">${sci.executive.html}</div>
+          </div>
+        `;
+      }
+
+      // 2. Mandatory Relays Matrix
+      const relays = sci.mandatory_relays || [];
+      html += `
+        <div class="sci-section">
+          <h3>
+            <span>Mandatory Relays Audit Matrix (${relays.filter(r => r.addressed).length} / ${relays.length} Addressed)</span>
+            <span style="font-size:11px;color:var(--text-secondary);">Check #6: relay_coverage</span>
+          </h3>
+          ${relays.length === 0 ? '<div style="color:var(--text-secondary);font-size:12px;">No mandatory relays emitted across Layer 0 sidecars/analyses.</div>' : `
+            <table class="data-table">
+              <thead><tr><th>Relay Code</th><th>Source File</th><th>Meaning / Warning</th><th>Layer 1 Status</th></tr></thead>
+              <tbody>
+                ${relays.map(r => `
+                  <tr>
+                    <td><span class="pde-relay-pill"><code>${escapeHtml(r.code)}</code></span></td>
+                    <td><code>${escapeHtml(r.source_file)}</code></td>
+                    <td>${escapeHtml(r.message)}</td>
+                    <td>${r.addressed
+                      ? `<span class="badge-pass">[PASS] Addressed (${(r.addressed_in_findings || []).map(escapeHtml).join(', ') || 'in prose'})</span>`
+                      : `<span class="badge-fail">[FAIL] UNADDRESSED</span>`}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          `}
+        </div>
+      `;
+
+      // 3. Stage 0–4 Triage & Gate Dossiers (Concepts, Assessments, Decisions, Gates)
+      const tg = sci.triage_and_gates || {};
+      const concepts = tg.concepts || [];
+      const assessments = tg.assessments || [];
+      const decisions = tg.decisions || [];
+      const gates = tg.gates || [];
+      if (concepts.length || assessments.length || decisions.length || gates.length) {
+        html += `<div class="sci-section"><h3><span>Stage 0–4 Triage, Concepts, Assessments &amp; Gate Dossiers (Layer 3)</span><code>concepts/ · assessments/ · decisions/ · gates/</code></h3>`;
+
+        if (concepts.length > 0) {
+          html += `
+            <div style="margin-bottom:12px;">
+              <h4 style="margin:0 0 6px;font-size:12px;color:var(--accent-blue);">Intervention Concepts (${concepts.length})</h4>
+              <table class="data-table">
+                <thead><tr><th>Concept ID</th><th>Title / Target</th><th>Modality</th><th>Indication</th><th>Stage / Status</th></tr></thead>
+                <tbody>
+                  ${concepts.map(c => `
+                    <tr>
+                      <td><code>${escapeHtml(c.id || c.concept_id || c._source_file || 'IC')}</code></td>
+                      <td><strong>${escapeHtml(c.title || c.name || c.target || 'Concept')}</strong>${c.mechanism ? `<br><span style="font-size:11px;color:var(--text-secondary);">${escapeHtml(c.mechanism)}</span>` : ''}</td>
+                      <td>${escapeHtml(c.modality || '—')}</td>
+                      <td>${escapeHtml(c.indication || c.disease || '—')}</td>
+                      <td><span class="status-pill st-${escapeHtml(c.status || c.stage || 'active')}">${escapeHtml(c.status || c.stage || 'active')}</span></td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        if (assessments.length > 0) {
+          html += `
+            <div style="margin-bottom:12px;">
+              <h4 style="margin:0 0 6px;font-size:12px;color:var(--accent-blue);">Evidence Assessment Records (${assessments.length})</h4>
+              <table class="data-table">
+                <thead><tr><th>Assessment ID</th><th>Concept / Target</th><th>Domain / Gate Check</th><th>Verdict</th><th>Summary</th></tr></thead>
+                <tbody>
+                  ${assessments.map(a => {
+                    const verd = a.verdict || a.outcome || a.status || 'pass';
+                    return `
+                      <tr>
+                        <td><code>${escapeHtml(a.id || a.assessment_id || a._source_file || 'AR')}</code></td>
+                        <td><code>${escapeHtml(a.concept_id || a.target || '—')}</code></td>
+                        <td>${escapeHtml(a.category || a.domain || a.check || '—')}</td>
+                        <td><span class="status-pill st-${escapeHtml(verd)}">${escapeHtml(verd)}</span></td>
+                        <td style="font-size:11.5px;">${escapeHtml(a.summary || a.rationale || '')}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        if (decisions.length > 0) {
+          html += `
+            <div style="margin-bottom:12px;">
+              <h4 style="margin:0 0 6px;font-size:12px;color:var(--accent-blue);">Program &amp; Gate Decision Records (${decisions.length})</h4>
+              <table class="data-table">
+                <thead><tr><th>Decision ID</th><th>Stage / Gate</th><th>Outcome</th><th>Rationale</th><th>Timestamp</th></tr></thead>
+                <tbody>
+                  ${decisions.map(d => {
+                    const out = d.outcome || d.decision || 'recorded';
+                    return `
+                      <tr>
+                        <td><code>${escapeHtml(d.id || d.decision_id || d._source_file || 'DR')}</code></td>
+                        <td>${escapeHtml(d.stage || d.gate || 'Stage 1')}</td>
+                        <td><span class="stage-pill">${escapeHtml(out)}</span></td>
+                        <td style="font-size:11.5px;">${escapeHtml(d.rationale || d.summary || '')}</td>
+                        <td style="font-size:11px;color:var(--text-secondary);">${escapeHtml(d.decided_at || d.date || '—')}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            </div>
+          `;
+        }
+
+        gates.forEach(g => {
+          html += `<div style="margin-top:8px;padding:10px;background:var(--bg-elevated);border-radius:6px;">
+            <div style="font-weight:700;color:var(--accent-blue);margin-bottom:4px;">${escapeHtml(g.title)} (<code>${escapeHtml(g.source_path)}</code>)</div>
+            <div>${g.html}</div>
+          </div>`;
+        });
+        html += `</div>`;
+      }
+
+      // 4. Layer 2 Living Program State
+      const pstate = sci.program_state || [];
+      if (pstate.length > 0) {
+        html += `
+          <div class="sci-section">
+            <h3><span>Living Program State (Layer 2)</span><code>program-state/*.md</code></h3>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
+              ${pstate.map(doc => `
+                <div style="background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:6px;padding:10px 12px;">
+                  <div style="font-weight:700;color:var(--accent-blue);font-size:12px;margin-bottom:6px;">${escapeHtml(doc.title)} (<code>${escapeHtml(doc.name)}</code>)</div>
+                  <div style="font-size:12px;line-height:1.5;max-height:240px;overflow-y:auto;">${doc.html}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      el.innerHTML = html;
+      renderMathIn(el);
+    }
+
+    function renderFindingsTab() {
+      const bundle = window.__PDE_BUNDLE__;
+      const findings = (bundle.science && bundle.science.findings) || [];
+      const el = document.getElementById('scitab-findings');
+
+      if (findings.length === 0) {
+        el.innerHTML = `<div class="sci-section"><h3>No Specialist Findings Yet</h3><p style="color:var(--text-secondary)">Run a specialist work order or fast-path analysis to populate <code>findings/</code>.</p></div>`;
+        return;
+      }
+
+      if (!selectedFindingId || !findings.some(f => f.id === selectedFindingId)) {
+        selectedFindingId = findings[0].id;
+      }
+      const activeFinding = findings.find(f => f.id === selectedFindingId) || findings[0];
+
+      const navHtml = findings.map(f => `
+        <div class="finding-nav-item ${f.id === activeFinding.id ? 'active' : ''}" onclick="selectFinding('${escapeHtml(f.id)}')">
+          <div style="font-weight:700;font-size:12px;">${escapeHtml(f.title)}</div>
+          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
+            <code>${escapeHtml(f.discipline)}</code> · <span class="status-pill st-${escapeHtml(f.state)}">${escapeHtml(f.state)}</span>
+          </div>
+          ${f.work_order_id ? `<div style="font-size:10px;font-family:monospace;color:var(--accent-blue);margin-top:2px;">${escapeHtml(f.work_order_id)}-r${escapeHtml(f.revision)} · ${(f.source_citations || []).length} citations</div>` : ''}
+        </div>
+      `).join('');
+
+      el.innerHTML = `
+        <div class="findings-layout">
+          <div class="findings-nav">${navHtml}</div>
+          <div class="finding-reader" id="finding-reader-box">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:10px;margin-bottom:12px;border-bottom:1px solid var(--border-color);">
+              <div>
+                <span class="status-pill st-${escapeHtml(activeFinding.state)}">${escapeHtml(activeFinding.state)}</span>
+                <code style="margin-left:8px;color:var(--accent-blue);">${escapeHtml(activeFinding.source_path)}</code>
+                ${activeFinding.work_order_id ? `<code style="margin-left:8px;">(${escapeHtml(activeFinding.work_order_id)}-r${escapeHtml(activeFinding.revision)})</code>` : ''}
+              </div>
+              <div style="font-size:11px;color:var(--text-secondary);">
+                Verified <code>{source:}</code> tags: <strong>${(activeFinding.source_citations || []).filter(c => c.status === 'ok').length}/${(activeFinding.source_citations || []).length}</strong>
+              </div>
+            </div>
+            ${activeFinding.html}
+          </div>
+        </div>
+      `;
+
+      // Attach click handlers on .pde-source-badge to jump to Studio artifact
+      el.querySelectorAll('.pde-source-badge').forEach(badge => {
+        badge.addEventListener('click', () => {
+          const sp = badge.getAttribute('data-source-path');
+          if (sp) openArtifactByPath(sp);
+        });
+      });
+
+      renderMathIn(el);
+    }
+
+    function selectFinding(fid) {
+      selectedFindingId = fid;
+      renderFindingsTab();
+    }
+
+    function openFindingByPath(relPath) {
+      selectedFindingId = relPath;
+      switchSciTab('findings');
+      renderFindingsTab();
+    }
+
+    function openArtifactByPath(relPath) {
+      const bundle = window.__PDE_BUNDLE__;
+      const artifacts = (bundle.science && bundle.science.artifacts) || [];
+      // Match direct artifact or parent artifact if .analysis.json was cited
+      let target = artifacts.find(a => a.rel_path === relPath);
+      if (!target) {
+        const base = relPath.replace(/\.(analysis|meta)\.json$/i, '');
+        target = artifacts.find(a => a.rel_path.startsWith(base));
+      }
+      if (target) {
+        selectedArtifactId = target.id;
+        switchSciTab('studio');
+        renderStudioTab();
+      }
+    }
+
+    /* =========================================================================
+     * 3. 14 EMBEDDED SCIENTIFIC VIEWERS STUDIO (Layer 0 + Sidecar + Analysis)
+     * ========================================================================= */
+    function renderStudioTab() {
+      const bundle = window.__PDE_BUNDLE__;
+      const artifacts = (bundle.science && bundle.science.artifacts) || [];
+      const el = document.getElementById('scitab-studio');
+
+      if (artifacts.length === 0) {
+        el.innerHTML = `<div class="sci-section"><h3>No Layer 0 Scientific Artifacts Yet</h3><p style="color:var(--text-secondary)">Run any Phase-1/Phase-2 PDE command (e.g., <code>pde genetics fetch/analyze</code>, <code>pde admet predict/analyze</code>) to populate <code>raw/</code>.</p></div>`;
+        return;
+      }
+
+      if (!selectedArtifactId || !artifacts.some(a => a.id === selectedArtifactId)) {
+        selectedArtifactId = artifacts[0].id;
+      }
+      const art = artifacts.find(a => a.id === selectedArtifactId) || artifacts[0];
+
+      const listHtml = artifacts.map(a => `
+        <div class="artifact-item ${a.id === art.id ? 'active' : ''}" onclick="selectStudioArtifact('${escapeHtml(a.id)}')">
+          <div style="font-weight:700;word-break:break-all;">${escapeHtml(a.name)}</div>
+          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
+            <code>${escapeHtml(a.artifact_class)}</code> · <span style="color:var(--accent-blue)">${escapeHtml(a.domain_studio || a.viewer_type)}</span>
+            ${a.verdict ? ` · <span class="status-pill st-${escapeHtml(a.verdict)}">${escapeHtml(a.verdict)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+
+      el.innerHTML = `
+        <div class="studio-layout">
+          <div class="artifact-list-panel">${listHtml}</div>
+          <div class="studio-stage">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+              <div>
+                <span style="font-size:15px;font-weight:700;">${escapeHtml(art.viewer_label)}</span>
+                <code style="margin-left:8px;color:var(--accent-blue);">${escapeHtml(art.rel_path)}</code>
+              </div>
+              <div style="display:flex;gap:8px;align-items:center;">
+                ${art.work_order_id ? `<span class="stage-pill">${escapeHtml(art.work_order_id)}</span>` : ''}
+                ${art.verdict ? `<span class="status-pill st-${escapeHtml(art.verdict)}">Verdict: ${escapeHtml(art.verdict)}</span>` : ''}
+              </div>
+            </div>
+
+            <!-- Interactive Viewer Stage -->
+            <div id="active-viewer-controls" style="margin-bottom:8px;"></div>
+            <div class="viewer-stage-box" id="active-viewer-box"></div>
+
+            <!-- 3-File Provenance Inspector (Layer 0 + .meta.json + .analysis.json) -->
+            <div class="provenance-tabs">
+              <button class="mini-btn active" onclick="showProvPane('analysis', this)">1. Phase-2 Analysis (.analysis.json)</button>
+              <button class="mini-btn" onclick="showProvPane('meta', this)">2. Provenance Sidecar (.meta.json)</button>
+              <button class="mini-btn" onclick="showProvPane('raw', this)">3. Layer 0 Raw Data (${escapeHtml(art.name)})</button>
+            </div>
+            <div class="prov-json-box" id="prov-pane-content"></div>
+          </div>
+        </div>
+      `;
+
+      window.__ACTIVE_STUDIO_ART__ = art;
+      showProvPane('analysis');
+      setTimeout(() => mountEmbeddedViewer(art), 10);
+    }
+
+    function selectStudioArtifact(aid) {
+      selectedArtifactId = aid;
+      forceRawJsonMode = false;
+      renderStudioTab();
+    }
+
+    function toggleStudioRawMode(rawMode) {
+      forceRawJsonMode = Boolean(rawMode);
+      if (window.__ACTIVE_STUDIO_ART__) {
+        mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+      }
+    }
+
+    function showProvPane(which, btnEl) {
+      const art = window.__ACTIVE_STUDIO_ART__;
+      if (!art) return;
+      if (btnEl && btnEl.parentElement) {
+        btnEl.parentElement.querySelectorAll('.mini-btn').forEach(b => b.classList.remove('active'));
+        btnEl.classList.add('active');
+      }
+      const box = document.getElementById('prov-pane-content');
+      if (!box) return;
+      let payload;
+      if (which === 'analysis') payload = art.analysis || { info: 'No Phase-2 .analysis.json record present for this artifact.' };
+      else if (which === 'meta') payload = art.meta || { info: 'No .meta.json sidecar present for this artifact.' };
+      else payload = art.data;
+      box.textContent = typeof payload === 'string' ? payload : JSON.stringify(payload, null, 2);
+    }
+
+    function getArtifactById(relPath) {
+      const arts = (window.__PDE_BUNDLE__.science && window.__PDE_BUNDLE__.science.artifacts) || [];
+      return arts.find(a => a.rel_path === relPath);
+    }
+
+    function mountEmbeddedViewer(art) {
+      const box = document.getElementById('active-viewer-box');
+      const ctrl = document.getElementById('active-viewer-controls');
+      if (!box) return;
+      box.innerHTML = '';
+      if (ctrl) ctrl.innerHTML = '';
+
+      const vtype = art.viewer_type;
+      const studio = art.domain_studio || (vtype !== 'json' ? vtype : null);
+      const data = art.data;
+      const ana = art.analysis || {};
+
+      // Render Visual Studio <-> Raw JSON toggle for any non-3D JSON studio
+      if (ctrl && studio && !['structure_3d', 'docking_3d', 'sdf_3d'].includes(vtype)) {
+        ctrl.innerHTML = `
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span style="font-size:11.5px;color:var(--text-secondary);">View Mode:</span>
+            <button class="mini-btn ${!forceRawJsonMode ? 'active' : ''}" onclick="toggleStudioRawMode(false)">Visual Studio (${escapeHtml(studio)})</button>
+            <button class="mini-btn ${forceRawJsonMode ? 'active' : ''}" onclick="toggleStudioRawMode(true)">Raw JSON Tree</button>
+          </div>
+        `;
+      }
+
+      try {
+        if (forceRawJsonMode) {
+          renderEmbeddedJsonTree(box, data);
+          return;
+        }
+        if (vtype === 'admet' || studio === 'admet') {
+          renderEmbeddedAdmet(box, data, ana);
+        } else if (vtype === 'plddt' || studio === 'plddt') {
+          renderEmbeddedPlddt(box, data);
+        } else if (vtype === 'pae' || studio === 'pae') {
+          renderEmbeddedPae(box, data, art.name);
+        } else if (vtype === 'constraint' || studio === 'constraint') {
+          renderEmbeddedConstraint(box, data, art.name, ana);
+        } else if (vtype === 'expression' || studio === 'expression') {
+          renderEmbeddedExpression(box, data, art.name);
+        } else if (vtype === 'pockets' || studio === 'pockets') {
+          renderEmbeddedPockets(box, data);
+        } else if (vtype === 'docking_scores' || studio === 'docking_scores') {
+          renderEmbeddedDockingScores(box, data);
+        } else if (vtype === 'contacts' || studio === 'contacts') {
+          renderEmbeddedContacts(box, data, art.name);
+        } else if (vtype === 'tournament' || studio === 'tournament') {
+          renderEmbeddedTournament(box, data, ana);
+        } else if (vtype === 'brics' || studio === 'brics') {
+          renderEmbeddedBrics(box, data, ana);
+        } else if (studio === 'pk_studio') {
+          renderEmbeddedPkStudio(box, data, ana, art.name);
+        } else if (studio === 'bioactivity_studio') {
+          renderEmbeddedBioactivityStudio(box, data, ana, art.name);
+        } else if (studio === 'tox_studio') {
+          renderEmbeddedToxStudio(box, data, ana, art.name);
+        } else if (studio === 'medchem_studio') {
+          renderEmbeddedMedChemStudio(box, data, ana, art.name);
+        } else if (studio === 'omics_studio') {
+          renderEmbeddedOmicsStudio(box, data, ana, art.name);
+        } else if (studio === 'competitive_studio') {
+          renderEmbeddedCompetitiveStudio(box, data, ana, art.name);
+        } else if (vtype === 'structure_3d') {
+          renderEmbeddedStructure3D(box, ctrl, art);
+        } else if (vtype === 'docking_3d') {
+          renderEmbeddedDocking3D(box, ctrl, art);
+        } else if (vtype === 'sdf_3d') {
+          renderEmbeddedSdf3D(box, ctrl, art);
+        } else {
+          renderEmbeddedJsonTree(box, data);
+        }
+      } catch (err) {
+        box.innerHTML = `<div style="color:#dc2626;padding:12px;">Viewer render error: ${escapeHtml(err.message)}</div>`;
+      }
+    }
+
+    /* --- Viewer 1: ADMET Radar & Table (Plotly.js) --- */
+    function renderEmbeddedAdmet(box, data, ana) {
+      const ENDPOINTS = ['metabolic_stability', 'cyp_inhibition', 'permeability', 'herg_liability', 'solubility'];
+      const LABELS = {
+        metabolic_stability: 'Metabolic Stability',
+        cyp_inhibition: 'CYP Inhibition',
+        permeability: 'Permeability',
+        herg_liability: 'hERG Liability',
+        solubility: 'Solubility'
+      };
+      const SCORE_MAP = { acceptable: 3, pass: 3, marginal: 2, flag: 2, unacceptable: 1, fail: 1 };
+      const COLOR_MAP = { acceptable: '#16a34a', pass: '#16a34a', marginal: '#d97706', flag: '#d97706', unacceptable: '#dc2626', fail: '#dc2626' };
+
+      const epSource = (ana && ana.metrics && ana.metrics.endpoint_results)
+        || (data && data.metrics && data.metrics.endpoint_results)
+        || (data && data.endpoint_results)
+        || (data && data.predictions)
+        || data || {};
+
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '340px';
+      const tblDiv = document.createElement('div');
+      box.appendChild(plotDiv);
+      box.appendChild(tblDiv);
+
+      const theta = ENDPOINTS.map(e => LABELS[e]);
+      const rVals = ENDPOINTS.map(e => {
+        const item = epSource[e];
+        if (!item) return 2;
+        if (typeof item === 'object' && item.status) return SCORE_MAP[item.status] || 2;
+        if (typeof item === 'number') return item;
+        return 2;
+      });
+      const colors = ENDPOINTS.map(e => {
+        const item = epSource[e];
+        const st = (item && item.status) || 'acceptable';
+        return COLOR_MAP[st] || '#3b82f6';
+      });
+
+      Plotly.newPlot(plotDiv, [{
+        type: 'scatterpolar',
+        r: rVals.concat([rVals[0]]),
+        theta: theta.concat([theta[0]]),
+        fill: 'toself',
+        fillcolor: 'rgba(59, 130, 246, 0.15)',
+        line: { color: '#2563eb', width: 2 },
+        marker: { size: 9, color: colors.concat([colors[0]]) }
+      }], {
+        title: { text: 'ADMET Multipartite Endpoint Profile', font: { size: 14 } },
+        polar: {
+          radialaxis: { visible: true, range: [0, 3.4], tickvals: [1, 2, 3], ticktext: ['Unacceptable (1)', 'Marginal (2)', 'Acceptable (3)'] }
+        },
+        margin: { t: 40, b: 30, l: 60, r: 60 },
+        showlegend: false
+      }, { responsive: true });
+
+      tblDiv.innerHTML = `<table class="data-table" style="color:#0f172a;margin-top:8px;">
+        <thead><tr><th>ADMET Endpoint</th><th>Status</th><th>Value / Metric</th></tr></thead>
+        <tbody>
+          ${ENDPOINTS.map(e => {
+            const item = epSource[e] || {};
+            const st = item.status || (typeof item === 'string' ? item : 'acceptable');
+            const val = item.value !== undefined ? item.value : (typeof item === 'number' ? item : '—');
+            return `<tr><td><strong>${LABELS[e]}</strong></td><td style="color:${COLOR_MAP[st] || '#0f172a'};font-weight:700;">${escapeHtml(st)}</td><td>${escapeHtml(String(val))}</td></tr>`;
+          }).join('')}
+        </tbody>
+      </table>`;
+    }
+
+    /* --- Viewer 2: Per-Residue pLDDT Confidence (Plotly.js) --- */
+    function renderEmbeddedPlddt(box, data) {
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '400px';
+      box.appendChild(plotDiv);
+
+      const CHAIN_COLORS = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'];
+      let traces = [];
+      let totalRes = 0;
+
+      if (Array.isArray(data)) {
+        totalRes = data.length;
+        traces.push({ x: data.map((_, i) => i + 1), y: data, type: 'scatter', mode: 'lines', name: 'pLDDT', line: { color: '#0f172a', width: 1.8 } });
+      } else if (data && data.residue_plddt) {
+        if (Array.isArray(data.residue_plddt)) {
+          totalRes = data.residue_plddt.length;
+          traces.push({ x: data.residue_plddt.map((_, i) => i + 1), y: data.residue_plddt, type: 'scatter', mode: 'lines', name: 'pLDDT', line: { color: '#0f172a', width: 1.8 } });
+        } else {
+          let offset = 0;
+          Object.keys(data.residue_plddt).forEach((ch, ci) => {
+            const arr = data.residue_plddt[ch] || [];
+            totalRes += arr.length;
+            traces.push({
+              x: arr.map((_, i) => i + 1 + offset),
+              y: arr,
+              type: 'scatter',
+              mode: 'lines',
+              name: 'Chain ' + ch,
+              line: { color: CHAIN_COLORS[ci % CHAIN_COLORS.length], width: 1.8 }
+            });
+            offset += arr.length;
+          });
+        }
+      } else {
+        const arr = (data && (data.plddt || data.confidenceScore || data.atom_plddt)) || [];
+        totalRes = arr.length;
+        traces.push({ x: arr.map((_, i) => i + 1), y: arr, type: 'scatter', mode: 'lines', name: 'pLDDT', line: { color: '#0f172a', width: 1.8 } });
+      }
+
+      const shapes = [
+        { type: 'rect', y0: 90, y1: 100, x0: 0, x1: totalRes + 1, fillcolor: 'rgba(0,83,214,0.15)', line: { width: 0 }, layer: 'below' },
+        { type: 'rect', y0: 70, y1: 90, x0: 0, x1: totalRes + 1, fillcolor: 'rgba(101,203,243,0.15)', line: { width: 0 }, layer: 'below' },
+        { type: 'rect', y0: 50, y1: 70, x0: 0, x1: totalRes + 1, fillcolor: 'rgba(255,219,19,0.15)', line: { width: 0 }, layer: 'below' },
+        { type: 'rect', y0: 0, y1: 50, x0: 0, x1: totalRes + 1, fillcolor: 'rgba(255,125,69,0.15)', line: { width: 0 }, layer: 'below' }
+      ];
+
+      Plotly.newPlot(plotDiv, traces, {
+        title: { text: 'Per-Residue AlphaFold pLDDT Confidence' },
+        xaxis: { title: 'Residue Number', range: [0, totalRes + 1] },
+        yaxis: { title: 'pLDDT (0–100)', range: [0, 100] },
+        shapes: shapes,
+        margin: { t: 45, l: 55, r: 25, b: 45 }
+      }, { responsive: true });
+    }
+
+    /* --- Viewer 3: PAE 2D Heatmap (Plotly.js) --- */
+    function renderEmbeddedPae(box, paeData, name) {
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '410px';
+      box.appendChild(plotDiv);
+
+      let matrix = null, maxPAE = 31.75;
+      if (Array.isArray(paeData) && paeData.length > 0) {
+        if (Array.isArray(paeData[0])) matrix = paeData;
+        else if (paeData[0] && paeData[0].predicted_aligned_error) {
+          matrix = paeData[0].predicted_aligned_error;
+          maxPAE = paeData[0].max_predicted_aligned_error || 31.75;
+        }
+      } else if (paeData && paeData.predicted_aligned_error) {
+        matrix = paeData.predicted_aligned_error;
+        maxPAE = paeData.max_predicted_aligned_error || 31.75;
+      }
+
+      const colorscale = [
+        [0, '#00441b'], [0.2, '#41ae76'], [0.4, '#99d8c9'],
+        [0.6, '#e5f5e0'], [0.8, '#fdbb84'], [1, '#b30000']
+      ];
+      Plotly.newPlot(plotDiv, [{
+        z: matrix || [[0]],
+        type: 'heatmap',
+        colorscale: colorscale,
+        zmin: 0,
+        zmax: maxPAE,
+        colorbar: { title: 'PAE (Å)' }
+      }], {
+        title: { text: 'Predicted Aligned Error (PAE) — ' + name },
+        xaxis: { title: 'Scored Residue' },
+        yaxis: { title: 'Aligned Residue', autorange: 'reversed' },
+        margin: { t: 45, l: 60, r: 40, b: 45 }
+      }, { responsive: true });
+    }
+
+    /* --- Viewer 4: gnomAD Genetic Constraint & OpenTargets/ClinVar Studio --- */
+    function renderEmbeddedConstraint(box, data, filename, ana) {
+      const gene = (data && data.data && data.data.gene) ? data.data.gene : ((data && data.gene) || data || {});
+      const c = gene.gnomad_constraint || gene;
+      const sym = gene.symbol || (data && data.target) || filename.replace(/\.(gnomad-constraint|json)$/i, '');
+      const items = [
+        { k: 'pLI', label: 'pLI (LoF Intolerance)', v: c.pLI, desc: 'Constrained > 0.9' },
+        { k: 'LOEUF', label: 'LOEUF Upper Bound', v: c.oe_lof_upper !== undefined ? c.oe_lof_upper : c.loeuf, desc: 'Constrained < 0.35' },
+        { k: 'oe_lof', label: 'o/e Loss-of-Function', v: c.oe_lof, desc: 'Observed / Expected LoF' },
+        { k: 'oe_mis', label: 'o/e Missense', v: c.oe_mis, desc: 'Observed / Expected Missense' },
+        { k: 'lof_z', label: 'LoF Z-Score', v: c.lof_z, desc: 'Significant > 3.09' },
+        { k: 'mis_z', label: 'Missense Z-Score', v: c.mis_z, desc: 'Significant > 3.09' }
+      ];
+
+      const associations = (data && (data.disease_associations || data.associations))
+        || (gene && gene.disease_associations)
+        || (ana && ana.metrics && ana.metrics.disease_associations)
+        || [];
+
+      const clinvar = (data && (data.clinvar_summary || data.clinical_variants))
+        || (gene && gene.clinvar_summary)
+        || null;
+
+      let assocHtml = '';
+      if (Array.isArray(associations) && associations.length > 0) {
+        assocHtml = `
+          <div style="margin-top:16px;">
+            <h4 style="margin:0 0 8px;color:#0f172a;">OpenTargets &amp; GWAS Disease Associations (${associations.length})</h4>
+            <div id="constraint-assoc-plot" style="height:260px;"></div>
+            <table class="data-table" style="color:#0f172a;margin-top:8px;">
+              <thead><tr><th>Disease / Indication</th><th>EFO / ID</th><th>Overall Score</th><th>Genetic Assoc.</th><th>Somatic / Literature</th></tr></thead>
+              <tbody>
+                ${associations.map(a => {
+                  const sc = typeof a.score === 'number' ? a.score : (typeof a.overall_score === 'number' ? a.overall_score : 0);
+                  const ga = a.genetic_association_score ?? a.gwas_score ?? '—';
+                  const som = a.somatic_mutation_score ?? a.literature_score ?? '—';
+                  return `<tr>
+                    <td><strong>${escapeHtml(a.disease_name || a.disease || a.name || 'Indication')}</strong></td>
+                    <td><code>${escapeHtml(a.disease_id || a.efo_id || '—')}</code></td>
+                    <td><strong style="color:${sc >= 0.7 ? '#16a34a' : '#2563eb'};">${sc ? sc.toFixed(3) : '—'}</strong></td>
+                    <td>${typeof ga === 'number' ? ga.toFixed(3) : escapeHtml(String(ga))}</td>
+                    <td>${typeof som === 'number' ? som.toFixed(3) : escapeHtml(String(som))}</td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
+
+      let clinvarHtml = '';
+      if (clinvar && typeof clinvar === 'object') {
+        const entries = Array.isArray(clinvar) ? clinvar : Object.entries(clinvar).map(([k, v]) => ({ label: k, value: v }));
+        clinvarHtml = `
+          <div style="margin-top:14px;">
+            <h4 style="margin:0 0 6px;color:#0f172a;">ClinVar Pathogenicity &amp; Variant Summary</h4>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              ${entries.map(e => `<div style="border:1px solid #cbd5e1;border-radius:6px;padding:8px 12px;background:#f8fafc;color:#0f172a;">
+                <span style="font-size:11px;color:#64748b;">${escapeHtml(e.label || e.variant || e.significance || 'Metric')}:</span>
+                <strong style="margin-left:4px;">${escapeHtml(typeof e.value === 'object' ? JSON.stringify(e.value) : String(e.value ?? e.count ?? ''))}</strong>
+              </div>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      box.innerHTML = `
+        <div style="padding:10px;">
+          <h3 style="margin:0 0 12px;color:#0f172a;">gnomAD Constraint &amp; Target Genetic Evidence — ${escapeHtml(sym)}</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;">
+            ${items.map(m => {
+              const num = typeof m.v === 'number' ? m.v.toFixed(3) : '—';
+              return `<div style="border:1px solid #cbd5e1;border-left:4px solid #2563eb;border-radius:6px;padding:12px;background:#f8fafc;">
+                <div style="font-size:22px;font-weight:800;color:#0f172a;">${escapeHtml(num)}</div>
+                <div style="font-size:12px;font-weight:700;color:#334155;">${escapeHtml(m.label)}</div>
+                <div style="font-size:11px;color:#64748b;margin-top:4px;">${escapeHtml(m.desc)}</div>
+              </div>`;
+            }).join('')}
+          </div>
+          ${assocHtml}
+          ${clinvarHtml}
+        </div>
+      `;
+
+      if (Array.isArray(associations) && associations.length > 0 && typeof Plotly !== 'undefined') {
+        const plotEl = box.querySelector('#constraint-assoc-plot');
+        if (plotEl) {
+          const sortedA = associations.slice().sort((a, b) => ((a.score ?? a.overall_score ?? 0) - (b.score ?? b.overall_score ?? 0)));
+          Plotly.newPlot(plotEl, [{
+            x: sortedA.map(a => a.score ?? a.overall_score ?? 0),
+            y: sortedA.map(a => a.disease_name || a.disease || a.name || 'Disease'),
+            type: 'bar',
+            orientation: 'h',
+            marker: { color: '#2563eb' }
+          }], {
+            title: { text: 'OpenTargets Disease Association Score (0–1)', font: { size: 13 } },
+            xaxis: { title: 'Association Score', range: [0, 1.05] },
+            margin: { t: 35, l: 180, r: 25, b: 40 }
+          }, { responsive: true });
+        }
+      }
+    }
+
+    /* --- Viewer 5: Tissue Expression Bar Chart (Plotly.js) --- */
+    function renderEmbeddedExpression(box, jsonData, filename) {
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '410px';
+      box.appendChild(plotDiv);
+
+      let entry = Array.isArray(jsonData) ? jsonData[0] : ((jsonData && jsonData.data && Array.isArray(jsonData.data)) ? jsonData.data[0] : jsonData);
+      const tissues = [];
+      const hpaRe = /^Tissue RNA - (.+) \[nTPM\]$/;
+      if (entry && typeof entry === 'object') {
+        Object.keys(entry).forEach(k => {
+          const m = k.match(hpaRe);
+          if (m) tissues.push({ tissue: m[1], val: parseFloat(entry[k]) || 0 });
+        });
+        if (tissues.length === 0 && Array.isArray(entry.tissues)) {
+          entry.tissues.forEach(t => tissues.push({ tissue: t.tissue || t.name, val: parseFloat(t.nTPM || t.tpm || t.value) || 0 }));
+        }
+        if (tissues.length === 0) {
+          Object.keys(entry).forEach(k => {
+            if (typeof entry[k] === 'number') tissues.push({ tissue: k, val: entry[k] });
+          });
+        }
+      }
+      tissues.sort((a, b) => a.val - b.val);
+      Plotly.newPlot(plotDiv, [{
+        x: tissues.map(t => t.val),
+        y: tissues.map(t => t.tissue),
+        type: 'bar',
+        orientation: 'h',
+        marker: { color: tissues.map(t => t.val > 10 ? '#dc2626' : (t.val > 2 ? '#d97706' : '#3b82f6')) }
+      }], {
+        title: { text: 'Tissue Expression Profile (nTPM) — ' + filename },
+        xaxis: { title: 'nTPM' },
+        margin: { t: 45, l: 150, r: 25, b: 45 }
+      }, { responsive: true });
+    }
+
+    /* --- Viewer 6: Binding Site Pockets Table & Plot --- */
+    function renderEmbeddedPockets(box, data) {
+      const pockets = Array.isArray(data) ? data : ((data && data.pockets) || [data]);
+      box.innerHTML = `
+        <div style="padding:8px;">
+          <h3 style="margin:0 0 8px;color:#0f172a;">Binding Site Pockets (${pockets.length} detected)</h3>
+          <table class="data-table" style="color:#0f172a;">
+            <thead><tr><th>Rank</th><th>Score</th><th>Druggability</th><th>Volume (Å³)</th><th>Total SASA (Å²)</th><th>Alpha Spheres</th></tr></thead>
+            <tbody>
+              ${pockets.map(p => `
+                <tr>
+                  <td><strong>#${escapeHtml(p.rank ?? '—')}</strong></td>
+                  <td>${typeof p.score === 'number' ? p.score.toFixed(3) : '—'}</td>
+                  <td><strong style="color:${(p.druggability_score || 0) >= 0.5 ? '#16a34a' : '#d97706'}">${typeof p.druggability_score === 'number' ? p.druggability_score.toFixed(3) : '—'}</strong></td>
+                  <td>${typeof p.volume === 'number' ? p.volume.toFixed(1) : '—'}</td>
+                  <td>${typeof p.total_sasa === 'number' ? p.total_sasa.toFixed(1) : '—'}</td>
+                  <td>${escapeHtml(p.n_alpha_spheres ?? '—')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    /* --- Viewer 7: Docking Pose Scores (Plotly.js) --- */
+    function renderEmbeddedDockingScores(box, jsonData) {
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '390px';
+      box.appendChild(plotDiv);
+      const poses = Array.isArray(jsonData) ? jsonData : ((jsonData && (jsonData.poses || jsonData.results || jsonData.modes)) || []);
+      const labels = poses.map((p, i) => p.pose_id || p.id || ('Pose ' + (p.mode || i + 1)));
+      const affinities = poses.map(p => parseFloat(p.affinity ?? p.binding_affinity ?? p.score ?? 0));
+      Plotly.newPlot(plotDiv, [{
+        x: labels,
+        y: affinities,
+        type: 'bar',
+        marker: { color: affinities.map(a => a < -8.0 ? '#16a34a' : (a < -6.0 ? '#3b82f6' : '#94a3b8')) }
+      }], {
+        title: { text: 'AutoDock Vina Binding Affinity by Pose (kcal/mol)' },
+        yaxis: { title: 'Affinity (kcal/mol)' },
+        margin: { t: 45, l: 60, r: 30, b: 45 }
+      }, { responsive: true });
+    }
+
+    /* --- Viewer 8: Docking Contact Map (Plotly.js) --- */
+    function renderEmbeddedContacts(box, data, name) {
+      const plotDiv = document.createElement('div');
+      plotDiv.style.height = '380px';
+      box.appendChild(plotDiv);
+      const contacts = (data && data.contacts) || [];
+      const best = contacts[0] || { residues: [] };
+      const res = best.residues || [];
+      Plotly.newPlot(plotDiv, [{
+        x: res.map(r => `${r.res_name || ''}${r.res_num || ''} (${r.chain || 'A'})`),
+        y: [name.replace(/\.contacts\.json$/i, '')],
+        z: [res.map(r => r.min_distance || 0)],
+        type: 'heatmap',
+        colorscale: 'YlGnBu'
+      }], {
+        title: { text: 'Per-Residue Pocket Contact Distances (Å)' },
+        margin: { t: 45, l: 100, r: 30, b: 90 }
+      }, { responsive: true });
+    }
+
+    /* --- Viewer 9: Hypothesis ELO Tournament, Multi-Axis Review & Lineage Studio --- */
+    function renderEmbeddedTournament(box, data, ana) {
+      const ideas = Array.isArray(data) ? data : ((data && (data.ideas || data.hypotheses || data.rankings)) || []);
+      const sorted = ideas.slice().sort((a, b) => (b.elo_rating || b.elo || 0) - (a.elo_rating || a.elo || 0));
+      const matches = (data && data.matches) || [];
+
+      box.innerHTML = `
+        <div style="padding:8px;">
+          <h3 style="margin:0 0 8px;color:#0f172a;">Hypothesis Tournament ELO Rankings, Review Scores &amp; Lineage (${sorted.length} Hypotheses)</h3>
+          <div id="tournament-elo-plot" style="height:250px;margin-bottom:10px;"></div>
+          <table class="data-table" style="color:#0f172a;">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Hypothesis Title &amp; Summary</th>
+                <th>ELO</th>
+                <th>W-L (Win %)</th>
+                <th>Review Scores</th>
+                <th>Lineage / Cluster</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sorted.map((idea, idx) => {
+                const elo = Math.round(idea.elo_rating || idea.elo || 1500);
+                const won = (idea.match && idea.match.won) ?? idea.wins ?? 0;
+                const lost = (idea.match && idea.match.lost) ?? idea.losses ?? 0;
+                const wr = (idea.match && idea.match.win_rate !== undefined) ? (idea.match.win_rate * 100).toFixed(1) + '%' : '—';
+                const sc = idea.scores || idea.review_scores || {};
+                const scoreBadges = ['overall', 'correctness', 'novelty', 'testability', 'safety']
+                  .filter(k => sc[k] !== undefined)
+                  .map(k => `<span style="display:inline-block;background:#e2e8f0;border-radius:4px;padding:1px 5px;font-size:10px;margin:1px;">${escapeHtml(k)}: <strong>${escapeHtml(sc[k])}</strong></span>`)
+                  .join(' ') || '<span style="color:#64748b;font-size:11px;">—</span>';
+                const op = idea.evolution_operator || idea.generation_method || (idea.lineage && idea.lineage.operator) || 'initial';
+                const parents = idea.parent_ids || (idea.lineage && idea.lineage.parents) || [];
+                const cluster = idea.cluster_id || idea.cluster || '';
+                return `<tr>
+                  <td><strong>#${escapeHtml(idea.ranking || idx + 1)}</strong></td>
+                  <td>
+                    <strong>${escapeHtml(idea.title || idea.id || 'Hypothesis')}</strong>
+                    <br><span style="font-size:11px;color:#475569;">${escapeHtml((idea.prose && idea.prose.summary) || idea.summary || idea.mechanism || '')}</span>
+                  </td>
+                  <td><strong style="color:#16a34a;font-size:14px;">${elo}</strong></td>
+                  <td>${won}-${lost} (${wr})</td>
+                  <td>${scoreBadges}</td>
+                  <td style="font-size:11px;">
+                    <code>${escapeHtml(op)}</code>
+                    ${parents.length ? `<br><span style="color:#64748b;">Parents: ${escapeHtml(parents.join(', '))}</span>` : ''}
+                    ${cluster ? `<br><span style="color:#2563eb;">Cluster: ${escapeHtml(cluster)}</span>` : ''}
+                  </td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          ${matches.length > 0 ? `
+            <details style="margin-top:10px;color:#0f172a;">
+              <summary style="cursor:pointer;font-weight:700;font-size:12px;">Pairwise Debate Match Records (${matches.length})</summary>
+              <table class="data-table" style="color:#0f172a;margin-top:6px;">
+                <thead><tr><th>Match</th><th>Hypothesis A</th><th>Hypothesis B</th><th>Winner</th><th>Judge Rationale</th></tr></thead>
+                <tbody>
+                  ${matches.slice(0, 20).map((m, mi) => `
+                    <tr>
+                      <td>#${mi + 1}</td>
+                      <td><code>${escapeHtml(m.hypothesis_a || m.a || 'A')}</code></td>
+                      <td><code>${escapeHtml(m.hypothesis_b || m.b || 'B')}</code></td>
+                      <td><strong><code>${escapeHtml(m.winner || '—')}</code></strong></td>
+                      <td style="font-size:11px;">${escapeHtml(m.rationale || m.summary || '')}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </details>
+          ` : ''}
+        </div>
+      `;
+
+      if (sorted.length > 0 && typeof Plotly !== 'undefined') {
+        const plotEl = box.querySelector('#tournament-elo-plot');
+        if (plotEl) {
+          Plotly.newPlot(plotEl, [{
+            x: sorted.map(h => h.id || (h.title || '').slice(0, 24)),
+            y: sorted.map(h => Math.round(h.elo_rating || h.elo || 1500)),
+            type: 'bar',
+            marker: { color: sorted.map((_, i) => i === 0 ? '#16a34a' : '#2563eb') },
+            text: sorted.map(h => (h.title || '').slice(0, 32)),
+            textposition: 'auto'
+          }], {
+            title: { text: 'Hypothesis Tournament ELO Rating Distribution', font: { size: 13 } },
+            yaxis: { title: 'ELO Rating' },
+            margin: { t: 35, l: 55, r: 20, b: 45 }
+          }, { responsive: true });
+        }
+      }
+    }
+
+    /* --- Viewer 10: BRICS Fragment & SAR Studio --- */
+    function renderEmbeddedBrics(box, data, ana) {
+      const compounds = Array.isArray(data) ? data : ((data && (data.compounds || data.series)) || []);
+      const cliffs = (data && data.property_cliffs) || (ana && ana.metrics && ana.metrics.property_cliffs) || [];
+      box.innerHTML = `
+        <div style="padding:8px;">
+          <h3 style="margin:0 0 8px;color:#0f172a;">BRICS Fragment &amp; SAR Series (${compounds.length} Compounds)</h3>
+          <table class="data-table" style="color:#0f172a;">
+            <thead><tr><th>Compound ID</th><th>SMILES</th><th>Fragments / Properties</th></tr></thead>
+            <tbody>
+              ${compounds.map(c => `
+                <tr>
+                  <td><strong>${escapeHtml(c.compound_id || c.id || c.name || 'Compound')}</strong></td>
+                  <td><code style="font-size:11px;">${escapeHtml(c.smiles || '')}</code></td>
+                  <td>${escapeHtml(JSON.stringify(c.fragments || c.properties || {}))}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+          ${cliffs.length > 0 ? `
+            <h4 style="margin:12px 0 6px;color:#0f172a;">Detected SAR Property Cliffs (${cliffs.length})</h4>
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Pair</th><th>Transformation</th><th>Property Delta</th></tr></thead>
+              <tbody>
+                ${cliffs.map(cl => `
+                  <tr>
+                    <td><code>${escapeHtml(cl.mol_a || cl.from || 'A')} → ${escapeHtml(cl.mol_b || cl.to || 'B')}</code></td>
+                    <td><code>${escapeHtml(cl.smirks || cl.transformation || '—')}</code></td>
+                    <td><strong>${escapeHtml(JSON.stringify(cl.delta || cl.property_change || cl))}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    /* --- Viewer 15: In Vivo PK, Allometric Scaling & DDI Studio (Plotly.js) --- */
+    function renderEmbeddedPkStudio(box, data, ana, filename) {
+      const metrics = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const nca = metrics.nca_parameters || data.nca_parameters || metrics;
+      const scaling = metrics.human_scaling || data.human_scaling || null;
+      const ddi = metrics.ddi_static || data.ddi_static || (metrics.r1 !== undefined || metrics.aucr !== undefined ? metrics : null);
+      const timeArr = data.time_hours || data.time || (Array.isArray(data.profile) ? data.profile.map(p => p.time_h ?? p.time) : []);
+      const concArr = data.concentrations || data.conc_ng_ml || (Array.isArray(data.profile) ? data.profile.map(p => p.conc ?? p.concentration) : []);
+
+      const kpis = [
+        { label: 'Cmax', val: nca.cmax ?? nca.Cmax, unit: nca.conc_unit || 'ng/mL' },
+        { label: 'AUC(0-inf)', val: nca.auc_inf ?? nca.auc_0_inf ?? nca.auc_last, unit: 'ng·h/mL' },
+        { label: 'Half-Life (t1/2)', val: nca.t_half ?? nca.half_life_h, unit: 'h' },
+        { label: 'Clearance (CL)', val: nca.cl ?? nca.clearance, unit: 'mL/min/kg' },
+        { label: 'Vdss', val: nca.vdss ?? nca.vss, unit: 'L/kg' },
+        { label: 'Bioavailability (F%)', val: nca.bioavailability_pct ?? nca.f_pct, unit: '%' }
+      ].filter(k => k.val !== undefined && k.val !== null);
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 10px;">In Vivo PK, Allometric Scaling &amp; DDI Studio — ${escapeHtml(filename)}</h3>
+          ${kpis.length > 0 ? `
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:10px;margin-bottom:12px;">
+              ${kpis.map(k => `<div style="border:1px solid #cbd5e1;border-left:4px solid #0284c7;border-radius:6px;padding:10px;background:#f8fafc;">
+                <div style="font-size:19px;font-weight:800;">${typeof k.val === 'number' ? k.val.toFixed(2) : escapeHtml(String(k.val))} <span style="font-size:11px;font-weight:600;color:#64748b;">${escapeHtml(k.unit)}</span></div>
+                <div style="font-size:11.5px;font-weight:700;color:#334155;">${escapeHtml(k.label)}</div>
+              </div>`).join('')}
+            </div>
+          ` : ''}
+          <div id="pk-studio-plot" style="height:300px;"></div>
+          ${scaling ? `<div style="margin-top:10px;"><h4>Human Allometric Projection</h4><pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(scaling, null, 2))}</pre></div>` : ''}
+          ${ddi ? `<div style="margin-top:10px;"><h4>FDA/EMA Static DDI Risk (R1 / R1,gut / AUCR)</h4><pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(ddi, null, 2))}</pre></div>` : ''}
+        </div>
+      `;
+
+      const plotEl = box.querySelector('#pk-studio-plot');
+      if (plotEl && typeof Plotly !== 'undefined') {
+        if (timeArr.length > 0 && concArr.length > 0) {
+          Plotly.newPlot(plotEl, [{
+            x: timeArr,
+            y: concArr,
+            type: 'scatter',
+            mode: 'lines+markers',
+            name: 'Plasma Conc.',
+            line: { color: '#0284c7', width: 2.5 },
+            marker: { size: 7 }
+          }], {
+            title: { text: 'Concentration–Time Profile (Semi-Log)', font: { size: 13 } },
+            xaxis: { title: 'Time (h)' },
+            yaxis: { title: 'Concentration', type: 'log' },
+            margin: { t: 35, l: 60, r: 25, b: 40 }
+          }, { responsive: true });
+        } else {
+          plotEl.style.display = 'none';
+        }
+      }
+    }
+
+    /* --- Viewer 16: Bioactivity, Dose-Response & Target Selectivity Studio (Plotly.js) --- */
+    function renderEmbeddedBioactivityStudio(box, data, ana, filename) {
+      const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const onTarget = data.on_target || m.on_target || null;
+      const offTargets = data.off_targets || m.off_targets || [];
+      const ratios = m.selectivity_ratios || data.selectivity_ratios || [];
+      const doses = data.concentrations || data.doses || [];
+      const responses = data.responses || data.inhibition_pct || [];
+
+      const entries = [];
+      if (onTarget && typeof onTarget === 'object') {
+        entries.push({
+          target: (onTarget.target || 'Primary Target') + ' (On-Target)',
+          ic50: parseFloat(onTarget.ic50_nm ?? onTarget.ki_nm ?? onTarget.value ?? 0),
+          role: 'on_target',
+          fold: 1.0,
+          margin: 'on_target'
+        });
+      }
+      if (Array.isArray(offTargets)) {
+        offTargets.forEach(ot => {
+          const ic = parseFloat(ot.ic50_nm ?? ot.ki_nm ?? ot.value ?? 0);
+          const rMatch = Array.isArray(ratios) ? ratios.find(r => r.off_target === ot.target || r.target === ot.target) : null;
+          const fold = rMatch ? (rMatch.selectivity_fold ?? rMatch.fold ?? (onTarget && onTarget.ic50_nm ? ic / onTarget.ic50_nm : null))
+                              : (onTarget && onTarget.ic50_nm ? ic / onTarget.ic50_nm : null);
+          entries.push({
+            target: ot.target || ot.name || 'Off-Target',
+            ic50: ic,
+            role: 'off_target',
+            fold: fold,
+            margin: (rMatch && (rMatch.margin_class || rMatch.classification)) || (fold >= 100 ? 'high (>100x)' : (fold >= 10 ? 'moderate (10-100x)' : 'narrow (<10x)'))
+          });
+        });
+      }
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 8px;">Bioactivity, Dose-Response &amp; Selectivity Studio — ${escapeHtml(filename)}</h3>
+          <div id="bioactivity-studio-plot" style="height:310px;margin-bottom:10px;"></div>
+          ${entries.length > 0 ? `
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Target</th><th>Role</th><th>IC50 / Ki (nM)</th><th>Selectivity Fold</th><th>Margin Classification</th></tr></thead>
+              <tbody>
+                ${entries.map(e => `
+                  <tr>
+                    <td><strong>${escapeHtml(e.target)}</strong></td>
+                    <td><code>${escapeHtml(e.role)}</code></td>
+                    <td><strong>${typeof e.ic50 === 'number' && !isNaN(e.ic50) ? e.ic50.toFixed(2) : '—'} nM</strong></td>
+                    <td>${typeof e.fold === 'number' && !isNaN(e.fold) ? e.fold.toFixed(1) + 'x' : '—'}</td>
+                    <td><strong style="color:${String(e.margin).includes('high') || e.role === 'on_target' ? '#16a34a' : '#d97706'};">${escapeHtml(e.margin)}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : `<pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(m, null, 2))}</pre>`}
+        </div>
+      `;
+
+      const plotEl = box.querySelector('#bioactivity-studio-plot');
+      if (plotEl && typeof Plotly !== 'undefined') {
+        if (entries.length > 0) {
+          Plotly.newPlot(plotEl, [{
+            x: entries.map(e => e.target),
+            y: entries.map(e => e.ic50),
+            type: 'bar',
+            marker: { color: entries.map(e => e.role === 'on_target' ? '#16a34a' : '#2563eb') },
+            text: entries.map(e => e.fold ? `${e.fold.toFixed(1)}x` : ''),
+            textposition: 'auto'
+          }], {
+            title: { text: 'Target vs. Off-Target Potency Panel (IC50 nM, Log Scale)', font: { size: 13 } },
+            yaxis: { title: 'IC50 / Ki (nM)', type: 'log' },
+            margin: { t: 35, l: 60, r: 25, b: 45 }
+          }, { responsive: true });
+        } else if (doses.length > 0 && responses.length > 0) {
+          Plotly.newPlot(plotEl, [{
+            x: doses,
+            y: responses,
+            type: 'scatter',
+            mode: 'lines+markers',
+            line: { color: '#16a34a', width: 2.2 }
+          }], {
+            title: { text: '4PL Dose–Response Curve', font: { size: 13 } },
+            xaxis: { title: 'Concentration (nM)', type: 'log' },
+            yaxis: { title: '% Response / Inhibition' },
+            margin: { t: 35, l: 60, r: 25, b: 45 }
+          }, { responsive: true });
+        } else {
+          plotEl.style.display = 'none';
+        }
+      }
+    }
+
+    /* --- Viewer 17: Preclinical Toxicology & Safety Margin Studio (Plotly.js) --- */
+    function renderEmbeddedToxStudio(box, data, ana, filename) {
+      const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const ti = m.therapeutic_index ?? m.ti_auc ?? data.therapeutic_index;
+      const hergMargin = m.herg_margin ?? m.herg_safety_margin ?? data.herg_margin;
+      const noael = m.noael_mg_kg ?? data.noael_mg_kg ?? data.noael;
+      const genotox = m.genotoxicity_battery || data.genotoxicity_battery || data.assays || [];
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 10px;">Preclinical Safety, TI &amp; Genotoxicity Studio — ${escapeHtml(filename)}</h3>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-bottom:12px;">
+            <div style="border:1px solid #cbd5e1;border-left:4px solid #16a34a;border-radius:6px;padding:10px;background:#f8fafc;">
+              <div style="font-size:20px;font-weight:800;">${ti !== undefined ? escapeHtml(String(ti)) + 'x' : '—'}</div>
+              <div style="font-size:11.5px;font-weight:700;color:#334155;">Therapeutic Index (NOAEL / Efficacy)</div>
+            </div>
+            <div style="border:1px solid #cbd5e1;border-left:4px solid #2563eb;border-radius:6px;padding:10px;background:#f8fafc;">
+              <div style="font-size:20px;font-weight:800;">${hergMargin !== undefined ? escapeHtml(String(hergMargin)) + 'x' : '—'}</div>
+              <div style="font-size:11.5px;font-weight:700;color:#334155;">hERG Safety Margin (Cutoff ≥ 30x)</div>
+            </div>
+            <div style="border:1px solid #cbd5e1;border-left:4px solid #d97706;border-radius:6px;padding:10px;background:#f8fafc;">
+              <div style="font-size:20px;font-weight:800;">${noael !== undefined ? escapeHtml(String(noael)) + ' mg/kg' : '—'}</div>
+              <div style="font-size:11.5px;font-weight:700;color:#334155;">Repeat-Dose NOAEL</div>
+            </div>
+          </div>
+          ${Array.isArray(genotox) && genotox.length > 0 ? `
+            <h4 style="margin:8px 0 6px;">ICH S2(R1) Genotoxicity Battery</h4>
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Assay</th><th>Result</th><th>Metabolic Activation (±S9)</th><th>Notes</th></tr></thead>
+              <tbody>
+                ${genotox.map(g => `
+                  <tr>
+                    <td><strong>${escapeHtml(g.assay || g.name || 'Assay')}</strong></td>
+                    <td><strong style="color:${String(g.result || g.status).toLowerCase() === 'negative' || String(g.result || g.status).toLowerCase() === 'pass' ? '#16a34a' : '#dc2626'};">${escapeHtml(g.result || g.status || '—')}</strong></td>
+                    <td>${escapeHtml(g.s9 || g.activation || '±S9')}</td>
+                    <td>${escapeHtml(g.notes || g.detail || '')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : `<pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(m, null, 2))}</pre>`}
+        </div>
+      `;
+    }
+
+    /* --- Viewer 18: Medicinal Chemistry, Descriptors, Structural Alerts & Similarity Studio --- */
+    function renderEmbeddedMedChemStudio(box, data, ana, filename) {
+      const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const desc = m.descriptors || data.descriptors || m;
+      const alerts = m.alerts || data.alerts || data.structural_alerts || [];
+      const hits = data.similar_compounds || data.hits || m.similar_compounds || [];
+
+      const propKeys = [
+        { k: 'mw', alt: 'molecular_weight', label: 'Mol. Weight (Da)', rule: '≤ 500' },
+        { k: 'clogp', alt: 'logp', label: 'cLogP', rule: '≤ 5.0' },
+        { k: 'tpsa', alt: 'TPSA', label: 'TPSA (Å²)', rule: '≤ 140' },
+        { k: 'hbd', alt: 'num_hbd', label: 'H-Bond Donors', rule: '≤ 5' },
+        { k: 'hba', alt: 'num_hba', label: 'H-Bond Acceptors', rule: '≤ 10' },
+        { k: 'rotatable_bonds', alt: 'rot_bonds', label: 'Rotatable Bonds', rule: '≤ 10' },
+        { k: 'qed', alt: 'QED', label: 'QED Drug-Likeness', rule: '0–1' },
+        { k: 'sa_score', alt: 'synthetic_accessibility', label: 'SA Score', rule: '1 (easy) – 10' }
+      ].map(pk => ({ ...pk, val: desc[pk.k] !== undefined ? desc[pk.k] : desc[pk.alt] }))
+       .filter(pk => pk.val !== undefined);
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 10px;">Medicinal Chemistry, Property &amp; Structural Alerts Studio — ${escapeHtml(filename)}</h3>
+          ${(data.smiles || m.smiles || data.canonical_smiles) ? `<div style="margin-bottom:10px;padding:8px;background:#f1f5f9;border-radius:6px;"><strong>Canonical SMILES:</strong> <code>${escapeHtml(data.canonical_smiles || data.smiles || m.smiles)}</code></div>` : ''}
+          ${propKeys.length > 0 ? `
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:12px;">
+              ${propKeys.map(p => `<div style="border:1px solid #cbd5e1;border-left:4px solid #2563eb;border-radius:6px;padding:10px;background:#f8fafc;">
+                <div style="font-size:19px;font-weight:800;">${typeof p.val === 'number' ? p.val.toFixed(2) : escapeHtml(String(p.val))}</div>
+                <div style="font-size:11.5px;font-weight:700;color:#334155;">${escapeHtml(p.label)}</div>
+                <div style="font-size:10px;color:#64748b;">Lipinski/Veber: ${escapeHtml(p.rule)}</div>
+              </div>`).join('')}
+            </div>
+          ` : ''}
+          ${Array.isArray(alerts) && alerts.length > 0 ? `
+            <h4 style="margin:8px 0 6px;">PAINS / Brenk Structural Alerts (${alerts.length})</h4>
+            <table class="data-table" style="color:#0f172a;margin-bottom:10px;">
+              <thead><tr><th>Filter Catalog</th><th>Rule / Substructure</th><th>Status / Severity</th></tr></thead>
+              <tbody>
+                ${alerts.map(a => `
+                  <tr>
+                    <td><code>${escapeHtml(a.catalog || a.filter || 'PAINS/Brenk')}</code></td>
+                    <td>${escapeHtml(a.rule || a.name || a.smarts || JSON.stringify(a))}</td>
+                    <td><strong style="color:#dc2626;">${escapeHtml(a.severity || a.status || 'FLAG')}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${Array.isArray(hits) && hits.length > 0 ? `
+            <h4 style="margin:8px 0 6px;">Structural Similarity Neighbors (${hits.length})</h4>
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Compound ID</th><th>Tanimoto Similarity</th><th>SMILES</th></tr></thead>
+              <tbody>
+                ${hits.map(h => `
+                  <tr>
+                    <td><strong>${escapeHtml(h.id || h.chembl_id || h.cid || 'Analog')}</strong></td>
+                    <td><strong>${typeof h.tanimoto === 'number' ? h.tanimoto.toFixed(3) : escapeHtml(String(h.similarity ?? '—'))}</strong></td>
+                    <td><code style="font-size:11px;">${escapeHtml(h.smiles || '')}</code></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${propKeys.length === 0 && (!Array.isArray(alerts) || alerts.length === 0) && (!Array.isArray(hits) || hits.length === 0) ? `
+            <pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(m, null, 2))}</pre>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    /* --- Viewer 19: Multi-Omics, Regulatory Variant, Brain Atlas & Phenotype Studio --- */
+    function renderEmbeddedOmicsStudio(box, data, ana, filename) {
+      const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const tracks = data.regulatory_tracks || m.regulatory_tracks || data.tracks || [];
+      const brainRegions = data.brain_regions || data.structures || m.brain_regions || [];
+      const phenotypes = data.phenotypes || data.mgi_phenotypes || data.hpo_terms || m.phenotypes || [];
+      const degs = data.differential_expression || data.signatures || data.datasets || [];
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 10px;">Multi-Omics, Regulatory Variant, Brain Atlas &amp; Phenotype Studio — ${escapeHtml(filename)}</h3>
+          <div id="omics-studio-plot" style="height:280px;margin-bottom:10px;"></div>
+          ${Array.isArray(phenotypes) && phenotypes.length > 0 ? `
+            <h4 style="margin:8px 0 6px;">Model Organism (MGI) &amp; Human (HPO) Phenotype Annotations (${phenotypes.length})</h4>
+            <table class="data-table" style="color:#0f172a;margin-bottom:10px;">
+              <thead><tr><th>Term ID</th><th>Phenotype / Organ System</th><th>Source / Zygosity</th></tr></thead>
+              <tbody>
+                ${phenotypes.map(p => `
+                  <tr>
+                    <td><code>${escapeHtml(p.id || p.term_id || 'MP/HP')}</code></td>
+                    <td><strong>${escapeHtml(p.name || p.term || p.phenotype || JSON.stringify(p))}</strong></td>
+                    <td>${escapeHtml(p.source || p.allele || p.zygosity || 'MGI/HPO')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${Array.isArray(degs) && degs.length > 0 ? `
+            <h4 style="margin:8px 0 6px;">Disease Transcriptomics &amp; Single-Cell Studies (${degs.length})</h4>
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Dataset / Gene</th><th>Comparison / Tissue</th><th>log2FC / Metric</th><th>Adjusted p-value</th></tr></thead>
+              <tbody>
+                ${degs.map(d => `
+                  <tr>
+                    <td><strong>${escapeHtml(d.accession || d.dataset_id || d.gene || d.id || 'Study')}</strong></td>
+                    <td>${escapeHtml(d.title || d.comparison || d.tissue || '—')}</td>
+                    <td>${escapeHtml(String(d.log2fc ?? d.n_samples ?? '—'))}</td>
+                    <td>${escapeHtml(String(d.padj ?? d.pvalue ?? '—'))}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${(!phenotypes.length && !degs.length) ? `<pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(m, null, 2))}</pre>` : ''}
+        </div>
+      `;
+
+      const plotEl = box.querySelector('#omics-studio-plot');
+      if (plotEl && typeof Plotly !== 'undefined') {
+        if (Array.isArray(tracks) && tracks.length > 0) {
+          Plotly.newPlot(plotEl, [{
+            x: tracks.map(t => t.track || t.assay || t.cell_type || 'Track'),
+            y: tracks.map(t => parseFloat(t.delta_score ?? t.score ?? t.value ?? 0)),
+            type: 'bar',
+            marker: { color: '#7c3aed' }
+          }], {
+            title: { text: 'AlphaGenome Regulatory Variant Effect Delta Scores', font: { size: 13 } },
+            yaxis: { title: 'Predicted Delta Score' },
+            margin: { t: 35, l: 55, r: 20, b: 55 }
+          }, { responsive: true });
+        } else if (Array.isArray(brainRegions) && brainRegions.length > 0) {
+          Plotly.newPlot(plotEl, [{
+            x: brainRegions.map(b => b.region || b.structure || b.name),
+            y: brainRegions.map(b => parseFloat(b.z_score ?? b.expression ?? b.value ?? 0)),
+            type: 'bar',
+            marker: { color: '#0284c7' }
+          }], {
+            title: { text: 'Allen Brain Atlas Regional Expression (Z-Score / log2 Intensity)', font: { size: 13 } },
+            yaxis: { title: 'Expression Level' },
+            margin: { t: 35, l: 55, r: 20, b: 55 }
+          }, { responsive: true });
+        } else {
+          plotEl.style.display = 'none';
+        }
+      }
+    }
+
+    /* --- Viewer 20: Clinical Trials, Patent Landscape & Literature Citation Studio --- */
+    function renderEmbeddedCompetitiveStudio(box, data, ana, filename) {
+      const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
+      const trials = data.trials || data.studies || m.trials || [];
+      const patents = data.patents || m.patents || [];
+      const papers = data.articles || data.papers || data.citations || m.citations || [];
+
+      box.innerHTML = `
+        <div style="padding:10px;color:#0f172a;">
+          <h3 style="margin:0 0 10px;">Clinical Trials, Patent Landscape &amp; Literature Studio — ${escapeHtml(filename)}</h3>
+          ${Array.isArray(trials) && trials.length > 0 ? `
+            <h4 style="margin:6px 0;">ClinicalTrials.gov Competitive Pipeline (${trials.length} Trials)</h4>
+            <table class="data-table" style="color:#0f172a;margin-bottom:10px;">
+              <thead><tr><th>NCT ID</th><th>Title / Intervention</th><th>Phase</th><th>Status</th><th>Sponsor</th></tr></thead>
+              <tbody>
+                ${trials.map(t => `
+                  <tr>
+                    <td><code>${escapeHtml(t.nct_id || t.id || 'NCT')}</code></td>
+                    <td><strong>${escapeHtml(t.title || t.intervention || 'Trial')}</strong></td>
+                    <td><span style="background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:11px;">${escapeHtml(t.phase || '—')}</span></td>
+                    <td>${escapeHtml(t.status || '—')}</td>
+                    <td>${escapeHtml(t.sponsor || '—')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${Array.isArray(patents) && patents.length > 0 ? `
+            <h4 style="margin:6px 0;">Patent Landscape (${patents.length} Records)</h4>
+            <table class="data-table" style="color:#0f172a;margin-bottom:10px;">
+              <thead><tr><th>Patent Number</th><th>Title</th><th>Assignee</th><th>Filing / Pub Date</th></tr></thead>
+              <tbody>
+                ${patents.map(p => `
+                  <tr>
+                    <td><code>${escapeHtml(p.patent_number || p.id || 'Patent')}</code></td>
+                    <td><strong>${escapeHtml(p.title || '—')}</strong></td>
+                    <td>${escapeHtml(p.assignee || '—')}</td>
+                    <td>${escapeHtml(p.date || p.publication_date || '—')}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${Array.isArray(papers) && papers.length > 0 ? `
+            <h4 style="margin:6px 0;">Literature &amp; Verified Registry Citations (${papers.length})</h4>
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>ID (PMID / DOI / NCT)</th><th>Title</th><th>Year / Journal</th><th>Verification</th></tr></thead>
+              <tbody>
+                ${papers.map(p => `
+                  <tr>
+                    <td><code>${escapeHtml(p.pmid || p.doi || p.id || '—')}</code></td>
+                    <td><strong>${escapeHtml(p.title || '—')}</strong></td>
+                    <td>${escapeHtml(p.year || p.journal || '—')}</td>
+                    <td><strong style="color:${p.resolved === false ? '#dc2626' : '#16a34a'};">${p.resolved === false ? 'UNRESOLVED' : 'VERIFIED'}</strong></td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${(!trials.length && !patents.length && !papers.length) ? `<pre style="background:#f8fafc;padding:8px;border:1px solid #cbd5e1;border-radius:6px;font-size:11.5px;">${escapeHtml(JSON.stringify(m, null, 2))}</pre>` : ''}
+        </div>
+      `;
+    }
+
+    /* --- Viewer 11: 3D Protein Structure Studio (3Dmol.js) --- */
+    function renderEmbeddedStructure3D(box, ctrl, art) {
+      if (ctrl) {
+        ctrl.innerHTML = `
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;color:var(--text-secondary);">Style:</span>
+            <button class="mini-btn active" onclick="set3DStyle('cartoon')">Cartoon (pLDDT)</button>
+            <button class="mini-btn" onclick="set3DStyle('stick')">Stick</button>
+            <button class="mini-btn" onclick="set3DStyle('sphere')">Sphere</button>
+          </div>
+        `;
+      }
+      const mdiv = document.createElement('div');
+      mdiv.className = 'mol3d-box';
+      box.appendChild(mdiv);
+      if (typeof $3Dmol === 'undefined') {
+        mdiv.innerHTML = '<div style="padding:16px;">3Dmol.js library loading...</div>';
+        return;
+      }
+      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+      const fmt = art.name.toLowerCase().endsWith('.cif') ? 'cif' : 'pdb';
+      viewer.addModel(String(art.data || ''), fmt);
+      viewer.setStyle({}, {
+        cartoon: {
+          colorfunc: function(atom) {
+            const b = atom.b || 0;
+            if (b >= 90) return 0x0053D6;
+            if (b >= 70) return 0x65CBF3;
+            if (b >= 50) return 0xFFDB13;
+            return 0xFF7D45;
+          }
+        }
+      });
+      viewer.zoomTo();
+      viewer.render();
+      window.__ACTIVE_3DMOL__ = viewer;
+    }
+
+    function set3DStyle(styleName) {
+      const v = window.__ACTIVE_3DMOL__;
+      if (!v) return;
+      const spec = {};
+      spec[styleName] = { colorscheme: 'chainHetatm' };
+      v.setStyle({}, spec);
+      v.render();
+    }
+
+    /* --- Viewer 12: 3D Docking Poses Studio (3Dmol.js) --- */
+    function renderEmbeddedDocking3D(box, ctrl, art) {
+      const mdiv = document.createElement('div');
+      mdiv.className = 'mol3d-box';
+      box.appendChild(mdiv);
+      if (typeof $3Dmol === 'undefined') return;
+      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+
+      const pairedRec = art.paired_files && art.paired_files.receptor ? getArtifactById(art.paired_files.receptor) : null;
+      const pairedPoses = art.paired_files && art.paired_files.poses ? getArtifactById(art.paired_files.poses) : null;
+
+      if (art.name.endsWith('.receptor.pdbqt')) {
+        viewer.addModel(String(art.data || ''), 'pdbqt');
+        viewer.setStyle({ model: 0 }, { cartoon: { color: '#8899aa', opacity: 0.65 } });
+        if (pairedPoses && pairedPoses.data) {
+          viewer.addModel(String(pairedPoses.data), 'pdbqt');
+          viewer.setStyle({ model: 1 }, { stick: { radius: 0.2, colorscheme: 'greenCarbon' } });
+        }
+      } else {
+        if (pairedRec && pairedRec.data) {
+          viewer.addModel(String(pairedRec.data), 'pdbqt');
+          viewer.setStyle({ model: 0 }, { cartoon: { color: '#8899aa', opacity: 0.65 } });
+        }
+        viewer.addModel(String(art.data || ''), 'pdbqt');
+        viewer.setStyle({ model: pairedRec ? 1 : 0 }, { stick: { radius: 0.2, colorscheme: 'greenCarbon' } });
+      }
+      viewer.zoomTo();
+      viewer.render();
+      window.__ACTIVE_3DMOL__ = viewer;
+    }
+
+    /* --- Viewer 13: 3D SDF Molecule Studio (3Dmol.js) --- */
+    function renderEmbeddedSdf3D(box, ctrl, art) {
+      const mdiv = document.createElement('div');
+      mdiv.className = 'mol3d-box';
+      box.appendChild(mdiv);
+      if (typeof $3Dmol === 'undefined') return;
+      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+      viewer.addModel(String(art.data || ''), 'sdf');
+      viewer.setStyle({}, { stick: { radius: 0.16 }, sphere: { scale: 0.28 } });
+      viewer.zoomTo();
+      viewer.render();
+      window.__ACTIVE_3DMOL__ = viewer;
+    }
+
+    /* --- Viewer 14: Generic JSON / Provenance Tree Viewer --- */
+    function renderEmbeddedJsonTree(box, data) {
+      const pre = document.createElement('pre');
+      pre.style.margin = '0';
+      pre.style.fontSize = '12px';
+      pre.style.color = '#0f172a';
+      pre.textContent = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+      box.appendChild(pre);
+    }
+
+    /* =========================================================================
+     * 4. UI NAVIGATION, SHORTCUTS, KA-TEX & LIVE SSE STREAM
+     * ========================================================================= */
+    function setWorkspaceMode(mode) {
+      const ws = document.getElementById('main-workspace');
+      ws.classList.remove('mode-agentic', 'mode-science');
+      if (mode === 'agentic') ws.classList.add('mode-agentic');
+      if (mode === 'science') ws.classList.add('mode-science');
+      document.querySelectorAll('.mode-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-mode') === mode);
+      });
+      setTimeout(() => {
+        if (mode !== 'science') fitGraphToScreen();
+        if (mode !== 'agentic' && window.__ACTIVE_STUDIO_ART__) {
+          const studioEl = document.getElementById('scitab-studio');
+          if (studioEl && studioEl.style.display !== 'none') {
+            mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+          }
+        }
+        window.dispatchEvent(new Event('resize'));
+      }, 50);
+    }
+
+    function switchDockTab(tab) {
+      ['inspector', 'messages', 'roles', 'retros'].forEach(t => {
+        const el = document.getElementById('dock-' + t);
+        if (el) el.style.display = (t === tab) ? 'block' : 'none';
+      });
+      document.querySelectorAll('.subtab-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-dock') === tab);
+      });
+    }
+
+    function switchSciTab(tab) {
+      ['overview', 'findings', 'studio'].forEach(t => {
+        document.getElementById('scitab-' + t).style.display = (t === tab) ? 'block' : 'none';
+      });
+      document.querySelectorAll('.sci-tab').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-scitab') === tab);
+      });
+      if (tab === 'studio' && window.__ACTIVE_STUDIO_ART__) {
+        mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const cur = html.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      const sun = document.getElementById('theme-icon-sun');
+      const moon = document.getElementById('theme-icon-moon');
+      if (sun && moon) {
+        sun.style.display = next === 'dark' ? 'block' : 'none';
+        moon.style.display = next === 'light' ? 'block' : 'none';
+      }
+      renderAgentGraph();
+    }
+
+    function renderMathIn(el) {
+      if (typeof renderMathInElement === 'function' && el) {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (_e) {}
+      }
+    }
+
+    function refreshAllFromBundle() {
+      const bundle = window.__PDE_BUNDLE__;
+      if (!bundle) return;
+      const prog = bundle.program || {};
+      const m = prog.summary_metrics || {};
+
+      document.getElementById('hdr-program-name').textContent = prog.name || 'PDE Program';
+      document.getElementById('hdr-stage').textContent = prog.stage || 'Stage 0–1';
+      document.getElementById('kpi-agents').textContent = `${m.n_agents || 0} / ${m.n_work_orders || 0}`;
+      document.getElementById('kpi-validation').textContent = `${m.validation_pass_rate ?? 100}%`;
+      document.getElementById('kpi-artifacts').textContent = String(m.n_artifacts || 0);
+      document.getElementById('kpi-findings').textContent = String(m.n_findings || 0);
+      document.getElementById('kpi-relays').textContent = `${m.n_relays_addressed || 0} / ${m.n_relays || 0}`;
+
+      renderAgentGraph();
+      renderInspector();
+      renderMessagesAndRoles();
+      renderRetrosAndEnv();
+      renderOverviewTab();
+      renderFindingsTab();
+      renderStudioTab();
+    }
+
+    // Pan & Zoom mouse handlers on SVG stage
+    (function initGraphInteractions() {
+      const stage = document.getElementById('graph-stage');
+      stage.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.agent-node-group')) return;
+        isDragging = true;
+        dragStartX = e.clientX - panX;
+        dragStartY = e.clientY - panY;
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        panX = e.clientX - dragStartX;
+        panY = e.clientY - dragStartY;
+        applySvgTransform();
+      });
+      window.addEventListener('mouseup', () => { isDragging = false; });
+      stage.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        zoomGraph(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
+      }, { passive: false });
+
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target && e.target.tagName) || '')) return;
+        if (e.key === 't' || e.key === 'T') toggleOrientation();
+        if (e.key === 'f' || e.key === 'F') fitGraphToScreen();
+      });
+    })();
+
+    // Connect to Live SSE (/api/stream) if served via `pde dashboard serve`
+    function initLiveSseIfAvailable() {
+      if (window.location.protocol.startsWith('http')) {
+        try {
+          const es = new EventSource('/api/stream');
+          es.onopen = () => {
+            const b = document.getElementById('conn-badge');
+            b.classList.add('live');
+            document.getElementById('conn-text').textContent = 'LIVE SSE';
+          };
+          es.onmessage = (ev) => {
+            try {
+              const msg = JSON.parse(ev.data);
+              if (msg.type === 'bundle_updated' && msg.bundle) {
+                window.__PDE_BUNDLE__ = msg.bundle;
+                refreshAllFromBundle();
+              }
+            } catch (_e) {}
+          };
+          es.onerror = () => {
+            es.close();
+          };
+        } catch (_e) {}
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      refreshAllFromBundle();
+      setTimeout(fitGraphToScreen, 60);
+      initLiveSseIfAvailable();
+    });
+  </script>
+</body>
+</html>

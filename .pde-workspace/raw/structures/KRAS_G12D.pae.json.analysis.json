@@ -1,0 +1,18 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/structures/KRAS_G12D.pae.json",
+  "source_sha256": "771249ff13ddbf3d734bf243e0897990458b95d8a7cc941b127867466472b2bb",
+  "threshold_set": "structure-v1",
+  "work_order_id": "WO-002",
+  "analyzed_at": "2026-10-07T03:39:18Z",
+  "verdict": "pass",
+  "summary": "Low inter-residue PAE across the catalytic G-domain core (mean PAE 3.18 A).",
+  "thresholds_applied": {
+    "max_domain_pae": 8.0
+  },
+  "metrics": {
+    "mean_pae": 3.18
+  },
+  "mandatory_relays": []
+}

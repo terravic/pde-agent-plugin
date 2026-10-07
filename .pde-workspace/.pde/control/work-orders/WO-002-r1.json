@@ -1,0 +1,40 @@
+{
+  "id": "WO-002",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Characterize KRAS G12D structure confidence (pLDDT/PAE) and Switch-II pocket (SII-P) druggability.",
+  "requested_role": "structural-biologist",
+  "stage": 1,
+  "cycle": 1,
+  "context": {
+    "content": "Characterize KRAS G12D structure confidence (pLDDT/PAE) and Switch-II pocket (SII-P) druggability.",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-002-r1.json",
+    "snapshot_sha256": "9777b574790e54f40045e189a607ce7c6982966619815ab302757c4a468cff3d"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "pde.structures",
+      "pde.pocket"
+    ],
+    "layer_1": [
+      "findings/structural-biology/kras-g12d-structure-pockets.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "af3",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-07T03:39:15Z",
+  "committed_at": "2026-10-07T03:39:15Z"
+}

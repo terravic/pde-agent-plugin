@@ -1,0 +1,24 @@
+{
+  "compound_id": "MRTX1133",
+  "mw": 600.6,
+  "clogp": 4.12,
+  "tpsa": 93.5,
+  "hbd": 2,
+  "hba": 8,
+  "mpo_score": 0.74,
+  "radar_axes": {
+    "Metabolic Stability": 0.82,
+    "CYP Inhibition": 0.88,
+    "Permeability": 0.46,
+    "hERG Liability": 0.79,
+    "Solubility": 0.76
+  },
+  "predictions": {
+    "caco2_papp_1e6": 2.4,
+    "hlm_t12_min": 68.0,
+    "cyp3a4_ic50_um": 18.5,
+    "herg_ic50_um": 14.2,
+    "kinetic_solubility_um": 85.0,
+    "oral_bioavailability_pct": 11.5
+  }
+}

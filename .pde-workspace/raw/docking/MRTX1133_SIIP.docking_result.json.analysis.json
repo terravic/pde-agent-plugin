@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/docking/MRTX1133_SIIP.docking_result.json",
+  "source_sha256": "d4f56d8890f00b02203076342450d1df9c763e4cd9c442b518a2f9f750e5d88c",
+  "threshold_set": "docking-v1",
+  "work_order_id": "WO-004",
+  "analyzed_at": "2026-10-07T03:39:34Z",
+  "verdict": "pass",
+  "summary": "Top pose achieves -11.4 kcal/mol in KRAS G12D SII-P with 2.74 A Asp12 salt bridge and -3.6 kcal/mol selectivity over WT.",
+  "thresholds_applied": {
+    "max_affinity_kcal_mol": -8.5,
+    "max_salt_bridge_dist_a": 3.2
+  },
+  "metrics": {
+    "top_affinity_kcal_mol": -11.4,
+    "selectivity_ddg_kcal_mol": -3.6
+  },
+  "mandatory_relays": [
+    {
+      "code": "SIIP_POSE1_SALT_BRIDGE_CONFIRMED",
+      "target_role": "experimental-biologist",
+      "detail": "Confirm Asp12 salt-bridge dependence via SPR against KRAS G12D vs G12V/WT."
+    }
+  ]
+}

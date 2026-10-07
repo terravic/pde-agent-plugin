@@ -1,0 +1,52 @@
+{
+  "research_goal": "Overcome adaptive RTK/SHP2 feedback and secondary Switch-II mutations under KRAS G12D inhibition in PDAC",
+  "n_hypotheses": 4,
+  "n_matches": 24,
+  "top_elo": 1648,
+  "hypotheses": [
+    {
+      "id": "HYP-001",
+      "title": "Dual MRTX1133 + SHP2 (RMC-4630) pulsatile blockade prevents adaptive RTK-driven WT RAS reactivation",
+      "elo": 1648,
+      "wins": 11,
+      "losses": 1,
+      "win_rate": 0.917,
+      "novelty_score": 8.8,
+      "testability_score": 9.4,
+      "rationale": "RTK-SHP2-SOS1 nucleotide exchange reactivates WT HRAS/NRAS within 48h of G12D suppression; intermittent SHP2 co-inhibition collapses pERK rebound while sparing GI mucosa."
+    },
+    {
+      "id": "HYP-002",
+      "title": "C2-fluorinated pyrrolizidine C-O-C conformational lock mitigates Tyr96Asp/His95Gln Switch-II groove resistance",
+      "elo": 1572,
+      "wins": 8,
+      "losses": 4,
+      "win_rate": 0.667,
+      "novelty_score": 9.1,
+      "testability_score": 8.9,
+      "rationale": "Pre-organizing the C2 sidechain reduces entropic penalty when His95 hydrogen bonding is lost in acquired resistance clones."
+    },
+    {
+      "id": "HYP-003",
+      "title": "Phenolic pivaloyloxymethyl (POM) prodrug of MRTX1133 masks naphthol HBD to achieve >35% oral bioavailability",
+      "elo": 1510,
+      "wins": 4,
+      "losses": 8,
+      "win_rate": 0.333,
+      "novelty_score": 7.9,
+      "testability_score": 9.2,
+      "rationale": "Masking the 3-hydroxynaphthyl donor lowers TPSA from 93.5 to 79.2 A^2 and increases Caco-2 Papp >3-fold."
+    },
+    {
+      "id": "HYP-004",
+      "title": "ULK1 autophagy co-inhibition synergizes with G12D blockade in nutrient-deprived PDAC organoids",
+      "elo": 1412,
+      "wins": 1,
+      "losses": 11,
+      "win_rate": 0.083,
+      "novelty_score": 7.2,
+      "testability_score": 8.1,
+      "rationale": "PDAC cells upregulate macropinocytosis and autophagy upon MAPK pathway suppression."
+    }
+  ]
+}

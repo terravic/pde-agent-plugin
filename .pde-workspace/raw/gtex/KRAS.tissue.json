@@ -1,0 +1,42 @@
+{
+  "gene": "KRAS",
+  "unit": "TPM",
+  "max_tpm": 48.5,
+  "tissues": [
+    {
+      "tissue": "Colon - Transverse",
+      "median_tpm": 48.5,
+      "essential_organ": true
+    },
+    {
+      "tissue": "Esophagus - Mucosa",
+      "median_tpm": 42.1,
+      "essential_organ": false
+    },
+    {
+      "tissue": "Lung",
+      "median_tpm": 36.8,
+      "essential_organ": true
+    },
+    {
+      "tissue": "Pancreas",
+      "median_tpm": 22.4,
+      "essential_organ": true
+    },
+    {
+      "tissue": "Heart - Left Ventricle",
+      "median_tpm": 18.2,
+      "essential_organ": true
+    },
+    {
+      "tissue": "Liver",
+      "median_tpm": 14.9,
+      "essential_organ": true
+    },
+    {
+      "tissue": "Kidney - Cortex",
+      "median_tpm": 19.7,
+      "essential_organ": true
+    }
+  ]
+}

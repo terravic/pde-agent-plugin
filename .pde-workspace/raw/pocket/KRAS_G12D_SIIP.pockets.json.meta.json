@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde pocket detect raw/structures/KRAS_G12D.cif --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:18Z",
+  "work_order_id": "WO-002",
+  "outputs": [
+    {
+      "path": "raw/pocket/KRAS_G12D_SIIP.pockets.json",
+      "sha256": "22bd4f3d3ea69d1c8b87611f5efbf4a2c6279deb1e33db2048031a4fd4c80683",
+      "bytes": 824
+    }
+  ],
+  "mandatory_relays": [
+    {
+      "code": "ASP12_SALT_BRIDGE_ANCHOR_REQUIRED",
+      "target_role": "medicinal-chemist",
+      "detail": "POCKET_1_SIIP druggability=0.84 relies on basic bicyclic amine engaging Asp12 OD1/OD2 plus His95/Tyr96 groove."
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "dataset_id": "SYNTH-CNS-SERIES-2026A",
+  "description": "Synthetic private lead-optimization series of CNS kinase inhibitor candidates with internal brain-penetrance (Kp,uu,brain), MDCK-MDR1 efflux ratio, and biochemical IC50 measurements.",
+  "target": "LRRK2",
+  "records": [
+    {
+      "compound_id": "CMPD-901",
+      "series": "azaindole-core-A",
+      "smiles": "COc1cc2c(ncnc2cc1OCCCN1CCOCC1)Nc1ccc(F)c(Cl)c1",
+      "ic50_nm": 4.2,
+      "kp_uu_brain": 0.68,
+      "mdck_er": 1.3,
+      "mw": 348.4,
+      "tpsa": 58.2,
+      "logp": 2.6,
+      "hbd": 1,
+      "pka": 7.4
+    },
+    {
+      "compound_id": "CMPD-902",
+      "series": "azaindole-core-A",
+      "smiles": "COc1cc2nccc(Oc3ccc(NC(=O)NC4CC4)c(Cl)c3)c2cc1C(N)=O",
+      "ic50_nm": 6.8,
+      "kp_uu_brain": 0.54,
+      "mdck_er": 1.7,
+      "mw": 362.8,
+      "tpsa": 64.5,
+      "logp": 2.9,
+      "hbd": 1,
+      "pka": 7.8
+    },
+    {
+      "compound_id": "CMPD-903",
+      "series": "azaindole-core-A",
+      "smiles": "Cn1cc(c2c1nc(n2)Nc3ccc(cc3)N4CCN(CC4)C)c5ccnc(n5)N",
+      "ic50_nm": 11.5,
+      "kp_uu_brain": 0.35,
+      "mdck_er": 2.4,
+      "mw": 389.5,
+      "tpsa": 76.0,
+      "logp": 3.4,
+      "hbd": 2,
+      "pka": 8.3
+    },
+    {
+      "compound_id": "CMPD-904",
+      "series": "pyrazolopyrimidine-B",
+      "smiles": "CC(C)(C)c1nc(c(s1)c2ccnc(n2)N)c3cccc(c3NS(=O)(=O)c4c(cccc4F)F)F",
+      "ic50_nm": 19.0,
+      "kp_uu_brain": 0.24,
+      "mdck_er": 3.1,
+      "mw": 418.5,
+      "tpsa": 84.1,
+      "logp": 3.8,
+      "hbd": 2,
+      "pka": 8.7
+    },
+    {
+      "compound_id": "CMPD-905",
+      "series": "pyrazolopyrimidine-B",
+      "smiles": "CS(=O)(=O)CCNCc1ccc(o1)c2ccc3ncnc(Nc4ccc(OCc5cccc(F)c5)c(Cl)c4)c3c2",
+      "ic50_nm": 3.1,
+      "kp_uu_brain": 0.08,
+      "mdck_er": 6.8,
+      "mw": 486.9,
+      "tpsa": 106.4,
+      "logp": 4.5,
+      "hbd": 3,
+      "pka": 9.4
+    },
+    {
+      "compound_id": "CMPD-906",
+      "series": "macrocycle-C",
+      "smiles": "C[C@H]1Oc2cc(cnc2N)c3c(nn(c3C)C)c4ccc(cc4)C(=O)N[C@@H](C1)C#N",
+      "ic50_nm": 2.5,
+      "kp_uu_brain": 0.74,
+      "mdck_er": 1.1,
+      "mw": 359.4,
+      "tpsa": 69.8,
+      "logp": 2.1,
+      "hbd": 1,
+      "pka": 6.9
+    }
+  ]
+}

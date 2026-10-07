@@ -1,0 +1,39 @@
+{
+  "id": "WO-005",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Run Co-Scientist / Hypex ELO tournament to rank rational combination & secondary resistance hypotheses for KRAS G12D inhibition.",
+  "requested_role": "hypex-supervisor",
+  "stage": 2,
+  "cycle": 2,
+  "context": {
+    "content": "Run Co-Scientist / Hypex ELO tournament to rank rational combination & secondary resistance hypotheses for KRAS G12D inhibition.",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-005-r1.json",
+    "snapshot_sha256": "fb8c56790b0f58b68a2d73afe7d31c988d879e88e5c775f51f824156663f76a2"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "pde.hypotheses"
+    ],
+    "layer_1": [
+      "findings/computational-biology/kras-hypex-tournament.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "hypex-supervisor",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-07T03:39:38Z",
+  "committed_at": "2026-10-07T03:39:38Z"
+}

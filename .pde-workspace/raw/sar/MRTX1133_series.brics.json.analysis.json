@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/sar/MRTX1133_series.brics.json",
+  "source_sha256": "84aee2c9fed25e2d396260881ac8c53faf966ae372cf21d39856fbbeea96b658",
+  "threshold_set": "sar-v1",
+  "work_order_id": "WO-003",
+  "analyzed_at": "2026-10-07T03:39:25Z",
+  "verdict": "pass",
+  "summary": "BRICS decomposition identifies 4 pharmacophoric synthons; FRAG-01 diazabicyclooctane provides -4.8 kcal/mol Asp12 anchor.",
+  "thresholds_applied": {
+    "min_fragments": 2
+  },
+  "metrics": {
+    "n_fragments": 4,
+    "warhead_dg": -4.8
+  },
+  "mandatory_relays": []
+}

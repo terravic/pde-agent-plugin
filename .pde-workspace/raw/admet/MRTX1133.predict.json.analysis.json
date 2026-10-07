@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/admet/MRTX1133.predict.json",
+  "source_sha256": "b44c9f2bd6788d8fe5d60dfe6eb66e63351f9002d28531a58dd4571268bd4d71",
+  "threshold_set": "admet-v1",
+  "work_order_id": "WO-003",
+  "analyzed_at": "2026-10-07T03:39:25Z",
+  "verdict": "pass_with_warnings",
+  "summary": "Favorable metabolic stability (HLM t1/2=68 min) and hERG margin (IC50=14.2 uM), but moderate permeability (Papp=2.4e-6 cm/s, F%=11.5%).",
+  "thresholds_applied": {
+    "min_papp": 5.0,
+    "min_herg_ic50_um": 10.0
+  },
+  "metrics": {
+    "mpo_score": 0.74,
+    "caco2_papp_1e6": 2.4,
+    "herg_ic50_um": 14.2
+  },
+  "mandatory_relays": [
+    {
+      "code": "LOW_ORAL_PERMEABILITY_PRODRUG_EVAL",
+      "target_role": "admet-dmpk-scientist",
+      "detail": "Caco-2 Papp=2.4e-6 cm/s and F%=11.5% require phenolic ester prodrug or IV/SC formulation strategy."
+    }
+  ]
+}

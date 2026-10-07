@@ -1,0 +1,38 @@
+{
+  "ligand": "MRTX1133",
+  "receptor": "KRAS_G12D",
+  "pocket_id": "POCKET_1_SIIP",
+  "top_affinity_kcal_mol": -11.4,
+  "wt_affinity_kcal_mol": -7.8,
+  "selectivity_ddg_kcal_mol": -3.6,
+  "poses": [
+    {
+      "pose_rank": 1,
+      "affinity_kcal_mol": -11.4,
+      "rmsd_lb": 0.0,
+      "rmsd_ub": 0.0,
+      "asp12_salt_bridge_dist_a": 2.74
+    },
+    {
+      "pose_rank": 2,
+      "affinity_kcal_mol": -10.6,
+      "rmsd_lb": 1.12,
+      "rmsd_ub": 1.48,
+      "asp12_salt_bridge_dist_a": 2.91
+    },
+    {
+      "pose_rank": 3,
+      "affinity_kcal_mol": -9.8,
+      "rmsd_lb": 2.05,
+      "rmsd_ub": 2.64,
+      "asp12_salt_bridge_dist_a": 3.28
+    },
+    {
+      "pose_rank": 4,
+      "affinity_kcal_mol": -9.1,
+      "rmsd_lb": 3.14,
+      "rmsd_ub": 4.02,
+      "asp12_salt_bridge_dist_a": 3.85
+    }
+  ]
+}

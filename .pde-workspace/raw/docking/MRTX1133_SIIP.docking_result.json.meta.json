@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde docking run MRTX1133 --receptor raw/structures/KRAS_G12D.cif --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:34Z",
+  "work_order_id": "WO-004",
+  "outputs": [
+    {
+      "path": "raw/docking/MRTX1133_SIIP.docking_result.json",
+      "sha256": "d4f56d8890f00b02203076342450d1df9c763e4cd9c442b518a2f9f750e5d88c",
+      "bytes": 817
+    }
+  ],
+  "mandatory_relays": [
+    {
+      "code": "SIIP_POSE1_SALT_BRIDGE_CONFIRMED",
+      "target_role": "experimental-biologist",
+      "detail": "Confirm Asp12 salt-bridge dependence via SPR against KRAS G12D vs G12V/WT."
+    }
+  ]
+}

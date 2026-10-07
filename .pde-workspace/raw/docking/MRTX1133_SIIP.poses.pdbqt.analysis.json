@@ -1,0 +1,14 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/docking/MRTX1133_SIIP.poses.pdbqt",
+  "source_sha256": "654ed876f8d38842a64db57617874775d88799c2ca8da8a4b08f1808e3f170ad",
+  "threshold_set": "docking-v1",
+  "work_order_id": "WO-004",
+  "analyzed_at": "2026-10-07T03:39:34Z",
+  "verdict": "pass",
+  "summary": "Top Vina docking poses for MRTX1133 in KRAS G12D SII-P.",
+  "thresholds_applied": {},
+  "metrics": {},
+  "mandatory_relays": []
+}

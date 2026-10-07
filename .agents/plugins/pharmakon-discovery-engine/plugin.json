@@ -1,0 +1,10 @@
+{
+  "name": "pharmakon-discovery-engine",
+  "displayName": "Pharmakon Discovery Engine (PDE) Multi-Agent Harness",
+  "version": "0.3.0",
+  "description": "Full-spectrum pre-clinical drug discovery harness with 43 scientific skills, 22 specialist subagents, 10-check mechanical validation, and the unified PDE interactive scientific dashboard.",
+  "mcpServers": "./mcp_config.json",
+  "skills": "./skills",
+  "agents": "./agents",
+  "rules": "./rules"
+}

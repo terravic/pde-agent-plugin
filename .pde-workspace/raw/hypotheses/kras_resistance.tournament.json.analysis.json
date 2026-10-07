@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/hypotheses/kras_resistance.tournament.json",
+  "source_sha256": "a41246a65e35ecc5d930d44490c98becd99d7d18870fe4aeabb533fd3de0c2e4",
+  "threshold_set": "hypex-v1",
+  "work_order_id": "WO-005",
+  "analyzed_at": "2026-10-07T03:39:42Z",
+  "verdict": "pass",
+  "summary": "Co-Scientist / Hypex tournament (24 matches, 4 hypotheses) ranks HYP-001 (MRTX1133 + SHP2 pulsatile blockade, ELO 1648) #1.",
+  "thresholds_applied": {
+    "min_top_elo": 1550,
+    "min_matches": 12
+  },
+  "metrics": {
+    "top_elo": 1648,
+    "n_hypotheses": 4,
+    "n_matches": 24
+  },
+  "mandatory_relays": [
+    {
+      "code": "HYPEX_TOP_RANKED_SHP2_COMBO",
+      "target_role": "experimental-biologist",
+      "detail": "Validate HYP-001 (ELO 1648) in AsPC-1 and GP2d PDAC lines with 72h pERK rebound readout."
+    }
+  ]
+}

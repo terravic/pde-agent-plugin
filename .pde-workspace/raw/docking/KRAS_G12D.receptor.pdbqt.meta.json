@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde docking prepare-receptor raw/structures/KRAS_G12D.cif --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:34Z",
+  "work_order_id": "WO-004",
+  "outputs": [
+    {
+      "path": "raw/docking/KRAS_G12D.receptor.pdbqt",
+      "sha256": "dc018f89871e372ba5458543ae3828142edd3181c2d95305756ddcfad6212610",
+      "bytes": 604
+    }
+  ],
+  "mandatory_relays": []
+}

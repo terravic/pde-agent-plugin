@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/docking/MRTX1133_SIIP.contacts.json",
+  "source_sha256": "788e5db2e9d841735eb140564ba7dd612684a9c6f5ed133630394a7f6fe2d26f",
+  "threshold_set": "docking-v1",
+  "work_order_id": "WO-004",
+  "analyzed_at": "2026-10-07T03:39:34Z",
+  "verdict": "pass",
+  "summary": "6 key protein-ligand interactions identified, anchored by the 2.74 A Asp12 bidentate salt bridge.",
+  "thresholds_applied": {
+    "min_contacts": 4
+  },
+  "metrics": {
+    "n_contacts": 6,
+    "asp12_distance_a": 2.74
+  },
+  "mandatory_relays": []
+}

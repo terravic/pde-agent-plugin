@@ -1,0 +1,163 @@
+{
+  "work_order_id": "WO-004",
+  "work_order_revision": 1,
+  "run_id": "RUN-004",
+  "validated_at": "2026-10-07T03:39:36Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "pde.docking",
+          "pde.bioactivity"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-004-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 3
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 5
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 5
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 1,
+        "codes_addressed": 1,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "result": "skip",
+      "status": "skip",
+      "kind": null,
+      "detail": "program.yaml not present \u2014 check deferred to a future program.yaml configuration issue"
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 6
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/docking/MRTX1133_SIIP.docking_result.json $.top_affinity_kcal_mol}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-11.4",
+          "actual_value": "-11.4",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/bioactivity/KRAS_G12D_panel.json $.kras_g12d_kd_nm}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.2",
+          "actual_value": "0.2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/docking/MRTX1133_SIIP.contacts.json $.contacts[0].distance_a}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.74",
+          "actual_value": "2.74",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/docking/MRTX1133_SIIP.contacts.json $.n_contacts}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "6.0",
+          "actual_value": "6",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/bioactivity/KRAS_G12D_panel.json $.selectivity_fold}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "725.0",
+          "actual_value": "725.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/docking/MRTX1133_SIIP.docking_result.json $.selectivity_ddg_kcal_mol}",
+          "file": "findings/computational-chemistry/mrtx1133-siip-docking.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-3.6",
+          "actual_value": "-3.6",
+          "detail": "values match within tolerance"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

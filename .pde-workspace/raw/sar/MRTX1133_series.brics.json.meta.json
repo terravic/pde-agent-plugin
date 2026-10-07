@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde mmp brics MRTX1133 --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:25Z",
+  "work_order_id": "WO-003",
+  "outputs": [
+    {
+      "path": "raw/sar/MRTX1133_series.brics.json",
+      "sha256": "84aee2c9fed25e2d396260881ac8c53faf966ae372cf21d39856fbbeea96b658",
+      "bytes": 921
+    }
+  ],
+  "mandatory_relays": []
+}

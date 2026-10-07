@@ -1,0 +1,348 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 960" width="1500" height="960" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#475569"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1D4ED8"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0F766E"/>
+    </marker>
+    <filter id="card-shadow" x="-2%" y="-2%" width="104%" height="106%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0F172A" flood-opacity="0.04"/>
+    </filter>
+  </defs>
+
+  <!-- Clean White Canvas -->
+  <rect width="1500" height="960" fill="#FFFFFF"/>
+  <rect x="16" y="16" width="1468" height="928" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- Top Header Banner -->
+  <text x="44" y="52" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Pharmakon Discovery Engine (pde-agent-plugin) — Skill Workflow &amp; Data Architecture</text>
+  <text x="44" y="74" font-size="13" fill="#475569">Two-phase execution invariant, 4-layer cryptographic provenance, 10-check validation gate, and interactive scientific dashboard</text>
+  <line x1="44" y1="90" x2="1456" y2="90" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- ======================================================================= -->
+  <!-- TOP SECTION: 3-STAGE WORKFLOW (INPUTS -> SKILL ENGINE -> OUTPUTS)       -->
+  <!-- ======================================================================= -->
+
+  <!-- COLUMN 1: DATA INPUTS (x=44, w=320) -->
+  <rect x="44" y="108" width="320" height="396" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="44" y="108" width="320" height="34" rx="8" fill="#F1F5F9"/>
+  <line x1="44" y1="142" x2="364" y2="142" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="62" y="130" font-size="12" font-weight="700" fill="#334155" letter-spacing="0.6">1. DATA INPUTS</text>
+
+  <!-- Input Card A: User Research Query -->
+  <rect x="62" y="156" width="284" height="94" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="78" y="178" font-size="13" font-weight="700" fill="#0F172A">Research Prompt / Work Order</text>
+  <text x="78" y="196" font-size="11.5" fill="#475569">Plain-English query or Stage 0–4 task:</text>
+  <rect x="78" y="206" width="252" height="34" rx="4" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="88" y="220" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#1E293B">"Evaluate EGFR in NSCLC, score</text>
+  <text x="88" y="233" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#1E293B">pockets, and run private CNS series"</text>
+
+  <!-- Input Card B: Public Scientific Databases -->
+  <rect x="62" y="264" width="284" height="114" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="78" y="286" font-size="13" font-weight="700" fill="#0F172A">Public Scientific Databases</text>
+  <text x="78" y="306" font-size="11.5" fill="#334155">• Genetics: gnomAD, Open Targets, GWAS</text>
+  <text x="78" y="324" font-size="11.5" fill="#334155">• Expression: HPA, GTEx, CELLxGENE, GEO</text>
+  <text x="78" y="342" font-size="11.5" fill="#334155">• Structure &amp; Chem: AlphaFold DB, PDB, ChEMBL</text>
+  <text x="78" y="360" font-size="11.5" fill="#334155">• Clinical &amp; IP: PubMed, ClinicalTrials.gov</text>
+
+  <!-- Input Card C: Private Data & BYOA Algorithms -->
+  <rect x="62" y="392" width="284" height="96" rx="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.2" filter="url(#card-shadow)"/>
+  <text x="78" y="414" font-size="13" font-weight="700" fill="#0F766E">Private Data &amp; BYOA Models</text>
+  <text x="78" y="434" font-size="11.5" fill="#334155">• Internal Assay Tables (.csv, .tsv, .json)</text>
+  <text x="78" y="452" font-size="11.5" fill="#334155">• Proprietary Python / C++ / Rust Scorers</text>
+  <text x="78" y="472" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#0F766E">pde custom ingest | pde custom run</text>
+
+
+  <!-- Arrows from Column 1 to Column 2 -->
+  <line x1="364" y1="203" x2="404" y2="203" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+  <line x1="364" y1="322" x2="404" y2="322" stroke="#1D4ED8" stroke-width="1.8" marker-end="url(#arrow-blue)"/>
+  <line x1="364" y1="440" x2="404" y2="352" stroke="#0F766E" stroke-width="1.8" marker-end="url(#arrow-teal)"/>
+
+
+  <!-- COLUMN 2: SKILL ENGINE & TWO-PHASE EXECUTION (x=408, w=634) -->
+  <rect x="408" y="108" width="634" height="396" rx="8" fill="#F8FAFC" stroke="#94A3B8" stroke-width="1.4"/>
+  <rect x="408" y="108" width="634" height="34" rx="8" fill="#EFF6FF"/>
+  <line x1="408" y1="142" x2="1042" y2="142" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="426" y="130" font-size="12" font-weight="700" fill="#1E3A8A" letter-spacing="0.6">2. SKILL EXECUTION ENGINE (43 SKILLS · 22 SPECIALIST ROLES)</text>
+
+  <!-- Step 2A: Orchestration & Specialist Routing -->
+  <rect x="428" y="156" width="594" height="74" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="444" y="177" font-size="13" font-weight="700" fill="#0F172A">Work-Order Routing &amp; Context Freezing</text>
+  <text x="444" y="195" font-size="11.5" fill="#475569">Science Program Lead &amp; Operations Controller dispatch domain specialists:</text>
+  <!-- Role Pills -->
+  <rect x="444" y="203" width="106" height="20" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="497" y="217" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">Comp. Biologist</text>
+  <rect x="558" y="203" width="114" height="20" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="615" y="217" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">Struct. Biologist</text>
+  <rect x="680" y="203" width="108" height="20" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="734" y="217" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">Med. Chemist</text>
+  <rect x="796" y="203" width="104" height="20" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="848" y="217" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">ADMET / DMPK</text>
+  <rect x="908" y="203" width="96" height="20" rx="4" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="956" y="217" font-size="10.5" font-weight="600" fill="#334155" text-anchor="middle">Toxicologist</text>
+
+  <!-- Down Arrow from Dispatch to Phase 1/Phase 2 -->
+  <line x1="725" y1="230" x2="725" y2="252" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Step 2B: Two-Phase Split (Phase 1 Left, Phase 2 Right) -->
+  <!-- Phase 1 Box -->
+  <rect x="428" y="256" width="278" height="126" rx="6" fill="#FFFFFF" stroke="#1D4ED8" stroke-width="1.4" filter="url(#card-shadow)"/>
+  <rect x="428" y="256" width="278" height="26" rx="6" fill="#EFF6FF"/>
+  <text x="442" y="273" font-size="11.5" font-weight="700" fill="#1E40AF">PHASE 1: ACQUIRE / COMPUTE</text>
+  <text x="442" y="296" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#0F172A">pde &lt;tool&gt; fetch | run | predict</text>
+  <text x="442" y="316" font-size="11.5" fill="#334155">• Queries external API or local binary</text>
+  <text x="442" y="334" font-size="11.5" fill="#334155">• Writes primary records into raw/</text>
+  <text x="442" y="352" font-size="11.5" fill="#334155">• Writes .meta.json (SHA-256 digests</text>
+  <text x="442" y="368" font-size="11.5" fill="#334155">  of inputs, scripts, and ENV_VERSION)</text>
+
+  <!-- Arrow from Phase 1 to Phase 2 -->
+  <line x1="706" y1="319" x2="740" y2="319" stroke="#1D4ED8" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Phase 2 Box -->
+  <rect x="744" y="256" width="278" height="126" rx="6" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.4" filter="url(#card-shadow)"/>
+  <rect x="744" y="256" width="278" height="26" rx="6" fill="#F0FDFA"/>
+  <text x="758" y="273" font-size="11.5" font-weight="700" fill="#0F766E">PHASE 2: OFFLINE ANALYSIS</text>
+  <text x="758" y="296" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#0F172A">pde &lt;tool&gt; analyze (offline)</text>
+  <text x="758" y="316" font-size="11.5" fill="#334155">• Network sockets blocked in Phase 2</text>
+  <text x="758" y="334" font-size="11.5" fill="#334155">• Applies versioned thresholds.py</text>
+  <text x="758" y="352" font-size="11.5" fill="#334155">• Writes .analysis.json with metrics,</text>
+  <text x="758" y="368" font-size="11.5" fill="#334155">  verdicts, and mandatory_relays</text>
+
+  <!-- Down Arrow to Validation Gate -->
+  <line x1="725" y1="382" x2="725" y2="404" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+  <!-- Step 2C: 10-Check Mechanical Validation & Scientific Review Gate -->
+  <rect x="428" y="408" width="594" height="80" rx="6" fill="#FFFFFF" stroke="#334155" stroke-width="1.3" filter="url(#card-shadow)"/>
+  <text x="444" y="430" font-size="13" font-weight="700" fill="#0F172A">10-Check Mechanical Validation Gate &amp; Scientific Review</text>
+  <text x="444" y="449" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#1E40AF">pde validate check &lt;WO-ID&gt;</text>
+  <text x="612" y="449" font-size="11.5" fill="#334155">Verifies every specialist finding before acceptance:</text>
+  <text x="444" y="468" font-size="11" fill="#475569">• SHA-256 sidecar integrity   • Inline {source: raw/...#$.path} JSONPath resolution   • Verbatim mandatory relays</text>
+
+
+  <!-- Arrows from Column 2 to Column 3 -->
+  <line x1="1022" y1="319" x2="1082" y2="230" stroke="#0F766E" stroke-width="1.8" marker-end="url(#arrow-teal)"/>
+  <line x1="1022" y1="448" x2="1082" y2="360" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+
+  <!-- COLUMN 3: STRUCTURED DATA OUTPUTS (x=1086, w=370) -->
+  <rect x="1086" y="108" width="370" height="396" rx="8" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1.2"/>
+  <rect x="1086" y="108" width="370" height="34" rx="8" fill="#F1F5F9"/>
+  <line x1="1086" y1="142" x2="1456" y2="142" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="1104" y="130" font-size="12" font-weight="700" fill="#334155" letter-spacing="0.6">3. DATA OUTPUTS (4-LAYER HIERARCHY)</text>
+
+  <!-- Layer 0 Card -->
+  <rect x="1104" y="156" width="334" height="78" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="1118" y="176" font-size="12.5" font-weight="700" fill="#1E40AF">Layer 0 — Raw Evidence &amp; Sidecars (raw/)</text>
+  <text x="1118" y="194" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#334155">raw/&lt;class&gt;/&lt;id&gt;.json | .cif | .sdf</text>
+  <text x="1118" y="209" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#334155">raw/&lt;class&gt;/&lt;id&gt;.meta.json     (SHA-256)</text>
+  <text x="1118" y="224" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#0F766E">raw/&lt;class&gt;/&lt;id&gt;.analysis.json (Verdict)</text>
+
+  <!-- Layer 1 Card -->
+  <rect x="1104" y="246" width="334" height="78" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="1118" y="266" font-size="12.5" font-weight="700" fill="#0F172A">Layer 1 — Specialist Findings (findings/)</text>
+  <text x="1118" y="283" font-size="11" fill="#475569">Cited reports with JSONPath tags &amp; relays:</text>
+  <text x="1118" y="299" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#1E293B">{source: raw/mpo/series.analysis.json#$.metrics}</text>
+  <text x="1118" y="314" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#B45309">**Relay: `custom.external_algorithm_caveat`**</text>
+
+  <!-- Layer 2 Card -->
+  <rect x="1104" y="336" width="334" height="72" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="1118" y="356" font-size="12.5" font-weight="700" fill="#0F172A">Layer 2 — Program State (program-state/)</text>
+  <text x="1118" y="374" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#334155">active-series.md  ·  liability-tracker.md</text>
+  <text x="1118" y="390" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#334155">decision-log.md   ·  open-questions.md</text>
+
+  <!-- Layer 4 Card -->
+  <rect x="1104" y="420" width="334" height="68" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1" filter="url(#card-shadow)"/>
+  <text x="1118" y="440" font-size="12.5" font-weight="700" fill="#0F172A">Layer 4 — Executive &amp; Gate Dossiers</text>
+  <text x="1118" y="458" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#334155">executive/program-summary.md</text>
+  <text x="1118" y="474" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#0F766E">gates/stage1-gate-package.md &amp; dashboard.html</text>
+
+  <!-- Connector Arrows down to Interactive Dashboard -->
+  <line x1="1270" y1="504" x2="1270" y2="534" stroke="#0F766E" stroke-width="2" marker-end="url(#arrow-teal)"/>
+  <line x1="725" y1="504" x2="725" y2="534" stroke="#475569" stroke-width="1.8" marker-end="url(#arrow)"/>
+
+
+  <!-- ======================================================================= -->
+  <!-- BOTTOM SECTION: UI DASHBOARD ELEMENT PREVIEW (dashboard.html)           -->
+  <!-- ======================================================================= -->
+
+  <!-- Browser / Application Frame -->
+  <rect x="44" y="538" width="1412" height="386" rx="8" fill="#FFFFFF" stroke="#94A3B8" stroke-width="1.5" filter="url(#card-shadow)"/>
+
+  <!-- Dashboard Top Bar -->
+  <rect x="44" y="538" width="1412" height="38" rx="8" fill="#0F172A"/>
+  <rect x="44" y="562" width="1412" height="14" fill="#0F172A"/>
+  <text x="64" y="562" font-size="12.5" font-weight="700" fill="#F8FAFC" letter-spacing="0.5">4. INTERACTIVE UI DASHBOARD (dashboard.html) — MULTI-AGENT LINEAGE &amp; 20 SCIENTIFIC STUDIOS</text>
+  <rect x="1080" y="547" width="166" height="20" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <circle cx="1094" cy="557" r="4" fill="#22C55E"/>
+  <text x="1104" y="561" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="600" fill="#E2E8F0">STANDALONE SNAPSHOT</text>
+  <rect x="1256" y="547" width="182" height="20" rx="4" fill="#1E293B" stroke="#334155" stroke-width="1"/>
+  <text x="1347" y="561" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="600" fill="#93C5FD" text-anchor="middle">10/10 CHECKS VALIDATED</text>
+
+  <!-- LEFT PANE OF DASHBOARD: Multi-Agent Lineage DAG & Control Plane (x=58, w=450) -->
+  <rect x="58" y="588" width="450" height="322" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <rect x="58" y="588" width="450" height="28" rx="6" fill="#F1F5F9"/>
+  <line x1="58" y1="616" x2="508" y2="616" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="72" y="606" font-size="11" font-weight="700" fill="#334155">LEFT PANE: MULTI-AGENT LINEAGE DAG &amp; WORK-ORDER SCORECARD</text>
+
+  <!-- Root Orchestrator Node in DAG -->
+  <rect x="178" y="630" width="210" height="34" rx="5" fill="#1E3A8A" stroke="#1E40AF" stroke-width="1"/>
+  <text x="283" y="645" font-size="11" font-weight="700" fill="#FFFFFF" text-anchor="middle">Science Program Lead</text>
+  <text x="283" y="658" font-size="9.5" fill="#BFDBFE" text-anchor="middle">Stage 1–3 Orchestrator</text>
+
+  <!-- DAG Connectors -->
+  <line x1="230" y1="664" x2="155" y2="692" stroke="#64748B" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="283" y1="664" x2="283" y2="692" stroke="#64748B" stroke-width="1.4" marker-end="url(#arrow)"/>
+  <line x1="336" y1="664" x2="410" y2="692" stroke="#64748B" stroke-width="1.4" marker-end="url(#arrow)"/>
+
+  <!-- Child Specialist Nodes in DAG -->
+  <rect x="74" y="696" width="124" height="42" rx="5" fill="#FFFFFF" stroke="#15803D" stroke-width="1.2"/>
+  <text x="136" y="713" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="middle">WO-001 Genetics</text>
+  <text x="136" y="729" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#15803D" text-anchor="middle">ACCEPTED (10/10)</text>
+
+  <rect x="221" y="696" width="124" height="42" rx="5" fill="#FFFFFF" stroke="#15803D" stroke-width="1.2"/>
+  <text x="283" y="713" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="middle">WO-002 Structure</text>
+  <text x="283" y="729" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#15803D" text-anchor="middle">ACCEPTED (10/10)</text>
+
+  <rect x="368" y="696" width="124" height="42" rx="5" fill="#FFFFFF" stroke="#0F766E" stroke-width="1.2"/>
+  <text x="430" y="713" font-size="10.5" font-weight="700" fill="#0F172A" text-anchor="middle">WO-003 BYOA MPO</text>
+  <text x="430" y="729" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#0F766E" text-anchor="middle">ACCEPTED (10/10)</text>
+
+  <!-- Node Inspector / Frozen Context Snapshot Card -->
+  <rect x="74" y="752" width="418" height="144" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="88" y="771" font-size="11" font-weight="700" fill="#0F172A">Node Inspector: WO-003 (Medicinal Chemist · BYOA CNS Scorer)</text>
+  <line x1="74" y1="779" x2="492" y2="779" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="88" y="797" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#334155">Context:   .pde/control/contexts/WO-003-r1.json (SHA-256 locked)</text>
+  <text x="88" y="814" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#334155">Algorithm: proprietary_cns_mpo_scorer.py (sha256: 8f4c...e91a)</text>
+  <text x="88" y="831" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#15803D">Checks:    [PASS] paths_resolve   [PASS] provenance_valid</text>
+  <text x="88" y="848" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#15803D">           [PASS] source_tags     [PASS] relay_coverage</text>
+  <rect x="88" y="860" width="390" height="24" rx="4" fill="#FEF3C7" stroke="#F59E0B" stroke-width="1"/>
+  <text x="283" y="876" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="600" fill="#92400E" text-anchor="middle">Relays: custom.external_algorithm_caveat | custom.liability_flagged</text>
+
+
+  <!-- RIGHT PANE OF DASHBOARD: 20 Scientific Visualization Studios (x=522, w=920) -->
+  <rect x="522" y="588" width="920" height="322" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+  <rect x="522" y="588" width="920" height="28" rx="6" fill="#F1F5F9"/>
+  <line x1="522" y1="616" x2="1442" y2="616" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="538" y="606" font-size="11" font-weight="700" fill="#334155">RIGHT PANE: 20 SCIENTIFIC VISUALIZATION STUDIOS &amp; DOSSIER VIEWERS</text>
+
+  <!-- Studio Sub-Card 1: Target Genetics & Constraint Studio (x=538, w=286) -->
+  <rect x="538" y="630" width="286" height="266" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="552" y="650" font-size="11.5" font-weight="700" fill="#0F172A">Studio: Target Genetics &amp; Expression</text>
+  <text x="552" y="666" font-size="10" fill="#64748B">EGFR (ENSG00000146648) · gnomad@4.0</text>
+  <line x1="538" y1="674" x2="824" y2="674" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Bar metrics -->
+  <text x="552" y="694" font-size="10.5" fill="#334155">gnomAD pLI (1.00 — Intolerant)</text>
+  <rect x="552" y="700" width="254" height="10" rx="3" fill="#E2E8F0"/>
+  <rect x="552" y="700" width="254" height="10" rx="3" fill="#1D4ED8"/>
+
+  <text x="552" y="728" font-size="10.5" fill="#334155">LOEUF Upper Bound (0.21 &lt; 0.35 cutoff)</text>
+  <rect x="552" y="734" width="254" height="10" rx="3" fill="#E2E8F0"/>
+  <rect x="552" y="734" width="60" height="10" rx="3" fill="#0F766E"/>
+
+  <text x="552" y="762" font-size="10.5" fill="#334155">Open Targets NSCLC Score (0.92)</text>
+  <rect x="552" y="768" width="254" height="10" rx="3" fill="#E2E8F0"/>
+  <rect x="552" y="768" width="234" height="10" rx="3" fill="#15803D"/>
+
+  <text x="552" y="796" font-size="10.5" fill="#334155">HPA Tissue Specificity (tau = 0.48 Broad)</text>
+  <rect x="552" y="802" width="254" height="10" rx="3" fill="#E2E8F0"/>
+  <rect x="552" y="802" width="122" height="10" rx="3" fill="#D97706"/>
+
+  <rect x="552" y="826" width="254" height="56" rx="4" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="562" y="842" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#334155">Source: raw/genomics/EGFR.analysis.json</text>
+  <text x="562" y="858" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#334155">ClinVar Pathogenic: 148 | GWAS Loci: 19</text>
+  <text x="562" y="874" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#15803D">Verdict: STRONG_GENETIC_SUPPORT</text>
+
+
+  <!-- Studio Sub-Card 2: Protein Structure & Pocket Druggability (x=838, w=286) -->
+  <rect x="838" y="630" width="286" height="266" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="852" y="650" font-size="11.5" font-weight="700" fill="#0F172A">Studio: Structure &amp; Pocket Analysis</text>
+  <text x="852" y="666" font-size="10" fill="#64748B">UniProt P00533 · AlphaFold pLDDT &amp; fpocket</text>
+  <line x1="838" y1="674" x2="1124" y2="674" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Clean pLDDT Line Chart -->
+  <rect x="852" y="686" width="258" height="90" rx="4" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="862" y="702" font-size="9.5" font-weight="600" fill="#475569">Per-Residue pLDDT Confidence (Kinase Domain)</text>
+  <!-- Threshold dashed line -->
+  <line x1="862" y1="730" x2="1100" y2="730" stroke="#94A3B8" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="1058" y="725" font-size="8.5" fill="#64748B">70 cutoff</text>
+  <!-- Polyline curve -->
+  <polyline fill="none" stroke="#1D4ED8" stroke-width="2" points="862,760 880,752 898,716 916,712 934,714 952,710 970,713 988,708 1006,711 1024,715 1042,718 1060,712 1078,746 1098,764"/>
+
+  <!-- Pocket Metrics Table -->
+  <text x="852" y="796" font-size="10.5" font-weight="700" fill="#0F172A">Detected Binding Pockets (fpocket@1.0)</text>
+  <text x="852" y="814" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#15803D">Pocket 1 (ATP):  Score 0.86  Vol 742 A³ [PASS]</text>
+  <text x="852" y="831" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#475569">Pocket 2 (Allo): Score 0.54  Vol 410 A³ [MOD]</text>
+  <text x="852" y="848" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#64748B">Vina Pose: -9.4 kcal/mol (MET793 H-bond)</text>
+
+  <rect x="852" y="858" width="258" height="24" rx="4" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="981" y="874" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" fill="#1E40AF" text-anchor="middle">Relay: fpocket.druggability_is_not_affinity</text>
+
+
+  <!-- Studio Sub-Card 3: MedChem, ADMET & BYOA Ranking (x=1138, w=288) -->
+  <rect x="1138" y="630" width="288" height="266" rx="5" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="1152" y="650" font-size="11.5" font-weight="700" fill="#0F172A">Studio: MedChem, ADMET &amp; BYOA MPO</text>
+  <text x="1152" y="666" font-size="10" fill="#64748B">custom-evaluation@1.0 · cns-lead-series.custom.json</text>
+  <line x1="1138" y1="674" x2="1426" y2="674" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Candidate Leaderboard Table with explicit column x-coordinates -->
+  <rect x="1152" y="684" width="260" height="20" rx="3" fill="#F1F5F9"/>
+  <text x="1158" y="698" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#334155">ID</text>
+  <text x="1222" y="698" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#334155">Kp,uu</text>
+  <text x="1268" y="698" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#334155">ER</text>
+  <text x="1302" y="698" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#334155">MPO</text>
+  <text x="1358" y="698" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#334155">STATUS</text>
+
+  <!-- Row 1 -->
+  <text x="1158" y="718" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-906</text>
+  <text x="1222" y="718" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.74</text>
+  <text x="1268" y="718" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">1.1</text>
+  <text x="1302" y="718" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.922</text>
+  <text x="1364" y="718" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#15803D">PASS</text>
+
+  <!-- Row 2 -->
+  <text x="1158" y="736" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-901</text>
+  <text x="1222" y="736" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.68</text>
+  <text x="1268" y="736" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">1.3</text>
+  <text x="1302" y="736" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.848</text>
+  <text x="1364" y="736" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#15803D">PASS</text>
+
+  <!-- Row 3 -->
+  <text x="1158" y="754" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-902</text>
+  <text x="1222" y="754" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.54</text>
+  <text x="1268" y="754" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">1.7</text>
+  <text x="1302" y="754" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.708</text>
+  <text x="1364" y="754" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#15803D">PASS</text>
+
+  <!-- Row 4 -->
+  <text x="1158" y="772" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-903</text>
+  <text x="1222" y="772" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.35</text>
+  <text x="1268" y="772" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">2.4</text>
+  <text x="1302" y="772" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.495</text>
+  <text x="1364" y="772" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#D97706">WARN</text>
+
+  <!-- Row 5 -->
+  <text x="1158" y="790" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-904</text>
+  <text x="1222" y="790" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.24</text>
+  <text x="1268" y="790" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">3.1</text>
+  <text x="1302" y="790" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.312</text>
+  <text x="1364" y="790" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#DC2626">FAIL</text>
+
+  <!-- Row 6 -->
+  <text x="1158" y="808" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">CMPD-905</text>
+  <text x="1222" y="808" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.08</text>
+  <text x="1268" y="808" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">6.8</text>
+  <text x="1302" y="808" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" fill="#0F172A">0.156</text>
+  <text x="1364" y="808" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="700" fill="#DC2626">FAIL</text>
+
+  <line x1="1152" y1="818" x2="1412" y2="818" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1152" y="835" font-size="10" fill="#334155">• PAINS / Brenk Alerts: 0 Structural Alerts</text>
+  <text x="1152" y="850" font-size="10" fill="#334155">• ADMET: High Permeability, Low hERG Risk</text>
+  <rect x="1152" y="858" width="260" height="24" rx="4" fill="#F0FDFA" stroke="#99F6E4" stroke-width="1"/>
+  <text x="1162" y="874" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9.5" font-weight="600" fill="#0F766E">Top Lead: CMPD-906 (cns_bbb_score = 0.922)</text>
+
+</svg>

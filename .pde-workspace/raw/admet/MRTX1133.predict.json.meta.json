@@ -1,0 +1,22 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pde admet predict MRTX1133 --json",
+  "cli_version": "0.3.0",
+  "created_at": "2026-10-07T03:39:25Z",
+  "work_order_id": "WO-003",
+  "outputs": [
+    {
+      "path": "raw/admet/MRTX1133.predict.json",
+      "sha256": "b44c9f2bd6788d8fe5d60dfe6eb66e63351f9002d28531a58dd4571268bd4d71",
+      "bytes": 488
+    }
+  ],
+  "mandatory_relays": [
+    {
+      "code": "LOW_ORAL_PERMEABILITY_PRODRUG_EVAL",
+      "target_role": "admet-dmpk-scientist",
+      "detail": "Caco-2 Papp=2.4e-6 cm/s and F%=11.5% require phenolic ester prodrug or IV/SC formulation strategy."
+    }
+  ]
+}

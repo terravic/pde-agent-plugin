@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/gtex/KRAS.tissue.json",
+  "source_sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f",
+  "threshold_set": "expression-v1",
+  "work_order_id": "WO-001",
+  "analyzed_at": "2026-10-07T03:39:12Z",
+  "verdict": "pass",
+  "summary": "Broad baseline WT expression across GI tract and lung (max 48.5 TPM in Colon); confirms need for G12D salt-bridge selectivity.",
+  "thresholds_applied": {
+    "high_expression_tpm": 50.0
+  },
+  "metrics": {
+    "max_tpm": 48.5,
+    "pancreas_tpm": 22.4
+  },
+  "mandatory_relays": [
+    {
+      "code": "GI_MUCOSA_WT_EXPRESSION_MONITOR",
+      "target_role": "preclinical-toxicologist",
+      "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."
+    }
+  ]
+}

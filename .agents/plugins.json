@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    {
+      "name": "pharmakon-discovery-engine",
+      "path": ".agents/plugins/pharmakon-discovery-engine",
+      "enabled": true
+    }
+  ]
+}

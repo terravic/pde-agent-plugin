@@ -1,0 +1,172 @@
+{
+  "work_order_id": "WO-003",
+  "work_order_revision": 1,
+  "run_id": "RUN-003",
+  "validated_at": "2026-10-07T03:39:28Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "pde.compounds",
+          "pde.sar",
+          "pde.admet"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-003-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 3
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 3
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 3
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 1,
+        "codes_addressed": 1,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "result": "skip",
+      "status": "skip",
+      "kind": null,
+      "detail": "program.yaml not present \u2014 check deferred to a future program.yaml configuration issue"
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 7
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/admet/MRTX1133.predict.json $.mpo_score}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.74",
+          "actual_value": "0.74",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/MRTX1133.predict.json $.mw}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "600.6",
+          "actual_value": "600.6",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/sar/MRTX1133_series.brics.json $.n_fragments}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/sar/MRTX1133_series.brics.json $.fragments[0].kd_contribution_kcal}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.8",
+          "actual_value": "-4.8",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/MRTX1133.predict.json $.predictions.hlm_t12_min}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "68.0",
+          "actual_value": "68.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/MRTX1133.predict.json $.predictions.herg_ic50_um}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "14.2",
+          "actual_value": "14.2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/MRTX1133.predict.json $.predictions.caco2_papp_1e6}",
+          "file": "findings/medicinal-chemistry/mrtx1133-sar-admet.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.4",
+          "actual_value": "2.4",
+          "detail": "values match within tolerance"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

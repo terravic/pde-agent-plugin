@@ -1,0 +1,42 @@
+{
+  "id": "WO-003",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Profile lead series MRTX1133 3D conformer, BRICS fragment SAR, and 5-axis ADMET properties.",
+  "requested_role": "medicinal-chemist",
+  "stage": 2,
+  "cycle": 1,
+  "context": {
+    "content": "Profile lead series MRTX1133 3D conformer, BRICS fragment SAR, and 5-axis ADMET properties.",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-003-r1.json",
+    "snapshot_sha256": "e447d7c3cb881fb09346e5195c7d7f0bd1c77b8c7a9028dad68cb24e0fc26d61"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "pde.compounds",
+      "pde.sar",
+      "pde.admet"
+    ],
+    "layer_1": [
+      "findings/medicinal-chemistry/mrtx1133-sar-admet.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-07T03:39:21Z",
+  "committed_at": "2026-10-07T03:39:21Z",
+  "correction_cycle": 1
+}

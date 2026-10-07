@@ -1,0 +1,8 @@
+{
+  "work_order_id": "WO-001",
+  "revision": 1,
+  "artifact_links": [],
+  "content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.",
+  "content_sha256": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61",
+  "created_at": "2026-10-07T03:39:10Z"
+}

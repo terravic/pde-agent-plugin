@@ -1,0 +1,17 @@
+{
+  "resource": "af3",
+  "resource_class": "af3",
+  "state": "released",
+  "work_order_id": "WO-002",
+  "holder_wo_id": "WO-002",
+  "work_order_revision": 1,
+  "run_id": "RUN-002",
+  "holder_run_id": "RUN-002",
+  "holder_agent": "pde-structural-biologist",
+  "granted_at": "2026-10-07T03:39:18Z",
+  "acquired_at": "2026-10-07T03:39:18Z",
+  "ttl_minutes": 60,
+  "expires_at": "2026-10-07T03:39:18Z",
+  "extensions": 0,
+  "released_at": "2026-10-07T03:39:20Z"
+}

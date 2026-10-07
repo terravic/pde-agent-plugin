@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/structures/KRAS_G12D.afdb.json",
+  "source_sha256": "872d29ce3049a87a3ceab6184b39eb4b97b1274e7c7872327d9c3538ccf87e51",
+  "threshold_set": "structure-v1",
+  "work_order_id": "WO-002",
+  "analyzed_at": "2026-10-07T03:39:18Z",
+  "verdict": "pass",
+  "summary": "High-confidence G-domain fold (mean pLDDT 91.4, pTM 0.91) with well-defined Switch-II pocket.",
+  "thresholds_applied": {
+    "min_mean_plddt": 70.0,
+    "min_pocket_plddt": 75.0
+  },
+  "metrics": {
+    "mean_plddt": 91.4,
+    "switch_ii_mean_plddt": 88.6
+  },
+  "mandatory_relays": [
+    {
+      "code": "SWITCH_II_CONFORMATIONAL_PLASTICITY",
+      "target_role": "computational-chemist",
+      "detail": "Switch-II loop (residues 58-72, mean pLDDT 88.6) requires induced-fit receptor ensemble."
+    }
+  ]
+}

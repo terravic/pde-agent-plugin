@@ -1,0 +1,142 @@
+{
+  "work_order_id": "WO-005",
+  "work_order_revision": 1,
+  "run_id": "RUN-005",
+  "validated_at": "2026-10-07T03:39:43Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "pde.hypotheses"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-005-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 1
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 1
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 1
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 1,
+        "codes_addressed": 1,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "result": "skip",
+      "status": "skip",
+      "kind": null,
+      "detail": "program.yaml not present \u2014 check deferred to a future program.yaml configuration issue"
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 4
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/hypotheses/kras_resistance.tournament.json $.n_hypotheses}",
+          "file": "findings/computational-biology/kras-hypex-tournament.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "4.0",
+          "actual_value": "4",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/hypotheses/kras_resistance.tournament.json $.top_elo}",
+          "file": "findings/computational-biology/kras-hypex-tournament.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1648.0",
+          "actual_value": "1648",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/hypotheses/kras_resistance.tournament.json $.hypotheses[0].win_rate}",
+          "file": "findings/computational-biology/kras-hypex-tournament.md",
+          "line": 4,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.917",
+          "actual_value": "0.917",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/hypotheses/kras_resistance.tournament.json $.hypotheses[1].elo}",
+          "file": "findings/computational-biology/kras-hypex-tournament.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1572.0",
+          "actual_value": "1572",
+          "detail": "values match within tolerance"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

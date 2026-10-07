@@ -1,0 +1,43 @@
+{
+  "ligand": "MRTX1133",
+  "receptor": "KRAS_G12D",
+  "n_contacts": 6,
+  "contacts": [
+    {
+      "residue": "ASP12",
+      "interaction": "Salt Bridge / Ionic H-Bond",
+      "distance_a": 2.74,
+      "energy_kcal": -4.8
+    },
+    {
+      "residue": "GLY60",
+      "interaction": "Backbone H-Bond",
+      "distance_a": 2.98,
+      "energy_kcal": -1.9
+    },
+    {
+      "residue": "GLU62",
+      "interaction": "Water-Mediated H-Bond",
+      "distance_a": 3.12,
+      "energy_kcal": -1.6
+    },
+    {
+      "residue": "ARG68",
+      "interaction": "Cation-Pi / Stacking",
+      "distance_a": 3.54,
+      "energy_kcal": -2.1
+    },
+    {
+      "residue": "HIS95",
+      "interaction": "Aromatic Groove Contact",
+      "distance_a": 3.68,
+      "energy_kcal": -1.8
+    },
+    {
+      "residue": "TYR96",
+      "interaction": "Pi-Pi T-Stacking",
+      "distance_a": 3.72,
+      "energy_kcal": -2.4
+    }
+  ]
+}
