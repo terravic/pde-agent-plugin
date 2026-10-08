@@ -2,10 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/pocket/KRAS_G12D_SIIP.pockets.json",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
   "source_sha256": "22bd4f3d3ea69d1c8b87611f5efbf4a2c6279deb1e33db2048031a4fd4c80683",
   "threshold_set": "pocket-v1",
   "work_order_id": "WO-002",
-  "analyzed_at": "2026-10-07T03:39:18Z",
+  "analyzed_at": "2026-10-08T19:43:54Z",
   "verdict": "pass",
   "summary": "Switch-II allosteric pocket (POCKET_1_SIIP) is highly druggable (score 0.84, volume 542.6 A^3) with direct access to Asp12 carboxylate.",
   "thresholds_applied": {

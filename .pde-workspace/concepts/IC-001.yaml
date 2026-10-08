@@ -1,0 +1,7 @@
+id: IC-001
+title: Non-Covalent KRAS G12D Switch-II Pocket Inhibitor (MRTX1133 Core)
+target: KRAS G12D
+modality: small_molecule
+indication: Pancreatic Ductal Adenocarcinoma (PDAC)
+mechanism: Asp12 bidentate salt-bridge stabilization of GDP-bound KRAS G12D Switch-II pocket
+status: active

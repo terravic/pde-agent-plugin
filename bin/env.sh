@@ -11,9 +11,13 @@ else
 fi
 export PDE_NO_DIRTY_WARNING=1
 if [ -z "${PDE_PROJECT:-}" ]; then
-  export PDE_PROJECT="$PDE_ROOT/.pde-workspace/default-program"
-  if [ ! -d "$PDE_PROJECT/.pde" ]; then
-    mkdir -p "$PDE_ROOT/.pde-workspace"
-    python3 -m pde.cli init "$PDE_PROJECT" >/dev/null 2>&1 || true
+  if [ -d "$PDE_ROOT/.pde-workspace/.pde" ] && [ -d "$PDE_ROOT/.pde-workspace/raw" ] && [ -n "$(ls -A "$PDE_ROOT/.pde-workspace/raw" 2>/dev/null)" ]; then
+    export PDE_PROJECT="$PDE_ROOT/.pde-workspace"
+  else
+    export PDE_PROJECT="$PDE_ROOT/.pde-workspace/default-program"
+    if [ ! -d "$PDE_PROJECT/.pde" ]; then
+      mkdir -p "$PDE_ROOT/.pde-workspace"
+      python3 -m pde.cli init "$PDE_PROJECT" >/dev/null 2>&1 || true
+    fi
   fi
 fi

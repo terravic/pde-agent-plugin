@@ -143,6 +143,10 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     assert "window.__PDE_BUNDLE__" in html_text
     assert "KRAS-G12D-Selective-Inhibitor" in html_text
     assert "buildLineageForest" in html_text
+    assert "renderPlotWithFallback" in html_text
+    assert "renderSvgChartFallback" in html_text
+    assert "canUseWebGL" in html_text
+    assert "renderCanvas3DMoleculeFallback" in html_text
     assert "renderEmbeddedBioactivityStudio" in html_text
     assert "renderEmbeddedPkStudio" in html_text
     assert "renderEmbeddedToxStudio" in html_text
@@ -150,5 +154,6 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     assert "renderEmbeddedOmicsStudio" in html_text
     assert "renderEmbeddedCompetitiveStudio" in html_text
     assert "renderRetrosAndEnv" in html_text
+    assert agent_sys["environment"]["bootstrap_ready"] is True
     assert out_path == out_html
 

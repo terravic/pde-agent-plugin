@@ -2,10 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/bioactivity/KRAS_G12D_panel.json",
-  "source_sha256": "51859e1004c75581e0277d713183e68a4ced240de42e992b77360997a96a539b",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "source_sha256": "dc765d852fbfdafab90209b84d33d90d6da7f091d80800e4713b0ae77dbb7fa0",
   "threshold_set": "bioactivity-v1",
   "work_order_id": "WO-004",
-  "analyzed_at": "2026-10-07T03:39:34Z",
+  "analyzed_at": "2026-10-08T19:44:12Z",
   "verdict": "pass",
   "summary": "SPR confirms KRAS G12D Kd=0.2 nM with 725-fold selectivity over wild-type KRAS (Kd=145 nM).",
   "thresholds_applied": {

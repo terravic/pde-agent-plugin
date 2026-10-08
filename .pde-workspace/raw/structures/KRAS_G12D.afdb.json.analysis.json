@@ -2,10 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/structures/KRAS_G12D.afdb.json",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
   "source_sha256": "872d29ce3049a87a3ceab6184b39eb4b97b1274e7c7872327d9c3538ccf87e51",
   "threshold_set": "structure-v1",
   "work_order_id": "WO-002",
-  "analyzed_at": "2026-10-07T03:39:18Z",
+  "analyzed_at": "2026-10-08T19:43:54Z",
   "verdict": "pass",
   "summary": "High-confidence G-domain fold (mean pLDDT 91.4, pTM 0.91) with well-defined Switch-II pocket.",
   "thresholds_applied": {

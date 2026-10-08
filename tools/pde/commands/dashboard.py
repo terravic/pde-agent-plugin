@@ -1786,24 +1786,40 @@ def build_dashboard_html(
             pass
 
     # When building for an active workspace inside the repo without a custom output_path,
-    # also keep the top-level <repo_root>/dashboard.html updated in place.
+    # also keep the top-level <repo_root>/dashboard.html updated in place (unless this workspace
+    # is completely empty and <repo_root>/dashboard.html already holds a populated workspace).
     repo_root = _repo_root()
     if output_path is None and root.is_relative_to(repo_root):
         repo_dash = repo_root / "dashboard.html"
         if repo_dash.resolve() != target_path.resolve():
-            try:
-                with tempfile.NamedTemporaryFile(
-                    "w",
-                    encoding="utf-8",
-                    dir=str(repo_root),
-                    delete=False,
-                    suffix=".tmp.html",
-                ) as rtmp:
-                    rtmp.write(rendered)
-                    rtmp_path = Path(rtmp.name)
-                os.replace(rtmp_path, repo_dash)
-            except OSError:
-                pass
+            summary_counts = bundle.get("summary_counts", {})
+            is_empty_ws = (
+                summary_counts.get("n_artifacts", 0) == 0
+                and summary_counts.get("n_work_orders", 0) == 0
+                and summary_counts.get("n_findings", 0) == 0
+            )
+            should_sync_root = True
+            if is_empty_ws and repo_dash.is_file():
+                try:
+                    existing_text = repo_dash.read_text(encoding="utf-8", errors="ignore")
+                    if '"n_artifacts": 0' not in existing_text and '"n_artifacts":0' not in existing_text:
+                        should_sync_root = False
+                except OSError:
+                    pass
+            if should_sync_root:
+                try:
+                    with tempfile.NamedTemporaryFile(
+                        "w",
+                        encoding="utf-8",
+                        dir=str(repo_root),
+                        delete=False,
+                        suffix=".tmp.html",
+                    ) as rtmp:
+                        rtmp.write(rendered)
+                        rtmp_path = Path(rtmp.name)
+                    os.replace(rtmp_path, repo_dash)
+                except OSError:
+                    pass
 
     return target_path, bundle
 

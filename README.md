@@ -355,14 +355,25 @@ Every workflow executed by `pde-agent-plugin` enforces four scientific integrity
 
 ## Technical Setup & CLI Usage
 
-### 1. Environment Initialization
+### 1. Environment Provisioning & Initialization (Ubuntu Linux & macOS)
 
-Activate the local Python virtual environment and add `./bin` to `PATH`:
+Whether you are running in **Antigravity on Ubuntu Linux** or **Gemini Enterprise on macOS**, run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI binaries (`bin/hypex`, `bin/elo`, `bin/prox`):
 
 ```bash
+# 1. Check host prerequisites (python3>=3.11, venv/uv, optional go)
+./tools/bootstrap-preflight.sh
+
+# 2. Install/update .venv + [science] stack + Hypex binaries and stamp ENV_VERSION
+./tools/install.sh
+
+# 3. Activate the environment and verify readiness
 source ./bin/env.sh
 ./bin/pde doctor
 ```
+
+> **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux vs. macOS):**
+> - **macOS (Gemini Enterprise / Safari / Chrome):** Uses hardware-accelerated WebGL (`3Dmol.js`) for 3D molecular studios and `Plotly.js` for 2D scientific charts automatically.
+> - **Ubuntu Linux (Antigravity / Electron Webviews / Headless X11 or Wayland):** If hardware WebGL is disabled in the embedded Linux webview or external CDN scripts are restricted by Content Security Policy, `dashboard.html` automatically falls back to its built-in **Interactive HTML5 Canvas2D 3D Engine** (supporting drag-to-rotate, scroll-to-zoom, residue/atom hover inspection, and `Cartoon` / `Stick` / `Sphere` styles) and **Inline SVG Chart Renderer**. You can also manually switch between `Auto (WebGL/Canvas)` and `Canvas 3D` at any time using the **Engine** button in the 3D studio toolbar.
 
 ### 2. Two-Phase CLI Examples
 

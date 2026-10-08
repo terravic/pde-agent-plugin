@@ -3,7 +3,8 @@
   "record_type": "provenance",
   "command": "pde compound conformer MRTX1133 --json",
   "cli_version": "0.3.0",
-  "created_at": "2026-10-07T03:39:25Z",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "created_at": "2026-10-08T19:44:02Z",
   "work_order_id": "WO-003",
   "outputs": [
     {

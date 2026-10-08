@@ -3,13 +3,14 @@
   "record_type": "provenance",
   "command": "pde assay fetch MRTX1133 --json",
   "cli_version": "0.3.0",
-  "created_at": "2026-10-07T03:39:34Z",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "created_at": "2026-10-08T19:44:12Z",
   "work_order_id": "WO-004",
   "outputs": [
     {
       "path": "raw/bioactivity/KRAS_G12D_panel.json",
-      "sha256": "51859e1004c75581e0277d713183e68a4ced240de42e992b77360997a96a539b",
-      "bytes": 134
+      "sha256": "dc765d852fbfdafab90209b84d33d90d6da7f091d80800e4713b0ae77dbb7fa0",
+      "bytes": 788
     }
   ],
   "mandatory_relays": []

@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [ -d "$SCRIPT_DIR/../tools/vendor" ]; then
+  ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+else
+  ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
+PROX_DIR="$ROOT_DIR/tools/vendor/hypex/hypothesis-explorer/tools/prox"
+PY_BIN="$ROOT_DIR/.venv/bin/python"
+if [ ! -x "$PY_BIN" ]; then
+  PY_BIN="python3"
+fi
+export PYTHONPATH="$PROX_DIR:${PYTHONPATH:-}"
+exec "$PY_BIN" -c "import sys; from prox.cli import main; sys.exit(main())" "$@"

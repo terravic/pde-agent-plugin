@@ -49,6 +49,11 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _has_raw_artifacts(workspace: Path) -> bool:
+    raw_dir = workspace / "raw"
+    return (workspace / ".pde").is_dir() and raw_dir.is_dir() and any(raw_dir.rglob("*.meta.json"))
+
+
 def resolve_project_root(project_dir: str | Path | None = None) -> Path:
     """Resolve and initialize the active PDE project workspace root."""
     if project_dir:
@@ -56,7 +61,12 @@ def resolve_project_root(project_dir: str | Path | None = None) -> Path:
     elif os.environ.get("PDE_PROJECT"):
         root = Path(os.environ["PDE_PROJECT"]).expanduser().resolve()
     else:
-        root = (REPO_ROOT / ".pde-workspace" / "default-program").resolve()
+        default_prog = (REPO_ROOT / ".pde-workspace" / "default-program").resolve()
+        parent_ws = (REPO_ROOT / ".pde-workspace").resolve()
+        if not _has_raw_artifacts(default_prog) and _has_raw_artifacts(parent_ws):
+            root = parent_ws
+        else:
+            root = default_prog
 
     if not (root / ".pde").is_dir():
         root.mkdir(parents=True, exist_ok=True)

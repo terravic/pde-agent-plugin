@@ -10,7 +10,7 @@
     "content": "Characterize KRAS G12D structure confidence (pLDDT/PAE) and Switch-II pocket (SII-P) druggability.",
     "artifact_links": [],
     "snapshot": "contexts/WO-002-r1.json",
-    "snapshot_sha256": "9777b574790e54f40045e189a607ce7c6982966619815ab302757c4a468cff3d"
+    "snapshot_sha256": "0d2405096a7ddc22d35b5cf13ceadf6239b93a0f90e7fc007e859087f01bf541"
   },
   "dependencies": [],
   "capabilities": [],
@@ -35,6 +35,6 @@
   "priority": "normal",
   "resource_class": "af3",
   "report_to": "discovery-lead",
-  "created_at": "2026-10-07T03:39:15Z",
-  "committed_at": "2026-10-07T03:39:15Z"
+  "created_at": "2026-10-08T19:43:51Z",
+  "committed_at": "2026-10-08T19:43:51Z"
 }

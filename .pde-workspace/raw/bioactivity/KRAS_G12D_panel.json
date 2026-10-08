@@ -3,5 +3,40 @@
   "kras_g12d_kd_nm": 0.2,
   "kras_wt_kd_nm": 145.0,
   "selectivity_fold": 725.0,
-  "p_erk_ic50_nm": 1.8
+  "p_erk_ic50_nm": 1.8,
+  "on_target": {
+    "target": "KRAS G12D",
+    "ic50_nm": 0.2
+  },
+  "off_targets": [
+    {
+      "target": "KRAS WT",
+      "ic50_nm": 145.0
+    },
+    {
+      "target": "HRAS WT",
+      "ic50_nm": 520.0
+    },
+    {
+      "target": "NRAS WT",
+      "ic50_nm": 610.0
+    }
+  ],
+  "selectivity_ratios": [
+    {
+      "off_target": "KRAS WT",
+      "selectivity_fold": 725.0,
+      "margin_class": "high (>100x)"
+    },
+    {
+      "off_target": "HRAS WT",
+      "selectivity_fold": 2600.0,
+      "margin_class": "high (>100x)"
+    },
+    {
+      "off_target": "NRAS WT",
+      "selectivity_fold": 3050.0,
+      "margin_class": "high (>100x)"
+    }
+  ]
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PDE Unified Mission Control &amp; Scientific Dashboard — default-program</title>
+  <title>PDE Unified Mission Control &amp; Scientific Dashboard — KRAS-G12D-Selective-Inhibitor</title>
   <!-- Scientific & Math Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/3dmol@2.4.2/build/3Dmol-min.js"></script>
@@ -353,7 +353,7 @@
 </head>
 <body>
   <!-- Embedded Single-File PDE Bundle -->
-  <script id="pde-bundle-data" type="application/json">{"program": {"name": "default-program", "target": "", "indication": "", "modality": "", "stage": "Stage 0–1 Discovery", "project_root": ".pde-workspace/default-program", "cli_version": "0.3.0", "generated_at": "2026-10-08T17:21:13Z", "summary_metrics": {"n_agents": 4, "n_roles_available": 22, "n_work_orders": 0, "n_runs": 0, "n_validated": 0, "validation_pass_rate": 100.0, "total_checks_passed": 0, "total_checks_run": 0, "n_artifacts": 0, "n_findings": 0, "n_relays": 0, "n_relays_addressed": 0, "n_active_leases": 0, "n_concepts": 0, "n_assessments": 0, "n_decisions": 0, "n_retrospectives": 0}, "standalone_mode": true}, "agent_system": {"roles_catalog": {"admet-dmpk-scientist": {"role": "admet-dmpk-scientist", "display_name": "Admet Dmpk Scientist", "description": "ADMET/DMPK scientist for pharmacokinetic profiling, metabolite identification, and drug-drug interaction prediction", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "bioactivity-landscape", "in-vivo-pk-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "bootstrapper": {"role": "bootstrapper", "display_name": "Bootstrapper", "description": "Short-lived agent that provisions the PDE tools environment, runs doctor verification, and reports readiness", "category": "Operations", "skills": ["pharmakon-discovery-engine", "artifact-conventions"], "harness_config": "default"}, "computational-biologist": {"role": "computational-biologist", "display_name": "Computational Biologist", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "category": "Specialist", "skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "harness_config": "default"}, "computational-chemist": {"role": "computational-chemist", "display_name": "Computational Chemist", "description": "Computational chemist for virtual screening, molecular docking, cheminformatics, and QSAR modeling", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "compound-property-profile", "binding-mode-analysis", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "experimental-biologist": {"role": "experimental-biologist", "display_name": "Experimental Biologist", "description": "Experimental biologist for assay design, high-throughput screening, CRISPR validation, and cellular pharmacology", "category": "Specialist", "skills": ["citation-resolution", "bioactivity-landscape", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "finding-validator": {"role": "finding-validator", "display_name": "Finding Validator", "description": "Mechanical finding validator — checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "category": "Quality Gate", "skills": ["artifact-conventions"], "harness_config": "default"}, "head-of-discovery": {"role": "head-of-discovery", "display_name": "Head Of Discovery", "description": "Head of Discovery — persistent strategic advisor that monitors program trajectory and optionally counsels the Science Program Lead; holds no decision authority, blocks nothing, gates nothing", "category": "Advisory", "skills": ["artifact-conventions"], "harness_config": "default"}, "hypex-evolution": {"role": "hypex-evolution", "display_name": "Hypex Evolution", "description": "Hypothesis Evolution Agent - refines and combines tournament hypotheses using explicit lineage-preserving operators", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "evolution-operators", "hypothesis-schema", "hypex-tool-setup"], "harness_config": "default"}, "hypex-generation": {"role": "hypex-generation", "display_name": "Hypex Generation", "description": "Hypothesis Generation Agent — explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "hypothesis-schema", "debate-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-meta-review": {"role": "hypex-meta-review", "display_name": "Hypex Meta Review", "description": "Hypothesis Meta-Review Agent - synthesizes reviews into epoch steering and the final PDE research report", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "meta-review-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-proximity": {"role": "hypex-proximity", "display_name": "Hypex Proximity", "description": "Hypothesis Proximity Agent - clusters hypotheses and adjudicates near-duplicate candidates", "category": "Hypex Graph", "skills": ["artifact-conventions", "proximity-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-reflection": {"role": "hypex-reflection", "display_name": "Hypex Reflection", "description": "Hypothesis Reflection Agent — reviews hypotheses on correctness, novelty, testability, safety, goal alignment, and constraint compliance; screens for dual-use biosafety risk", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "review-rubric", "safety-screen", "hypex-tool-setup"], "harness_config": "default"}, "hypex-supervisor": {"role": "hypex-supervisor", "display_name": "Hypex Supervisor", "description": "Hypothesis-Explorer Supervisor - orchestrates PDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph", "category": "Hypex Graph", "skills": ["artifact-conventions", "hypothesis-run-corpus", "run-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-tournament": {"role": "hypex-tournament", "display_name": "Hypex Tournament", "description": "Hypothesis Tournament Agent — runs pairwise tournament matches between hypotheses, writes match records, and triggers Elo rating recomputation", "category": "Hypex Graph", "skills": ["artifact-conventions", "elo-tournament", "debate-protocol", "review-rubric", "hypex-tool-setup"], "harness_config": "default"}, "medicinal-chemist": {"role": "medicinal-chemist", "display_name": "Medicinal Chemist", "description": "Medicinal chemist for SAR analysis, analog design, scaffold optimization, and drug-likeness assessment", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "preclinical-toxicologist": {"role": "preclinical-toxicologist", "display_name": "Preclinical Toxicologist", "description": "Preclinical toxicologist for safety pharmacology, toxicology study design, and therapeutic index assessment", "category": "Specialist", "skills": ["tissue-expression-profile", "target-genetic-evidence", "preclinical-safety-assessment", "compound-property-profile", "admet-property-prediction", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "project-curator": {"role": "project-curator", "display_name": "Project Curator", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "category": "Presentation", "skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "harness_config": "default"}, "regulatory-scientist": {"role": "regulatory-scientist", "display_name": "Regulatory Scientist", "description": "Regulatory scientist for IND dossier assembly, eCTD compliance, and FDA/EMA regulatory strategy", "category": "Specialist", "skills": ["citation-resolution", "preclinical-safety-assessment", "in-vivo-pk-analysis", "compound-property-profile", "artifact-conventions"], "harness_config": "default"}, "research-operations-controller": {"role": "research-operations-controller", "display_name": "Research Operations Controller", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "harness_config": "default"}, "science-program-lead": {"role": "science-program-lead", "display_name": "Science Program Lead", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "harness_config": "default"}, "scientific-reviewer": {"role": "scientific-reviewer", "display_name": "Scientific Reviewer", "description": "Independent scientific reviewer — re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject", "category": "Quality Gate", "skills": ["citation-resolution", "tournament-corpus", "citation-verification", "artifact-conventions"], "harness_config": "default"}, "structural-biologist": {"role": "structural-biologist", "display_name": "Structural Biologist", "description": "Structural biologist for protein structure analysis, druggability assessment, and binding mode interpretation", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "binding-mode-analysis", "artifact-conventions"], "harness_config": "default"}}, "all_10_checks": [{"name": "deliverables_exist", "kind": "COMPLETENESS"}, {"name": "report_headings", "kind": "FORMAT"}, {"name": "paths_resolve", "kind": "COMPLETENESS"}, {"name": "provenance_valid", "kind": "DATA_INTEGRITY"}, {"name": "analysis_citations", "kind": "DATA_INTEGRITY"}, {"name": "relay_coverage", "kind": "COMPLETENESS"}, {"name": "version_policy", "kind": "CONSISTENCY"}, {"name": "findings_integrity", "kind": "DATA_INTEGRITY"}, {"name": "source_tags_resolve", "kind": "DATA_INTEGRITY"}, {"name": "unrecognized_json", "kind": "COMPLETENESS"}], "nodes": [{"id": "user", "name": "Scientist / User", "role": "user", "category": "User", "parentId": null, "ancestry": [], "state": "active", "wo_state": "active", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Program Charter & Discovery Objective", "description": "Principal Investigator / Interactive User Session", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard"], "validation": null, "deliverables": []}, {"id": "science-program-lead", "name": "Science Program Lead", "role": "science-program-lead", "category": "Orchestrator", "parentId": "user", "ancestry": ["user"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions.", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "validation": null, "deliverables": ["program-state/decision-log.md", "program-state/liability-tracker.md", "program-state/active-series.md", "program-state/open-questions.md", "executive/program-summary.md"]}, {"id": "research-operations-controller", "name": "Research Ops Controller", "role": "research-operations-controller", "category": "Orchestrator", "parentId": "science-program-lead", "ancestry": ["user", "science-program-lead"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Commit work orders, freeze context snapshots, manage single-flight resource leases, and enforce 10-check mechanical validation.", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "validation": null, "deliverables": [".pde/control/events.ndjson"]}, {"id": "project-curator-dashboard", "name": "Project Curator (Dashboard)", "role": "project-curator", "category": "Presentation", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "succeeded", "wo_state": "published", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Compile Unified Multi-Agent Graph + 14 PDE Scientific Viewers into Interactive Dashboard.", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "injected_skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "validation": null, "deliverables": ["dashboard.html"]}], "edges": [{"parentId": "user", "childId": "science-program-lead", "label": "charter", "state": "idle"}, {"parentId": "science-program-lead", "childId": "research-operations-controller", "label": "cohort-dispatch", "state": "idle"}, {"parentId": "research-operations-controller", "childId": "project-curator-dashboard", "label": "dashboard-build", "state": "succeeded"}], "work_orders": [], "contexts": [], "runs": [], "validations": [], "leases": [], "events": [], "messages": [], "retrospectives": [], "environment": {"cli_version": "0.3.0", "env_version": "sha256:e23e016d8", "project_root": ".pde-workspace/default-program", "binaries": [{"name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, {"name": "hypex", "description": "Hypex Hypothesis Store", "status": "optional_missing"}, {"name": "elo", "description": "Pairwise ELO Rating Engine", "status": "optional_missing"}, {"name": "prox", "description": "Proximity Clustering CLI", "status": "optional_missing"}, {"name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, {"name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}], "libraries": [{"name": "rdkit", "label": "RDKit Cheminformatics", "status": "missing"}, {"name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "missing"}, {"name": "biopython", "label": "BioPython Sequence & Structure", "status": "missing"}, {"name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "missing"}, {"name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, {"name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}], "credentials": [{"name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, {"name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, {"name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}], "cli_binaries": {"pde": {"available": true, "name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, "hypex": {"available": false, "name": "hypex", "description": "Hypex Hypothesis Store", "status": "optional_missing"}, "elo": {"available": false, "name": "elo", "description": "Pairwise ELO Rating Engine", "status": "optional_missing"}, "prox": {"available": false, "name": "prox", "description": "Proximity Clustering CLI", "status": "optional_missing"}, "fpocket": {"available": false, "name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, "vina": {"available": false, "name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}}, "python_libraries": {"rdkit": {"available": false, "name": "rdkit", "label": "RDKit Cheminformatics", "status": "missing"}, "gemmi": {"available": false, "name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "missing"}, "biopython": {"available": false, "name": "biopython", "label": "BioPython Sequence & Structure", "status": "missing"}, "scipy": {"available": false, "name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "missing"}, "jsonpath_ng": {"available": true, "name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, "mcp": {"available": true, "name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}}, "api_credentials": {"ALPHAGENOME_API_KEY": {"configured": false, "name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, "NCBI_API_KEY": {"configured": false, "name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, "CLOUD_APPLICATION_CREDENTIALS": {"configured": false, "name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}}, "bootstrap_ready": false}}, "science": {"executive": {"title": "Program Summary", "source_path": "executive/program-summary.md", "raw_markdown": "# Program Summary\n\nHigh-level program status and executive overview.\n", "html": "<h1>Program Summary<\/h1>\n<p>High-level program status and executive overview.<\/p>\n"}, "program_state": [{"name": "active-series.md", "stem": "active-series", "title": "Active Series", "source_file": "program-state/active-series.md", "raw_markdown": "# Active Series\n\nTrack active chemical series under investigation.\n", "html": "<h1>Active Series<\/h1>\n<p>Track active chemical series under investigation.<\/p>\n"}, {"name": "decision-log.md", "stem": "decision-log", "title": "Decision Log", "source_file": "program-state/decision-log.md", "raw_markdown": "# Decision Log\n\nChronological record of key program decisions.\n", "html": "<h1>Decision Log<\/h1>\n<p>Chronological record of key program decisions.<\/p>\n"}, {"name": "liability-tracker.md", "stem": "liability-tracker", "title": "Liability Tracker", "source_file": "program-state/liability-tracker.md", "raw_markdown": "# Liability Tracker\n\nRecord identified liabilities and their mitigation status.\n", "html": "<h1>Liability Tracker<\/h1>\n<p>Record identified liabilities and their mitigation status.<\/p>\n"}, {"name": "open-questions.md", "stem": "open-questions", "title": "Open Questions", "source_file": "program-state/open-questions.md", "raw_markdown": "# Open Questions\n\nOutstanding questions requiring resolution.\n", "html": "<h1>Open Questions<\/h1>\n<p>Outstanding questions requiring resolution.<\/p>\n"}], "triage_and_gates": {"concepts": [], "assessments": [], "decisions": [], "gates": []}, "findings": [], "mandatory_relays": [], "artifacts": [], "artifacts_by_class": {}}}</script>
+  <script id="pde-bundle-data" type="application/json">{"program": {"name": "KRAS-G12D-Selective-Inhibitor", "target": "KRAS (G12D)", "indication": "Pancreatic Ductal Adenocarcinoma (PDAC)", "modality": "", "stage": "Stage 2 — Hit-to-Lead & Switch-II Optimization", "project_root": ".pde-workspace", "cli_version": "0.3.0", "generated_at": "2026-10-08T19:43:48Z", "summary_metrics": {"n_agents": 6, "n_roles_available": 22, "n_work_orders": 1, "n_runs": 1, "n_validated": 0, "validation_pass_rate": 100.0, "total_checks_passed": 9, "total_checks_run": 9, "n_artifacts": 2, "n_findings": 1, "n_relays": 4, "n_relays_addressed": 4, "n_active_leases": 0, "n_concepts": 0, "n_assessments": 0, "n_decisions": 0, "n_retrospectives": 0}, "standalone_mode": true}, "agent_system": {"roles_catalog": {"admet-dmpk-scientist": {"role": "admet-dmpk-scientist", "display_name": "Admet Dmpk Scientist", "description": "ADMET/DMPK scientist for pharmacokinetic profiling, metabolite identification, and drug-drug interaction prediction", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "bioactivity-landscape", "in-vivo-pk-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "bootstrapper": {"role": "bootstrapper", "display_name": "Bootstrapper", "description": "Short-lived agent that provisions the PDE tools environment, runs doctor verification, and reports readiness", "category": "Operations", "skills": ["pharmakon-discovery-engine", "artifact-conventions"], "harness_config": "default"}, "computational-biologist": {"role": "computational-biologist", "display_name": "Computational Biologist", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "category": "Specialist", "skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "harness_config": "default"}, "computational-chemist": {"role": "computational-chemist", "display_name": "Computational Chemist", "description": "Computational chemist for virtual screening, molecular docking, cheminformatics, and QSAR modeling", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "compound-property-profile", "binding-mode-analysis", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "experimental-biologist": {"role": "experimental-biologist", "display_name": "Experimental Biologist", "description": "Experimental biologist for assay design, high-throughput screening, CRISPR validation, and cellular pharmacology", "category": "Specialist", "skills": ["citation-resolution", "bioactivity-landscape", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "finding-validator": {"role": "finding-validator", "display_name": "Finding Validator", "description": "Mechanical finding validator — checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "category": "Quality Gate", "skills": ["artifact-conventions"], "harness_config": "default"}, "head-of-discovery": {"role": "head-of-discovery", "display_name": "Head Of Discovery", "description": "Head of Discovery — persistent strategic advisor that monitors program trajectory and optionally counsels the Science Program Lead; holds no decision authority, blocks nothing, gates nothing", "category": "Advisory", "skills": ["artifact-conventions"], "harness_config": "default"}, "hypex-evolution": {"role": "hypex-evolution", "display_name": "Hypex Evolution", "description": "Hypothesis Evolution Agent - refines and combines tournament hypotheses using explicit lineage-preserving operators", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "evolution-operators", "hypothesis-schema", "hypex-tool-setup"], "harness_config": "default"}, "hypex-generation": {"role": "hypex-generation", "display_name": "Hypex Generation", "description": "Hypothesis Generation Agent — explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "hypothesis-schema", "debate-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-meta-review": {"role": "hypex-meta-review", "display_name": "Hypex Meta Review", "description": "Hypothesis Meta-Review Agent - synthesizes reviews into epoch steering and the final PDE research report", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "meta-review-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-proximity": {"role": "hypex-proximity", "display_name": "Hypex Proximity", "description": "Hypothesis Proximity Agent - clusters hypotheses and adjudicates near-duplicate candidates", "category": "Hypex Graph", "skills": ["artifact-conventions", "proximity-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-reflection": {"role": "hypex-reflection", "display_name": "Hypex Reflection", "description": "Hypothesis Reflection Agent — reviews hypotheses on correctness, novelty, testability, safety, goal alignment, and constraint compliance; screens for dual-use biosafety risk", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "review-rubric", "safety-screen", "hypex-tool-setup"], "harness_config": "default"}, "hypex-supervisor": {"role": "hypex-supervisor", "display_name": "Hypex Supervisor", "description": "Hypothesis-Explorer Supervisor - orchestrates PDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph", "category": "Hypex Graph", "skills": ["artifact-conventions", "hypothesis-run-corpus", "run-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-tournament": {"role": "hypex-tournament", "display_name": "Hypex Tournament", "description": "Hypothesis Tournament Agent — runs pairwise tournament matches between hypotheses, writes match records, and triggers Elo rating recomputation", "category": "Hypex Graph", "skills": ["artifact-conventions", "elo-tournament", "debate-protocol", "review-rubric", "hypex-tool-setup"], "harness_config": "default"}, "medicinal-chemist": {"role": "medicinal-chemist", "display_name": "Medicinal Chemist", "description": "Medicinal chemist for SAR analysis, analog design, scaffold optimization, and drug-likeness assessment", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "preclinical-toxicologist": {"role": "preclinical-toxicologist", "display_name": "Preclinical Toxicologist", "description": "Preclinical toxicologist for safety pharmacology, toxicology study design, and therapeutic index assessment", "category": "Specialist", "skills": ["tissue-expression-profile", "target-genetic-evidence", "preclinical-safety-assessment", "compound-property-profile", "admet-property-prediction", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "project-curator": {"role": "project-curator", "display_name": "Project Curator", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "category": "Presentation", "skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "harness_config": "default"}, "regulatory-scientist": {"role": "regulatory-scientist", "display_name": "Regulatory Scientist", "description": "Regulatory scientist for IND dossier assembly, eCTD compliance, and FDA/EMA regulatory strategy", "category": "Specialist", "skills": ["citation-resolution", "preclinical-safety-assessment", "in-vivo-pk-analysis", "compound-property-profile", "artifact-conventions"], "harness_config": "default"}, "research-operations-controller": {"role": "research-operations-controller", "display_name": "Research Operations Controller", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "harness_config": "default"}, "science-program-lead": {"role": "science-program-lead", "display_name": "Science Program Lead", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "harness_config": "default"}, "scientific-reviewer": {"role": "scientific-reviewer", "display_name": "Scientific Reviewer", "description": "Independent scientific reviewer — re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject", "category": "Quality Gate", "skills": ["citation-resolution", "tournament-corpus", "citation-verification", "artifact-conventions"], "harness_config": "default"}, "structural-biologist": {"role": "structural-biologist", "display_name": "Structural Biologist", "description": "Structural biologist for protein structure analysis, druggability assessment, and binding mode interpretation", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "binding-mode-analysis", "artifact-conventions"], "harness_config": "default"}}, "all_10_checks": [{"name": "deliverables_exist", "kind": "COMPLETENESS"}, {"name": "report_headings", "kind": "FORMAT"}, {"name": "paths_resolve", "kind": "COMPLETENESS"}, {"name": "provenance_valid", "kind": "DATA_INTEGRITY"}, {"name": "analysis_citations", "kind": "DATA_INTEGRITY"}, {"name": "relay_coverage", "kind": "COMPLETENESS"}, {"name": "version_policy", "kind": "CONSISTENCY"}, {"name": "findings_integrity", "kind": "DATA_INTEGRITY"}, {"name": "source_tags_resolve", "kind": "DATA_INTEGRITY"}, {"name": "unrecognized_json", "kind": "COMPLETENESS"}], "nodes": [{"id": "user", "name": "Scientist / User", "role": "user", "category": "User", "parentId": null, "ancestry": [], "state": "active", "wo_state": "active", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Program Charter & Discovery Objective", "description": "Principal Investigator / Interactive User Session", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard"], "validation": null, "deliverables": []}, {"id": "science-program-lead", "name": "Science Program Lead", "role": "science-program-lead", "category": "Orchestrator", "parentId": "user", "ancestry": ["user"], "state": "running", "wo_state": "running", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions.", "description": "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "validation": null, "deliverables": ["program-state/decision-log.md", "program-state/liability-tracker.md", "program-state/active-series.md", "program-state/open-questions.md", "executive/program-summary.md"]}, {"id": "research-operations-controller", "name": "Research Ops Controller", "role": "research-operations-controller", "category": "Orchestrator", "parentId": "science-program-lead", "ancestry": ["user", "science-program-lead"], "state": "running", "wo_state": "running", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Commit work orders, freeze context snapshots, manage single-flight resource leases, and enforce 10-check mechanical validation.", "description": "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard", "artifact-conventions", "site-generation"], "validation": null, "deliverables": [".pde/control/events.ndjson"]}, {"id": "WO-001-r1-computational-biologist", "name": "Computational Biologist (WO-001)", "role": "computational-biologist", "category": "Specialist", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "running", "run_state": "running", "wo_state": "submitted", "work_order_id": "WO-001", "revision": 1, "run_id": "RUN-001", "attempt": 1, "correction_cycle": 0, "stage": 1, "cycle": 1, "priority": "normal", "resource_class": "standard", "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "injected_skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "dependencies": [], "acceptance_criteria": ["All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.", "All mandatory relays in .analysis.json appear in the Layer 1 findings report.", "All 10 mechanical validation checks pass via pde validate check."], "alert_policy": {"critical": "halt_and_escalate", "warning": "document_in_findings"}, "context_snapshot": {"work_order_id": "WO-001", "revision": 1, "artifact_links": [], "content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "content_sha256": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61", "created_at": "2026-10-08T19:43:44Z", "hash": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61"}, "failure_class": null, "failure_detail": null, "validation": {"work_order_id": "WO-001", "work_order_revision": 1, "run_id": "RUN-001", "validated_at": "2026-10-08T19:43:48Z", "result": "pass", "mode": "live_preview", "checks": [{"name": "deliverables_exist", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"layer_1_count": 1, "layer_0_classes": ["pde.genetics", "pde.gtex"]}}, {"name": "report_headings", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"reference": "WO-001-r1"}}, {"name": "paths_resolve", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"links_checked": 2}}, {"name": "provenance_valid", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"artifacts_checked": 2}}, {"name": "analysis_citations", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"analyses_checked": 2}}, {"name": "relay_coverage", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"codes_checked": 2, "codes_addressed": 2, "codes_not_addressed": 0, "unaddressed": []}}, {"name": "version_policy", "result": "skip", "status": "skip", "kind": null, "detail": "program.yaml not present — check deferred to a future program.yaml configuration issue"}, {"name": "findings_integrity", "result": "pass", "status": "ok", "kind": "CONVENTION", "detail": "no misplaced sidecars found under findings/"}, {"name": "source_tags_resolve", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"tags_checked": 6}, "sub_findings": [{"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.pLI}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.98", "actual_value": "0.98", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.loeuf}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.24", "actual_value": "0.24", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.mis_z}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 7, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "3.42", "actual_value": "3.42", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.disease_associations[0].overall_score}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 8, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.94", "actual_value": "0.94", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.max_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "48.5", "actual_value": "48.5", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "22.4", "actual_value": "22.4", "detail": "values match within tolerance"}]}, {"name": "unrecognized_json", "result": "pass", "status": "ok", "kind": "unrecognized_record_type", "detail": "no unrecognized JSON files found"}]}, "deliverables": ["findings/computational-biology/kras-genetics-expression.md", "raw/genetics", "raw/gtex"], "created_at": "2026-10-08T19:43:44Z", "started_at": "2026-10-08T19:43:47Z", "completed_at": null}, {"id": "validator-WO-001-r1", "name": "Finding Validator (WO-001)", "role": "finding-validator", "category": "Quality Gate", "parentId": "WO-001-r1-computational-biologist", "ancestry": ["user", "science-program-lead", "research-operations-controller", "WO-001-r1-computational-biologist"], "state": "mechanically_validated", "wo_state": "submitted", "work_order_id": "WO-001", "revision": 1, "run_id": "RUN-001", "attempt": 1, "correction_cycle": 0, "decision_question": "Verify all 10 mechanical validation checks for WO-001-r1", "description": "Mechanical finding validator — checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "injected_skills": ["artifact-conventions"], "context_snapshot": {"work_order_id": "WO-001", "revision": 1, "artifact_links": [], "content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "content_sha256": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61", "created_at": "2026-10-08T19:43:44Z", "hash": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61"}, "validation": {"work_order_id": "WO-001", "work_order_revision": 1, "run_id": "RUN-001", "validated_at": "2026-10-08T19:43:48Z", "result": "pass", "mode": "live_preview", "checks": [{"name": "deliverables_exist", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"layer_1_count": 1, "layer_0_classes": ["pde.genetics", "pde.gtex"]}}, {"name": "report_headings", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"reference": "WO-001-r1"}}, {"name": "paths_resolve", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"links_checked": 2}}, {"name": "provenance_valid", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"artifacts_checked": 2}}, {"name": "analysis_citations", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"analyses_checked": 2}}, {"name": "relay_coverage", "result": "pass", "status": "ok", "kind": "COMPLETENESS", "detail": {"codes_checked": 2, "codes_addressed": 2, "codes_not_addressed": 0, "unaddressed": []}}, {"name": "version_policy", "result": "skip", "status": "skip", "kind": null, "detail": "program.yaml not present — check deferred to a future program.yaml configuration issue"}, {"name": "findings_integrity", "result": "pass", "status": "ok", "kind": "CONVENTION", "detail": "no misplaced sidecars found under findings/"}, {"name": "source_tags_resolve", "result": "pass", "status": "ok", "kind": "DATA_INTEGRITY", "detail": {"tags_checked": 6}, "sub_findings": [{"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.pLI}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.98", "actual_value": "0.98", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.loeuf}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.24", "actual_value": "0.24", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.mis_z}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 7, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "3.42", "actual_value": "3.42", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.disease_associations[0].overall_score}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 8, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.94", "actual_value": "0.94", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.max_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "48.5", "actual_value": "48.5", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "22.4", "actual_value": "22.4", "detail": "values match within tolerance"}]}, {"name": "unrecognized_json", "result": "pass", "status": "ok", "kind": "unrecognized_record_type", "detail": "no unrecognized JSON files found"}]}, "deliverables": [".pde/control/validations/WO-001-r1.json"]}, {"id": "project-curator-dashboard", "name": "Project Curator (Dashboard)", "role": "project-curator", "category": "Presentation", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "succeeded", "wo_state": "published", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Compile Unified Multi-Agent Graph + 14 PDE Scientific Viewers into Interactive Dashboard.", "description": "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy", "injected_skills": ["artifact-conventions", "site-generation", "pde-dashboard"], "validation": null, "deliverables": ["dashboard.html"]}], "edges": [{"parentId": "user", "childId": "science-program-lead", "label": "charter", "state": "running"}, {"parentId": "science-program-lead", "childId": "research-operations-controller", "label": "cohort-dispatch", "state": "running"}, {"parentId": "research-operations-controller", "childId": "WO-001-r1-computational-biologist", "label": "WO-001-r1 (att #1)", "state": "running"}, {"parentId": "WO-001-r1-computational-biologist", "childId": "validator-WO-001-r1", "label": "10-check gate", "state": "mechanically_validated"}, {"parentId": "research-operations-controller", "childId": "project-curator-dashboard", "label": "dashboard-build", "state": "succeeded"}], "work_orders": [{"id": "WO-001", "revision": 1, "state": "submitted", "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "requested_role": "computational-biologist", "stage": 1, "cycle": 1, "context": {"content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "artifact_links": [], "snapshot": "contexts/WO-001-r1.json", "snapshot_sha256": "c221ec2d7fa7f7a7af4f93832d43fb05c7e8a9dcd5eb357a951b33c1837bebd4"}, "dependencies": [], "capabilities": [], "deliverables": {"layer_0_classes": ["pde.genetics", "pde.gtex"], "layer_1": ["findings/computational-biology/kras-genetics-expression.md"]}, "acceptance_criteria": ["All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.", "All mandatory relays in .analysis.json appear in the Layer 1 findings report.", "All 10 mechanical validation checks pass via pde validate check."], "alert_policy": {"critical": "halt_and_escalate", "warning": "document_in_findings"}, "priority": "normal", "resource_class": "standard", "report_to": "discovery-lead", "created_at": "2026-10-08T19:43:44Z", "committed_at": "2026-10-08T19:43:44Z"}], "contexts": [{"work_order_id": "WO-001", "revision": 1, "artifact_links": [], "content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "content_sha256": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61", "created_at": "2026-10-08T19:43:44Z", "hash": "f917e3c1f2b7b416a90f786758fc2b02049b11d4f9d6ea84b884616b64e79b61"}], "runs": [{"run_id": "RUN-001", "work_order_id": "WO-001", "work_order_revision": 1, "state": "running", "attempt": 1, "created_at": "2026-10-08T19:43:46Z", "started_at": "2026-10-08T19:43:47Z", "completed_at": null, "result": null, "failure_class": null, "failure_detail": null}], "validations": [], "leases": [], "events": [{"type": "workorder.transition", "subject_id": "WO-001", "revision": 1, "from_state": null, "to_state": "proposed", "actor": null, "detail": null, "timestamp": "2026-10-08T19:43:44Z"}, {"type": "workorder.transition", "subject_id": "WO-001", "revision": 1, "from_state": "proposed", "to_state": "committed", "actor": null, "detail": null, "timestamp": "2026-10-08T19:43:44Z"}, {"type": "workorder.transition", "subject_id": "WO-001", "revision": 1, "from_state": "committed", "to_state": "queued", "actor": null, "detail": null, "timestamp": "2026-10-08T19:43:45Z"}, {"type": "workorder.transition", "subject_id": "WO-001", "revision": 1, "from_state": "queued", "to_state": "in_progress", "actor": null, "detail": null, "timestamp": "2026-10-08T19:43:45Z"}, {"type": "run.transition", "subject_id": "RUN-001", "from_state": null, "to_state": "queued", "timestamp": "2026-10-08T19:43:46Z"}, {"type": "run.transition", "subject_id": "RUN-001", "from_state": "queued", "to_state": "starting", "timestamp": "2026-10-08T19:43:47Z"}, {"type": "run.transition", "subject_id": "RUN-001", "from_state": "starting", "to_state": "running", "timestamp": "2026-10-08T19:43:47Z"}, {"type": "dispatch.subagent", "subject_id": "WO-001", "revision": 1, "actor": "discovery-lead", "detail": {"requested_role": "computational-biologist", "subagent_name": "pde-computational-biologist", "run_id": "RUN-001", "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk."}, "timestamp": "2026-10-08T19:43:47Z"}, {"type": "workorder.transition", "subject_id": "WO-001", "revision": 1, "from_state": "in_progress", "to_state": "submitted", "actor": null, "detail": null, "timestamp": "2026-10-08T19:43:48Z"}], "messages": [{"timestamp": "2026-10-08T19:43:44Z", "sender": "research-operations-controller", "recipient": "WO-001", "type": "workorder.transition", "level": "info", "summary": "workorder.transition: WO-001 (init → proposed)", "detail": null}, {"timestamp": "2026-10-08T19:43:44Z", "sender": "research-operations-controller", "recipient": "WO-001", "type": "workorder.transition", "level": "info", "summary": "workorder.transition: WO-001 (proposed → committed)", "detail": null}, {"timestamp": "2026-10-08T19:43:45Z", "sender": "research-operations-controller", "recipient": "WO-001", "type": "workorder.transition", "level": "info", "summary": "workorder.transition: WO-001 (committed → queued)", "detail": null}, {"timestamp": "2026-10-08T19:43:45Z", "sender": "research-operations-controller", "recipient": "WO-001", "type": "workorder.transition", "level": "info", "summary": "workorder.transition: WO-001 (queued → in_progress)", "detail": null}, {"timestamp": "2026-10-08T19:43:46Z", "sender": "research-operations-controller", "recipient": "RUN-001", "type": "run.transition", "level": "info", "summary": "run.transition: RUN-001 (init → queued)", "detail": null}, {"timestamp": "2026-10-08T19:43:47Z", "sender": "research-operations-controller", "recipient": "RUN-001", "type": "run.transition", "level": "info", "summary": "run.transition: RUN-001 (queued → starting)", "detail": null}, {"timestamp": "2026-10-08T19:43:47Z", "sender": "research-operations-controller", "recipient": "RUN-001", "type": "run.transition", "level": "info", "summary": "run.transition: RUN-001 (starting → running)", "detail": null}, {"timestamp": "2026-10-08T19:43:47Z", "sender": "discovery-lead", "recipient": "pde-computational-biologist (WO-001)", "type": "dispatch.subagent", "level": "info", "summary": "Dispatched pde-computational-biologist on WO-001 (RUN-001): Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.", "detail": {"requested_role": "computational-biologist", "subagent_name": "pde-computational-biologist", "run_id": "RUN-001", "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk."}}, {"timestamp": "2026-10-08T19:43:47Z", "sender": "specialist", "recipient": "raw/genomics", "type": "tool.phase1", "level": "info", "summary": "Phase 1 `pde pde fetch` wrote `raw/genomics/KRAS.gnomad-constraint.json` (SHA-256 verified)", "detail": {"parameters": null, "relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}}, {"timestamp": "2026-10-08T19:43:47Z", "sender": "specialist", "recipient": "raw/gtex", "type": "tool.phase1", "level": "info", "summary": "Phase 1 `pde pde fetch` wrote `raw/gtex/KRAS.tissue.json` (SHA-256 verified)", "detail": {"parameters": null, "relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}}, {"timestamp": "2026-10-08T19:43:48Z", "sender": "research-operations-controller", "recipient": "WO-001", "type": "workorder.transition", "level": "info", "summary": "workorder.transition: WO-001 (in_progress → submitted)", "detail": null}, {"timestamp": "2026-10-08T19:43:48Z", "sender": "phase2-analyzer", "recipient": "finding-validator", "type": "tool.phase2", "level": "warn", "summary": "Phase 2 offline analysis on `KRAS.gnomad-constraint.json` [thresholds: genetics-v1] → verdict: go_with_caution", "detail": {"threshold_set": "genetics-v1", "relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}}, {"timestamp": "2026-10-08T19:43:48Z", "sender": "phase2-analyzer", "recipient": "finding-validator", "type": "tool.phase2", "level": "success", "summary": "Phase 2 offline analysis on `KRAS.tissue.json` [thresholds: expression-v1] → verdict: pass", "detail": {"threshold_set": "expression-v1", "relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}}], "retrospectives": [], "environment": {"cli_version": "0.3.0", "env_version": "sha256:a912d23b8", "project_root": ".pde-workspace", "binaries": [{"name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, {"name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, {"name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, {"name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, {"name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, {"name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}], "libraries": [{"name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, {"name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, {"name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, {"name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, {"name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, {"name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}], "credentials": [{"name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, {"name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, {"name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}], "cli_binaries": {"pde": {"available": true, "name": "pde", "description": "Primary PDE CLI Engine", "status": "ready"}, "hypex": {"available": true, "name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, "elo": {"available": true, "name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, "prox": {"available": true, "name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, "fpocket": {"available": false, "name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, "vina": {"available": false, "name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}}, "python_libraries": {"rdkit": {"available": true, "name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, "gemmi": {"available": true, "name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, "biopython": {"available": true, "name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, "scipy": {"available": true, "name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, "jsonpath_ng": {"available": true, "name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, "mcp": {"available": true, "name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}}, "api_credentials": {"ALPHAGENOME_API_KEY": {"configured": false, "name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, "NCBI_API_KEY": {"configured": false, "name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, "CLOUD_APPLICATION_CREDENTIALS": {"configured": false, "name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}}, "bootstrap_ready": true}}, "science": {"executive": {"title": "Program Summary", "source_path": "executive/program-summary.md", "raw_markdown": "# Program Summary\n\nHigh-level program status and executive overview.\n", "html": "<h1>Program Summary<\/h1>\n<p>High-level program status and executive overview.<\/p>\n"}, "program_state": [{"name": "active-series.md", "stem": "active-series", "title": "Active Series", "source_file": "program-state/active-series.md", "raw_markdown": "# Active Series\n\nTrack active chemical series under investigation.\n", "html": "<h1>Active Series<\/h1>\n<p>Track active chemical series under investigation.<\/p>\n"}, {"name": "decision-log.md", "stem": "decision-log", "title": "Decision Log", "source_file": "program-state/decision-log.md", "raw_markdown": "# Decision Log\n\nChronological record of key program decisions.\n", "html": "<h1>Decision Log<\/h1>\n<p>Chronological record of key program decisions.<\/p>\n"}, {"name": "liability-tracker.md", "stem": "liability-tracker", "title": "Liability Tracker", "source_file": "program-state/liability-tracker.md", "raw_markdown": "# Liability Tracker\n\nRecord identified liabilities and their mitigation status.\n", "html": "<h1>Liability Tracker<\/h1>\n<p>Record identified liabilities and their mitigation status.<\/p>\n"}, {"name": "open-questions.md", "stem": "open-questions", "title": "Open Questions", "source_file": "program-state/open-questions.md", "raw_markdown": "# Open Questions\n\nOutstanding questions requiring resolution.\n", "html": "<h1>Open Questions<\/h1>\n<p>Outstanding questions requiring resolution.<\/p>\n"}], "triage_and_gates": {"concepts": [], "assessments": [], "decisions": [], "gates": []}, "findings": [{"id": "findings/computational-biology/kras-genetics-expression.md", "title": "KRAS Genetic Constraint & Tissue Expression Assessment (WO-001-r1)", "source_path": "findings/computational-biology/kras-genetics-expression.md", "discipline": "computational-biology", "raw_markdown": "# KRAS Genetic Constraint & Tissue Expression Assessment (WO-001-r1)\n\n## Summary\nExecuted human genetic constraint and normal tissue transcriptomic profiling for `WO-001-r1`. KRAS exhibits extreme loss-of-function intolerance in gnomAD with pLI of 0.98 {source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.pLI} and LOEUF of 0.24 {source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.loeuf}.\n\n## Key Findings\n- **Missense & LoF Constraint**: Missense Z-score is 3.42 {source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.mis_z}, confirming strong purifying selection.\n- **Oncology Driver Evidence**: Pancreatic adenocarcinoma association score is 0.94 {source: raw/genomics/KRAS.gnomad-constraint.json $.disease_associations[0].overall_score}.\n- **Normal Tissue Expression (GTEx)**: Peak expression occurs in Colon - Transverse at 48.5 {source: raw/gtex/KRAS.tissue.json $.max_tpm} TPM and Pancreas at 22.4 {source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm} TPM.\n- **Relay: `ESSENTIAL_GENE_WT_SPARING_REQUIRED`** — Medicinal chemistry and docking must enforce >=50x G12D over WT selectivity.\n- **Relay: `GI_MUCOSA_WT_EXPRESSION_MONITOR`** — Preclinical toxicology must monitor GI mucosa.\n\n## Verdict\n**GO WITH CAUTION** — Proceed with non-covalent Switch-II pocket inhibitors specifically engaging Asp12.\n\n## Evidence\n- [KRAS gnomAD Constraint](../../raw/genomics/KRAS.gnomad-constraint.json)\n- [KRAS GTEx Expression](../../raw/gtex/KRAS.tissue.json)\n\n## Implications\nWild-type KRAS sparing is the primary design constraint for Stage 2 hit-to-lead.\n", "html": "<h1>KRAS Genetic Constraint &amp; Tissue Expression Assessment (WO-001-r1)<\/h1>\n<h2>Summary<\/h2>\n<p>Executed human genetic constraint and normal tissue transcriptomic profiling for <code>WO-001-r1<\/code>. KRAS exhibits extreme loss-of-function intolerance in gnomAD with pLI of 0.98 <span class=\"pde-source-badge verified\" title=\"{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.pLI} — OK: values match within tolerance | actual=0.98\" data-source-path=\"raw/genomics/KRAS.gnomad-constraint.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.gnomad-constraint.json $.constraint.pLI<\/span> and LOEUF of 0.24 <span class=\"pde-source-badge verified\" title=\"{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.loeuf} — OK: values match within tolerance | actual=0.24\" data-source-path=\"raw/genomics/KRAS.gnomad-constraint.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.gnomad-constraint.json $.constraint.loeuf<\/span>.<\/p>\n<h2>Key Findings<\/h2>\n<ul>\n<li><strong>Missense &amp; LoF Constraint<\/strong>: Missense Z-score is 3.42 <span class=\"pde-source-badge verified\" title=\"{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.mis_z} — OK: values match within tolerance | actual=3.42\" data-source-path=\"raw/genomics/KRAS.gnomad-constraint.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.gnomad-constraint.json $.constraint.mis_z<\/span>, confirming strong purifying selection.<\/li>\n<li><strong>Oncology Driver Evidence<\/strong>: Pancreatic adenocarcinoma association score is 0.94 <span class=\"pde-source-badge verified\" title=\"{source: raw/genomics/KRAS.gnomad-constraint.json $.disease_associations[0].overall_score} — OK: values match within tolerance | actual=0.94\" data-source-path=\"raw/genomics/KRAS.gnomad-constraint.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.gnomad-constraint.json $.disease_associations[0].overall_score<\/span>.<\/li>\n<li><strong>Normal Tissue Expression (GTEx)<\/strong>: Peak expression occurs in Colon - Transverse at 48.5 <span class=\"pde-source-badge verified\" title=\"{source: raw/gtex/KRAS.tissue.json $.max_tpm} — OK: values match within tolerance | actual=48.5\" data-source-path=\"raw/gtex/KRAS.tissue.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.tissue.json $.max_tpm<\/span> TPM and Pancreas at 22.4 <span class=\"pde-source-badge verified\" title=\"{source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm} — OK: values match within tolerance | actual=22.4\" data-source-path=\"raw/gtex/KRAS.tissue.json\"><span class=\"badge-icon\">[PASS]<\/span> KRAS.tissue.json $.tissues[3].median_tpm<\/span> TPM.<\/li>\n<li><span class=\"pde-relay-pill\" data-relay=\"ESSENTIAL_GENE_WT_SPARING_REQUIRED\">Relay: <code>ESSENTIAL_GENE_WT_SPARING_REQUIRED<\/code><\/span> — Medicinal chemistry and docking must enforce &gt;=50x G12D over WT selectivity.<\/li>\n<li><span class=\"pde-relay-pill\" data-relay=\"GI_MUCOSA_WT_EXPRESSION_MONITOR\">Relay: <code>GI_MUCOSA_WT_EXPRESSION_MONITOR<\/code><\/span> — Preclinical toxicology must monitor GI mucosa.<\/li>\n<\/ul>\n<h2>Verdict<\/h2>\n<p><strong>GO WITH CAUTION<\/strong> — Proceed with non-covalent Switch-II pocket inhibitors specifically engaging Asp12.<\/p>\n<h2>Evidence<\/h2>\n<ul>\n<li><a href=\"../../raw/genomics/KRAS.gnomad-constraint.json\">KRAS gnomAD Constraint<\/a><\/li>\n<li><a href=\"../../raw/gtex/KRAS.tissue.json\">KRAS GTEx Expression<\/a><\/li>\n<\/ul>\n<h2>Implications<\/h2>\n<p>Wild-type KRAS sparing is the primary design constraint for Stage 2 hit-to-lead.<\/p>\n", "work_order_id": "WO-001", "revision": 1, "requested_role": "computational-biologist", "state": "submitted", "stage": 1, "cycle": 1, "artifact_classes": ["pde.genetics", "pde.gtex"], "source_citations": [{"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.pLI}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.98", "actual_value": "0.98", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.loeuf}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 4, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.24", "actual_value": "0.24", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.constraint.mis_z}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 7, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "3.42", "actual_value": "3.42", "detail": "values match within tolerance"}, {"tag": "{source: raw/genomics/KRAS.gnomad-constraint.json $.disease_associations[0].overall_score}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 8, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "0.94", "actual_value": "0.94", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.max_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "48.5", "actual_value": "48.5", "detail": "values match within tolerance"}, {"tag": "{source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm}", "file": "findings/computational-biology/kras-genetics-expression.md", "line": 9, "status": "ok", "kind": "DATA_INTEGRITY", "claimed_value": "22.4", "actual_value": "22.4", "detail": "values match within tolerance"}], "relays_addressed": ["ESSENTIAL_GENE_WT_SPARING_REQUIRED", "GI_MUCOSA_WT_EXPRESSION_MONITOR"]}], "mandatory_relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "message": "", "source_file": "raw/genomics/KRAS.gnomad-constraint.json.analysis.json", "record_type": "analysis", "work_order_id": "WO-001", "written_by": "pde", "addressed": true, "addressed_in_findings": ["findings/computational-biology/kras-genetics-expression.md"]}, {"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "message": "", "source_file": "raw/genomics/KRAS.gnomad-constraint.json.meta.json", "record_type": "sidecar", "work_order_id": "WO-001", "written_by": "pde", "addressed": true, "addressed_in_findings": ["findings/computational-biology/kras-genetics-expression.md"]}, {"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "message": "", "source_file": "raw/gtex/KRAS.tissue.json.analysis.json", "record_type": "analysis", "work_order_id": "WO-001", "written_by": "pde", "addressed": true, "addressed_in_findings": ["findings/computational-biology/kras-genetics-expression.md"]}, {"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "message": "", "source_file": "raw/gtex/KRAS.tissue.json.meta.json", "record_type": "sidecar", "work_order_id": "WO-001", "written_by": "pde", "addressed": true, "addressed_in_findings": ["findings/computational-biology/kras-genetics-expression.md"]}], "artifacts": [{"id": "raw/genomics/KRAS.gnomad-constraint.json", "name": "KRAS.gnomad-constraint.json", "rel_path": "raw/genomics/KRAS.gnomad-constraint.json", "artifact_class": "genomics", "viewer_type": "constraint", "domain_studio": null, "viewer_label": "gnomAD Constraint Studio", "size_bytes": 501, "work_order_id": "WO-001", "verdict": "go_with_caution", "data": {"gene": "KRAS", "ensembl_id": "ENSG00000133703", "uniprot_id": "P01116", "constraint": {"pLI": 0.98, "oe_lof_upper": 0.24, "loeuf": 0.24, "mis_z": 3.42, "syn_z": 0.18}, "disease_associations": [{"disease": "Pancreatic adenocarcinoma", "overall_score": 0.94}, {"disease": "Colorectal adenocarcinoma", "overall_score": 0.91}, {"disease": "Non-small cell lung carcinoma", "overall_score": 0.89}]}, "meta": {"schema_version": "1.0", "record_type": "provenance", "command": "pde genetics fetch KRAS --json", "cli_version": "0.3.0", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "created_at": "2026-10-08T19:43:47Z", "work_order_id": "WO-001", "outputs": [{"path": "raw/genomics/KRAS.gnomad-constraint.json", "sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f", "bytes": 501}], "mandatory_relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}, "analysis": {"schema_version": "1.0", "record_type": "analysis", "source": "raw/genomics/KRAS.gnomad-constraint.json", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "source_sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f", "threshold_set": "genetics-v1", "work_order_id": "WO-001", "analyzed_at": "2026-10-08T19:43:47Z", "verdict": "go_with_caution", "summary": "KRAS is strongly constrained against loss-of-function (pLI=0.98, LOEUF=0.24); mutant-selective G12D targeting is mandatory to spare wild-type KRAS.", "thresholds_applied": {"pLI_essential_cutoff": 0.9, "loeuf_constrained": 0.35}, "metrics": {"pLI": 0.98, "LOEUF": 0.24, "mis_z": 3.42}, "mandatory_relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}, "paired_files": {}}, {"id": "raw/gtex/KRAS.tissue.json", "name": "KRAS.tissue.json", "rel_path": "raw/gtex/KRAS.tissue.json", "artifact_class": "gtex", "viewer_type": "expression", "domain_studio": null, "viewer_label": "Tissue Expression Studio", "size_bytes": 790, "work_order_id": "WO-001", "verdict": "pass", "data": {"gene": "KRAS", "unit": "TPM", "max_tpm": 48.5, "tissues": [{"tissue": "Colon - Transverse", "median_tpm": 48.5, "essential_organ": true}, {"tissue": "Esophagus - Mucosa", "median_tpm": 42.1, "essential_organ": false}, {"tissue": "Lung", "median_tpm": 36.8, "essential_organ": true}, {"tissue": "Pancreas", "median_tpm": 22.4, "essential_organ": true}, {"tissue": "Heart - Left Ventricle", "median_tpm": 18.2, "essential_organ": true}, {"tissue": "Liver", "median_tpm": 14.9, "essential_organ": true}, {"tissue": "Kidney - Cortex", "median_tpm": 19.7, "essential_organ": true}]}, "meta": {"schema_version": "1.0", "record_type": "provenance", "command": "pde gtex fetch KRAS --json", "cli_version": "0.3.0", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "created_at": "2026-10-08T19:43:47Z", "work_order_id": "WO-001", "outputs": [{"path": "raw/gtex/KRAS.tissue.json", "sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f", "bytes": 790}], "mandatory_relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}, "analysis": {"schema_version": "1.0", "record_type": "analysis", "source": "raw/gtex/KRAS.tissue.json", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "source_sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f", "threshold_set": "expression-v1", "work_order_id": "WO-001", "analyzed_at": "2026-10-08T19:43:47Z", "verdict": "pass", "summary": "Broad baseline WT expression across GI tract and lung (max 48.5 TPM in Colon); confirms need for G12D salt-bridge selectivity.", "thresholds_applied": {"high_expression_tpm": 50.0}, "metrics": {"max_tpm": 48.5, "pancreas_tpm": 22.4}, "mandatory_relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}, "paired_files": {}}], "artifacts_by_class": {"genomics": [{"id": "raw/genomics/KRAS.gnomad-constraint.json", "name": "KRAS.gnomad-constraint.json", "rel_path": "raw/genomics/KRAS.gnomad-constraint.json", "artifact_class": "genomics", "viewer_type": "constraint", "domain_studio": null, "viewer_label": "gnomAD Constraint Studio", "size_bytes": 501, "work_order_id": "WO-001", "verdict": "go_with_caution", "data": {"gene": "KRAS", "ensembl_id": "ENSG00000133703", "uniprot_id": "P01116", "constraint": {"pLI": 0.98, "oe_lof_upper": 0.24, "loeuf": 0.24, "mis_z": 3.42, "syn_z": 0.18}, "disease_associations": [{"disease": "Pancreatic adenocarcinoma", "overall_score": 0.94}, {"disease": "Colorectal adenocarcinoma", "overall_score": 0.91}, {"disease": "Non-small cell lung carcinoma", "overall_score": 0.89}]}, "meta": {"schema_version": "1.0", "record_type": "provenance", "command": "pde genetics fetch KRAS --json", "cli_version": "0.3.0", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "created_at": "2026-10-08T19:43:47Z", "work_order_id": "WO-001", "outputs": [{"path": "raw/genomics/KRAS.gnomad-constraint.json", "sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f", "bytes": 501}], "mandatory_relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}, "analysis": {"schema_version": "1.0", "record_type": "analysis", "source": "raw/genomics/KRAS.gnomad-constraint.json", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "source_sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f", "threshold_set": "genetics-v1", "work_order_id": "WO-001", "analyzed_at": "2026-10-08T19:43:47Z", "verdict": "go_with_caution", "summary": "KRAS is strongly constrained against loss-of-function (pLI=0.98, LOEUF=0.24); mutant-selective G12D targeting is mandatory to spare wild-type KRAS.", "thresholds_applied": {"pLI_essential_cutoff": 0.9, "loeuf_constrained": 0.35}, "metrics": {"pLI": 0.98, "LOEUF": 0.24, "mis_z": 3.42}, "mandatory_relays": [{"code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED", "target_role": "medicinal-chemist", "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."}]}, "paired_files": {}}], "gtex": [{"id": "raw/gtex/KRAS.tissue.json", "name": "KRAS.tissue.json", "rel_path": "raw/gtex/KRAS.tissue.json", "artifact_class": "gtex", "viewer_type": "expression", "domain_studio": null, "viewer_label": "Tissue Expression Studio", "size_bytes": 790, "work_order_id": "WO-001", "verdict": "pass", "data": {"gene": "KRAS", "unit": "TPM", "max_tpm": 48.5, "tissues": [{"tissue": "Colon - Transverse", "median_tpm": 48.5, "essential_organ": true}, {"tissue": "Esophagus - Mucosa", "median_tpm": 42.1, "essential_organ": false}, {"tissue": "Lung", "median_tpm": 36.8, "essential_organ": true}, {"tissue": "Pancreas", "median_tpm": 22.4, "essential_organ": true}, {"tissue": "Heart - Left Ventricle", "median_tpm": 18.2, "essential_organ": true}, {"tissue": "Liver", "median_tpm": 14.9, "essential_organ": true}, {"tissue": "Kidney - Cortex", "median_tpm": 19.7, "essential_organ": true}]}, "meta": {"schema_version": "1.0", "record_type": "provenance", "command": "pde gtex fetch KRAS --json", "cli_version": "0.3.0", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "created_at": "2026-10-08T19:43:47Z", "work_order_id": "WO-001", "outputs": [{"path": "raw/gtex/KRAS.tissue.json", "sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f", "bytes": 790}], "mandatory_relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}, "analysis": {"schema_version": "1.0", "record_type": "analysis", "source": "raw/gtex/KRAS.tissue.json", "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba", "source_sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f", "threshold_set": "expression-v1", "work_order_id": "WO-001", "analyzed_at": "2026-10-08T19:43:47Z", "verdict": "pass", "summary": "Broad baseline WT expression across GI tract and lung (max 48.5 TPM in Colon); confirms need for G12D salt-bridge selectivity.", "thresholds_applied": {"high_expression_tpm": 50.0}, "metrics": {"max_tpm": 48.5, "pancreas_tpm": 22.4}, "mandatory_relays": [{"code": "GI_MUCOSA_WT_EXPRESSION_MONITOR", "target_role": "preclinical-toxicologist", "detail": "Monitor GI mucosal proliferation in rodent tox due to colon TPM 48.5."}]}, "paired_files": {}}]}}}</script>
   <script>
     window.__PDE_BUNDLE__ = JSON.parse(document.getElementById('pde-bundle-data').textContent);
   </script>
@@ -363,9 +363,9 @@
     <div class="brand-group">
       <div class="brand-logo">PDE</div>
       <div>
-        <div class="brand-title" id="hdr-program-name">default-program</div>
+        <div class="brand-title" id="hdr-program-name">KRAS-G12D-Selective-Inhibitor</div>
         <div class="brand-sub">
-          <span class="stage-pill" id="hdr-stage">Stage 0–1 Discovery</span>
+          <span class="stage-pill" id="hdr-stage">Stage 2 — Hit-to-Lead &amp; Switch-II Optimization</span>
           <span>CLI v0.3.0</span>
         </div>
       </div>
@@ -1420,15 +1420,169 @@
       }
     }
 
-    /* --- Viewer 1: ADMET Radar & Table (Plotly.js) --- */
+    /* --- Cross-Platform Plot Helper (Plotly.js with Built-In SVG Fallback) --- */
+    function renderPlotWithFallback(container, traces, layout, config) {
+      if (!container) return;
+      if (typeof Plotly !== 'undefined' && typeof Plotly.newPlot === 'function') {
+        try {
+          Plotly.newPlot(container, traces, layout || {}, config || { responsive: true });
+          return;
+        } catch (e) {
+          console.warn('Plotly.newPlot failed, using built-in SVG fallback:', e);
+        }
+      }
+      renderSvgChartFallback(container, traces || [], layout || {});
+    }
+
+    function renderSvgChartFallback(container, traces, layout) {
+      const trace = traces[0] || {};
+      const title = (layout && layout.title && (layout.title.text || layout.title)) || '';
+      const w = Math.max(container.clientWidth || 640, 480);
+      const h = Math.max(parseInt(container.style.height, 10) || 340, 240);
+
+      if (trace.type === 'scatterpolar') {
+        const rArr = (trace.r || []).slice(0, -1);
+        const tArr = (trace.theta || []).slice(0, -1);
+        const maxR = (layout.polar && layout.polar.radialaxis && layout.polar.radialaxis.range && layout.polar.radialaxis.range[1]) || 3.4;
+        const cx = w / 2, cy = h / 2 + 10, rad = Math.min(w, h) * 0.34;
+        const n = Math.max(rArr.length, 1);
+        const pts = rArr.map((rv, i) => {
+          const ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
+          const dist = Math.max(0, Math.min(1, rv / maxR)) * rad;
+          return [cx + dist * Math.cos(ang), cy + dist * Math.sin(ang), tArr[i] || '', rv];
+        });
+        const poly = pts.map(p => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join(' ');
+        const rings = [0.33, 0.66, 1.0].map(f => `<circle cx="${cx}" cy="${cy}" r="${(rad * f).toFixed(1)}" fill="none" stroke="#cbd5e1" stroke-dasharray="3,3"/>`).join('');
+        const axes = pts.map((p, i) => {
+          const ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
+          const ex = cx + rad * Math.cos(ang), ey = cy + rad * Math.sin(ang);
+          const lx = cx + (rad + 26) * Math.cos(ang), ly = cy + (rad + 18) * Math.sin(ang);
+          return `<line x1="${cx}" y1="${cy}" x2="${ex.toFixed(1)}" y2="${ey.toFixed(1)}" stroke="#cbd5e1"/>
+                  <text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#334155" font-weight="600">${escapeHtml(String(p[2]))}</text>`;
+        }).join('');
+        const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="5" fill="#2563eb" stroke="#fff" stroke-width="1.5"><title>${escapeHtml(String(p[2]))}: ${p[3]}</title></circle>`).join('');
+        container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;background:#ffffff;border-radius:6px;">
+          <text x="${w / 2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${escapeHtml(String(title))}</text>
+          ${rings}${axes}
+          <polygon points="${poly}" fill="rgba(37,99,235,0.18)" stroke="#2563eb" stroke-width="2"/>
+          ${dots}
+        </svg>`;
+        return;
+      }
+
+      if (trace.type === 'heatmap') {
+        const z = Array.isArray(trace.z) && Array.isArray(trace.z[0]) ? trace.z : [[0]];
+        const rows = z.length, cols = Math.max((z[0] || []).length, 1);
+        const padL = 70, padR = 30, padT = 38, padB = 45;
+        const pw = w - padL - padR, ph = h - padT - padB;
+        const cw = pw / cols, ch = ph / rows;
+        const zmax = trace.zmax || 31.75;
+        let cells = '';
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const val = Number((z[r] && z[r][c]) || 0);
+            const ratio = Math.max(0, Math.min(1, val / (zmax || 1)));
+            const red = Math.round(20 + ratio * 200);
+            const grn = Math.round(150 - ratio * 95);
+            const blu = Math.round(90 - ratio * 60);
+            cells += `<rect x="${(padL + c * cw).toFixed(1)}" y="${(padT + r * ch).toFixed(1)}" width="${Math.max(cw + 0.4, 1).toFixed(1)}" height="${Math.max(ch + 0.4, 1).toFixed(1)}" fill="rgb(${red},${grn},${blu})"><title>[${r + 1}, ${c + 1}]: ${val.toFixed(2)}</title></rect>`;
+          }
+        }
+        container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;background:#ffffff;border-radius:6px;">
+          <text x="${w / 2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${escapeHtml(String(title))}</text>
+          ${cells}
+          <rect x="${padL}" y="${padT}" width="${pw}" height="${ph}" fill="none" stroke="#94a3b8"/>
+        </svg>`;
+        return;
+      }
+
+      if (trace.type === 'bar') {
+        const isHoriz = trace.orientation === 'h';
+        const labels = (isHoriz ? trace.y : trace.x) || [];
+        const rawVals = (isHoriz ? trace.x : trace.y) || [];
+        const vals = rawVals.map(v => Number(v) || 0);
+        const colors = (trace.marker && Array.isArray(trace.marker.color)) ? trace.marker.color : null;
+        const baseColor = (trace.marker && typeof trace.marker.color === 'string') ? trace.marker.color : '#2563eb';
+        const padL = isHoriz ? 155 : 60, padR = 30, padT = 38, padB = 48;
+        const pw = w - padL - padR, ph = h - padT - padB;
+        const n = Math.max(vals.length, 1);
+        const minV = Math.min(0, ...vals), maxV = Math.max(0.001, ...vals);
+        const span = Math.max(Math.abs(maxV - minV), 1);
+
+        if (isHoriz) {
+          const bh = Math.max(6, (ph / n) * 0.72);
+          const bars = vals.map((v, i) => {
+            const y = padT + (i + 0.14) * (ph / n);
+            const bw = Math.max(2, (Math.abs(v) / Math.max(Math.abs(maxV), Math.abs(minV), 1)) * pw);
+            const col = colors ? (colors[i] || baseColor) : baseColor;
+            return `<rect x="${padL}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${col}" rx="2"/>
+                    <text x="${padL - 6}" y="${(y + bh / 2).toFixed(1)}" text-anchor="end" dominant-baseline="middle" font-size="11" fill="#334155">${escapeHtml(String(labels[i] || ''))}</text>
+                    <text x="${(padL + bw + 5).toFixed(1)}" y="${(y + bh / 2).toFixed(1)}" dominant-baseline="middle" font-size="10.5" fill="#0f172a" font-weight="600">${v.toFixed(2)}</text>`;
+          }).join('');
+          container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;background:#ffffff;border-radius:6px;">
+            <text x="${w / 2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${escapeHtml(String(title))}</text>
+            <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + ph}" stroke="#94a3b8"/>
+            ${bars}
+          </svg>`;
+        } else {
+          const bw = Math.max(10, (pw / n) * 0.65);
+          const zeroY = maxV <= 0 ? padT : (minV >= 0 ? padT + ph : padT + (maxV / span) * ph);
+          const bars = vals.map((v, i) => {
+            const x = padL + (i + 0.17) * (pw / n);
+            const bh = Math.max(2, (Math.abs(v) / Math.max(Math.abs(maxV), Math.abs(minV), 1)) * (ph * 0.85));
+            const y = v >= 0 ? (zeroY - bh) : zeroY;
+            const col = colors ? (colors[i] || baseColor) : baseColor;
+            return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${bh.toFixed(1)}" fill="${col}" rx="2"/>
+                    <text x="${(x + bw / 2).toFixed(1)}" y="${padT + ph + 16}" text-anchor="middle" font-size="10.5" fill="#334155">${escapeHtml(String(labels[i] || '').slice(0, 14))}</text>
+                    <text x="${(x + bw / 2).toFixed(1)}" y="${(v >= 0 ? y - 5 : y + bh + 12).toFixed(1)}" text-anchor="middle" font-size="10" fill="#0f172a" font-weight="600">${v.toFixed(1)}</text>`;
+          }).join('');
+          container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;background:#ffffff;border-radius:6px;">
+            <text x="${w / 2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${escapeHtml(String(title))}</text>
+            <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${padL + pw}" y2="${zeroY.toFixed(1)}" stroke="#94a3b8"/>
+            ${bars}
+          </svg>`;
+        }
+        return;
+      }
+
+      // Default line / scatter plot
+      const padL = 55, padR = 25, padT = 38, padB = 42;
+      const pw = w - padL - padR, ph = h - padT - padB;
+      const allX = [], allY = [];
+      traces.forEach(tr => {
+        (tr.x || []).forEach(v => allX.push(Number(v) || 0));
+        (tr.y || []).forEach(v => allY.push(Number(v) || 0));
+      });
+      const minX = Math.min(0, ...allX), maxX = Math.max(1, ...allX);
+      const minY = (layout.yaxis && layout.yaxis.range) ? layout.yaxis.range[0] : Math.min(0, ...allY);
+      const maxY = (layout.yaxis && layout.yaxis.range) ? layout.yaxis.range[1] : Math.max(100, ...allY);
+      const paths = traces.map(tr => {
+        const xs = tr.x || [], ys = tr.y || [];
+        const col = (tr.line && tr.line.color) || '#2563eb';
+        const pts = ys.map((yv, i) => {
+          const xv = xs[i] !== undefined ? Number(xs[i]) : i + 1;
+          const px = padL + ((xv - minX) / Math.max(maxX - minX, 1)) * pw;
+          const py = padT + ph - ((Number(yv) - minY) / Math.max(maxY - minY, 1)) * ph;
+          return `${px.toFixed(1)},${py.toFixed(1)}`;
+        }).join(' ');
+        return pts ? `<polyline fill="none" stroke="${col}" stroke-width="2" points="${pts}"/>` : '';
+      }).join('');
+      container.innerHTML = `<svg viewBox="0 0 ${w} ${h}" style="width:100%;height:100%;background:#ffffff;border-radius:6px;">
+        <text x="${w / 2}" y="22" text-anchor="middle" font-size="13" font-weight="700" fill="#0f172a">${escapeHtml(String(title))}</text>
+        <rect x="${padL}" y="${padT}" width="${pw}" height="${ph}" fill="#f8fafc" stroke="#cbd5e1"/>
+        ${paths}
+      </svg>`;
+    }
+
+    /* --- Viewer 1: ADMET Radar & Table (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedAdmet(box, data, ana) {
       const ENDPOINTS = ['metabolic_stability', 'cyp_inhibition', 'permeability', 'herg_liability', 'solubility'];
       const LABELS = {
         metabolic_stability: 'Metabolic Stability',
-        cyp_inhibition: 'CYP Inhibition',
-        permeability: 'Permeability',
-        herg_liability: 'hERG Liability',
-        solubility: 'Solubility'
+        cyp_inhibition: 'CYP Inhibition Safety',
+        permeability: 'Permeability (Caco-2)',
+        herg_liability: 'hERG Cardiac Safety',
+        solubility: 'Kinetic Solubility'
       };
       const SCORE_MAP = { acceptable: 3, pass: 3, marginal: 2, flag: 2, unacceptable: 1, fail: 1 };
       const COLOR_MAP = { acceptable: '#16a34a', pass: '#16a34a', marginal: '#d97706', flag: '#d97706', unacceptable: '#dc2626', fail: '#dc2626' };
@@ -1436,8 +1590,87 @@
       const epSource = (ana && ana.metrics && ana.metrics.endpoint_results)
         || (data && data.metrics && data.metrics.endpoint_results)
         || (data && data.endpoint_results)
-        || (data && data.predictions)
-        || data || {};
+        || {};
+      const preds = (data && data.predictions) || (ana && ana.metrics && ana.metrics.predictions) || {};
+      const radarAxes = (data && data.radar_axes) || (ana && ana.metrics && ana.metrics.radar_axes) || {};
+
+      function resolveEndpoint(e) {
+        if (epSource[e] !== undefined) {
+          const it = epSource[e];
+          if (typeof it === 'object' && it !== null) {
+            return {
+              status: it.status || 'acceptable',
+              score: SCORE_MAP[it.status] || (typeof it.score === 'number' ? it.score : 2.5),
+              display: it.value !== undefined ? String(it.value) : '—'
+            };
+          }
+          if (typeof it === 'number') {
+            return { status: it >= 2.2 ? 'acceptable' : 'marginal', score: it, display: String(it) };
+          }
+        }
+        if (e === 'metabolic_stability') {
+          const v = preds.hlm_t12_min ?? preds.metabolic_stability;
+          const ax = radarAxes.metabolic_stability;
+          const st = (v !== undefined && v >= 30) ? 'acceptable' : (v !== undefined ? 'marginal' : 'acceptable');
+          return {
+            status: st,
+            score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
+            display: v !== undefined ? `${v} min (HLM t1/2)` : (ax !== undefined ? `${(ax * 100).toFixed(0)}% score` : 'Acceptable')
+          };
+        }
+        if (e === 'cyp_inhibition') {
+          const v = preds.cyp3a4_ic50_um ?? preds.cyp_inhibition;
+          const ax = radarAxes.cyp_safety ?? radarAxes.cyp_inhibition;
+          const st = (v !== undefined && v >= 10) ? 'acceptable' : (v !== undefined ? 'marginal' : 'acceptable');
+          return {
+            status: st,
+            score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
+            display: v !== undefined ? `CYP3A4 IC50 = ${v} µM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}% score` : 'Acceptable')
+          };
+        }
+        if (e === 'permeability') {
+          const v = preds.caco2_papp_1e6 ?? preds.permeability;
+          const ax = radarAxes.permeability;
+          const st = (v !== undefined && v >= 5) ? 'acceptable' : (v !== undefined ? 'marginal' : 'acceptable');
+          return {
+            status: st,
+            score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
+            display: v !== undefined ? `Caco-2 Papp = ${v} × 10⁻⁶ cm/s` : (ax !== undefined ? `${(ax * 100).toFixed(0)}% score` : 'Acceptable')
+          };
+        }
+        if (e === 'herg_liability') {
+          const v = preds.herg_ic50_um ?? preds.herg_liability;
+          const ax = radarAxes.herg_safety ?? radarAxes.herg_liability;
+          const st = (v !== undefined && v >= 30) ? 'acceptable' : (v !== undefined && v >= 10 ? 'marginal' : 'acceptable');
+          return {
+            status: st,
+            score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
+            display: v !== undefined ? `hERG IC50 = ${v} µM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}% score` : 'Acceptable')
+          };
+        }
+        if (e === 'solubility') {
+          const v = preds.kinetic_solubility_um ?? preds.solubility;
+          const ax = radarAxes.solubility;
+          const st = (v !== undefined && v >= 50) ? 'acceptable' : (v !== undefined ? 'marginal' : 'acceptable');
+          return {
+            status: st,
+            score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
+            display: v !== undefined ? `${v} µM (pH 7.4)` : (ax !== undefined ? `${(ax * 100).toFixed(0)}% score` : 'Acceptable')
+          };
+        }
+        return { status: 'acceptable', score: 2.5, display: '—' };
+      }
+
+      const resolved = ENDPOINTS.map(e => ({ key: e, label: LABELS[e], ...resolveEndpoint(e) }));
+      if (preds.oral_bioavailability_pct !== undefined) {
+        resolved.push({
+          key: 'oral_f',
+          label: 'Predicted Oral Bioavailability (%F)',
+          status: preds.oral_bioavailability_pct >= 30 ? 'acceptable' : 'marginal',
+          score: Math.min(3.0, (preds.oral_bioavailability_pct / 100) * 3.5),
+          display: `${preds.oral_bioavailability_pct}%`
+        });
+      }
 
       const plotDiv = document.createElement('div');
       plotDiv.style.height = '340px';
@@ -1445,21 +1678,12 @@
       box.appendChild(plotDiv);
       box.appendChild(tblDiv);
 
-      const theta = ENDPOINTS.map(e => LABELS[e]);
-      const rVals = ENDPOINTS.map(e => {
-        const item = epSource[e];
-        if (!item) return 2;
-        if (typeof item === 'object' && item.status) return SCORE_MAP[item.status] || 2;
-        if (typeof item === 'number') return item;
-        return 2;
-      });
-      const colors = ENDPOINTS.map(e => {
-        const item = epSource[e];
-        const st = (item && item.status) || 'acceptable';
-        return COLOR_MAP[st] || '#3b82f6';
-      });
+      const radarItems = resolved.slice(0, 5);
+      const theta = radarItems.map(r => r.label);
+      const rVals = radarItems.map(r => r.score);
+      const colors = radarItems.map(r => COLOR_MAP[r.status] || '#3b82f6');
 
-      Plotly.newPlot(plotDiv, [{
+      renderPlotWithFallback(plotDiv, [{
         type: 'scatterpolar',
         r: rVals.concat([rVals[0]]),
         theta: theta.concat([theta[0]]),
@@ -1468,7 +1692,7 @@
         line: { color: '#2563eb', width: 2 },
         marker: { size: 9, color: colors.concat([colors[0]]) }
       }], {
-        title: { text: 'ADMET Multipartite Endpoint Profile', font: { size: 14 } },
+        title: { text: 'ADMET Multipartite Endpoint Profile — ' + ((data && data.compound_id) || 'Lead'), font: { size: 14 } },
         polar: {
           radialaxis: { visible: true, range: [0, 3.4], tickvals: [1, 2, 3], ticktext: ['Unacceptable (1)', 'Marginal (2)', 'Acceptable (3)'] }
         },
@@ -1479,17 +1703,16 @@
       tblDiv.innerHTML = `<table class="data-table" style="color:#0f172a;margin-top:8px;">
         <thead><tr><th>ADMET Endpoint</th><th>Status</th><th>Value / Metric</th></tr></thead>
         <tbody>
-          ${ENDPOINTS.map(e => {
-            const item = epSource[e] || {};
-            const st = item.status || (typeof item === 'string' ? item : 'acceptable');
-            const val = item.value !== undefined ? item.value : (typeof item === 'number' ? item : '—');
-            return `<tr><td><strong>${LABELS[e]}</strong></td><td style="color:${COLOR_MAP[st] || '#0f172a'};font-weight:700;">${escapeHtml(st)}</td><td>${escapeHtml(String(val))}</td></tr>`;
-          }).join('')}
+          ${resolved.map(r => `<tr>
+            <td><strong>${escapeHtml(r.label)}</strong></td>
+            <td style="color:${COLOR_MAP[r.status] || '#0f172a'};font-weight:700;">${escapeHtml(r.status.toUpperCase())}</td>
+            <td><strong>${escapeHtml(r.display)}</strong></td>
+          </tr>`).join('')}
         </tbody>
       </table>`;
     }
 
-    /* --- Viewer 2: Per-Residue pLDDT Confidence (Plotly.js) --- */
+    /* --- Viewer 2: Per-Residue pLDDT Confidence (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedPlddt(box, data) {
       const plotDiv = document.createElement('div');
       plotDiv.style.height = '400px';
@@ -1535,7 +1758,7 @@
         { type: 'rect', y0: 0, y1: 50, x0: 0, x1: totalRes + 1, fillcolor: 'rgba(255,125,69,0.15)', line: { width: 0 }, layer: 'below' }
       ];
 
-      Plotly.newPlot(plotDiv, traces, {
+      renderPlotWithFallback(plotDiv, traces, {
         title: { text: 'Per-Residue AlphaFold pLDDT Confidence' },
         xaxis: { title: 'Residue Number', range: [0, totalRes + 1] },
         yaxis: { title: 'pLDDT (0–100)', range: [0, 100] },
@@ -1544,7 +1767,7 @@
       }, { responsive: true });
     }
 
-    /* --- Viewer 3: PAE 2D Heatmap (Plotly.js) --- */
+    /* --- Viewer 3: PAE 2D Heatmap (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedPae(box, paeData, name) {
       const plotDiv = document.createElement('div');
       plotDiv.style.height = '410px';
@@ -1555,18 +1778,18 @@
         if (Array.isArray(paeData[0])) matrix = paeData;
         else if (paeData[0] && paeData[0].predicted_aligned_error) {
           matrix = paeData[0].predicted_aligned_error;
-          maxPAE = paeData[0].max_predicted_aligned_error || 31.75;
+          maxPAE = paeData[0].max_predicted_aligned_error || paeData[0].max_pae || 31.75;
         }
       } else if (paeData && paeData.predicted_aligned_error) {
         matrix = paeData.predicted_aligned_error;
-        maxPAE = paeData.max_predicted_aligned_error || 31.75;
+        maxPAE = paeData.max_predicted_aligned_error || paeData.max_pae || 31.75;
       }
 
       const colorscale = [
         [0, '#00441b'], [0.2, '#41ae76'], [0.4, '#99d8c9'],
         [0.6, '#e5f5e0'], [0.8, '#fdbb84'], [1, '#b30000']
       ];
-      Plotly.newPlot(plotDiv, [{
+      renderPlotWithFallback(plotDiv, [{
         z: matrix || [[0]],
         type: 'heatmap',
         colorscale: colorscale,
@@ -1583,25 +1806,34 @@
 
     /* --- Viewer 4: gnomAD Genetic Constraint & OpenTargets/ClinVar Studio --- */
     function renderEmbeddedConstraint(box, data, filename, ana) {
-      const gene = (data && data.data && data.data.gene) ? data.data.gene : ((data && data.gene) || data || {});
-      const c = gene.gnomad_constraint || gene;
-      const sym = gene.symbol || (data && data.target) || filename.replace(/\.(gnomad-constraint|json)$/i, '');
+      const geneObj = (data && data.data && data.data.gene && typeof data.data.gene === 'object')
+        ? data.data.gene
+        : ((data && data.gene && typeof data.gene === 'object') ? data.gene : (data || {}));
+      const c = geneObj.gnomad_constraint
+        || (data && data.constraint)
+        || (ana && ana.metrics && ana.metrics.constraint)
+        || geneObj
+        || {};
+      const sym = (data && typeof data.gene === 'string' ? data.gene : null)
+        || geneObj.symbol
+        || (data && data.target)
+        || filename.replace(/\.(gnomad-constraint|json)$/i, '');
       const items = [
-        { k: 'pLI', label: 'pLI (LoF Intolerance)', v: c.pLI, desc: 'Constrained > 0.9' },
-        { k: 'LOEUF', label: 'LOEUF Upper Bound', v: c.oe_lof_upper !== undefined ? c.oe_lof_upper : c.loeuf, desc: 'Constrained < 0.35' },
-        { k: 'oe_lof', label: 'o/e Loss-of-Function', v: c.oe_lof, desc: 'Observed / Expected LoF' },
+        { k: 'pLI', label: 'pLI (LoF Intolerance)', v: c.pLI ?? (ana && ana.metrics && ana.metrics.pLI), desc: 'Constrained > 0.9' },
+        { k: 'LOEUF', label: 'LOEUF Upper Bound', v: c.oe_lof_upper ?? c.loeuf ?? (ana && ana.metrics && ana.metrics.loeuf), desc: 'Constrained < 0.35' },
+        { k: 'oe_lof', label: 'o/e Loss-of-Function', v: c.oe_lof ?? c.oe_lof_upper ?? c.loeuf, desc: 'Observed / Expected LoF' },
         { k: 'oe_mis', label: 'o/e Missense', v: c.oe_mis, desc: 'Observed / Expected Missense' },
-        { k: 'lof_z', label: 'LoF Z-Score', v: c.lof_z, desc: 'Significant > 3.09' },
-        { k: 'mis_z', label: 'Missense Z-Score', v: c.mis_z, desc: 'Significant > 3.09' }
+        { k: 'mis_z', label: 'Missense Z-Score', v: c.mis_z, desc: 'Significant > 3.09' },
+        { k: 'syn_z', label: 'Synonymous Z-Score', v: c.syn_z ?? c.lof_z, desc: 'Baseline Z-Score' }
       ];
 
       const associations = (data && (data.disease_associations || data.associations))
-        || (gene && gene.disease_associations)
+        || (geneObj && geneObj.disease_associations)
         || (ana && ana.metrics && ana.metrics.disease_associations)
         || [];
 
       const clinvar = (data && (data.clinvar_summary || data.clinical_variants))
-        || (gene && gene.clinvar_summary)
+        || (geneObj && geneObj.clinvar_summary)
         || null;
 
       let assocHtml = '';
@@ -1665,11 +1897,11 @@
         </div>
       `;
 
-      if (Array.isArray(associations) && associations.length > 0 && typeof Plotly !== 'undefined') {
+      if (Array.isArray(associations) && associations.length > 0) {
         const plotEl = box.querySelector('#constraint-assoc-plot');
         if (plotEl) {
           const sortedA = associations.slice().sort((a, b) => ((a.score ?? a.overall_score ?? 0) - (b.score ?? b.overall_score ?? 0)));
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: sortedA.map(a => a.score ?? a.overall_score ?? 0),
             y: sortedA.map(a => a.disease_name || a.disease || a.name || 'Disease'),
             type: 'bar',
@@ -1684,10 +1916,10 @@
       }
     }
 
-    /* --- Viewer 5: Tissue Expression Bar Chart (Plotly.js) --- */
+    /* --- Viewer 5: Tissue Expression Bar Chart (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedExpression(box, jsonData, filename) {
       const plotDiv = document.createElement('div');
-      plotDiv.style.height = '410px';
+      plotDiv.style.height = '380px';
       box.appendChild(plotDiv);
 
       let entry = Array.isArray(jsonData) ? jsonData[0] : ((jsonData && jsonData.data && Array.isArray(jsonData.data)) ? jsonData.data[0] : jsonData);
@@ -1699,7 +1931,11 @@
           if (m) tissues.push({ tissue: m[1], val: parseFloat(entry[k]) || 0 });
         });
         if (tissues.length === 0 && Array.isArray(entry.tissues)) {
-          entry.tissues.forEach(t => tissues.push({ tissue: t.tissue || t.name, val: parseFloat(t.nTPM || t.tpm || t.value) || 0 }));
+          entry.tissues.forEach(t => tissues.push({
+            tissue: t.tissue || t.name || 'Tissue',
+            val: parseFloat(t.nTPM ?? t.median_tpm ?? t.tpm ?? t.value ?? 0) || 0,
+            pct: t.pct_expressed
+          }));
         }
         if (tissues.length === 0) {
           Object.keys(entry).forEach(k => {
@@ -1708,16 +1944,16 @@
         }
       }
       tissues.sort((a, b) => a.val - b.val);
-      Plotly.newPlot(plotDiv, [{
+      renderPlotWithFallback(plotDiv, [{
         x: tissues.map(t => t.val),
         y: tissues.map(t => t.tissue),
         type: 'bar',
         orientation: 'h',
-        marker: { color: tissues.map(t => t.val > 10 ? '#dc2626' : (t.val > 2 ? '#d97706' : '#3b82f6')) }
+        marker: { color: tissues.map(t => t.val > 30 ? '#dc2626' : (t.val > 15 ? '#d97706' : '#3b82f6')) }
       }], {
-        title: { text: 'Tissue Expression Profile (nTPM) — ' + filename },
-        xaxis: { title: 'nTPM' },
-        margin: { t: 45, l: 150, r: 25, b: 45 }
+        title: { text: 'Tissue Expression Profile (TPM / nTPM) — ' + filename },
+        xaxis: { title: 'Median TPM / nTPM' },
+        margin: { t: 45, l: 160, r: 25, b: 45 }
       }, { responsive: true });
     }
 
@@ -1728,33 +1964,45 @@
         <div style="padding:8px;">
           <h3 style="margin:0 0 8px;color:#0f172a;">Binding Site Pockets (${pockets.length} detected)</h3>
           <table class="data-table" style="color:#0f172a;">
-            <thead><tr><th>Rank</th><th>Score</th><th>Druggability</th><th>Volume (Å³)</th><th>Total SASA (Å²)</th><th>Alpha Spheres</th></tr></thead>
+            <thead><tr><th>Pocket ID / Rank</th><th>Pocket Name</th><th>Druggability</th><th>Volume (Å³)</th><th>Polar / Total SASA (Å²)</th><th>Hydrophobicity</th><th>Key Lining Residues</th></tr></thead>
             <tbody>
-              ${pockets.map(p => `
-                <tr>
-                  <td><strong>#${escapeHtml(p.rank ?? '—')}</strong></td>
-                  <td>${typeof p.score === 'number' ? p.score.toFixed(3) : '—'}</td>
-                  <td><strong style="color:${(p.druggability_score || 0) >= 0.5 ? '#16a34a' : '#d97706'}">${typeof p.druggability_score === 'number' ? p.druggability_score.toFixed(3) : '—'}</strong></td>
-                  <td>${typeof p.volume === 'number' ? p.volume.toFixed(1) : '—'}</td>
-                  <td>${typeof p.total_sasa === 'number' ? p.total_sasa.toFixed(1) : '—'}</td>
-                  <td>${escapeHtml(p.n_alpha_spheres ?? '—')}</td>
-                </tr>
-              `).join('')}
+              ${pockets.map((p, idx) => {
+                const pid = p.pocket_id || ('#' + (p.rank ?? (idx + 1)));
+                const pname = p.name || ('Pocket ' + (p.rank ?? (idx + 1)));
+                const drug = p.druggability_score ?? p.score;
+                const vol = p.volume_a3 ?? p.volume;
+                const sasa = p.polar_sasa ?? p.total_sasa;
+                const hydro = p.hydrophobicity_score;
+                const residues = Array.isArray(p.key_residues) ? p.key_residues.join(', ') : (p.n_alpha_spheres !== undefined ? `${p.n_alpha_spheres} alpha spheres` : '—');
+                return `
+                  <tr>
+                    <td><strong><code>${escapeHtml(String(pid))}</code></strong></td>
+                    <td><strong>${escapeHtml(String(pname))}</strong></td>
+                    <td><strong style="color:${(drug || 0) >= 0.6 ? '#16a34a' : '#d97706'}">${typeof drug === 'number' ? drug.toFixed(3) : '—'}</strong></td>
+                    <td>${typeof vol === 'number' ? vol.toFixed(1) : '—'}</td>
+                    <td>${typeof sasa === 'number' ? sasa.toFixed(1) : '—'}</td>
+                    <td>${typeof hydro === 'number' ? hydro.toFixed(1) : '—'}</td>
+                    <td><code style="font-size:11px;">${escapeHtml(String(residues))}</code></td>
+                  </tr>
+                `;
+              }).join('')}
             </tbody>
           </table>
         </div>
       `;
     }
 
-    /* --- Viewer 7: Docking Pose Scores (Plotly.js) --- */
+    /* --- Viewer 7: Docking Pose Scores (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedDockingScores(box, jsonData) {
       const plotDiv = document.createElement('div');
-      plotDiv.style.height = '390px';
+      plotDiv.style.height = '340px';
+      const tblDiv = document.createElement('div');
       box.appendChild(plotDiv);
+      box.appendChild(tblDiv);
       const poses = Array.isArray(jsonData) ? jsonData : ((jsonData && (jsonData.poses || jsonData.results || jsonData.modes)) || []);
-      const labels = poses.map((p, i) => p.pose_id || p.id || ('Pose ' + (p.mode || i + 1)));
-      const affinities = poses.map(p => parseFloat(p.affinity ?? p.binding_affinity ?? p.score ?? 0));
-      Plotly.newPlot(plotDiv, [{
+      const labels = poses.map((p, i) => p.pose_id || p.id || ('Pose #' + (p.pose_rank ?? p.mode ?? (i + 1))));
+      const affinities = poses.map(p => parseFloat(p.affinity_kcal_mol ?? p.affinity ?? p.binding_affinity ?? p.score ?? 0));
+      renderPlotWithFallback(plotDiv, [{
         x: labels,
         y: affinities,
         type: 'bar',
@@ -1764,26 +2012,79 @@
         yaxis: { title: 'Affinity (kcal/mol)' },
         margin: { t: 45, l: 60, r: 30, b: 45 }
       }, { responsive: true });
+
+      if (poses.length > 0) {
+        tblDiv.innerHTML = `<table class="data-table" style="color:#0f172a;margin-top:8px;">
+          <thead><tr><th>Pose</th><th>Affinity (kcal/mol)</th><th>RMSD l.b. (Å)</th><th>Asp12 Salt-Bridge (Å)</th></tr></thead>
+          <tbody>
+            ${poses.map((p, i) => {
+              const aff = parseFloat(p.affinity_kcal_mol ?? p.affinity ?? p.binding_affinity ?? p.score ?? 0);
+              const rmsd = p.rmsd_lb ?? p.rmsd ?? 0;
+              const sb = p.asp12_salt_bridge_a ?? '—';
+              return `<tr>
+                <td><strong>${escapeHtml(labels[i])}</strong></td>
+                <td><strong style="color:${aff <= -9.0 ? '#16a34a' : '#2563eb'};">${aff.toFixed(2)} kcal/mol</strong></td>
+                <td>${typeof rmsd === 'number' ? rmsd.toFixed(2) + ' Å' : escapeHtml(String(rmsd))}</td>
+                <td>${typeof sb === 'number' ? sb.toFixed(2) + ' Å' : escapeHtml(String(sb))}</td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>`;
+      }
     }
 
-    /* --- Viewer 8: Docking Contact Map (Plotly.js) --- */
+    /* --- Viewer 8: Docking Contact Map (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedContacts(box, data, name) {
       const plotDiv = document.createElement('div');
-      plotDiv.style.height = '380px';
+      plotDiv.style.height = '310px';
+      const tblDiv = document.createElement('div');
       box.appendChild(plotDiv);
+      box.appendChild(tblDiv);
+
       const contacts = (data && data.contacts) || [];
-      const best = contacts[0] || { residues: [] };
-      const res = best.residues || [];
-      Plotly.newPlot(plotDiv, [{
-        x: res.map(r => `${r.res_name || ''}${r.res_num || ''} (${r.chain || 'A'})`),
+      let resLabels = [], distances = [], flatRows = [];
+      if (contacts.length > 0 && contacts[0] && Array.isArray(contacts[0].residues)) {
+        const res = contacts[0].residues;
+        resLabels = res.map(r => `${r.res_name || ''}${r.res_num || ''} (${r.chain || 'A'})`);
+        distances = res.map(r => parseFloat(r.min_distance ?? r.distance_a ?? 0));
+        flatRows = res.map(r => ({
+          residue: `${r.res_name || ''}${r.res_num || ''}`,
+          interaction: r.interaction || 'contact',
+          distance_a: r.min_distance ?? r.distance_a,
+          energy_kcal: r.energy_kcal ?? '—'
+        }));
+      } else {
+        flatRows = contacts;
+        resLabels = contacts.map(c => c.residue || `${c.res_name || ''}${c.res_num || ''}`);
+        distances = contacts.map(c => parseFloat(c.distance_a ?? c.min_distance ?? 0));
+      }
+
+      renderPlotWithFallback(plotDiv, [{
+        x: resLabels,
         y: [name.replace(/\.contacts\.json$/i, '')],
-        z: [res.map(r => r.min_distance || 0)],
+        z: [distances.length ? distances : [0]],
         type: 'heatmap',
+        zmin: 2.0,
+        zmax: 4.5,
         colorscale: 'YlGnBu'
       }], {
-        title: { text: 'Per-Residue Pocket Contact Distances (Å)' },
-        margin: { t: 45, l: 100, r: 30, b: 90 }
+        title: { text: 'Per-Residue Pocket Contact Distances (Å) — ' + ((data && data.ligand) || name) },
+        margin: { t: 45, l: 120, r: 30, b: 60 }
       }, { responsive: true });
+
+      if (flatRows.length > 0) {
+        tblDiv.innerHTML = `<table class="data-table" style="color:#0f172a;margin-top:8px;">
+          <thead><tr><th>Pocket Residue</th><th>Interaction Mode</th><th>Distance (Å)</th><th>Interaction Energy (kcal/mol)</th></tr></thead>
+          <tbody>
+            ${flatRows.map(r => `<tr>
+              <td><strong><code>${escapeHtml(String(r.residue || '—'))}</code></strong></td>
+              <td><span style="background:#e2e8f0;padding:2px 6px;border-radius:4px;font-size:11px;">${escapeHtml(String(r.interaction || 'contact'))}</span></td>
+              <td><strong>${typeof r.distance_a === 'number' ? r.distance_a.toFixed(2) + ' Å' : escapeHtml(String(r.distance_a ?? '—'))}</strong></td>
+              <td style="color:#16a34a;font-weight:700;">${typeof r.energy_kcal === 'number' ? r.energy_kcal.toFixed(2) + ' kcal/mol' : escapeHtml(String(r.energy_kcal ?? '—'))}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>`;
+      }
     }
 
     /* --- Viewer 9: Hypothesis ELO Tournament, Multi-Axis Review & Lineage Studio --- */
@@ -1861,10 +2162,10 @@
         </div>
       `;
 
-      if (sorted.length > 0 && typeof Plotly !== 'undefined') {
+      if (sorted.length > 0) {
         const plotEl = box.querySelector('#tournament-elo-plot');
         if (plotEl) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: sorted.map(h => h.id || (h.title || '').slice(0, 24)),
             y: sorted.map(h => Math.round(h.elo_rating || h.elo || 1500)),
             type: 'bar',
@@ -1882,23 +2183,43 @@
 
     /* --- Viewer 10: BRICS Fragment & SAR Studio --- */
     function renderEmbeddedBrics(box, data, ana) {
+      const fragments = (data && Array.isArray(data.fragments)) ? data.fragments : [];
       const compounds = Array.isArray(data) ? data : ((data && (data.compounds || data.series)) || []);
       const cliffs = (data && data.property_cliffs) || (ana && ana.metrics && ana.metrics.property_cliffs) || [];
       box.innerHTML = `
         <div style="padding:8px;">
-          <h3 style="margin:0 0 8px;color:#0f172a;">BRICS Fragment &amp; SAR Series (${compounds.length} Compounds)</h3>
-          <table class="data-table" style="color:#0f172a;">
-            <thead><tr><th>Compound ID</th><th>SMILES</th><th>Fragments / Properties</th></tr></thead>
-            <tbody>
-              ${compounds.map(c => `
-                <tr>
-                  <td><strong>${escapeHtml(c.compound_id || c.id || c.name || 'Compound')}</strong></td>
-                  <td><code style="font-size:11px;">${escapeHtml(c.smiles || '')}</code></td>
-                  <td>${escapeHtml(JSON.stringify(c.fragments || c.properties || {}))}</td>
-                </tr>
-              `).join('')}
-            </tbody>
-          </table>
+          <h3 style="margin:0 0 8px;color:#0f172a;">BRICS Fragment Decomposition &amp; Matched-Pair SAR Studio (${fragments.length || compounds.length} Records)</h3>
+          ${fragments.length > 0 ? `
+            <table class="data-table" style="color:#0f172a;margin-bottom:12px;">
+              <thead><tr><th>Fragment ID</th><th>Structural Role</th><th>BRICS SMILES</th><th>MW (Da)</th><th>Matched-Pair ΔpKd</th></tr></thead>
+              <tbody>
+                ${fragments.map(f => {
+                  const dpkd = f.matched_pair_delta_pkd;
+                  return `<tr>
+                    <td><strong><code>${escapeHtml(f.fragment_id || f.id || 'FRAG')}</code></strong></td>
+                    <td><strong>${escapeHtml(f.role || 'Substructure')}</strong></td>
+                    <td><code style="font-size:11px;">${escapeHtml(f.smiles || '')}</code></td>
+                    <td>${typeof f.mw === 'number' ? f.mw.toFixed(1) : escapeHtml(String(f.mw ?? '—'))}</td>
+                    <td><strong style="color:${(dpkd || 0) >= 1.5 ? '#16a34a' : '#2563eb'};">${typeof dpkd === 'number' ? (dpkd >= 0 ? '+' : '') + dpkd.toFixed(2) : escapeHtml(String(dpkd ?? '—'))}</strong></td>
+                  </tr>`;
+                }).join('')}
+              </tbody>
+            </table>
+          ` : ''}
+          ${compounds.length > 0 ? `
+            <table class="data-table" style="color:#0f172a;">
+              <thead><tr><th>Compound ID</th><th>SMILES</th><th>Fragments / Properties</th></tr></thead>
+              <tbody>
+                ${compounds.map(c => `
+                  <tr>
+                    <td><strong>${escapeHtml(c.compound_id || c.id || c.name || 'Compound')}</strong></td>
+                    <td><code style="font-size:11px;">${escapeHtml(c.smiles || '')}</code></td>
+                    <td>${escapeHtml(JSON.stringify(c.fragments || c.properties || {}))}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          ` : ''}
           ${cliffs.length > 0 ? `
             <h4 style="margin:12px 0 6px;color:#0f172a;">Detected SAR Property Cliffs (${cliffs.length})</h4>
             <table class="data-table" style="color:#0f172a;">
@@ -1918,7 +2239,7 @@
       `;
     }
 
-    /* --- Viewer 15: In Vivo PK, Allometric Scaling & DDI Studio (Plotly.js) --- */
+    /* --- Viewer 15: In Vivo PK, Allometric Scaling & DDI Studio (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedPkStudio(box, data, ana, filename) {
       const metrics = (ana && ana.metrics) || (data && data.metrics) || data || {};
       const nca = metrics.nca_parameters || data.nca_parameters || metrics;
@@ -1954,9 +2275,9 @@
       `;
 
       const plotEl = box.querySelector('#pk-studio-plot');
-      if (plotEl && typeof Plotly !== 'undefined') {
+      if (plotEl) {
         if (timeArr.length > 0 && concArr.length > 0) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: timeArr,
             y: concArr,
             type: 'scatter',
@@ -1976,7 +2297,7 @@
       }
     }
 
-    /* --- Viewer 16: Bioactivity, Dose-Response & Target Selectivity Studio (Plotly.js) --- */
+    /* --- Viewer 16: Bioactivity, Dose-Response & Target Selectivity Studio (Plotly.js + SVG Fallback) --- */
     function renderEmbeddedBioactivityStudio(box, data, ana, filename) {
       const m = (ana && ana.metrics) || (data && data.metrics) || data || {};
       const onTarget = data.on_target || m.on_target || null;
@@ -2035,9 +2356,9 @@
       `;
 
       const plotEl = box.querySelector('#bioactivity-studio-plot');
-      if (plotEl && typeof Plotly !== 'undefined') {
+      if (plotEl) {
         if (entries.length > 0) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: entries.map(e => e.target),
             y: entries.map(e => e.ic50),
             type: 'bar',
@@ -2050,7 +2371,7 @@
             margin: { t: 35, l: 60, r: 25, b: 45 }
           }, { responsive: true });
         } else if (doses.length > 0 && responses.length > 0) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: doses,
             y: responses,
             type: 'scatter',
@@ -2230,9 +2551,9 @@
       `;
 
       const plotEl = box.querySelector('#omics-studio-plot');
-      if (plotEl && typeof Plotly !== 'undefined') {
+      if (plotEl) {
         if (Array.isArray(tracks) && tracks.length > 0) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: tracks.map(t => t.track || t.assay || t.cell_type || 'Track'),
             y: tracks.map(t => parseFloat(t.delta_score ?? t.score ?? t.value ?? 0)),
             type: 'bar',
@@ -2243,7 +2564,7 @@
             margin: { t: 35, l: 55, r: 20, b: 55 }
           }, { responsive: true });
         } else if (Array.isArray(brainRegions) && brainRegions.length > 0) {
-          Plotly.newPlot(plotEl, [{
+          renderPlotWithFallback(plotEl, [{
             x: brainRegions.map(b => b.region || b.structure || b.name),
             y: brainRegions.map(b => parseFloat(b.z_score ?? b.expression ?? b.value ?? 0)),
             type: 'bar',
@@ -2323,96 +2644,563 @@
       `;
     }
 
-    /* --- Viewer 11: 3D Protein Structure Studio (3Dmol.js) --- */
+    /* --- Cross-Platform 3D Molecular Engine (3Dmol.js WebGL + Interactive HTML5 Canvas2D Software 3D Fallback) --- */
+    function canUseWebGL() {
+      if (window.__FORCE_CANVAS_3D__) return false;
+      if (typeof $3Dmol === 'undefined' || typeof $3Dmol.createViewer !== 'function') return false;
+      try {
+        const c = document.createElement('canvas');
+        const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        return !!(gl && typeof gl.getExtension === 'function');
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function parseStructureModelsToAtoms(models) {
+      const atoms = [];
+      const bonds = [];
+      const CPK_COLORS = {
+        C: '#334155', N: '#2563eb', O: '#dc2626', S: '#d97706', P: '#ea580c',
+        F: '#16a34a', CL: '#16a34a', BR: '#991b1b', H: '#94a3b8'
+      };
+
+      (models || []).forEach((m, modelIdx) => {
+        const raw = String(m.data || '');
+        const fmt = (m.format || 'pdb').toLowerCase();
+        const startIdx = atoms.length;
+
+        if (fmt === 'sdf') {
+          const lines = raw.split(/\r?\n/);
+          let countsLineIdx = -1;
+          for (let i = 0; i < Math.min(lines.length, 10); i++) {
+            if (lines[i].includes('V2000') || lines[i].includes('V3000')) {
+              countsLineIdx = i;
+              break;
+            }
+          }
+          if (countsLineIdx >= 0) {
+            const parts = lines[countsLineIdx].trim().split(/\s+/);
+            const nAtoms = parseInt(parts[0], 10) || 0;
+            const nBonds = parseInt(parts[1], 10) || 0;
+            for (let a = 0; a < nAtoms; a++) {
+              const ln = lines[countsLineIdx + 1 + a] || '';
+              const cols = ln.trim().split(/\s+/);
+              if (cols.length >= 4) {
+                const elem = (cols[3] || 'C').toUpperCase();
+                atoms.push({
+                  x: parseFloat(cols[0]) || 0,
+                  y: parseFloat(cols[1]) || 0,
+                  z: parseFloat(cols[2]) || 0,
+                  elem: elem,
+                  atomName: elem + (a + 1),
+                  resn: m.label || 'LIG',
+                  resi: 1,
+                  b: 90,
+                  modelIdx: modelIdx,
+                  role: m.role || 'ligand',
+                  color: m.role === 'ligand' && elem === 'C' ? '#16a34a' : (CPK_COLORS[elem] || '#475569')
+                });
+              }
+            }
+            for (let b = 0; b < nBonds; b++) {
+              const ln = lines[countsLineIdx + 1 + nAtoms + b] || '';
+              const cols = ln.trim().split(/\s+/);
+              if (cols.length >= 2) {
+                const a1 = (parseInt(cols[0], 10) || 1) - 1 + startIdx;
+                const a2 = (parseInt(cols[1], 10) || 1) - 1 + startIdx;
+                const order = parseInt(cols[2], 10) || 1;
+                if (atoms[a1] && atoms[a2]) bonds.push({ a1, a2, order, kind: 'covalent' });
+              }
+            }
+          }
+        } else if (fmt === 'cif') {
+          const lines = raw.split(/\r?\n/);
+          const headers = [];
+          let inAtomLoop = false;
+          lines.forEach(line => {
+            const t = line.trim();
+            if (t.startsWith('_atom_site.')) {
+              inAtomLoop = true;
+              headers.push(t.replace('_atom_site.', ''));
+            } else if (inAtomLoop && (t.startsWith('ATOM ') || t.startsWith('HETATM '))) {
+              const cols = t.split(/\s+/);
+              const idxX = headers.indexOf('Cartn_x') >= 0 ? headers.indexOf('Cartn_x') : 7;
+              const idxY = headers.indexOf('Cartn_y') >= 0 ? headers.indexOf('Cartn_y') : 8;
+              const idxZ = headers.indexOf('Cartn_z') >= 0 ? headers.indexOf('Cartn_z') : 9;
+              const idxElem = headers.indexOf('type_symbol') >= 0 ? headers.indexOf('type_symbol') : 2;
+              const idxAtom = headers.indexOf('label_atom_id') >= 0 ? headers.indexOf('label_atom_id') : 3;
+              const idxComp = headers.indexOf('label_comp_id') >= 0 ? headers.indexOf('label_comp_id') : 4;
+              const idxSeq = headers.indexOf('label_seq_id') >= 0 ? headers.indexOf('label_seq_id') : 6;
+              const idxB = headers.indexOf('B_iso_or_equiv') >= 0 ? headers.indexOf('B_iso_or_equiv') : 11;
+              const elem = (cols[idxElem] || 'C').toUpperCase();
+              const bVal = parseFloat(cols[idxB]) || 85;
+              const plddtCol = bVal >= 90 ? '#0053d6' : (bVal >= 70 ? '#38bdf8' : (bVal >= 50 ? '#eab308' : '#f97316'));
+              atoms.push({
+                x: parseFloat(cols[idxX]) || 0,
+                y: parseFloat(cols[idxY]) || 0,
+                z: parseFloat(cols[idxZ]) || 0,
+                elem: elem,
+                atomName: cols[idxAtom] || elem,
+                resn: cols[idxComp] || 'RES',
+                resi: parseInt(cols[idxSeq], 10) || 1,
+                b: bVal,
+                modelIdx: modelIdx,
+                role: m.role || 'receptor',
+                color: elem === 'C' ? plddtCol : (CPK_COLORS[elem] || plddtCol)
+              });
+            }
+          });
+        } else {
+          // PDB or PDBQT
+          const lines = raw.split(/\r?\n/);
+          let currentPose = 1;
+          lines.forEach(line => {
+            if (line.startsWith('MODEL')) {
+              const mp = line.trim().split(/\s+/);
+              currentPose = parseInt(mp[1], 10) || currentPose;
+            }
+            if ((line.startsWith('ATOM') || line.startsWith('HETATM')) && (currentPose === 1 || m.allPoses)) {
+              const x = parseFloat(line.substring(30, 38));
+              const y = parseFloat(line.substring(38, 46));
+              const z = parseFloat(line.substring(46, 54));
+              if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
+                const atomName = line.substring(12, 16).trim() || 'C';
+                const resn = line.substring(17, 20).trim() || 'RES';
+                const resi = parseInt(line.substring(22, 26).trim(), 10) || 1;
+                const bVal = parseFloat(line.substring(60, 66).trim()) || 80;
+                const elemRaw = (line.substring(76, 78).trim() || atomName.replace(/[0-9]/g, '').slice(0, 1) || 'C').toUpperCase();
+                const isLig = m.role === 'ligand' || resn === 'LIG' || resn === 'UNL';
+                atoms.push({
+                  x, y, z,
+                  elem: elemRaw,
+                  atomName,
+                  resn,
+                  resi,
+                  b: bVal,
+                  modelIdx,
+                  role: isLig ? 'ligand' : 'receptor',
+                  color: isLig ? (elemRaw === 'C' ? '#16a34a' : (CPK_COLORS[elemRaw] || '#16a34a'))
+                               : (elemRaw === 'C' ? '#0284c7' : (CPK_COLORS[elemRaw] || '#64748b'))
+                });
+              }
+            }
+          });
+        }
+
+        // Infer covalent & C-alpha trace bonds for this model if not already populated from SDF
+        const endIdx = atoms.length;
+        let prevCaIdx = -1;
+        for (let i = startIdx; i < endIdx; i++) {
+          if (atoms[i].atomName === 'CA') {
+            if (prevCaIdx >= 0) {
+              const dx = atoms[i].x - atoms[prevCaIdx].x;
+              const dy = atoms[i].y - atoms[prevCaIdx].y;
+              const dz = atoms[i].z - atoms[prevCaIdx].z;
+              const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+              if (d <= 6.5) bonds.push({ a1: prevCaIdx, a2: i, order: 1, kind: 'backbone' });
+            }
+            prevCaIdx = i;
+          }
+          for (let j = i + 1; j < endIdx; j++) {
+            const dx = atoms[i].x - atoms[j].x;
+            const dy = atoms[i].y - atoms[j].y;
+            const dz = atoms[i].z - atoms[j].z;
+            const d2 = dx * dx + dy * dy + dz * dz;
+            if (d2 > 0.16 && d2 <= 3.85) {
+              bonds.push({ a1: i, a2: j, order: 1, kind: 'covalent' });
+            }
+          }
+        }
+      });
+
+      return { atoms, bonds };
+    }
+
+    function renderCanvas3DMoleculeFallback(container, models, styleMode) {
+      container.innerHTML = '';
+      const parsed = parseStructureModelsToAtoms(models);
+      const atoms = parsed.atoms;
+      const bonds = parsed.bonds;
+
+      if (atoms.length === 0) {
+        container.innerHTML = '<div style="padding:18px;color:#64748b;">No 3D coordinates found in artifact payload.</div>';
+        return null;
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      canvas.style.display = 'block';
+      canvas.style.cursor = 'grab';
+      container.appendChild(canvas);
+
+      // Compute centroid & radius
+      let cx = 0, cy = 0, cz = 0;
+      atoms.forEach(a => { cx += a.x; cy += a.y; cz += a.z; });
+      cx /= atoms.length; cy /= atoms.length; cz /= atoms.length;
+      let maxR = 1.0;
+      atoms.forEach(a => {
+        const d = Math.sqrt((a.x - cx) ** 2 + (a.y - cy) ** 2 + (a.z - cz) ** 2);
+        if (d > maxR) maxR = d;
+      });
+
+      const state = {
+        rotX: 0.35,
+        rotY: -0.55,
+        zoom: 1.0,
+        style: styleMode || 'cartoon',
+        dragging: false,
+        lastX: 0,
+        lastY: 0,
+        hoverAtom: null
+      };
+
+      function project(a, w, h) {
+        let x = a.x - cx, y = a.y - cy, z = a.z - cz;
+        // Rotate Y then X
+        const cosY = Math.cos(state.rotY), sinY = Math.sin(state.rotY);
+        const x1 = x * cosY + z * sinY;
+        const z1 = -x * sinY + z * cosY;
+        const cosX = Math.cos(state.rotX), sinX = Math.sin(state.rotX);
+        const y2 = y * cosX - z1 * sinX;
+        const z2 = y * sinX + z1 * cosX;
+
+        const scale = (Math.min(w, h) * 0.38 * state.zoom) / Math.max(maxR, 2.5);
+        const persp = 1 + (z2 / (maxR * 4.5));
+        return {
+          sx: w / 2 + x1 * scale * persp,
+          sy: h / 2 - y2 * scale * persp,
+          z: z2,
+          scale: scale * persp
+        };
+      }
+
+      function draw() {
+        const rect = container.getBoundingClientRect();
+        const w = Math.max(rect.width || 620, 360);
+        const h = Math.max(rect.height || 440, 320);
+        const dpr = window.devicePixelRatio || 1;
+        if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+          canvas.width = Math.round(w * dpr);
+          canvas.height = Math.round(h * dpr);
+        }
+        const ctx = canvas.getContext('2d');
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+
+        const proj = atoms.map(a => ({ atom: a, ...project(a, w, h) }));
+
+        // Draw bonds & backbone trace
+        bonds.forEach(b => {
+          const p1 = proj[b.a1], p2 = proj[b.a2];
+          if (!p1 || !p2) return;
+          if (b.kind === 'backbone' && state.style === 'stick') return;
+          ctx.beginPath();
+          ctx.moveTo(p1.sx, p1.sy);
+          ctx.lineTo(p2.sx, p2.sy);
+          if (b.kind === 'backbone') {
+            ctx.strokeStyle = 'rgba(2, 132, 199, 0.55)';
+            ctx.lineWidth = 4.2 * state.zoom;
+          } else if (p1.atom.role === 'ligand' || p2.atom.role === 'ligand') {
+            ctx.strokeStyle = '#16a34a';
+            ctx.lineWidth = (b.order > 1 ? 3.4 : 2.5) * state.zoom;
+          } else {
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.8 * state.zoom;
+          }
+          ctx.lineCap = 'round';
+          ctx.stroke();
+        });
+
+        // Sort atoms back-to-front by z
+        const sortedProj = proj.slice().sort((a, b) => a.z - b.z);
+        sortedProj.forEach(p => {
+          const a = p.atom;
+          let rad = state.style === 'sphere' ? 8.5 : (a.role === 'ligand' ? 5.2 : (a.atomName === 'CA' ? 4.8 : 3.8));
+          rad = Math.max(2.2, rad * state.zoom);
+
+          ctx.beginPath();
+          ctx.arc(p.sx, p.sy, rad, 0, Math.PI * 2);
+          ctx.fillStyle = a.color;
+          ctx.fill();
+          ctx.lineWidth = 1;
+          ctx.strokeStyle = '#ffffff';
+          ctx.stroke();
+
+          // Label key pocket residues or CA atoms
+          if ((a.atomName === 'CA' || (a.role === 'receptor' && a.atomName === 'OD1')) && atoms.length <= 90) {
+            ctx.font = '600 10px Inter, system-ui, sans-serif';
+            ctx.fillStyle = '#0f172a';
+            ctx.fillText(`${a.resn}${a.resi}`, p.sx + rad + 3, p.sy + 3);
+          }
+        });
+
+        // HUD footer
+        ctx.font = '500 11px Inter, system-ui, sans-serif';
+        ctx.fillStyle = '#475569';
+        ctx.fillText(`Interactive 3D Canvas (${atoms.length} atoms, ${bonds.length} bonds) — Drag to rotate · Scroll to zoom · Double-click to reset`, 12, h - 12);
+
+        if (state.hoverAtom) {
+          const ha = state.hoverAtom;
+          const label = `${ha.resn}${ha.resi} ${ha.atomName} (${ha.elem}) [${ha.x.toFixed(2)}, ${ha.y.toFixed(2)}, ${ha.z.toFixed(2)}]`;
+          ctx.font = '600 11.5px Inter, system-ui, sans-serif';
+          const tw = ctx.measureText(label).width + 16;
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+          ctx.fillRect(12, 12, tw, 24);
+          ctx.fillStyle = '#ffffff';
+          ctx.fillText(label, 20, 28);
+        }
+        ctx.restore();
+      }
+
+      canvas.addEventListener('mousedown', e => {
+        state.dragging = true;
+        state.lastX = e.clientX;
+        state.lastY = e.clientY;
+        canvas.style.cursor = 'grabbing';
+      });
+      window.addEventListener('mousemove', e => {
+        if (state.dragging) {
+          const dx = e.clientX - state.lastX;
+          const dy = e.clientY - state.lastY;
+          state.lastX = e.clientX;
+          state.lastY = e.clientY;
+          state.rotY += dx * 0.012;
+          state.rotX += dy * 0.012;
+          draw();
+        }
+      });
+      window.addEventListener('mouseup', () => {
+        state.dragging = false;
+        canvas.style.cursor = 'grab';
+      });
+      canvas.addEventListener('mousemove', e => {
+        if (state.dragging) return;
+        const rect = canvas.getBoundingClientRect();
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        const proj = atoms.map(a => ({ atom: a, ...project(a, rect.width, rect.height) }));
+        let hit = null, bestD = 144;
+        proj.forEach(p => {
+          const d2 = (p.sx - mx) ** 2 + (p.sy - my) ** 2;
+          if (d2 < bestD) { bestD = d2; hit = p.atom; }
+        });
+        if (hit !== state.hoverAtom) {
+          state.hoverAtom = hit;
+          draw();
+        }
+      });
+      canvas.addEventListener('wheel', e => {
+        e.preventDefault();
+        state.zoom = Math.max(0.4, Math.min(3.5, state.zoom * (e.deltaY < 0 ? 1.12 : 0.9)));
+        draw();
+      }, { passive: false });
+      canvas.addEventListener('dblclick', () => {
+        state.rotX = 0.35;
+        state.rotY = -0.55;
+        state.zoom = 1.0;
+        draw();
+      });
+
+      setTimeout(draw, 20);
+      return {
+        setStyleMode(mode) { state.style = mode; draw(); },
+        render: draw
+      };
+    }
+
+    /* --- Viewer 11: 3D Protein Structure Studio (3Dmol.js + Canvas2D Fallback) --- */
     function renderEmbeddedStructure3D(box, ctrl, art) {
       if (ctrl) {
         ctrl.innerHTML = `
-          <div style="display:flex;gap:8px;align-items:center;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <span style="font-size:12px;color:var(--text-secondary);">Style:</span>
-            <button class="mini-btn active" onclick="set3DStyle('cartoon')">Cartoon (pLDDT)</button>
+            <button class="mini-btn active" onclick="set3DStyle('cartoon')">Cartoon + Pocket (pLDDT)</button>
             <button class="mini-btn" onclick="set3DStyle('stick')">Stick</button>
             <button class="mini-btn" onclick="set3DStyle('sphere')">Sphere</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()" title="Switch between WebGL (3Dmol.js) and Software Canvas 3D">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
           </div>
         `;
       }
       const mdiv = document.createElement('div');
       mdiv.className = 'mol3d-box';
       box.appendChild(mdiv);
-      if (typeof $3Dmol === 'undefined') {
-        mdiv.innerHTML = '<div style="padding:16px;">3Dmol.js library loading...</div>';
+      const fmt = art.name.toLowerCase().endsWith('.cif') ? 'cif' : 'pdb';
+      const models = [{ data: String(art.data || ''), format: fmt, role: 'receptor' }];
+      window.__ACTIVE_3D_MODELS__ = models;
+
+      if (!canUseWebGL()) {
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'cartoon');
         return;
       }
-      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
-      const fmt = art.name.toLowerCase().endsWith('.cif') ? 'cif' : 'pdb';
-      viewer.addModel(String(art.data || ''), fmt);
-      viewer.setStyle({}, {
-        cartoon: {
-          colorfunc: function(atom) {
-            const b = atom.b || 0;
-            if (b >= 90) return 0x0053D6;
-            if (b >= 70) return 0x65CBF3;
-            if (b >= 50) return 0xFFDB13;
-            return 0xFF7D45;
-          }
-        }
-      });
-      viewer.zoomTo();
-      viewer.render();
-      window.__ACTIVE_3DMOL__ = viewer;
+
+      try {
+        const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+        viewer.addModel(String(art.data || ''), fmt);
+        const plddtColor = function(atom) {
+          const b = atom.b || 0;
+          if (b >= 90) return 0x0053D6;
+          if (b >= 70) return 0x65CBF3;
+          if (b >= 50) return 0xFFDB13;
+          return 0xFF7D45;
+        };
+        viewer.setStyle({}, {
+          cartoon: { colorfunc: plddtColor },
+          stick: { radius: 0.14, colorfunc: plddtColor },
+          sphere: { scale: 0.24, colorfunc: plddtColor }
+        });
+        viewer.zoomTo();
+        viewer.render();
+        window.__ACTIVE_3DMOL__ = viewer;
+        window.__ACTIVE_CANVAS_3D__ = null;
+      } catch (e) {
+        console.warn('3Dmol WebGL viewer failed, switching to Canvas2D 3D fallback:', e);
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'cartoon');
+      }
     }
 
     function set3DStyle(styleName) {
+      if (window.__ACTIVE_CANVAS_3D__) {
+        window.__ACTIVE_CANVAS_3D__.setStyleMode(styleName);
+        return;
+      }
       const v = window.__ACTIVE_3DMOL__;
       if (!v) return;
-      const spec = {};
-      spec[styleName] = { colorscheme: 'chainHetatm' };
-      v.setStyle({}, spec);
+      if (styleName === 'cartoon') {
+        v.setStyle({}, {
+          cartoon: { colorscheme: 'chainHetatm' },
+          stick: { radius: 0.12, colorscheme: 'chainHetatm' },
+          sphere: { scale: 0.22, colorscheme: 'chainHetatm' }
+        });
+      } else {
+        const spec = {};
+        spec[styleName] = { colorscheme: 'chainHetatm' };
+        v.setStyle({}, spec);
+      }
       v.render();
     }
 
-    /* --- Viewer 12: 3D Docking Poses Studio (3Dmol.js) --- */
+    function toggle3DRenderEngine() {
+      window.__FORCE_CANVAS_3D__ = !window.__FORCE_CANVAS_3D__;
+      if (window.__ACTIVE_STUDIO_ART__) {
+        mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+      }
+    }
+
+    /* --- Viewer 12: 3D Docking Poses Studio (3Dmol.js + Canvas2D Fallback) --- */
     function renderEmbeddedDocking3D(box, ctrl, art) {
+      if (ctrl) {
+        ctrl.innerHTML = `
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;color:var(--text-secondary);">Docking Complex:</span>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
+          </div>
+        `;
+      }
       const mdiv = document.createElement('div');
       mdiv.className = 'mol3d-box';
       box.appendChild(mdiv);
-      if (typeof $3Dmol === 'undefined') return;
-      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
 
       const pairedRec = art.paired_files && art.paired_files.receptor ? getArtifactById(art.paired_files.receptor) : null;
       const pairedPoses = art.paired_files && art.paired_files.poses ? getArtifactById(art.paired_files.poses) : null;
 
+      const models = [];
       if (art.name.endsWith('.receptor.pdbqt')) {
-        viewer.addModel(String(art.data || ''), 'pdbqt');
-        viewer.setStyle({ model: 0 }, { cartoon: { color: '#8899aa', opacity: 0.65 } });
+        models.push({ data: String(art.data || ''), format: 'pdbqt', role: 'receptor' });
         if (pairedPoses && pairedPoses.data) {
-          viewer.addModel(String(pairedPoses.data), 'pdbqt');
-          viewer.setStyle({ model: 1 }, { stick: { radius: 0.2, colorscheme: 'greenCarbon' } });
+          models.push({ data: String(pairedPoses.data), format: 'pdbqt', role: 'ligand' });
         }
       } else {
         if (pairedRec && pairedRec.data) {
-          viewer.addModel(String(pairedRec.data), 'pdbqt');
-          viewer.setStyle({ model: 0 }, { cartoon: { color: '#8899aa', opacity: 0.65 } });
+          models.push({ data: String(pairedRec.data), format: 'pdbqt', role: 'receptor' });
         }
-        viewer.addModel(String(art.data || ''), 'pdbqt');
-        viewer.setStyle({ model: pairedRec ? 1 : 0 }, { stick: { radius: 0.2, colorscheme: 'greenCarbon' } });
+        models.push({ data: String(art.data || ''), format: 'pdbqt', role: 'ligand' });
       }
-      viewer.zoomTo();
-      viewer.render();
-      window.__ACTIVE_3DMOL__ = viewer;
+      window.__ACTIVE_3D_MODELS__ = models;
+
+      if (!canUseWebGL()) {
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        return;
+      }
+
+      try {
+        const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+        const recStyle = {
+          cartoon: { color: '#8899aa', opacity: 0.7 },
+          stick: { radius: 0.14, colorscheme: 'cyanCarbon' },
+          sphere: { scale: 0.25, colorscheme: 'cyanCarbon' }
+        };
+        const ligStyle = {
+          stick: { radius: 0.22, colorscheme: 'greenCarbon' },
+          sphere: { scale: 0.28, colorscheme: 'greenCarbon' }
+        };
+
+        if (art.name.endsWith('.receptor.pdbqt')) {
+          viewer.addModel(String(art.data || ''), 'pdbqt');
+          viewer.setStyle({ model: 0 }, recStyle);
+          if (pairedPoses && pairedPoses.data) {
+            viewer.addModel(String(pairedPoses.data), 'pdbqt');
+            viewer.setStyle({ model: 1 }, ligStyle);
+          }
+        } else {
+          if (pairedRec && pairedRec.data) {
+            viewer.addModel(String(pairedRec.data), 'pdbqt');
+            viewer.setStyle({ model: 0 }, recStyle);
+          }
+          viewer.addModel(String(art.data || ''), 'pdbqt');
+          viewer.setStyle({ model: pairedRec ? 1 : 0 }, ligStyle);
+        }
+        viewer.zoomTo();
+        viewer.render();
+        window.__ACTIVE_3DMOL__ = viewer;
+        window.__ACTIVE_CANVAS_3D__ = null;
+      } catch (e) {
+        console.warn('3Dmol docking viewer failed, switching to Canvas2D 3D fallback:', e);
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+      }
     }
 
-    /* --- Viewer 13: 3D SDF Molecule Studio (3Dmol.js) --- */
+    /* --- Viewer 13: 3D SDF Molecule Studio (3Dmol.js + Canvas2D Fallback) --- */
     function renderEmbeddedSdf3D(box, ctrl, art) {
+      if (ctrl) {
+        ctrl.innerHTML = `
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span style="font-size:12px;color:var(--text-secondary);">3D Conformer:</span>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
+          </div>
+        `;
+      }
       const mdiv = document.createElement('div');
       mdiv.className = 'mol3d-box';
       box.appendChild(mdiv);
-      if (typeof $3Dmol === 'undefined') return;
-      const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
-      viewer.addModel(String(art.data || ''), 'sdf');
-      viewer.setStyle({}, { stick: { radius: 0.16 }, sphere: { scale: 0.28 } });
-      viewer.zoomTo();
-      viewer.render();
-      window.__ACTIVE_3DMOL__ = viewer;
+      const models = [{ data: String(art.data || ''), format: 'sdf', role: 'ligand', label: art.name.replace(/\.3d\.sdf$/i, '') }];
+      window.__ACTIVE_3D_MODELS__ = models;
+
+      if (!canUseWebGL()) {
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        return;
+      }
+
+      try {
+        const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: 'white' });
+        viewer.addModel(String(art.data || ''), 'sdf');
+        viewer.setStyle({}, { stick: { radius: 0.16 }, sphere: { scale: 0.28 } });
+        viewer.zoomTo();
+        viewer.render();
+        window.__ACTIVE_3DMOL__ = viewer;
+        window.__ACTIVE_CANVAS_3D__ = null;
+      } catch (e) {
+        console.warn('3Dmol SDF viewer failed, switching to Canvas2D 3D fallback:', e);
+        window.__ACTIVE_3DMOL__ = null;
+        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+      }
     }
 
     /* --- Viewer 14: Generic JSON / Provenance Tree Viewer --- */

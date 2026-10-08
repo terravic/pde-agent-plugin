@@ -1,9 +1,11 @@
 {
-  "commit": null,
-  "dirty": null,
-  "dirty_inputs": null,
-  "on_origin": null,
-  "remote_ref": null,
-  "stamped_at": "2026-10-07T03:21:39Z",
-  "env_version": "sha256:e23e016d8a2c25e8e9981fabdad80b29ea22caddd3bf71c47d91a22185994aaa"
+  "commit": "da93dbcd25fe4bbcca01ec5a53724b7c5afa0aa7",
+  "dirty": true,
+  "dirty_inputs": [
+    "tools/install.sh"
+  ],
+  "on_origin": true,
+  "remote_ref": "origin/main",
+  "stamped_at": "2026-10-08T19:33:38Z",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba"
 }

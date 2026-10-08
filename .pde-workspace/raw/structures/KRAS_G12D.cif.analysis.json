@@ -2,10 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/structures/KRAS_G12D.cif",
-  "source_sha256": "bf18241eccf37b667cd22e6fe7978b2779441d4825a8c6059847e15d5e542edb",
+  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "source_sha256": "16cff27eb836130463a7b61145493e900aab6fa1037976706d909117d2d8034c",
   "threshold_set": "structure-v1",
   "work_order_id": "WO-002",
-  "analyzed_at": "2026-10-07T03:39:18Z",
+  "analyzed_at": "2026-10-08T19:43:54Z",
   "verdict": "pass",
   "summary": "High-resolution Switch-II pocket receptor coordinates prepared for Asp12 salt-bridge docking.",
   "thresholds_applied": {

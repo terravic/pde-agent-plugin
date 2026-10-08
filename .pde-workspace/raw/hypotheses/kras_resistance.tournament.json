@@ -13,6 +13,19 @@
       "win_rate": 0.917,
       "novelty_score": 8.8,
       "testability_score": 9.4,
+      "scores": {
+        "overall": 9.2,
+        "correctness": 9.5,
+        "novelty": 8.8,
+        "testability": 9.4,
+        "safety": 9.1
+      },
+      "evolution_operator": "combine",
+      "parent_ids": [
+        "HYP-001a",
+        "HYP-001b"
+      ],
+      "cluster_id": "CL-RTK-SHP2",
       "rationale": "RTK-SHP2-SOS1 nucleotide exchange reactivates WT HRAS/NRAS within 48h of G12D suppression; intermittent SHP2 co-inhibition collapses pERK rebound while sparing GI mucosa."
     },
     {
@@ -24,6 +37,18 @@
       "win_rate": 0.667,
       "novelty_score": 9.1,
       "testability_score": 8.9,
+      "scores": {
+        "overall": 8.9,
+        "correctness": 8.8,
+        "novelty": 9.1,
+        "testability": 8.9,
+        "safety": 9.0
+      },
+      "evolution_operator": "ground",
+      "parent_ids": [
+        "HYP-002-seed"
+      ],
+      "cluster_id": "CL-SIIP-LOCK",
       "rationale": "Pre-organizing the C2 sidechain reduces entropic penalty when His95 hydrogen bonding is lost in acquired resistance clones."
     },
     {
@@ -35,6 +60,16 @@
       "win_rate": 0.333,
       "novelty_score": 7.9,
       "testability_score": 9.2,
+      "scores": {
+        "overall": 8.4,
+        "correctness": 8.7,
+        "novelty": 7.9,
+        "testability": 9.2,
+        "safety": 8.5
+      },
+      "evolution_operator": "simplify",
+      "parent_ids": [],
+      "cluster_id": "CL-PRODRUG",
       "rationale": "Masking the 3-hydroxynaphthyl donor lowers TPSA from 93.5 to 79.2 A^2 and increases Caco-2 Papp >3-fold."
     },
     {
@@ -46,7 +81,31 @@
       "win_rate": 0.083,
       "novelty_score": 7.2,
       "testability_score": 8.1,
+      "scores": {
+        "overall": 7.6,
+        "correctness": 7.8,
+        "novelty": 7.2,
+        "testability": 8.1,
+        "safety": 7.9
+      },
+      "evolution_operator": "oob",
+      "parent_ids": [],
+      "cluster_id": "CL-AUTOPHAGY",
       "rationale": "PDAC cells upregulate macropinocytosis and autophagy upon MAPK pathway suppression."
+    }
+  ],
+  "matches": [
+    {
+      "hypothesis_a": "HYP-001",
+      "hypothesis_b": "HYP-002",
+      "winner": "HYP-001",
+      "rationale": "HYP-001 directly addresses adaptive WT RAS feedback observed within 48h in PDAC models using clinically available SHP2 inhibitors."
+    },
+    {
+      "hypothesis_a": "HYP-002",
+      "hypothesis_b": "HYP-003",
+      "winner": "HYP-002",
+      "rationale": "Conformational C2 lock directly overcomes on-target Switch-II groove resistance mutations."
     }
   ]
 }

@@ -8,10 +8,10 @@
   "run_id": "RUN-005",
   "holder_run_id": "RUN-005",
   "holder_agent": "pde-hypex-supervisor",
-  "granted_at": "2026-10-07T03:39:42Z",
-  "acquired_at": "2026-10-07T03:39:42Z",
+  "granted_at": "2026-10-08T19:44:21Z",
+  "acquired_at": "2026-10-08T19:44:21Z",
   "ttl_minutes": 60,
-  "expires_at": "2026-10-07T03:39:42Z",
+  "expires_at": "2026-10-08T19:44:21Z",
   "extensions": 0,
-  "released_at": "2026-10-07T03:39:45Z"
+  "released_at": "2026-10-08T19:44:23Z"
 }
