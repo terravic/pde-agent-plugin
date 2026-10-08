@@ -128,9 +128,10 @@ Language model agents operating on biomedical research tasks without determinist
 '-- tests/
     |-- _fixture_workspace.py
     |-- test_custom_byoa.py
+    |-- test_dashboard.py
+    |-- test_pocket_geometric.py
     |-- test_targets_compile.py
-    |-- test_tool_bridge.py
-    '-- test_dashboard.py
+    '-- test_tool_bridge.py
 ```
 
 ### 3.2 Integration Surfaces
@@ -153,7 +154,7 @@ Language model agents operating on biomedical research tasks without determinist
 Every PDE project workspace (default `.pde-workspace/` or initialized via `bin/pde init`) enforces a 4-layer data and documentation hierarchy:
 
 1. **Layer 0 (`raw/<category>/`)**:
-   - Primary data files fetched from external APIs or computed by local scientific binaries.
+   - Primary data files fetched from external APIs or computed by local scientific binaries and built-in computational engines.
    - Every primary artifact `<stem>.<ext>` is accompanied by `<stem>.meta.json` (recording tool name, subcommand, endpoint, parameters, timestamp, `env_version`, and SHA-256 digests of all inputs and outputs).
    - Every Phase 2 analysis produces `<stem>.analysis.json` (recording the applied versioned threshold set from `tools/pde/core/thresholds.py`, computed metrics, structured categorical assessment, and `mandatory_relays`).
 2. **Layer 1 (`findings/<category>/`)**:
@@ -166,10 +167,14 @@ Every PDE project workspace (default `.pde-workspace/` or initialized via `bin/p
 4. **Layer 4 (`executive/`, `gates/`, and `dashboard.html`)**:
    - Executive decision packages (`executive/program-summary.md`, `gates/stage1-gate-package.md`), static HTML dossiers (`site/index.html`), and the standalone interactive dashboard (`dashboard.html`).
 
-### 4.2 Two-Phase Execution Invariant
+### 4.2 Two-Phase Execution Invariant & Built-In Pocket Detection Fallback
 All scientific domain commands in `bin/pde` follow a mandatory two-phase execution pattern:
 - **Phase 1 (`fetch`, `search`, `run`, `compute`, `predict`, `ingest`, `resolve`, `verify`, `adopt`)**: Acquires external records or runs computational tools and writes verbatim Layer 0 files plus `.meta.json`.
 - **Phase 2 (`analyze`, `analyze-prediction`, `analyze-ism`, `analyze-single-cell`, `analyze-donors`)**: Latched offline at the CLI framework level (`tools/pde/common.py`). Reads stored Layer 0 artifacts, applies named threshold sets from `tools/pde/core/thresholds.py` (with optional overrides in `.pde/thresholds.yaml`), and writes `.analysis.json`.
+- **Built-In Geometric Pocket Detection (`bin/pde pocket run --backend [auto|fpocket|geometric]`)**:
+  - When `--backend auto` (default) is used, `pde pocket run` invokes the external `fpocket` binary if present on `PATH`, and automatically falls back to a built-in pure-Python/NumPy 3D lattice protein-solvent-protein (PSP) enclosure and alpha-probe cavity detector (`tools/pde/commands/pocket.py`) when `fpocket` is unavailable.
+  - The `geometric` backend parses PDB (`.pdb`, `.ent`) and mmCIF (`.cif`, `.mmcif`) structures, clusters buried and cleft cavities via 26-connected breadth-first search, computes volume, residue hydrophobicity, and calibrated druggability scores, and writes a complete `<stem>_fpocket/` output tree (`<stem>_info.txt` and `pockets/pocket{rank}_atm.{pdb,cif}`) compatible with `pde pocket analyze`, `pde docking prepare`, `pde structure annotate-topology`, and the 3Dmol.js dashboard viewer.
+  - Whenever the `geometric` backend executes, `pde pocket run` emits the mandatory relay `pocket.geometric_fallback_backend` in `.pockets.meta.json` (propagated by `pde pocket analyze` into `.pocket.analysis.json`), and `pde doctor` classifies missing `fpocket` as a non-blocking `CAVEAT`.
 
 ### 4.3 Mechanical Validation Gate (`bin/pde validate check`)
 Before a specialist work order can transition from `submitted` to `mechanically_validated`, it must pass 10 automated checks:
@@ -194,15 +199,15 @@ The repository defines 22 agent templates, each containing `agent.yaml`, `agents
 ### 4.5 Interactive Standalone Dashboard (`dashboard.html`)
 Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard`) generates a self-contained HTML application (`dashboard.html`) with dual-mode operation (`STANDALONE SNAPSHOT` when opened as a local file, and `LIVE STREAM (SSE)` with automatic reload when served via `bin/pde dashboard serve`), light/dark SVG icon theme switching, and two synchronized panes:
 
-1. **Left Pane — Multi-Agent Lineage & Control Plane**:
+1. **Left Pane -- Multi-Agent Lineage & Control Plane**:
    - **Agent Forest**: Interactive SVG multi-agent lineage DAG with cursor-anchored zoom/pan, live execution status badges, work-order edges, and a collapsible Node Inspector Drawer.
    - **Node Inspector Drawer**: Displays the specialist role, work-order state, correction cycle count (`cycle / 2`), dependencies, acceptance criteria checklist, frozen **Dispatch Context Snapshot** (`.pde/control/contexts/<WO>-r<N>.json` with Layer 2 file SHA-256 hashes), and the 10-check mechanical validation matrix.
    - **Work Orders, Runs, Leases, and Event Stream Tabs**: Detailed tables of work orders (`WO-*`), specialist runs (`RUN-*`), single-flight resource leases (`af3`, `hypex-supervisor`), and an inter-agent event stream filterable by category (`Work Orders`, `Runs`, `Leases`, `Validation`).
 
-2. **Right Pane — 20 Scientific Studios, Findings, Governance & Readiness**:
+2. **Right Pane -- 20 Scientific Studios, Findings, Governance & Readiness**:
    - **3D & Structure Studios (6 studios)**:
      1. `structure`: 3Dmol.js protein structure viewer colored by per-residue pLDDT confidence.
-     2. `pockets`: 3Dmol.js fpocket cavity surface and druggability score table.
+     2. `pockets`: 3Dmol.js fpocket/geometric cavity surface and druggability score table.
      3. `docking`: 3Dmol.js receptor-ligand 3D binding pose viewer.
      4. `contacts`: Protein-ligand residue interaction distance chart and contact table.
      5. `plddt`: Plotly per-residue pLDDT confidence profile with domain boundaries.
@@ -243,6 +248,8 @@ Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard
 ## 6. Verification & Acceptance Criteria
 
 The build and test suite (`tests/`) verifies:
+- `tests/test_custom_byoa.py`: Validates two-phase private CSV ingestion (`pde custom ingest`), proprietary Python algorithm execution (`pde custom run`), offline evaluation (`pde custom analyze`), relay attribution (`pde relays`), and dynamic Click extension loading.
+- `tests/test_pocket_geometric.py`: Validates the built-in Python/NumPy geometric pocket detector (`pde pocket run --backend [geometric|auto]`) and offline `pde pocket analyze` (global and `--near`) across PDB and mmCIF structures, `pocket.geometric_fallback_backend` relay propagation, and `pde docking prepare` grid-box compatibility.
 - `tests/test_targets_compile.py`: Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`.
 - `tests/test_tool_bridge.py`: Validates the two-phase execution lifecycle (`pde_genetics_profile`, `pde_compound_profile`, `pde_admet_predict`), Layer 0 sidecar generation, and MCP server tool registration.
 - `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pde-workspace/dashboard.html`, confirming all multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios render from real Layer 0-4 artifacts.

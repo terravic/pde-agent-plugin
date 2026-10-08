@@ -500,8 +500,8 @@ def _check_packages(report: Report) -> None:
 #: PDE; availability is an observed runtime state, not a release-plan flag.
 _PROVISIONED_BINARIES = {
     "fpocket": (
-        "pocket detection — `pde pocket run` cannot answer tractability",
-        "re-provision with `tools/install.sh --binaries-only`",
+        "pocket detection — `pde pocket run` will use the built-in Python `geometric` fallback backend",
+        "optional: re-provision with `tools/install.sh --binaries-only` for native fpocket",
     ),
     "vina": (
         "docking — structural-biologist and computational-chemist skills",
@@ -654,12 +654,16 @@ def _check_binaries(report: Report) -> None:
                     WARN,
                     f"present at {path} but not on PATH",
                     f"source {env.tools_home()}/env.sh before invoking tools that shell out",
-                    kind=CAPABILITY,
+                    kind=CAVEAT if binary == "fpocket" else CAPABILITY,
                 )
                 continue
         if not path:
             report.add(
-                f"binary {binary}", WARN, f"not found — {purpose}", remedy, CAPABILITY
+                f"binary {binary}",
+                WARN,
+                f"not found — {purpose}",
+                remedy,
+                CAVEAT if binary == "fpocket" else CAPABILITY,
             )
         elif binary in _CAPABILITY_VALIDATED:
             _validate_script_capability(report, binary, path, remedy)

@@ -249,6 +249,13 @@ RELAY_CODES: dict[str, str] = {
         "assess druggability from an apo or alternate-conformation structure "
         "before concluding undruggability."
     ),
+    "pocket.geometric_fallback_backend": (
+        "Disclose that pocket detection and druggability scoring were computed "
+        "by PDE's built-in 3D geometric lattice detector rather than the "
+        "fpocket Voronoi binary. Treat the druggability score as a geometric "
+        "and hydrophobic enclosure heuristic, not as a crystal-calibrated "
+        "Schmidtke & Barril logistic regression score."
+    ),
     "coscientist.partial_export": (
         "Confine conclusions to the ideas present in the export. Do not "
         "treat absence from it as evidence against an idea."

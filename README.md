@@ -50,9 +50,9 @@ Retrieve the structure for human KRAS (UniProt P01116), identify all potential b
 ```
 
 **What the system does:**
-- Downloads the 3D protein coordinates and detects surface and buried cavities using geometric alpha-sphere clustering (`fpocket`).
-- Scores each pocket for druggability, volume, and solvent-accessible surface area.
-- If a ligand is provided, docks the molecule into the pocket (`AutoDock Vina`) to estimate binding affinity (kcal/mol) and maps the specific amino acid residue contacts.
+- Downloads the 3D protein coordinates and detects surface and buried cavities using either `fpocket` (when installed on `PATH`) or PDE's built-in Python/NumPy 3D lattice geometric cavity detector (`--backend [auto|fpocket|geometric]`), ensuring pocket detection runs even on systems without external C binaries.
+- Scores each pocket for druggability, volume, and residue hydrophobicity, and records the `pocket.geometric_fallback_backend` provenance relay when the built-in detector is used.
+- If a ligand is provided, prepares the docking grid box from the detected pocket coordinates and docks the molecule (`AutoDock Vina`) to estimate binding affinity (kcal/mol) and map specific amino acid residue contacts.
 
 #### Example 4: Reviewing Competing Clinical Trials and Patents
 If you are preparing a strategic review and need to know what competing therapies are already in clinical trials or covered by recent patents:
@@ -168,7 +168,7 @@ All paths below are relative to the repository root (`./`):
 |   |-- brain-atlas/SKILL.md                     # Allen Brain Map regional expression and donor cohorts
 |   |-- model-organism-phenotype/SKILL.md        # MGI mouse knockout and HPO human phenotype analysis
 |   |-- protein-structure-confidence/SKILL.md    # AlphaFold DB / AF3 pLDDT and PAE domain evaluation
-|   |-- pocket-druggability/SKILL.md             # fpocket cavity detection and druggability scoring
+|   |-- pocket-druggability/SKILL.md             # Pocket detection (fpocket / geometric fallback) and scoring
 |   |-- structure-screening/SKILL.md             # Stage 0 bounded structural fast-fail screening
 |   |-- binding-mode-analysis/SKILL.md           # AutoDock Vina pose scoring and residue contact analysis
 |   |-- compound-identity-resolution/SKILL.md    # PubChem CID and ChEMBL ID resolution
@@ -223,7 +223,7 @@ All paths below are relative to the repository root (`./`):
 |   |   |-- cli.py                               # Click CLI entrypoint (42 command groups + extension loader)
 |   |   |-- common.py                            # Offline Phase 2 latch and shared CLI options
 |   |   |-- core/                                # Provenance, thresholds, HTTP pacing, and path confinement
-|   |   |-- commands/                            # Domain command implementations (including custom.py)
+|   |   |-- commands/                            # Domain command implementations (including custom.py and pocket.py)
 |   |   '-- site_templates/                      # HTML templates for static site and 20 scientific studios
 |   '-- vendor/
 |       '-- hypex/                               # Go and Python source for hypex, elo, and prox tools
@@ -253,9 +253,10 @@ All paths below are relative to the repository root (`./`):
 '-- tests/
     |-- _fixture_workspace.py                    # End-to-end reference campaign builder
     |-- test_custom_byoa.py                      # BYOA, private data ingestion, and extension loader tests
+    |-- test_dashboard.py                        # Dashboard and 20 scientific studio integration tests
+    |-- test_pocket_geometric.py                 # Built-in geometric pocket detector fallback and docking grid tests
     |-- test_targets_compile.py                  # Plugin and skill bundle compilation tests
-    |-- test_tool_bridge.py                      # Two-phase tool bridge and MCP server tests
-    '-- test_dashboard.py                        # Dashboard and 20 scientific studio integration tests
+    '-- test_tool_bridge.py                      # Two-phase tool bridge and MCP server tests
 ```
 
 ---
@@ -370,32 +371,32 @@ source ./bin/env.sh
 ./bin/pde init .pde-workspace
 
 # Target genetics (gnomAD v4 constraint + Open Targets + ClinVar)
-./bin/pde -C .pde-workspace genetics fetch EGFR
-./bin/pde -C .pde-workspace genetics analyze EGFR
+./bin/pde --project .pde-workspace genetics fetch EGFR
+./bin/pde --project .pde-workspace genetics analyze raw/genetics/EGFR.gnomad-constraint.json
 
 # Tissue RNA expression specificity (Human Protein Atlas)
-./bin/pde -C .pde-workspace expression fetch EGFR
-./bin/pde -C .pde-workspace expression analyze EGFR
+./bin/pde --project .pde-workspace expression fetch EGFR
+./bin/pde --project .pde-workspace expression analyze raw/expression/EGFR.tissue.json
 
 # Protein structure confidence & PAE domains (AlphaFold DB)
-./bin/pde -C .pde-workspace alphafold fetch P00533
-./bin/pde -C .pde-workspace alphafold analyze P00533
+./bin/pde --project .pde-workspace alphafold fetch P00533
+./bin/pde --project .pde-workspace alphafold analyze raw/structures/AF-P00533-F1-model_v4.cif
 
-# Binding pocket detection & druggability (fpocket)
-./bin/pde -C .pde-workspace pocket detect raw/structures/AF-P00533-F1-model_v4.cif --id P00533
-./bin/pde -C .pde-workspace pocket analyze P00533
+# Binding pocket detection & druggability (auto-selects fpocket or built-in Python geometric detector)
+./bin/pde --project .pde-workspace pocket run raw/structures/AF-P00533-F1-model_v4.cif --backend auto
+./bin/pde --project .pde-workspace pocket analyze raw/structures/AF-P00533-F1-model_v4.pockets.json
 
 # Compound descriptors & structural alerts (RDKit)
-./bin/pde -C .pde-workspace compound profile "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
-./bin/pde -C .pde-workspace compound analyze erlotinib
+./bin/pde --project .pde-workspace compound profile "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
+./bin/pde --project .pde-workspace compound analyze raw/compounds/erlotinib.descriptors.json
 
 # Rule-based ADMET endpoint classification
-./bin/pde -C .pde-workspace admet predict "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
-./bin/pde -C .pde-workspace admet analyze erlotinib
+./bin/pde --project .pde-workspace admet predict "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
+./bin/pde --project .pde-workspace admet analyze raw/admet/erlotinib.predict.json
 
 # Validate a specialist finding against the 10-check gate and rebuild dashboard.html
-./bin/pde -C .pde-workspace validate check WO-001
-./bin/pde -C .pde-workspace dashboard build --standalone
+./bin/pde --project .pde-workspace validate check WO-001
+./bin/pde --project .pde-workspace dashboard build --standalone
 ```
 
 ### 3. Rebuilding Plugin Targets & Running Tests

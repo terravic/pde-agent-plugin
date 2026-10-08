@@ -14,7 +14,7 @@
     </filter>
   </defs>
 
-  <!-- Clean White Canvas -->
+  <!-- Background Surface -->
   <rect width="1500" height="960" fill="#FFFFFF"/>
   <rect x="16" y="16" width="1468" height="928" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
 
