@@ -3,8 +3,8 @@
   "record_type": "provenance",
   "command": "pde assay fetch MRTX1133 --json",
   "cli_version": "0.3.0",
-  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
-  "created_at": "2026-10-08T19:44:12Z",
+  "env_version": "sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333",
+  "created_at": "2026-10-09T18:25:17Z",
   "work_order_id": "WO-004",
   "outputs": [
     {

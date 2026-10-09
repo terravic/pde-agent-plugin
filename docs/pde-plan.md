@@ -258,7 +258,7 @@ Each agent template contains:
 
 3. **Output contract**: The semi-structured report format expected by the Science Program Lead and downstream consumers. Standard headings, linking conventions, confidence reporting requirements.
 
-4. **Organization-specific policy overrides** (if any): Proprietary thresholds, company-specific decision criteria, or enterprise policy constraints that the LLM cannot know from training.
+4. **Organization-specific policy overrides** (if any): Proprietary thresholds, program-specific decision criteria, or institutional policy constraints that the LLM cannot know from training.
 
 What is explicitly **not** in the role definition: step-by-step procedural workflows. Those are either already in the LLM's training (a structural biologist knows how to interpret pLDDT scores) or provided dynamically by the Science Program Lead's work order.
 
@@ -727,7 +727,7 @@ This first-party case carries more weight than the inherited one. The fault is n
 
 3. **Wet-lab integration boundaries:** PDE's specialist agents reason about experiments and interpret results, but the physical experimental work happens outside the system. How does data from real lab instruments (plate readers, SPR, crystallography) flow into the Layer 0 raw artifacts? This interfaces with LIMS/lab automation tooling.
 
-4. **Enterprise policy extensibility:** The current material includes Sobi-specific policies (FcRn thresholds, haematology focus). How should pde support pluggable enterprise policy modules for different organizations? Program-level thresholds already have a mechanism (`.pde/thresholds.yaml`); an organization-level layer beneath it is the likely shape.
+4. **Policy extensibility:** Domain programs often include therapeutic-area-specific policies (such as FcRn thresholds or haematology focus). How should pde support pluggable policy modules for different research programs? Program-level thresholds already have a mechanism (`.pde/thresholds.yaml`); an organization-level layer beneath it is the likely shape.
 
 5. **Lease broker implementation:** The Research Operations Controller owns resource scheduling policy, and `pde` invocations must acquire leases for single-flight resources such as AlphaFold 3. This is now load-bearing rather than theoretical: `pde alphafold predict` serializes callers with an `fcntl` lock, which holds only within one container. Specialists run in separate containers, so cross-container collisions are unsolved and the endpoint returns 429 under concurrency. Whether the shared broker is a shared-volume service or an MCP service remains unsettled. Direct specialist coordination and ad hoc file locks are not an acceptable end state. *Note:* General HTTP rate-limit coordination (NCBI, PubChem, etc.) is now handled by flock on a shared filesystem volume (#59, #68); the lease broker question is scoped to truly single-flight endpoints (AF3) where only one concurrent request is permitted.
 

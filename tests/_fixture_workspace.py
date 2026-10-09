@@ -124,15 +124,50 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
     workspace_dir.mkdir(parents=True, exist_ok=True)
     init_project(workspace_dir)
 
-    # Configure .pde/program.yaml
+    # Configure .pde/program.yaml with initial user_prompt
+    user_prompt = (
+        "Run a multi-disciplinary Stage 2 Hit-to-Lead discovery campaign for a selective "
+        "non-covalent KRAS G12D Switch-II pocket inhibitor (MRTX1133 series) in pancreatic "
+        "ductal adenocarcinoma (PDAC): evaluate human genetics, 3D Switch-II pocket druggability "
+        "and docking poses, medicinal chemistry SAR and ADMET/PK/tox margins, and bypass resistance hypotheses."
+    )
     (workspace_dir / ".pde" / "program.yaml").write_text(
         "name: KRAS-G12D-Selective-Inhibitor\n"
+        f"user_prompt: {json.dumps(user_prompt)}\n"
         "target: KRAS (G12D)\n"
         "uniprot_id: P01116\n"
         "indication: Pancreatic Ductal Adenocarcinoma (PDAC)\n"
-        "stage: Stage 2 — Hit-to-Lead & Switch-II Optimization\n"
+        "stage: Stage 2 - Hit-to-Lead & Switch-II Optimization\n"
         "cycle: 2\n",
         encoding="utf-8",
+    )
+    from pde.core import controlstore as _cs
+
+    _cs.append_event(
+        workspace_dir,
+        {
+            "type": "prompt.received",
+            "subject_id": "science-program-lead",
+            "from_state": "idle",
+            "to_state": "running",
+            "actor": "user",
+            "detail": {
+                "prompt": user_prompt,
+                "summary": f'User prompt received by Science Program Lead: "{user_prompt}"',
+            },
+        },
+    )
+    _cs.append_event(
+        workspace_dir,
+        {
+            "type": "agent.message",
+            "subject_id": "research-operations-controller",
+            "actor": "science-program-lead",
+            "detail": {
+                "recipient": "research-operations-controller",
+                "summary": "Chartered Stage 2 Cycle 2 KRAS G12D campaign (DEC-001); authorizing 5 parallel specialist work orders (WO-001 through WO-005).",
+            },
+        },
     )
 
     # ------------------------------------------------------------------

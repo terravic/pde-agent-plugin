@@ -10,7 +10,7 @@
     "content": "Run Co-Scientist / Hypex ELO tournament to rank rational combination & secondary resistance hypotheses for KRAS G12D inhibition.",
     "artifact_links": [],
     "snapshot": "contexts/WO-005-r1.json",
-    "snapshot_sha256": "11982763c33e0c8a888f66d62b50918a21d54ea9812a58146160d50995d9637c"
+    "snapshot_sha256": "547e4e3593b4c2e1857b30e9aa3cdffb16cced14536a7ca4787b74829a19b239"
   },
   "dependencies": [],
   "capabilities": [],
@@ -34,6 +34,6 @@
   "priority": "normal",
   "resource_class": "hypex-supervisor",
   "report_to": "discovery-lead",
-  "created_at": "2026-10-08T19:44:16Z",
-  "committed_at": "2026-10-08T19:44:16Z"
+  "created_at": "2026-10-09T18:25:21Z",
+  "committed_at": "2026-10-09T18:25:21Z"
 }

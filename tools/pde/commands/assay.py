@@ -471,7 +471,7 @@ def ingest(
         raise ArtifactError(
             f"assay file not found: {assay_file}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the canonical assay JSON file",
+            remedy="pass a project-relative path to the canonical assay JSON file",
         )
     source = source.resolve()
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)

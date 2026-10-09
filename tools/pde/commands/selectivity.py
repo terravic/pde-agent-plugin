@@ -290,7 +290,7 @@ def compare(
         raise ArtifactError(
             f"selectivity panel file not found: {panel_file}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the canonical selectivity panel JSON file",
+            remedy="pass a project-relative path to the canonical selectivity panel JSON file",
         )
     source = source.resolve()
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)

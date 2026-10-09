@@ -274,13 +274,13 @@ The script is idempotent and creates a `vendor/manifest.json` listing all locali
 
 ## Serving the Generated Site
 
-After building, an agent can serve the site locally and expose it through the agent hub so stakeholders can view it in a browser.
+After building, an agent can serve the site locally so stakeholders can view it in a browser.
 
 ### 1. Serve locally
 
 Python's `http.server` is always available in managed agent environments:
 
-> **Reserved port:** Port 8080 is reserved by the Agent Hub in all managed agent environments. Agents must NOT bind port 8080 for any purpose. If the chosen port is already in use, try the next candidate (e.g. 8001, 8002) rather than failing.
+> **Reserved port:** Port 8080 is reserved by the host environment. Agents must NOT bind port 8080 for any purpose. If the chosen port is already in use, try the next candidate (e.g. 8001, 8002) rather than failing.
 
 ```bash
 # Try ports in order until one binds successfully
@@ -293,28 +293,18 @@ done
 
 ### 2. Expose via Local Server
 
-Use `pde dashboard build --standalone  # or: pde dashboard serve --port 8765
+Use `pde dashboard build --standalone` or `pde dashboard serve --port 8765`:
 
 ```bash
 pde dashboard build --standalone  # or: pde dashboard serve --port 8765
 ```
 
-Output (port number reflects whichever port was bound by the probe loop above):
-
-```
-Port $port exposed.
-URL: http://<hub>/api/v1/agents/<agent-id>/ports/$port/proxy/
-Base path: /api/v1/agents/<agent-id>/ports/$port/proxy/
-```
-
-Share the returned URL with stakeholders. Use `pde dashboard build --standalone  # or: pde dashboard serve --port 8765
-
 ### 3. Iterative rebuild-and-serve
 
-For iterative workflows (rebuild → post-process → verify → revise), keep the server running and rebuild in place. Each `pde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately — no server restart required. The agent can stay retained for revisions in this mode.
+For iterative workflows (rebuild -> post-process -> verify -> revise), keep the server running and rebuild in place. Each `pde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately — no server restart required. The agent can stay retained for revisions in this mode.
 
 ## What This Skill Does NOT Cover
 
-- **GCS publishing.** The `pde site export` command produces archives suitable for static hosting, but GCS-specific publishing workflow is handled by the `web-builder` template's `gcs-static-site` skill. This skill covers generation, export, and local serving/exposure in managed agent environments, not production hosting.
+- **Remote object-storage publishing.** The `pde site export` command produces archives suitable for static hosting, but remote bucket deployment is outside the scope of this skill. This skill covers generation, export, and local serving, not remote hosting.
 - **Viewer development.** Viewers are checked into the repo and are not modified at build time.
 - **Content authorship.** The agent prepares markdown content before building; the CLI renders it deterministically.

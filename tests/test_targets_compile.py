@@ -129,6 +129,7 @@ def test_skill_zip_bundles_valid() -> None:
     # Confirm the two primary skills contain their executable scripts
     with zipfile.ZipFile(bundles_dir / "pharmakon-discovery-engine.zip", "r") as zf:
         pde_names = zf.namelist()
+        assert "scripts/start_live_session.py" in pde_names
         assert "scripts/pde_runner.py" in pde_names
         assert "scripts/dispatch_workorder.py" in pde_names
 

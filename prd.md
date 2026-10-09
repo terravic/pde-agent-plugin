@@ -101,8 +101,14 @@ Language model agents operating on biomedical research tasks without determinist
 |   |-- finding-validator/
 |   '-- ... (22 agent role templates total)
 |-- tools/
+|   |-- bootstrap-preflight.sh
+|   |-- install.sh
+|   |-- bin/
 |   |-- env-manifest.txt
 |   |-- ENV_VERSION
+|   |-- ENV_HISTORY
+|   |-- ENV_SOURCE
+|   |-- manifests/
 |   |-- requirements.lock
 |   |-- pde/
 |   |   |-- cli.py
@@ -120,7 +126,9 @@ Language model agents operating on biomedical research tasks without determinist
 |       '-- skills/
 |           '-- proprietary-cns-scorer/SKILL.md
 |-- docs/
+|-- .pde-workspace/
 |-- .agents/
+|   |-- plugins.json
 |   '-- plugins/
 |       '-- pharmakon-discovery-engine/
 |-- dist/
@@ -144,6 +152,7 @@ Language model agents operating on biomedical research tasks without determinist
 | Python Tool Bridge | `pde_plugin/tool_bridge.py` | Typed Python functions (`ALL_PDE_TOOLS`) wrapping `bin/pde` CLI commands for direct function-calling frameworks. |
 | MCP Server | `pde_plugin/mcp_server.py` | JSON-RPC 2.0 Model Context Protocol stdio server exposing all `pde_*` tools. |
 | CLI Engine | `bin/pde` (`tools/pde/cli.py`) | Click-based command-line interface implementing 42 domain and operational command groups plus dynamic extension loading. |
+| Environment Provisioner | `tools/bootstrap-preflight.sh`, `tools/install.sh`, `bin/env.sh` | Cross-platform host prerequisite checker and provisioner for `.venv`, `[science]` dependencies, `bin/hypex`, `bin/elo`, `bin/prox`, and `tools/ENV_VERSION` stamping on Ubuntu Linux and macOS. |
 | BYOA & Private Data Extension | `bin/pde custom` (`tools/pde/commands/custom.py`), `examples/byoa/` | Two-phase ingestion (`pde custom ingest`), proprietary algorithm execution (`pde custom run`), and offline evaluation (`pde custom analyze`) with SHA-256 data/code provenance. |
 
 ---
@@ -196,33 +205,37 @@ The repository defines 22 agent templates, each containing `agent.yaml`, `agents
 - **Operations & Curation (2 roles)**: `bootstrapper`, `project-curator`.
 - **Hypothesis Exploration Subsystem (7 roles)**: `hypex-supervisor`, `hypex-generation`, `hypex-reflection`, `hypex-proximity`, `hypex-tournament`, `hypex-evolution`, `hypex-meta-review`.
 
-### 4.5 Interactive Standalone Dashboard (`dashboard.html`)
-Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard`) generates a self-contained HTML application (`dashboard.html`) with dual-mode operation (`STANDALONE SNAPSHOT` when opened as a local file, and `LIVE STREAM (SSE)` with automatic reload when served via `bin/pde dashboard serve`), light/dark SVG icon theme switching, and two synchronized panes:
+### 4.5 Interactive Standalone Dashboard (`dashboard.html`) & Cross-Platform Failover Rendering
+Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard`) generates a self-contained HTML application (`dashboard.html`) with dual-mode operation (`STANDALONE SNAPSHOT` when opened as a local file, and `LIVE STREAM (SSE)` with automatic reload when served via `bin/pde dashboard serve`), light/dark theme switching, cross-platform 3D/2D rendering failover, and two synchronized panes:
 
-1. **Left Pane -- Multi-Agent Lineage & Control Plane**:
+1. **Cross-Platform 3D & 2D Failover Rendering Engine**:
+   - **3D Molecular Failover (`canUseWebGL` + `renderSoftware3DMoleculeFallback`)**: Automatically detects whether hardware-accelerated WebGL (`3Dmol.js`) is available. In headless or embedded Linux webviews where WebGL is unavailable or external CDN scripts are restricted by Content Security Policy, the 3D studios (`structure`, `pockets`, `docking`, `sdf`) automatically switch to a built-in interactive software 3D projection engine that parses mmCIF, PDB, PDBQT, and SDF payloads, infers covalent and C-alpha backbone traces, and supports drag-to-rotate, scroll-to-zoom, residue/atom hover coordinate inspection, and `Cartoon` / `Stick` / `Sphere` style switching. Users can also manually toggle between `Auto (WebGL/Software)` and `Software 3D` via the studio toolbar.
+   - **2D Chart Failover (`renderPlotWithFallback` + `renderSvgChartFallback`)**: Automatically uses `Plotly.js` when available and falls back to an inline SVG chart renderer supporting bar charts, line/scatter profiles, radar plots, and 2D heatmaps when offline or under restricted CSP.
+
+2. **Left Pane -- Multi-Agent Lineage & Control Plane**:
    - **Agent Forest**: Interactive SVG multi-agent lineage DAG with cursor-anchored zoom/pan, live execution status badges, work-order edges, and a collapsible Node Inspector Drawer.
    - **Node Inspector Drawer**: Displays the specialist role, work-order state, correction cycle count (`cycle / 2`), dependencies, acceptance criteria checklist, frozen **Dispatch Context Snapshot** (`.pde/control/contexts/<WO>-r<N>.json` with Layer 2 file SHA-256 hashes), and the 10-check mechanical validation matrix.
    - **Work Orders, Runs, Leases, and Event Stream Tabs**: Detailed tables of work orders (`WO-*`), specialist runs (`RUN-*`), single-flight resource leases (`af3`, `hypex-supervisor`), and an inter-agent event stream filterable by category (`Work Orders`, `Runs`, `Leases`, `Validation`).
 
-2. **Right Pane -- 20 Scientific Studios, Findings, Governance & Readiness**:
+3. **Right Pane -- 20 Scientific Studios, Findings, Governance & Readiness**:
    - **3D & Structure Studios (6 studios)**:
-     1. `structure`: 3Dmol.js protein structure viewer colored by per-residue pLDDT confidence.
-     2. `pockets`: 3Dmol.js fpocket/geometric cavity surface and druggability score table.
-     3. `docking`: 3Dmol.js receptor-ligand 3D binding pose viewer.
+     1. `structure`: 3Dmol.js / Software 3D protein structure viewer colored by per-residue pLDDT confidence.
+     2. `pockets`: 3Dmol.js / Software 3D fpocket/geometric cavity surface and druggability score table.
+     3. `docking`: 3Dmol.js / Software 3D receptor-ligand 3D binding pose viewer.
      4. `contacts`: Protein-ligand residue interaction distance chart and contact table.
-     5. `plddt`: Plotly per-residue pLDDT confidence profile with domain boundaries.
-     6. `pae`: Plotly 2D Predicted Aligned Error (PAE) heatmap.
+     5. `plddt`: Plotly / SVG per-residue pLDDT confidence profile with domain boundaries.
+     6. `pae`: Plotly / SVG 2D Predicted Aligned Error (PAE) heatmap.
    - **Biology, Genetics & Omics Studios (3 studios)**:
      7. `constraint`: gnomAD loss-of-function constraint (`pLI`, `LOEUF`, `mis_z`), Open Targets disease association horizontal bar chart, ClinVar pathogenicity summary, and GWAS top loci table.
      8. `expression`: Human Protein Atlas (`nTPM`) and GTEx (`TPM`) tissue expression bar chart and tau specificity index.
      9. `omics_studio`: Multi-omics studio rendering AlphaGenome in silico mutagenesis (ISM) and regulatory variant scores, single-cell dataset discovery (`cellxgene`, `scp`, `disco`), disease transcriptomics (`geo`, `disignatlas`, `spatialdb`), Allen Brain Atlas regional expression, MGI/HPO phenotype annotations, and Reactome/STRING pathways.
    - **Chemistry, ADMET, PK & Toxicology Studios (8 studios)**:
-     10. `sdf`: 2D chemical structure depiction and physicochemical descriptor table.
+     10. `sdf`: 3D conformer viewer (3Dmol.js / Software 3D), 2D chemical structure depiction, and physicochemical descriptor table.
      11. `brics`: BRICS synthetic fragment decomposition viewer.
      12. `medchem_studio`: Lipinski, Veber, QED, and SA drug-likeness scorecard, PAINS/Brenk/NIH structural alert badges, matched molecular pair (MMP) activity cliff table, multi-parameter optimization (MPO) radar, and PubChem/ChEMBL similarity hits.
-     13. `admet`: Plotly multi-endpoint ADMET classification radar and parameter table.
+     13. `admet`: Plotly / SVG multi-endpoint ADMET classification radar and parameter table.
      14. `docking_scores`: AutoDock Vina mode affinity and RMSD comparison chart.
-     15. `pk_studio`: Non-compartmental PK parameter cards (`Cmax`, `AUC`, `t1/2`, `CL`, `Vdss`, `F%`), semi-log concentration-time Plotly curve, allometric human dose projection table, and FDA/EMA static DDI `R1` risk table.
+     15. `pk_studio`: Non-compartmental PK parameter cards (`Cmax`, `AUC`, `t1/2`, `CL`, `Vdss`, `F%`), semi-log concentration-time curve, allometric human dose projection table, and FDA/EMA static DDI `R1` risk table.
      16. `bioactivity_studio`: 4PL Hill dose-response curve (`IC50`, Hill slope), HTS `Z'` assay quality badge, and off-target selectivity fold-margin table.
      17. `tox_studio`: Repeat-dose toxicology NOAEL, therapeutic index (`TI`), hERG safety margin cards, ICH S2(R1) genotoxicity battery table, and FAERS adverse event disproportionate reporting table.
    - **Clinical, Tournaments & Raw Data Studios (3 studios)**:
@@ -241,7 +254,7 @@ Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard
 1. **Offline Re-Analysis**: All Phase 2 `analyze` commands execute with network sockets blocked (`PDE_PHASE2_OFFLINE=1`) so any historical Layer 0 artifact can be re-analyzed deterministically without external API dependencies.
 2. **Path Confinement & Security**: All file operations are confined to the active project workspace (`tools/pde/core/paths.py`), rejecting directory traversal (`..`) and symlink escapes, and storing only workspace-relative paths in generated artifacts and dashboard bundles.
 3. **Rate Limiting & Pacing**: Outbound HTTP requests to public scientific APIs (gnomAD, UniProt, ChEMBL, PubChem, NCBI E-utilities, Europe PMC, ClinicalTrials.gov) enforce per-host QPS pacing (`tools/pde/core/qps.py`).
-4. **Environment Reproducibility**: Every provenance sidecar records the SHA-256 digest of `tools/env-manifest.txt`, capturing the Python interpreter, installed package versions, and compiled binary hashes (`bin/hypex`, `bin/elo`, `bin/prox`).
+4. **Environment Reproducibility**: Every provenance sidecar records the SHA-256 digest of `tools/env-manifest.txt`, capturing the Python interpreter, installed package versions, and compiled binary hashes (`bin/hypex`, `bin/elo`, `bin/prox` built with `-trimpath`).
 
 ---
 
@@ -252,4 +265,4 @@ The build and test suite (`tests/`) verifies:
 - `tests/test_pocket_geometric.py`: Validates the built-in Python/NumPy geometric pocket detector (`pde pocket run --backend [geometric|auto]`) and offline `pde pocket analyze` (global and `--near`) across PDB and mmCIF structures, `pocket.geometric_fallback_backend` relay propagation, and `pde docking prepare` grid-box compatibility.
 - `tests/test_targets_compile.py`: Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`.
 - `tests/test_tool_bridge.py`: Validates the two-phase execution lifecycle (`pde_genetics_profile`, `pde_compound_profile`, `pde_admet_predict`), Layer 0 sidecar generation, and MCP server tool registration.
-- `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pde-workspace/dashboard.html`, confirming all multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios render from real Layer 0-4 artifacts.
+- `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pde-workspace/dashboard.html`, confirming all multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks (`bootstrap_ready`), cross-platform 3D (`canUseWebGL`, `renderSoftware3DMoleculeFallback`) and 2D (`renderPlotWithFallback`, `renderSvgChartFallback`) failover renderers, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios render from real Layer 0-4 artifacts.

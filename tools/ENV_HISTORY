@@ -1,3 +1,4 @@
 2026-10-07T03:21:39Z	sha256:e23e016d8a2c25e8e9981fabdad80b29ea22caddd3bf71c47d91a22185994aaa	initial stamp: 48 package(s), 0 file(s) in bin/
 2026-10-08T19:31:19Z	sha256:3f8b202818164605d5469f332eb5071d06b1ee11ef9b47587e9c276a2876d36c	26 added / 0 removed: PubChemPy, biopython, cloudpickle, contourpy, cycler, elo, +19 more	src=da93dbcd25fe+dirty	provisioned via tools/install.sh (update)
 2026-10-08T19:33:38Z	sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba	1 added / 1 removed: prox	src=da93dbcd25fe+dirty	provisioned via tools/install.sh (binaries-only)
+2026-10-09T17:03:53Z	sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333	2 added / 2 removed: elo, hypex	src=fc077abe5074+dirty	provisioned via tools/install.sh (binaries-only)

@@ -939,8 +939,8 @@ real, and the audit trail is clean.
 
 Two instances found on one afternoon, in unrelated sources:
 
-- `ClinicalTrials.gov`, `query.titles=PALOMA-3` returns two real trials — a
-  Janssen amivantamab study in NSCLC and the Pfizer palbociclib study in breast
+- `ClinicalTrials.gov`, `query.titles=PALOMA-3` returns two real trials — an
+  amivantamab study in NSCLC and a palbociclib study in breast
   cancer — and ranks the NSCLC one first. The breast-cancer record has a null
   `acronym`, so the two cannot be separated by name.
 - HPA `search_download.php?search=WEE1` returns both `WEE1` and `WEE2`, whose

@@ -18,8 +18,8 @@ Two phases:
 comes from a live case. `query.titles=PALOMA-3` on ClinicalTrials.gov
 returns two real trials and puts the wrong one first:
 
-    NCT05388669  Janssen, lazertinib + subcutaneous amivantamab (NSCLC)
-    NCT01942135  Pfizer,  palbociclib + fulvestrant (breast) — the real one
+    NCT05388669  lazertinib + subcutaneous amivantamab study (NSCLC)
+    NCT01942135  palbociclib + fulvestrant study (breast) — the target record
 
 NCT01942135's `acronym` field is null; the name PALOMA-3 appears only
 inside its title prose, so acronym matching cannot separate them. The

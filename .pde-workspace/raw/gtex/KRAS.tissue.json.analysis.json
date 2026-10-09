@@ -2,11 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/gtex/KRAS.tissue.json",
-  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "env_version": "sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333",
   "source_sha256": "8684f6342ddb779e53ac2b28a5dc17dabba6f801a8895f38d7bea626783b1b7f",
   "threshold_set": "expression-v1",
   "work_order_id": "WO-001",
-  "analyzed_at": "2026-10-08T19:43:47Z",
+  "analyzed_at": "2026-10-09T18:24:54Z",
   "verdict": "pass",
   "summary": "Broad baseline WT expression across GI tract and lung (max 48.5 TPM in Colon); confirms need for G12D salt-bridge selectivity.",
   "thresholds_applied": {

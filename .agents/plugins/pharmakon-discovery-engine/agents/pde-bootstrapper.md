@@ -102,9 +102,9 @@ Skip this step and proceed to Step 1.
 
 2. Clone the repository to the shared scratchpad volume:
 
-   **If `.pde/scratchpad/LifeSciences` already exists:** the clone from
+   **If `.pde/scratchpad/pde-repo` already exists:** the clone from
    a previous container is still present on the shared volume. Skip the clone and
-   run `git -C .pde/scratchpad/LifeSciences pull` to freshen it.
+   run `git -C .pde/scratchpad/pde-repo pull` to freshen it.
 
    If the pull fails, STOP and report the error. Nothing downstream can proceed
    without the tools directory.
@@ -112,7 +112,7 @@ Skip this step and proceed to Step 1.
    **Otherwise:**
 
    ```bash
-   gh repo clone agent-runtime-frontiers/LifeSciences .pde/scratchpad/LifeSciences
+   gh repo clone <org>/pde-agent-plugin .pde/scratchpad/pde-repo
    ```
 
    Clone to the scratchpad volume, not into `.pde-workspace` — this ensures the clone
@@ -126,7 +126,7 @@ Skip this step and proceed to Step 1.
 3. Symlink the tools directory into the workspace:
 
    ```bash
-   ln -s .pde/scratchpad/LifeSciences/applications/PDE/tools tools
+   ln -s .pde/scratchpad/pde-repo/tools tools
    ```
 
    Verify the link resolves:
@@ -281,7 +281,7 @@ The report must be machine-parseable — use the exact format below.
 
 ```
 BOOTSTRAP_RESULT: READY
-PROGRAM_DIR: <absolute path to program directory>
+PROGRAM_DIR: <relative path to program directory>
 DOCTOR_FINDINGS:
   failures: none
   capability_warnings:

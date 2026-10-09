@@ -76,7 +76,7 @@ build_go_or_fallback() {
 
   if command -v go >/dev/null 2>&1 && [ -d "$src_dir" ]; then
     echo "==> Building $name from Go source ($src_dir)..."
-    if (cd "$src_dir" && go build -o "$out_bin" . >/dev/null 2>&1); then
+    if (cd "$src_dir" && go build -trimpath -ldflags="-s -w -buildid=" -o "$out_bin" . >/dev/null 2>&1); then
       chmod +x "$out_bin"
       built=1
     fi

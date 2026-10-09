@@ -383,7 +383,7 @@ def pairs_cmd(
         raise ArtifactError(
             f"series file not found: {series_file}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the series JSON file",
+            remedy="pass a project-relative path to the series JSON file",
         )
     source = source.resolve()
 

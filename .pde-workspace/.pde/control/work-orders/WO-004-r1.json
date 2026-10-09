@@ -10,7 +10,7 @@
     "content": "Dock MRTX1133 into KRAS G12D Switch-II pocket and quantify Asp12 salt-bridge and His95/Tyr96 contacts.",
     "artifact_links": [],
     "snapshot": "contexts/WO-004-r1.json",
-    "snapshot_sha256": "de5812f48de5da460b6cdaa58b2db7603831edc1baa7718b6dacb37637f104fd"
+    "snapshot_sha256": "5a26d454b4051409523f2354daf1dbb7ad0109c99f5bcc267c7eae73c2d7d706"
   },
   "dependencies": [],
   "capabilities": [],
@@ -35,6 +35,6 @@
   "priority": "normal",
   "resource_class": "standard",
   "report_to": "discovery-lead",
-  "created_at": "2026-10-08T19:44:08Z",
-  "committed_at": "2026-10-08T19:44:08Z"
+  "created_at": "2026-10-09T18:25:13Z",
+  "committed_at": "2026-10-09T18:25:13Z"
 }

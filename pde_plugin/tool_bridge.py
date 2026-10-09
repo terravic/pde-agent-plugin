@@ -40,7 +40,13 @@ for _p in (str(REPO_ROOT), str(TOOLS_DIR), str(VENDOR_HYPEX_DIR)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from pde.commands.dashboard import build_dashboard_html  # noqa: E402
+from pde.commands.dashboard import (  # noqa: E402
+    bootstrap_prompt_session,
+    build_dashboard_html,
+    ensure_dashboard_server,
+    log_agent_message,
+    record_active_project,
+)
 from pde.core import controlstore  # noqa: E402
 from pde.core.context import init_project  # noqa: E402
 
@@ -73,6 +79,14 @@ def resolve_project_root(project_dir: str | Path | None = None) -> Path:
         init_project(root)
     elif not (root / "dashboard.html").is_file():
         _safe_build_dashboard(root)
+
+    if root.is_relative_to(REPO_ROOT):
+        try:
+            record_active_project(root)
+            if os.environ.get("PDE_AUTO_SERVE_DASHBOARD", "0") == "1":
+                ensure_dashboard_server(root)
+        except Exception:
+            pass
     return root
 
 
@@ -847,3 +861,51 @@ def pde_render_dashboard(
         "stage": prog.get("stage"),
         "summary_metrics": prog.get("summary_metrics", {}),
     }
+
+
+def pde_bootstrap_session(
+    prompt: str,
+    program_name: str | None = None,
+    stage: int | None = None,
+    project_dir: str | None = None,
+    host: str = "0.0.0.0",
+    port: int = 8765,
+    start_server: bool = True,
+) -> dict[str, Any]:
+    """Initialize a live PDE discovery session from the user's prompt and ensure the dashboard server is running."""
+    project_root = resolve_project_root(project_dir)
+    return bootstrap_prompt_session(
+        project_root,
+        prompt=prompt,
+        program_name=program_name,
+        stage=stage,
+        host=host,
+        port=port,
+        start_server=start_server,
+    )
+
+
+def pde_log_agent_message(
+    from_agent: str,
+    to_agent: str,
+    summary: str,
+    work_order_id: str | None = None,
+    project_dir: str | None = None,
+) -> dict[str, Any]:
+    """Record an explicit inter-agent communication event in the PDE control plane and refresh the dashboard."""
+    project_root = resolve_project_root(project_dir)
+    ev = log_agent_message(
+        project_root,
+        from_agent=from_agent,
+        to_agent=to_agent,
+        summary=summary,
+        work_order_id=work_order_id,
+    )
+    dashboard_path, _ = _safe_build_dashboard(project_root)
+    return {
+        "ok": True,
+        "event": ev,
+        "project_dir": str(project_root),
+        "dashboard_html": dashboard_path,
+    }
+

@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import os
 import sys
+import time
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,10 +12,52 @@ from typing import Any
 
 import click
 
-from .core import thresholds as thresholds_mod
+from .core import controlstore, thresholds as thresholds_mod
 from .core.context import ProjectContext, resolve_project
 from .core.errors import ArtifactError, PDEError
 from .core.output import Emitter
+
+_TOOL_ROLE_MAP: dict[str, str] = {
+    "genetics": "computational-biologist",
+    "gwas": "computational-biologist",
+    "alphagenome": "computational-biologist",
+    "expression": "computational-biologist",
+    "gtex": "computational-biologist",
+    "cellxgene": "computational-biologist",
+    "geo": "computational-biologist",
+    "allen": "computational-biologist",
+    "phenotype": "computational-biologist",
+    "pathway": "computational-biologist",
+    "alphafold": "structural-biologist",
+    "structure": "structural-biologist",
+    "pocket": "structural-biologist",
+    "ppi": "structural-biologist",
+    "conservation": "structural-biologist",
+    "homology": "structural-biologist",
+    "compound": "medicinal-chemist",
+    "analog": "medicinal-chemist",
+    "similar": "medicinal-chemist",
+    "mmp": "medicinal-chemist",
+    "mpo": "medicinal-chemist",
+    "retro": "medicinal-chemist",
+    "pubchem": "medicinal-chemist",
+    "docking": "computational-chemist",
+    "screen": "computational-chemist",
+    "structure_screen": "computational-chemist",
+    "admet": "admet-dmpk-scientist",
+    "pk": "admet-dmpk-scientist",
+    "assay": "experimental-biologist",
+    "selectivity": "experimental-biologist",
+    "tox": "preclinical-toxicologist",
+    "faers": "regulatory-scientist",
+    "trials": "regulatory-scientist",
+    "patent": "regulatory-scientist",
+    "differentiation": "regulatory-scientist",
+    "manufacturing": "regulatory-scientist",
+    "coscientist": "hypex-supervisor",
+    "hypex": "hypex-supervisor",
+    "hypothesis": "science-program-lead",
+}
 
 
 @dataclass
@@ -113,27 +157,20 @@ EXEMPT_PHASE_TWO_GROUPS: frozenset[str] = frozenset(
 
 
 def enforce_phase_two(group: click.Group) -> None:
-    """Apply the phase-2 contract to every `analyze` command in the tree.
+    """Apply the phase-2 contract and passive telemetry to domain commands.
 
-    Two properties, both structural, both applied here rather than at the
-    call sites they constrain:
+    Two structural properties applied to phase-2 (`analyze`/`assess`) commands:
 
     * **Offline.** The shared HTTP client is latched for the rest of the
       invocation, so a lookup added to a phase-2 command raises instead of
       quietly making re-analysis depend on an endpoint.
     * **Non-destructive.** `--overwrite` is injected, and without it a
-      write that would replace a *differing* analysis is refused. A second
-      opinion has to be producible without destroying the first, and the
-      directory scheme cannot promise that on its own: two reviewers on
-      one date resolve to one path.
+      write that would replace a *differing* analysis is refused.
 
-    Applied once to the root group, so a tool added next month inherits
-    both without its author knowing they exist. A per-command decorator
-    would need to be remembered by exactly the person who forgot the rule.
-
-    Walks the registered tree rather than inspecting argv: `--out
-    analyze` is a plausible argument and must not trip this, while
-    `pde expression analyze` must.
+    In addition, all non-exempt domain commands (both Phase 1 and Phase 2)
+    automatically emit lightweight passive telemetry events
+    (`tool.started` / `tool.completed` / `tool.failed`) into
+    `.pde/control/events.ndjson` when executed inside a PDE workspace.
     """
     from .core import http, provenance
 
@@ -143,31 +180,124 @@ def enforce_phase_two(group: click.Group) -> None:
         if isinstance(command, click.Group):
             enforce_phase_two(command)
             continue
-        if not is_phase_two(name):
-            continue
+        is_p2 = is_phase_two(name)
         original = command.callback
         if original is None or getattr(original, "_phase_two_guarded", False):
             continue
 
-        if not any(p.name == "overwrite" for p in command.params):
-            command.params.append(OVERWRITE_OPTION)
-        if not any(p.name == "overwrite_cross_wo" for p in command.params):
-            command.params.append(OVERWRITE_CROSS_WO_OPTION)
+        if is_p2:
+            if not any(p.name == "overwrite" for p in command.params):
+                command.params.append(OVERWRITE_OPTION)
+            if not any(p.name == "overwrite_cross_wo" for p in command.params):
+                command.params.append(OVERWRITE_CROSS_WO_OPTION)
 
         def guarded(
-            *args: Any, _original=original, _group=group.name, _name=name, **kwargs: Any
+            *args: Any,
+            _original=original,
+            _group=group.name or "pde",
+            _name=name,
+            _is_p2=is_p2,
+            **kwargs: Any,
         ):
-            # Injected by this wrapper, so consumed by it: the wrapped
-            # callback never declared the parameter.
-            provenance.allow_overwrite(bool(kwargs.pop("overwrite", False)))
-            provenance.allow_overwrite_cross_wo(
-                bool(kwargs.pop("overwrite_cross_wo", False))
+            if _is_p2:
+                # Injected by this wrapper, so consumed by it: the wrapped
+                # callback never declared the parameter.
+                provenance.allow_overwrite(bool(kwargs.pop("overwrite", False)))
+                provenance.allow_overwrite_cross_wo(
+                    bool(kwargs.pop("overwrite_cross_wo", False))
+                )
+                http.forbid_network(
+                    f"`{_group} {_name}` is phase 2: it reads what phase 1 wrote "
+                    "and never queries an endpoint"
+                )
+
+            project_root: Path | None = None
+            phase = "phase2" if _is_p2 else "phase1"
+            actor = os.environ.get("PDE_AGENT_ROLE") or _TOOL_ROLE_MAP.get(
+                _group, "computational-biologist"
             )
-            http.forbid_network(
-                f"`{_group} {_name}` is phase 2: it reads what phase 1 wrote "
-                "and never queries an endpoint"
-            )
-            return _original(*args, **kwargs)
+            t0 = time.monotonic()
+            try:
+                ctx = click.get_current_context(silent=True)
+                state = ctx.find_object(AppState) if ctx is not None else None
+                if state is not None:
+                    cand_root = state.project().root
+                    if (cand_root / ".pde").is_dir():
+                        project_root = cand_root
+                        arg_preview: list[str] = []
+                        for k, v in kwargs.items():
+                            if (
+                                k in ("as_json", "quiet", "out", "from_dir", "state")
+                                or v is None
+                                or isinstance(v, (bool, AppState))
+                            ):
+                                continue
+                            arg_preview.append(str(v)[:60])
+                        controlstore.append_event(
+                            project_root,
+                            {
+                                "type": "tool.started",
+                                "subject_id": f"{_group}.{_name}",
+                                "from_state": "idle",
+                                "to_state": "running",
+                                "actor": actor,
+                                "detail": {
+                                    "tool": _group,
+                                    "subcommand": _name,
+                                    "phase": phase,
+                                    "args": arg_preview[:3],
+                                },
+                            },
+                        )
+            except Exception:
+                project_root = None
+
+            try:
+                res = _original(*args, **kwargs)
+                if project_root is not None:
+                    try:
+                        controlstore.append_event(
+                            project_root,
+                            {
+                                "type": "tool.completed",
+                                "subject_id": f"{_group}.{_name}",
+                                "from_state": "running",
+                                "to_state": "succeeded",
+                                "actor": actor,
+                                "detail": {
+                                    "tool": _group,
+                                    "subcommand": _name,
+                                    "phase": phase,
+                                    "duration_ms": int((time.monotonic() - t0) * 1000),
+                                },
+                            },
+                        )
+                    except Exception:
+                        pass
+                return res
+            except Exception as exc:
+                if project_root is not None:
+                    try:
+                        controlstore.append_event(
+                            project_root,
+                            {
+                                "type": "tool.failed",
+                                "subject_id": f"{_group}.{_name}",
+                                "from_state": "running",
+                                "to_state": "failed",
+                                "actor": actor,
+                                "detail": {
+                                    "tool": _group,
+                                    "subcommand": _name,
+                                    "phase": phase,
+                                    "exit_code": int(getattr(exc, "exit_code", 1)),
+                                    "duration_ms": int((time.monotonic() - t0) * 1000),
+                                },
+                            },
+                        )
+                    except Exception:
+                        pass
+                raise
 
         guarded._phase_two_guarded = True  # type: ignore[attr-defined]
         command.callback = guarded
@@ -280,7 +410,7 @@ def resolve_artifact(state: AppState, path: str, what: str = "artifact") -> Path
             f"{what} not found: {resolved}",
             detail=f"relative paths resolve against the project root "
             f"({state.project().root}), never the current directory",
-            remedy="run the corresponding phase-1 subcommand first, or pass an absolute path",
+            remedy="run the corresponding phase-1 subcommand first, or pass a project-relative path",
         )
     return resolved
 

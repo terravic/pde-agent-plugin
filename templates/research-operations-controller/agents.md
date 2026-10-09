@@ -43,7 +43,7 @@ Do not proceed until the bootstrapper reports back.
 The bootstrapper sends a structured readiness report. Parse it for:
 
 - **`BOOTSTRAP_RESULT`**: `READY` or `FAILED`
-- **`PROGRAM_DIR`**: the absolute path to the program directory
+- **`PROGRAM_DIR`**: the relative path to the program directory
 - **`DOCTOR_FINDINGS`**: any `capability_warnings` — these feed the capability
   exclusion list you build in section 2
 

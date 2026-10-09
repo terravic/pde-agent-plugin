@@ -502,7 +502,7 @@ def ingest(
         raise ArtifactError(
             f"run directory not found: {run_dir}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the hypex run directory",
+            remedy="pass a project-relative path to the hypex run directory",
         )
     run_path = run_path.resolve()
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)

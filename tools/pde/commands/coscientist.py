@@ -398,7 +398,7 @@ def ingest(
         raise ArtifactError(
             f"tournament export not found: {export_file}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the raw Co-Scientist export",
+            remedy="pass a project-relative path to the raw Co-Scientist export",
         )
     source = source.resolve()
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)

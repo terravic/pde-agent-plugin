@@ -34,6 +34,11 @@ import html as html_mod
 import json
 import os
 import re
+import shutil
+import signal
+import socket
+import subprocess
+import sys
 import tempfile
 import time
 from datetime import datetime, timezone
@@ -56,7 +61,7 @@ from ..common import (
     pass_state,
 )
 from ..core import controlstore, provenance
-from ..core.context import ARTIFACT_DIRS, normalize_artifact_class
+from ..core.context import ARTIFACT_DIRS, init_project, normalize_artifact_class
 from ..core.controlstore import normalize_deliverables
 from ..core.env import CLI_VERSION
 from ..core.paths import confine_path, is_safe_to_open
@@ -954,6 +959,15 @@ def _collect_events(project_root: Path) -> list[dict[str, Any]]:
     return events
 
 
+def _file_mtime_iso(path: Path) -> str:
+    try:
+        return datetime.fromtimestamp(path.stat().st_mtime, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+    except OSError:
+        return _utc_now()
+
+
 def _build_agent_forest_and_messages(
     project_root: Path,
     roles_catalog: dict[str, dict[str, Any]],
@@ -965,12 +979,18 @@ def _build_agent_forest_and_messages(
     artifacts: list[dict[str, Any]],
     findings: list[dict[str, Any]],
     contexts: dict[str, dict[str, Any]] | None = None,
+    program_cfg: dict[str, Any] | None = None,
+    program_state_docs: list[dict[str, Any]] | None = None,
+    gates: list[dict[str, Any]] | None = None,
+    exec_doc: dict[str, Any] | None = None,
+    retrospectives: list[dict[str, Any]] | None = None,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]], list[dict[str, Any]]]:
-    """Construct Multi-Agent Lineage Forest nodes, edges, and message log."""
+    """Construct Multi-Agent Lineage Forest nodes, edges, and structured telemetry stream."""
     nodes: list[dict[str, Any]] = []
     edges: list[dict[str, Any]] = []
     messages: list[dict[str, Any]] = []
     contexts_map = contexts or {}
+    prog_cfg = program_cfg or {}
 
     def _skills_for(role: str) -> list[str]:
         return roles_catalog.get(role, {}).get(
@@ -982,9 +1002,42 @@ def _build_agent_forest_and_messages(
             "description", role.replace("-", " ").title()
         )
 
+    # Track in-flight CLI tool invocations per specialist role from passive CLI hooks
+    in_flight_by_role: dict[str, str] = {}
+    for ev in events:
+        ev_t = str(ev.get("type") or "")
+        act = str(ev.get("actor") or "").removeprefix("pde-")
+        subj = str(ev.get("subject_id") or "")
+        if ev_t == "tool.started" and act:
+            in_flight_by_role[act] = subj
+        elif ev_t in ("tool.completed", "tool.failed") and act:
+            in_flight_by_role.pop(act, None)
+
     # 1. Root User node & Orchestrator nodes
-    has_active_runs = any(r.get("state") in ("running", "starting", "queued") for r in runs)
-    lead_state = "running" if has_active_runs else ("succeeded" if (work_orders_latest or artifacts) else "idle")
+    has_active_runs = any(
+        r.get("state") in ("running", "starting", "queued") for r in runs
+    ) or bool(in_flight_by_role)
+    user_prompt = str(prog_cfg.get("user_prompt") or "").strip()
+    lead_state = (
+        "running"
+        if has_active_runs
+        else (
+            "succeeded"
+            if (work_orders_latest or artifacts)
+            else ("running" if user_prompt else "idle")
+        )
+    )
+
+    user_decision_question = (
+        f"Prompt: {user_prompt}"
+        if user_prompt
+        else "Program Charter & Discovery Objective"
+    )
+    lead_decision_question = (
+        f"Active Charter ({prog_cfg.get('target') or prog_cfg.get('name') or 'Discovery'}): {user_prompt}"
+        if user_prompt
+        else "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions."
+    )
 
     nodes.append(
         {
@@ -1000,11 +1053,11 @@ def _build_agent_forest_and_messages(
             "revision": None,
             "run_id": None,
             "attempt": 1,
-            "decision_question": "Program Charter & Discovery Objective",
+            "decision_question": user_decision_question,
             "description": "Principal Investigator / Interactive User Session",
             "injected_skills": ["pharmakon-discovery-engine", "pde-dashboard"],
             "validation": None,
-            "deliverables": [],
+            "deliverables": [".pde/program.yaml"] if user_prompt else [],
         }
     )
 
@@ -1022,7 +1075,7 @@ def _build_agent_forest_and_messages(
             "revision": None,
             "run_id": None,
             "attempt": 1,
-            "decision_question": "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions.",
+            "decision_question": lead_decision_question,
             "description": _desc_for("science-program-lead"),
             "injected_skills": _skills_for("science-program-lead"),
             "validation": None,
@@ -1044,7 +1097,7 @@ def _build_agent_forest_and_messages(
         }
     )
 
-    roc_state = lead_state if work_orders_latest else "idle"
+    roc_state = lead_state if (work_orders_latest or in_flight_by_role) else "idle"
     nodes.append(
         {
             "id": "research-operations-controller",
@@ -1082,6 +1135,14 @@ def _build_agent_forest_and_messages(
         runs_by_wo.setdefault(key, []).append(r)
 
     hypex_sup_node_id: str | None = None
+    wo_id_to_node_id: dict[str, str] = {}
+    role_to_node_id: dict[str, str] = {
+        "user": "user",
+        "science-program-lead": "science-program-lead",
+        "discovery-lead": "science-program-lead",
+        "research-operations-controller": "research-operations-controller",
+        "project-curator": "project-curator-dashboard",
+    }
 
     for wo in work_orders_latest:
         wo_id = wo.get("id", "WO-000")
@@ -1140,6 +1201,8 @@ def _build_agent_forest_and_messages(
             ancestry = [*ancestry, hypex_sup_node_id]
 
         node_id = f"{wo_id}-r{rev}-{role}"
+        wo_id_to_node_id[wo_id] = node_id
+        role_to_node_id[role] = node_id
         if role == "hypex-supervisor":
             hypex_sup_node_id = node_id
 
@@ -1279,7 +1342,7 @@ def _build_agent_forest_and_messages(
                     }
                 )
 
-    # Synthesize virtual Fast-Path specialist nodes for any artifacts not covered by a formal Work Order
+    # Synthesize virtual Fast-Path specialist nodes for any artifacts or in-flight tools not covered by a formal Work Order
     unattributed_by_role: dict[str, list[dict[str, Any]]] = {}
     for art in artifacts:
         if art.get("work_order_id"):
@@ -1289,10 +1352,22 @@ def _build_agent_forest_and_messages(
         role = TOOL_TO_ROLE_FALLBACK.get(tool_name, "computational-biologist")
         unattributed_by_role.setdefault(role, []).append(art)
 
+    for active_role in in_flight_by_role:
+        unattributed_by_role.setdefault(active_role, [])
+
     for role, role_arts in sorted(unattributed_by_role.items()):
         # Only add virtual node if no WO already exists for this role, or if there are no WOs at all
         if not work_orders_latest or not any(w.get("requested_role") == role for w in work_orders_latest):
             vnode_id = f"fastpath-{role}"
+            role_to_node_id.setdefault(role, vnode_id)
+            is_in_flight = role in in_flight_by_role
+            fp_state = "running" if is_in_flight else "succeeded"
+            in_flight_cmd = in_flight_by_role.get(role, "")
+            fp_question = (
+                f"Executing `pde {in_flight_cmd.replace('.', ' ')}` ({len(role_arts)} Layer 0 artifact(s) generated)"
+                if is_in_flight
+                else f"Fast-Path interactive scientific execution ({len(role_arts)} Layer 0 artifact(s) generated)"
+            )
             nodes.append(
                 {
                     "id": vnode_id,
@@ -1301,13 +1376,13 @@ def _build_agent_forest_and_messages(
                     "category": ROLE_CATEGORY_MAP.get(role, "Specialist"),
                     "parentId": "science-program-lead",
                     "ancestry": ["user", "science-program-lead"],
-                    "state": "succeeded",
+                    "state": fp_state,
                     "wo_state": "fast_path",
                     "work_order_id": "FAST-PATH",
                     "revision": 1,
                     "run_id": "RUN-FAST",
                     "attempt": 1,
-                    "decision_question": f"Fast-Path interactive scientific execution ({len(role_arts)} Layer 0 artifact(s) generated)",
+                    "decision_question": fp_question,
                     "description": _desc_for(role),
                     "injected_skills": _skills_for(role),
                     "validation": None,
@@ -1319,7 +1394,7 @@ def _build_agent_forest_and_messages(
                     "parentId": "science-program-lead",
                     "childId": vnode_id,
                     "label": "fast-path",
-                    "state": "succeeded",
+                    "state": fp_state,
                 }
             )
 
@@ -1338,7 +1413,7 @@ def _build_agent_forest_and_messages(
             "revision": None,
             "run_id": None,
             "attempt": 1,
-            "decision_question": "Compile Unified Multi-Agent Graph + 14 PDE Scientific Viewers into Interactive Dashboard.",
+            "decision_question": "Compile Unified Multi-Agent Graph + 20 PDE Scientific Viewers into Interactive Dashboard.",
             "description": _desc_for("project-curator"),
             "injected_skills": _skills_for("project-curator"),
             "validation": None,
@@ -1354,41 +1429,147 @@ def _build_agent_forest_and_messages(
         }
     )
 
-    # 2. Build Inter-Agent Message & Event Stream
-    for ev in events:
+    def _resolve_node_target(role_or_wo: str) -> str:
+        clean = str(role_or_wo or "").strip().removeprefix("pde-")
+        if clean in wo_id_to_node_id:
+            return wo_id_to_node_id[clean]
+        if clean in role_to_node_id:
+            return role_to_node_id[clean]
+        # Match WO-NNN prefix
+        m = re.match(r"^(WO-\d{3,})", clean)
+        if m and m.group(1) in wo_id_to_node_id:
+            return wo_id_to_node_id[m.group(1)]
+        return "science-program-lead"
+
+    # 2. Build Inter-Agent Message & Live Telemetry Stream
+    explicit_finding_paths: set[str] = set()
+    for idx, ev in enumerate(events):
         ts = ev.get("timestamp", _utc_now())
-        ev_type = ev.get("type", "event")
-        subj = ev.get("subject_id", "")
+        ev_type = str(ev.get("type", "event"))
+        subj = str(ev.get("subject_id", ""))
         from_st = ev.get("from_state")
         to_st = ev.get("to_state")
         detail = ev.get("detail")
         sender = str(ev.get("actor") or "research-operations-controller")
-        recipient = str(subj)
+        recipient = str(subj or "science-program-lead")
         level = "info"
-        summary = f"{ev_type}: {subj} ({from_st or 'init'} → {to_st})"
-        if ev_type == "dispatch.subagent" and isinstance(detail, dict):
-            sub_name = detail.get("subagent_name") or f"pde-{detail.get('requested_role', 'specialist')}"
+        category = "agent"
+        tag = "AGENT"
+        target_kind = "agent"
+        target_id = _resolve_node_target(subj or sender)
+        action_label = "Inspect Agent"
+        summary = f"{ev_type}: {subj} ({from_st or 'init'} -> {to_st})"
+
+        if ev_type in ("prompt.received", "charter.initialized"):
+            category = "prompt"
+            tag = "PROMPT"
+            target_kind = "overview"
+            target_id = "charter"
+            action_label = "View Charter"
+            level = "info"
+            if isinstance(detail, dict) and detail.get("summary"):
+                summary = str(detail["summary"])
+            elif isinstance(detail, dict) and detail.get("prompt"):
+                summary = f"Prompt received: \"{detail['prompt']}\""
+            else:
+                summary = f"Session charter initialized ({subj})"
+        elif ev_type in ("dispatch.subagent", "agent.spawned") and isinstance(detail, dict):
+            req_role = str(detail.get("requested_role") or "specialist").removeprefix("pde-")
+            sub_name = detail.get("subagent_name") or f"pde-{req_role}"
             recipient = f"{sub_name} ({subj})"
-            summary = f"Dispatched {sub_name} on {subj} ({detail.get('run_id', '')}): {detail.get('decision_question', '')}"
+            category = "agent"
+            tag = "AGENT"
+            target_kind = "agent"
+            target_id = _resolve_node_target(subj or req_role)
+            action_label = "Inspect Agent"
+            summary = f"Spawned {sub_name} on {subj} ({detail.get('run_id', '')}): {detail.get('decision_question', '')}"
+        elif ev_type in ("agent.message", "agent.handoff"):
+            category = "comm"
+            tag = "COMM"
+            if isinstance(detail, dict):
+                recipient = str(detail.get("recipient") or subj or "science-program-lead")
+                summary = str(detail.get("summary") or summary)
+            target_kind = "agent"
+            target_id = _resolve_node_target(sender if sender != "user" else recipient)
+            action_label = "Inspect Agent"
+        elif ev_type == "finding.submitted" and isinstance(detail, dict):
+            fpath = str(detail.get("source_path") or subj)
+            explicit_finding_paths.add(fpath)
+            category = "finding"
+            tag = "FINDING"
+            level = "success"
+            target_kind = "finding"
+            target_id = fpath
+            action_label = "Read Finding"
+            summary = str(detail.get("summary") or f"Finding submitted: `{fpath}`")
+        elif ev_type == "tool.started" and isinstance(detail, dict):
+            t_name = detail.get("tool", "pde")
+            s_name = detail.get("subcommand", "run")
+            t_args = " ".join(str(x) for x in (detail.get("args") or []))
+            category = "tool"
+            tag = "TOOL:RUN"
+            target_kind = "agent"
+            target_id = _resolve_node_target(sender)
+            action_label = "Inspect Running Agent"
+            summary = f"Running `pde {t_name} {s_name}{(' ' + t_args) if t_args else ''}` ({detail.get('phase', 'phase1')})"
+        elif ev_type == "tool.completed" and isinstance(detail, dict):
+            t_name = detail.get("tool", "pde")
+            s_name = detail.get("subcommand", "run")
+            dur = detail.get("duration_ms")
+            dur_str = f" in {dur}ms" if dur is not None else ""
+            category = "tool"
+            tag = "TOOL:DONE"
+            level = "success"
+            target_kind = "agent"
+            target_id = _resolve_node_target(sender)
+            action_label = "Inspect Agent"
+            summary = f"Completed `pde {t_name} {s_name}`{dur_str}"
+        elif ev_type == "tool.failed" and isinstance(detail, dict):
+            t_name = detail.get("tool", "pde")
+            s_name = detail.get("subcommand", "run")
+            category = "tool"
+            tag = "TOOL:ERR"
+            level = "error"
+            target_kind = "agent"
+            target_id = _resolve_node_target(sender)
+            action_label = "Inspect Agent"
+            summary = f"Command `pde {t_name} {s_name}` exited with code {detail.get('exit_code', 1)}"
         elif ev_type == "correction_returned" and isinstance(detail, dict):
             sender = "finding-validator"
             cyc = detail.get("correction_cycle", 1)
             failed_list = detail.get("checks_failed", [])
             level = "warn"
+            category = "gate"
+            tag = "GATE"
+            target_kind = "agent"
+            target_id = _resolve_node_target(subj)
+            action_label = "Inspect 10-Check Gate"
             summary = f"CORRECTION REQUIRED on {subj} (Cycle {cyc}/2): failed checks = {', '.join(failed_list)}"
-        elif ev_type == "validation.completed":
+        elif ev_type in ("validation.completed", "validation.failed"):
             sender = "finding-validator"
             recipient = "research-operations-controller"
             res = detail.get("result") if isinstance(detail, dict) else detail
             failed_list = (
                 detail.get("checks_failed", []) if isinstance(detail, dict) else []
             )
-            if res == "fail":
+            category = "gate"
+            tag = "GATE"
+            target_kind = "agent"
+            target_id = _resolve_node_target(subj)
+            action_label = "Inspect 10-Check Gate"
+            if res == "fail" or ev_type == "validation.failed":
                 level = "error"
                 summary = f"VALIDATION FAILED on {subj}: failed checks = {', '.join(failed_list)}"
             else:
                 level = "success"
                 summary = f"10-Check Mechanical Validation PASSED ({res}) for {subj}"
+        elif ev_type.startswith("lease."):
+            category = "lease"
+            tag = "LEASE"
+            target_kind = "agent"
+            target_id = _resolve_node_target(sender)
+            action_label = "Inspect Lease Holder"
+            summary = f"Resource lease `{subj}` {ev_type.split('.')[-1]} by {sender}"
         elif to_st in ("failed", "validation_failed", "scientifically_rejected"):
             level = "error"
         elif to_st in ("mechanically_validated", "scientifically_accepted", "succeeded"):
@@ -1396,49 +1577,149 @@ def _build_agent_forest_and_messages(
 
         messages.append(
             {
+                "id": f"ev-{idx}-{ts}",
                 "timestamp": ts,
                 "sender": sender,
                 "recipient": recipient,
                 "type": ev_type,
+                "category": category,
+                "tag": tag,
                 "level": level,
                 "summary": summary,
                 "detail": detail,
+                "target_kind": target_kind,
+                "target_id": target_id,
+                "action_label": action_label,
             }
         )
 
-    # Also synthesize tool provenance messages from .meta.json and .analysis.json
-    for art in artifacts:
+    # 3. Synthesize tool provenance messages from .meta.json and .analysis.json with direct Studio deep-links
+    for art_idx, art in enumerate(artifacts):
+        rel_path = art["rel_path"]
+        studio_label = art.get("viewer_label") or art.get("domain_studio") or "Studio"
         meta = art.get("meta")
         if isinstance(meta, dict):
             tool_name = meta.get("tool", "pde")
             subcmd = meta.get("subcommand", "fetch")
             role = TOOL_TO_ROLE_FALLBACK.get(str(tool_name), "specialist")
+            ts_p1 = meta.get("timestamp") or meta.get("created_at") or _utc_now()
             messages.append(
                 {
-                    "timestamp": meta.get("timestamp") or meta.get("created_at") or _utc_now(),
+                    "id": f"p1-{art_idx}-{rel_path}",
+                    "timestamp": ts_p1,
                     "sender": role,
                     "recipient": f"raw/{art['artifact_class']}",
                     "type": "tool.phase1",
+                    "category": "tool",
+                    "tag": "TOOL:P1",
                     "level": "info",
-                    "summary": f"Phase 1 `pde {tool_name} {subcmd}` wrote `{art['rel_path']}` (SHA-256 verified)",
+                    "summary": f"Phase 1 `pde {tool_name} {subcmd}` wrote `{rel_path}` (SHA-256 verified)",
                     "detail": {"parameters": meta.get("parameters"), "relays": meta.get("mandatory_relays")},
+                    "target_kind": "artifact",
+                    "target_id": rel_path,
+                    "action_label": f"Open {studio_label}",
                 }
             )
         ana = art.get("analysis")
         if isinstance(ana, dict):
             tset = ana.get("threshold_set") or ana.get("thresholds_applied") or "default"
             verdict = art.get("verdict") or "evaluated"
+            ts_p2 = ana.get("timestamp") or ana.get("created_at") or _utc_now()
+            relays_list = ana.get("mandatory_relays") or []
+            relay_suffix = f" · Relays: {', '.join(str(r) for r in relays_list[:3])}" if relays_list else ""
             messages.append(
                 {
-                    "timestamp": ana.get("timestamp") or ana.get("created_at") or _utc_now(),
+                    "id": f"p2-{art_idx}-{rel_path}",
+                    "timestamp": ts_p2,
                     "sender": ana.get("written_by") or "phase2-analyzer",
                     "recipient": "finding-validator",
                     "type": "tool.phase2",
+                    "category": "tool",
+                    "tag": "TOOL:P2",
                     "level": "success" if verdict in ("pass", "passed", "acceptable") else "warn",
-                    "summary": f"Phase 2 offline analysis on `{art['name']}` [thresholds: {tset}] → verdict: {verdict}",
-                    "detail": {"threshold_set": tset, "relays": ana.get("mandatory_relays")},
+                    "summary": f"Phase 2 analysis on `{art['name']}` [thresholds: {tset}] -> verdict: {verdict}{relay_suffix}",
+                    "detail": {"threshold_set": tset, "relays": relays_list},
+                    "target_kind": "artifact",
+                    "target_id": rel_path,
+                    "action_label": f"Open {studio_label}",
                 }
             )
+
+    # 4. Synthesize automatic filesystem telemetry for Layer 1 Findings, Layer 2 Program State, Layer 3 Gates, & Layer 4 Executive
+    for f_idx, f in enumerate(findings):
+        fpath = f["source_path"]
+        if fpath in explicit_finding_paths:
+            continue
+        full_f = project_root / fpath
+        ts_f = _file_mtime_iso(full_f) if full_f.is_file() else _utc_now()
+        n_cites = len(f.get("source_citations") or [])
+        n_relays = len(f.get("relays_addressed") or [])
+        role_sender = f.get("requested_role") or f.get("discipline") or "specialist"
+        messages.append(
+            {
+                "id": f"finding-{f_idx}-{fpath}",
+                "timestamp": ts_f,
+                "sender": role_sender,
+                "recipient": "discovery-findings",
+                "type": "finding.created",
+                "category": "finding",
+                "tag": "FINDING",
+                "level": "success",
+                "summary": f"New Layer 1 Finding added: `{fpath}` — {f.get('title', '')} ({n_cites} source citations, {n_relays} relays)",
+                "detail": {
+                    "source_path": fpath,
+                    "work_order_id": f.get("work_order_id"),
+                    "relays_addressed": f.get("relays_addressed"),
+                },
+                "target_kind": "finding",
+                "target_id": f["id"],
+                "action_label": "Read Finding",
+            }
+        )
+
+    for ps_idx, doc in enumerate(program_state_docs or []):
+        sf = doc.get("source_file", "")
+        full_ps = project_root / sf
+        ts_ps = _file_mtime_iso(full_ps) if full_ps.is_file() else _utc_now()
+        messages.append(
+            {
+                "id": f"pstate-{ps_idx}-{sf}",
+                "timestamp": ts_ps,
+                "sender": "science-program-lead",
+                "recipient": "program-state",
+                "type": "state.updated",
+                "category": "finding",
+                "tag": "STATE",
+                "level": "info",
+                "summary": f"Layer 2 Program State updated: `{sf}` ({doc.get('title', '')})",
+                "detail": {"source_file": sf},
+                "target_kind": "overview",
+                "target_id": "program-state",
+                "action_label": "View Program State",
+            }
+        )
+
+    if isinstance(exec_doc, dict) and exec_doc.get("source_path"):
+        ef = exec_doc["source_path"]
+        full_ef = project_root / ef
+        ts_ef = _file_mtime_iso(full_ef) if full_ef.is_file() else _utc_now()
+        messages.append(
+            {
+                "id": f"exec-{ef}",
+                "timestamp": ts_ef,
+                "sender": "science-program-lead",
+                "recipient": "executive",
+                "type": "executive.updated",
+                "category": "finding",
+                "tag": "EXEC",
+                "level": "success",
+                "summary": f"Layer 4 Executive Summary updated: `{ef}` ({exec_doc.get('title', '')})",
+                "detail": {"source_path": ef},
+                "target_kind": "overview",
+                "target_id": "executive",
+                "action_label": "View Executive Summary",
+            }
+        )
 
     messages.sort(key=lambda m: str(m.get("timestamp") or ""))
     return nodes, edges, messages
@@ -1622,6 +1903,11 @@ def collect_dashboard_bundle(project_root: Path | str) -> dict[str, Any]:
         artifacts=artifacts,
         findings=findings,
         contexts=contexts_map,
+        program_cfg=program_cfg,
+        program_state_docs=program_state_docs,
+        gates=gates,
+        exec_doc=exec_doc,
+        retrospectives=retrospectives,
     )
 
     # Compute validation check pass rate across work orders
@@ -1660,6 +1946,7 @@ def collect_dashboard_bundle(project_root: Path | str) -> dict[str, Any]:
     bundle: dict[str, Any] = {
         "program": {
             "name": str(program_name),
+            "user_prompt": str(program_cfg.get("user_prompt") or ""),
             "target": program_cfg.get("target", ""),
             "indication": program_cfg.get("indication", ""),
             "modality": program_cfg.get("modality", ""),
@@ -1792,11 +2079,12 @@ def build_dashboard_html(
     if output_path is None and root.is_relative_to(repo_root):
         repo_dash = repo_root / "dashboard.html"
         if repo_dash.resolve() != target_path.resolve():
-            summary_counts = bundle.get("summary_counts", {})
+            summary_counts = bundle.get("program", {}).get("summary_metrics", {})
             is_empty_ws = (
                 summary_counts.get("n_artifacts", 0) == 0
                 and summary_counts.get("n_work_orders", 0) == 0
                 and summary_counts.get("n_findings", 0) == 0
+                and not bundle.get("program", {}).get("user_prompt")
             )
             should_sync_root = True
             if is_empty_ws and repo_dash.is_file():
@@ -1824,9 +2112,71 @@ def build_dashboard_html(
     return target_path, bundle
 
 
+def _active_project_pointer_path() -> Path:
+    return _repo_root() / ".pde-workspace" / "active-project.json"
+
+
+def record_active_project(project_root: Path | str) -> None:
+    """Record the active workspace root so a running live dashboard server tracks it."""
+    if os.environ.get("PDE_DISABLE_ACTIVE_POINTER") == "1":
+        return
+    try:
+        root = Path(project_root).expanduser().resolve()
+        repo = _repo_root()
+        if not root.is_relative_to(repo):
+            return
+        rel_root = str(root.relative_to(repo)) or "."
+        ptr = _active_project_pointer_path()
+        ptr.parent.mkdir(parents=True, exist_ok=True)
+        ptr.write_text(
+            json.dumps(
+                {"project_root": rel_root, "updated_at": _utc_now()},
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+    except OSError:
+        pass
+
+
+def resolve_live_project_root(initial_root: Path) -> Path:
+    """Resolve the active workspace root for the live HTTP/SSE server."""
+    repo = _repo_root()
+    if initial_root.is_relative_to(repo):
+        ptr = _active_project_pointer_path()
+        if ptr.is_file():
+            try:
+                data = json.loads(ptr.read_text(encoding="utf-8"))
+                raw_ptr = str(data.get("project_root", "")).strip()
+                if raw_ptr:
+                    cand_path = Path(raw_ptr).expanduser()
+                    cand = (
+                        cand_path.resolve()
+                        if cand_path.is_absolute()
+                        else (repo / cand_path).resolve()
+                    )
+                    if (cand / ".pde").is_dir():
+                        return cand
+            except Exception:
+                pass
+    return initial_root
+
+
 def _compute_workspace_Quick_signature(project_root: Path) -> str:
-    """Compute a fast mtime+size signature over `.pde/control/`, `raw/`, `findings/`, and `retrospectives/`."""
-    parts: list[str] = []
+    """Compute a fast mtime+size signature over `.pde/`, `raw/`, `findings/`, and `retrospectives/`."""
+    parts: list[str] = [str(project_root)]
+    for cfg_file in (
+        project_root / ".pde" / "program.yaml",
+        project_root / "program.yaml",
+        _active_project_pointer_path(),
+    ):
+        if cfg_file.is_file():
+            try:
+                st = cfg_file.stat()
+                parts.append(f"{cfg_file.name}:{st.st_mtime_ns}:{st.st_size}")
+            except OSError:
+                pass
     for sub in (
         ".pde/control",
         "raw",
@@ -1854,7 +2204,7 @@ def _compute_workspace_Quick_signature(project_root: Path) -> str:
 
 def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHandler]:
     """Create a request handler serving `/`, `/api/bundle`, and `/api/stream` (SSE)."""
-    root = project_root.resolve()
+    initial_root = project_root.resolve()
 
     class DashboardRequestHandler(BaseHTTPRequestHandler):
         def log_message(self, format: str, *args: Any) -> None:
@@ -1863,6 +2213,7 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
             route = parsed.path
+            root = resolve_live_project_root(initial_root)
 
             if route in ("/", "/index.html", "/dashboard.html"):
                 dash_path, _ = build_dashboard_html(root, standalone_mode=False)
@@ -1895,19 +2246,24 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                 self.end_headers()
 
                 last_sig = _compute_workspace_Quick_signature(root)
-                # Send initial connected event
                 init_msg = json.dumps({"type": "connected", "timestamp": _utc_now()})
                 try:
                     self.wfile.write(f"data: {init_msg}\n\n".encode("utf-8"))
                     self.wfile.flush()
                     if parsed.query == "once=1":
                         return
+                    tick_count = 0
                     while True:
-                        time.sleep(1.5)
+                        time.sleep(0.5)
+                        tick_count += 1
+                        root = resolve_live_project_root(initial_root)
                         cur_sig = _compute_workspace_Quick_signature(root)
                         if cur_sig != last_sig:
                             last_sig = cur_sig
-                            bundle = collect_dashboard_bundle(root)
+                            try:
+                                _, bundle = build_dashboard_html(root, standalone_mode=True)
+                            except Exception:
+                                bundle = collect_dashboard_bundle(root)
                             bundle["program"]["standalone_mode"] = False
                             ev_payload = json.dumps(
                                 {"type": "bundle_updated", "bundle": bundle},
@@ -1916,7 +2272,7 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                             )
                             self.wfile.write(f"data: {ev_payload}\n\n".encode("utf-8"))
                             self.wfile.flush()
-                        else:
+                        elif tick_count % 4 == 0:
                             hb = json.dumps({"type": "heartbeat", "timestamp": _utc_now()})
                             self.wfile.write(f": {hb}\n\n".encode("utf-8"))
                             self.wfile.flush()
@@ -1926,6 +2282,317 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
             self.send_error(HTTPStatus.NOT_FOUND, f"Unknown endpoint: {route}")
 
     return DashboardRequestHandler
+
+
+# ---------------------------------------------------------------------------
+# Background Live Server & Session Bootstrap Helpers
+# ---------------------------------------------------------------------------
+
+
+def _is_port_listening(port: int, host: str = "127.0.0.1") -> bool:
+    check_host = "127.0.0.1" if host in ("0.0.0.0", "::", "") else host
+    try:
+        with socket.create_connection((check_host, int(port)), timeout=0.15):
+            return True
+    except OSError:
+        return False
+
+
+def _server_state_paths(project_root: Path) -> list[Path]:
+    paths = [project_root / ".pde" / "control" / "dashboard-server.json"]
+    repo = _repo_root()
+    if project_root.is_relative_to(repo):
+        ws_state = repo / ".pde-workspace" / "dashboard-server.json"
+        if ws_state not in paths:
+            paths.append(ws_state)
+    return paths
+
+
+def get_dashboard_server_status(
+    project_root: Path | str | None = None,
+    host: str = "0.0.0.0",
+    port: int | None = None,
+) -> dict[str, Any]:
+    """Return current status of the background live dashboard server."""
+    repo = _repo_root()
+    root = Path(project_root or repo / ".pde-workspace").expanduser().resolve()
+    resolved_port = int(port or os.environ.get("PDE_DASHBOARD_PORT", "8765"))
+    saved: dict[str, Any] = {}
+    for sp in _server_state_paths(root):
+        if sp.is_file():
+            try:
+                loaded = json.loads(sp.read_text(encoding="utf-8"))
+                if isinstance(loaded, dict):
+                    saved = loaded
+                    break
+            except Exception:
+                pass
+    if port is None and saved.get("port"):
+        resolved_port = int(saved["port"])
+    if saved.get("host"):
+        host = str(saved["host"])
+    listening = _is_port_listening(resolved_port, host)
+    live_root = resolve_live_project_root(root)
+    rel_or_str = (
+        str(live_root.relative_to(repo)) or "."
+        if live_root.is_relative_to(repo)
+        else str(live_root)
+    )
+    return {
+        "running": listening,
+        "pid": saved.get("pid") if listening else None,
+        "host": host,
+        "port": resolved_port,
+        "url": f"http://{host}:{resolved_port}",
+        "local_url": f"http://127.0.0.1:{resolved_port}",
+        "project_root": rel_or_str,
+        "started_at": saved.get("started_at"),
+    }
+
+
+def ensure_dashboard_server(
+    project_root: Path | str,
+    host: str = "0.0.0.0",
+    port: int | None = None,
+) -> dict[str, Any]:
+    """Ensure the live HTTP/SSE dashboard server is running in the background on `host:port`."""
+    root = Path(project_root).expanduser().resolve()
+    resolved_port = int(port or os.environ.get("PDE_DASHBOARD_PORT", "8765"))
+    record_active_project(root)
+
+    status = get_dashboard_server_status(root, host=host, port=resolved_port)
+    if status["running"]:
+        return {"ok": True, "reused": True, **status}
+
+    repo = _repo_root()
+    env = os.environ.copy()
+    py_paths = [str(repo), str(repo / "tools"), str(repo / "tools" / "vendor" / "hypex")]
+    if env.get("PYTHONPATH"):
+        py_paths.append(env["PYTHONPATH"])
+    env["PYTHONPATH"] = os.pathsep.join(py_paths)
+    env["PDE_PROJECT"] = str(root)
+
+    cmd = [
+        sys.executable,
+        "-m",
+        "pde.cli",
+        "--project",
+        str(root),
+        "dashboard",
+        "serve",
+        "--host",
+        host,
+        "--port",
+        str(resolved_port),
+    ]
+    proc = subprocess.Popen(
+        cmd,
+        cwd=str(root if root.is_dir() else repo),
+        env=env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+        start_new_session=True,
+    )
+
+    deadline = time.monotonic() + 2.5
+    listening = False
+    while time.monotonic() < deadline:
+        if _is_port_listening(resolved_port, host):
+            listening = True
+            break
+        if proc.poll() is not None:
+            break
+        time.sleep(0.05)
+
+    rel_or_str = (
+        str(root.relative_to(repo)) or "."
+        if root.is_relative_to(repo)
+        else str(root)
+    )
+    meta = {
+        "running": listening,
+        "pid": proc.pid,
+        "host": host,
+        "port": resolved_port,
+        "url": f"http://{host}:{resolved_port}",
+        "local_url": f"http://127.0.0.1:{resolved_port}",
+        "project_root": rel_or_str,
+        "started_at": _utc_now(),
+    }
+    for sp in _server_state_paths(root):
+        try:
+            sp.parent.mkdir(parents=True, exist_ok=True)
+            sp.write_text(json.dumps(meta, indent=2) + "\n", encoding="utf-8")
+        except OSError:
+            pass
+
+    return {"ok": listening, "reused": False, **meta}
+
+
+def stop_dashboard_server(
+    project_root: Path | str | None = None,
+    host: str = "0.0.0.0",
+    port: int | None = None,
+) -> dict[str, Any]:
+    """Stop the background dashboard server if running."""
+    root = Path(project_root or _repo_root() / ".pde-workspace").expanduser().resolve()
+    status = get_dashboard_server_status(root, host=host, port=port)
+    pid = status.get("pid")
+    stopped = False
+    if pid:
+        try:
+            os.kill(int(pid), signal.SIGTERM)
+            stopped = True
+            for _ in range(20):
+                if not _is_port_listening(int(status["port"]), str(status["host"])):
+                    break
+                time.sleep(0.05)
+        except OSError:
+            pass
+    for sp in _server_state_paths(root):
+        try:
+            if sp.is_file():
+                sp.unlink()
+        except OSError:
+            pass
+    return {
+        "ok": True,
+        "stopped": stopped,
+        "pid": pid,
+        "port": status.get("port"),
+        "url": status.get("url"),
+    }
+
+
+def log_agent_message(
+    project_root: Path | str,
+    sender: str | None = None,
+    recipient: str | None = None,
+    summary: str = "",
+    msg_type: str = "agent.message",
+    detail: dict[str, Any] | None = None,
+    from_agent: str | None = None,
+    to_agent: str | None = None,
+    work_order_id: str | None = None,
+) -> dict[str, Any]:
+    """Record an explicit inter-agent communication event in `.pde/control/events.ndjson`."""
+    root = Path(project_root).expanduser().resolve()
+    if not (root / ".pde").is_dir():
+        root.mkdir(parents=True, exist_ok=True)
+        init_project(root)
+    actual_sender = str(sender or from_agent or "science-program-lead")
+    actual_recipient = str(recipient or to_agent or "research-operations-controller")
+    payload_detail = dict(detail or {})
+    payload_detail["recipient"] = actual_recipient
+    payload_detail["summary"] = summary
+    if work_order_id:
+        payload_detail["work_order_id"] = work_order_id
+    ev = {
+        "timestamp": _utc_now(),
+        "type": msg_type,
+        "subject_id": work_order_id or actual_recipient,
+        "actor": actual_sender,
+        "detail": payload_detail,
+    }
+    controlstore.append_event(root, ev)
+    return ev
+
+
+def bootstrap_prompt_session(
+    project_root: Path | str,
+    prompt: str,
+    name: str | None = None,
+    program_name: str | None = None,
+    target: str | None = None,
+    indication: str | None = None,
+    modality: str | None = None,
+    stage: str | int | None = None,
+    host: str = "0.0.0.0",
+    port: int = 8765,
+    fresh: bool = False,
+    start_server: bool = True,
+) -> dict[str, Any]:
+    """Initialize `.pde/program.yaml` from the user prompt, build `dashboard.html`, and start the live server."""
+    root = Path(project_root).expanduser().resolve()
+    if fresh and (root / ".pde" / "control").is_dir():
+        shutil.rmtree(root / ".pde" / "control", ignore_errors=True)
+    if not (root / ".pde").is_dir():
+        root.mkdir(parents=True, exist_ok=True)
+        init_project(root)
+    else:
+        controlstore.ensure_control_dirs(root)
+
+    prog_path = root / ".pde" / "program.yaml"
+    existing: dict[str, Any] = {}
+    if prog_path.is_file():
+        try:
+            loaded = yaml.safe_load(prog_path.read_text(encoding="utf-8"))
+            if isinstance(loaded, dict):
+                existing = loaded
+        except Exception:
+            pass
+
+    clean_prompt = str(prompt or "").strip()
+    inferred_name = (
+        name
+        or program_name
+        or target
+        or existing.get("name")
+        or (clean_prompt[:56] + ("..." if len(clean_prompt) > 56 else "") if clean_prompt else root.name)
+    )
+    stage_str = (
+        f"Stage {stage}" if isinstance(stage, int) else str(stage if stage is not None else existing.get("stage", "Stage 0-1 Discovery"))
+    )
+    prog_data: dict[str, Any] = {
+        **existing,
+        "name": str(inferred_name),
+        "user_prompt": clean_prompt,
+        "target": str(target if target is not None else existing.get("target", "")),
+        "indication": str(indication if indication is not None else existing.get("indication", "")),
+        "modality": str(modality if modality is not None else existing.get("modality", "")),
+        "stage": stage_str,
+        "updated_at": _utc_now(),
+    }
+    prog_path.parent.mkdir(parents=True, exist_ok=True)
+    prog_path.write_text(yaml.safe_dump(prog_data, sort_keys=False), encoding="utf-8")
+
+    controlstore.append_event(
+        root,
+        {
+            "type": "prompt.received",
+            "subject_id": "science-program-lead",
+            "from_state": "idle",
+            "to_state": "running",
+            "actor": "user",
+            "detail": {
+                "prompt": clean_prompt,
+                "target": prog_data["target"],
+                "indication": prog_data["indication"],
+                "modality": prog_data["modality"],
+                "stage": prog_data["stage"],
+                "summary": f"User prompt received by Science Program Lead: \"{clean_prompt}\"",
+            },
+        },
+    )
+
+    record_active_project(root)
+    dash_path, bundle = build_dashboard_html(root, standalone_mode=True)
+    server_info = (
+        ensure_dashboard_server(root, host=host, port=port)
+        if start_server
+        else get_dashboard_server_status(root, host=host, port=port)
+    )
+
+    return {
+        "ok": True,
+        "prompt": clean_prompt,
+        "project_root": str(root),
+        "dashboard_html": str(dash_path),
+        "program": bundle["program"],
+        "server": server_info,
+        "url": server_info.get("url", f"http://{host}:{port}"),
+        "local_url": server_info.get("local_url", f"http://127.0.0.1:{port}"),
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -1986,10 +2653,175 @@ def build_cmd(
     emit.flush()
 
 
+@dashboard.command("start")
+@click.option(
+    "--prompt",
+    "user_prompt",
+    default="",
+    help="Initial user prompt / scientific question to populate the dashboard charter immediately.",
+)
+@click.option("--name", default=None, help="Optional program display name.")
+@click.option("--target", default=None, help="Optional target gene/protein symbol.")
+@click.option("--indication", default=None, help="Optional disease indication.")
+@click.option("--modality", default=None, help="Optional therapeutic modality.")
+@click.option("--stage", default=None, help="Optional discovery stage label.")
+@click.option(
+    "--host",
+    default="0.0.0.0",
+    show_default=True,
+    help="Host interface to bind the background live SSE server.",
+)
+@click.option(
+    "--port",
+    default=8765,
+    type=int,
+    show_default=True,
+    help="Port to serve the live dashboard on.",
+)
+@click.option(
+    "--fresh",
+    is_flag=True,
+    default=False,
+    help="Reset control-plane events/work-orders before starting the session.",
+)
+@output_options
+@pass_state
+def start_cmd(
+    state: AppState,
+    user_prompt: str,
+    name: str | None,
+    target: str | None,
+    indication: str | None,
+    modality: str | None,
+    stage: str | None,
+    host: str,
+    port: int,
+    fresh: bool,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Bootstrap prompt metadata, build `dashboard.html`, and start the background live server (`0.0.0.0:8765`)."""
+    emit = emitter(as_json, quiet)
+    try:
+        root = state.project().root
+    except Exception:
+        root = (_repo_root() / ".pde-workspace").resolve()
+
+    res = bootstrap_prompt_session(
+        project_root=root,
+        prompt=user_prompt,
+        name=name,
+        target=target,
+        indication=indication,
+        modality=modality,
+        stage=stage,
+        host=host,
+        port=port,
+        fresh=fresh,
+        start_server=True,
+    )
+    emit.path(Path(res["dashboard_html"]), role="dashboard_html")
+    emit.data("url", res["url"])
+    emit.data("local_url", res["local_url"])
+    emit.data("server", res["server"])
+    emit.data("program", res["program"])
+    emit.line(f"Live PDE Dashboard Server running at {res['url']} (PID={res['server'].get('pid')})")
+    emit.flush()
+
+
+@dashboard.command("stop")
+@click.option("--port", default=None, type=int, help="Optional port override.")
+@output_options
+@pass_state
+def stop_cmd(
+    state: AppState,
+    port: int | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Stop the background live dashboard server."""
+    emit = emitter(as_json, quiet)
+    try:
+        root = state.project().root
+    except Exception:
+        root = (_repo_root() / ".pde-workspace").resolve()
+    res = stop_dashboard_server(root, port=port)
+    emit.data("stopped", res["stopped"])
+    emit.data("pid", res["pid"])
+    emit.data("port", res["port"])
+    emit.line(f"Dashboard server stop: stopped={res['stopped']} (port={res['port']})")
+    emit.flush()
+
+
+@dashboard.command("status")
+@click.option("--host", default="0.0.0.0", show_default=True)
+@click.option("--port", default=None, type=int)
+@output_options
+@pass_state
+def status_cmd(
+    state: AppState,
+    host: str,
+    port: int | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Check whether the background live dashboard server is running."""
+    emit = emitter(as_json, quiet)
+    try:
+        root = state.project().root
+    except Exception:
+        root = (_repo_root() / ".pde-workspace").resolve()
+    res = get_dashboard_server_status(root, host=host, port=port)
+    for k, v in res.items():
+        emit.data(k, v)
+    emit.line(f"Dashboard server status: running={res['running']} url={res['url']}")
+    emit.flush()
+
+
+@dashboard.command("message")
+@click.option("--from", "sender", required=True, help="Sender agent role or ID.")
+@click.option("--to", "recipient", required=True, help="Recipient agent role or ID.")
+@click.option("--type", "msg_type", default="agent.message", show_default=True, help="Telemetry event type.")
+@click.option("--summary", required=True, help="One-line message summary.")
+@click.option("--detail", default=None, help="Optional JSON string payload.")
+@output_options
+@pass_state
+def message_cmd(
+    state: AppState,
+    sender: str,
+    recipient: str,
+    msg_type: str,
+    summary: str,
+    detail: str | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Append an inter-agent communication message to the live telemetry stream."""
+    emit = emitter(as_json, quiet)
+    project = state.project()
+    parsed_detail: dict[str, Any] | None = None
+    if detail:
+        try:
+            parsed_detail = json.loads(detail)
+        except Exception:
+            parsed_detail = {"raw": detail}
+    ev = log_agent_message(
+        project.root,
+        sender=sender,
+        recipient=recipient,
+        summary=summary,
+        msg_type=msg_type,
+        detail=parsed_detail,
+    )
+    emit.data("event", ev)
+    emit.line(f"Logged [{msg_type}] {sender} -> {recipient}: {summary}")
+    emit.flush()
+
+
 @dashboard.command("serve")
 @click.option(
     "--host",
-    default="127.0.0.1",
+    default="0.0.0.0",
     show_default=True,
     help="Host interface to bind.",
 )
@@ -2004,6 +2836,7 @@ def build_cmd(
 def serve_cmd(state: AppState, host: str, port: int) -> None:
     """Start the live PDE Interactive Dashboard HTTP/SSE server."""
     project = state.project()
+    record_active_project(project.root)
     dash_path, _ = build_dashboard_html(project.root, standalone_mode=False)
     handler_cls = create_dashboard_http_handler(project.root)
     server = ThreadingHTTPServer((host, port), handler_cls)

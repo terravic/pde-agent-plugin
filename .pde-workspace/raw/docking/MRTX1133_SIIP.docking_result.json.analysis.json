@@ -2,11 +2,11 @@
   "schema_version": "1.0",
   "record_type": "analysis",
   "source": "raw/docking/MRTX1133_SIIP.docking_result.json",
-  "env_version": "sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba",
+  "env_version": "sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333",
   "source_sha256": "d4f56d8890f00b02203076342450d1df9c763e4cd9c442b518a2f9f750e5d88c",
   "threshold_set": "docking-v1",
   "work_order_id": "WO-004",
-  "analyzed_at": "2026-10-08T19:44:12Z",
+  "analyzed_at": "2026-10-09T18:25:17Z",
   "verdict": "pass",
   "summary": "Top pose achieves -11.4 kcal/mol in KRAS G12D SII-P with 2.74 A Asp12 salt bridge and -3.6 kcal/mol selectivity over WT.",
   "thresholds_applied": {

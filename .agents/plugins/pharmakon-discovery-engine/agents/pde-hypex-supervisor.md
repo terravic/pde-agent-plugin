@@ -113,7 +113,7 @@ hypex init-run <run-id> --run-dir "${ARTIFACT_PATH}" --goal "<goal>"
 RUN_DIR="${ARTIFACT_PATH}/<run-id>"
 ```
 
-Pass the absolute `RUN_DIR`, run ID, epoch, work-order ID, constraints, and
+Pass the project-relative `RUN_DIR`, run ID, epoch, work-order ID, constraints, and
 relevant steering memo in every worker task. Never rely on a worker's current
 directory.
 

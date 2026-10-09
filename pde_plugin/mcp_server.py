@@ -30,8 +30,10 @@ except ImportError:
     from mcp.server.fastmcp import FastMCP as MCPServer  # type: ignore[no-redef]
 
 from .tool_bridge import (
+    pde_bootstrap_session as _bootstrap_session,
     pde_dispatch_workorder as _dispatch_workorder,
     pde_exec as _exec,
+    pde_log_agent_message as _log_agent_message,
     pde_render_dashboard as _render_dashboard,
     pde_validate_and_gate as _validate_and_gate,
 )
@@ -39,13 +41,36 @@ from .tool_bridge import (
 mcp = MCPServer(
     "pde-engine",
     instructions=(
-        "Pharmakon Discovery Engine (PDE) MCP server providing two-phase scientific "
-        "CLI execution (pde_exec), multi-agent work-order dispatch "
-        "(pde_dispatch_workorder), 10-check mechanical validation gating "
-        "(pde_validate_and_gate), and the unified interactive scientific "
-        "dashboard builder (pde_render_dashboard)."
+        "Pharmakon Discovery Engine (PDE) MCP server providing live session bootstrap "
+        "(pde_bootstrap_session), two-phase scientific CLI execution (pde_exec), "
+        "multi-agent work-order dispatch (pde_dispatch_workorder), inter-agent "
+        "communication logging (pde_log_agent_message), 10-check mechanical "
+        "validation gating (pde_validate_and_gate), and the unified interactive "
+        "scientific dashboard builder (pde_render_dashboard)."
     ),
 )
+
+
+@mcp.tool()
+def pde_bootstrap_session(
+    prompt: str,
+    program_name: str | None = None,
+    stage: int | None = None,
+    project_dir: str | None = None,
+    host: str = "0.0.0.0",
+    port: int = 8765,
+    start_server: bool = True,
+) -> dict[str, Any]:
+    """Initialize a live PDE discovery session from the user's prompt, record the active workspace, build the initial dashboard, and start the non-blocking live server on 0.0.0.0:8765."""
+    return _bootstrap_session(
+        prompt=prompt,
+        program_name=program_name,
+        stage=stage,
+        project_dir=project_dir,
+        host=host,
+        port=port,
+        start_server=start_server,
+    )
 
 
 @mcp.tool()
@@ -69,6 +94,24 @@ def pde_dispatch_workorder(
 ) -> dict[str, Any]:
     """Automate the 4-step Work Order intake ceremony: create and commit work order, freeze context snapshot, acquire resource lease, create and start run, and return the specialist dispatch brief."""
     return _dispatch_workorder(spec=spec, project_dir=project_dir)
+
+
+@mcp.tool()
+def pde_log_agent_message(
+    from_agent: str,
+    to_agent: str,
+    summary: str,
+    work_order_id: str | None = None,
+    project_dir: str | None = None,
+) -> dict[str, Any]:
+    """Record an explicit inter-agent communication event in the PDE control plane and refresh the live dashboard."""
+    return _log_agent_message(
+        from_agent=from_agent,
+        to_agent=to_agent,
+        summary=summary,
+        work_order_id=work_order_id,
+        project_dir=project_dir,
+    )
 
 
 @mcp.tool()

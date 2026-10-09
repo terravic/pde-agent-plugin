@@ -146,7 +146,7 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     assert "renderPlotWithFallback" in html_text
     assert "renderSvgChartFallback" in html_text
     assert "canUseWebGL" in html_text
-    assert "renderCanvas3DMoleculeFallback" in html_text
+    assert "renderSoftware3DMoleculeFallback" in html_text
     assert "renderEmbeddedBioactivityStudio" in html_text
     assert "renderEmbeddedPkStudio" in html_text
     assert "renderEmbeddedToxStudio" in html_text
@@ -154,6 +154,122 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     assert "renderEmbeddedOmicsStudio" in html_text
     assert "renderEmbeddedCompetitiveStudio" in html_text
     assert "renderRetrosAndEnv" in html_text
+    assert "renderTelemetryConsole" in html_text
+    assert "renderTelemetryFullView" in html_text
+    assert "navigateTelemetryEvent" in html_text
+    assert "scheduleLiveRefresh" in html_text
+    assert "renderStudioListOnly" in html_text
+    assert "renderFindingsNavOnly" in html_text
+    assert 'data-mode="telemetry"' in html_text
+    assert 'id="telemetry-drawer"' in html_text
+    assert 'id="telemetry-view"' in html_text
     assert agent_sys["environment"]["bootstrap_ready"] is True
     assert out_path == out_html
+
+
+def test_prompt_bootstrap_and_passive_cli_telemetry(tmp_path: Path) -> None:
+    from pde_plugin.tool_bridge import (
+        pde_bootstrap_session,
+        pde_exec,
+        pde_log_agent_message,
+    )
+
+    ws = tmp_path / "prompt-session"
+    prompt_text = "Evaluate aspirin physicochemical properties and ADMET profile."
+
+    # 1. Bootstrap session from user prompt (without binding a background port in unit test)
+    boot = pde_bootstrap_session(
+        prompt=prompt_text,
+        program_name="Aspirin-Fast-Track",
+        stage=1,
+        project_dir=str(ws),
+        start_server=False,
+    )
+    assert boot["ok"] is True
+    assert boot["prompt"] == prompt_text
+    assert (ws / "dashboard.html").is_file()
+
+    # 2. Log an explicit inter-agent communication
+    comm = pde_log_agent_message(
+        from_agent="science-program-lead",
+        to_agent="pde-medicinal-chemist",
+        summary="Dispatching fast-path compound descriptor and alert profiling for aspirin.",
+        project_dir=str(ws),
+    )
+    assert comm["ok"] is True
+
+    # 3. Execute two-phase CLI commands and verify passive CLI telemetry capture
+    r1 = pde_exec(
+        'compound profile "CC(=O)Oc1ccccc1C(=O)O" --name aspirin --json',
+        project_dir=str(ws),
+    )
+    assert r1["ok"] is True
+    r2 = pde_exec("compound analyze aspirin --json", project_dir=str(ws))
+    assert r2["ok"] is True
+
+    # 4. Write a Layer 1 finding report to verify filesystem discovery telemetry
+    finding_path = ws / "findings" / "medicinal-chemistry" / "aspirin-profile.md"
+    finding_path.parent.mkdir(parents=True, exist_ok=True)
+    finding_path.write_text(
+        "# Aspirin Medicinal Chemistry Profile\n\n"
+        "## Summary\nAspirin MW is 180.16.\n\n"
+        "## Verdict\nPASS\n\n"
+        "## Evidence\n- Verified.\n",
+        encoding="utf-8",
+    )
+
+    bundle = collect_dashboard_bundle(ws)
+    assert bundle["program"]["user_prompt"] == prompt_text
+    assert bundle["program"]["name"] == "Aspirin-Fast-Track"
+
+    nodes = bundle["agent_system"]["nodes"]
+    user_node = next((n for n in nodes if n["id"] == "user"), None)
+    assert user_node is not None
+    assert prompt_text in user_node["decision_question"]
+
+    messages = bundle["agent_system"]["messages"]
+    tags = {m.get("tag") for m in messages}
+    assert "PROMPT" in tags
+    assert "COMM" in tags
+    assert "TOOL:RUN" in tags
+    assert "TOOL:DONE" in tags
+    assert "TOOL:P1" in tags
+    assert "TOOL:P2" in tags
+    assert "FINDING" in tags
+
+    # Verify structured deep-link metadata on every telemetry message
+    for m in messages:
+        assert m.get("id")
+        assert m.get("category") in ("prompt", "agent", "comm", "tool", "finding", "gate", "lease")
+        assert m.get("target_kind") in ("overview", "agent", "finding", "artifact", "relay")
+        assert m.get("action_label")
+
+
+def test_background_server_start_status_stop(tmp_path: Path) -> None:
+    import socket
+    from pde.commands.dashboard import (
+        ensure_dashboard_server,
+        get_dashboard_server_status,
+        stop_dashboard_server,
+    )
+
+    ws = tmp_path / "server-lifecycle"
+    init_project(ws)
+
+    # Pick an available ephemeral port
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        free_port = s.getsockname()[1]
+
+    try:
+        srv = ensure_dashboard_server(ws, host="127.0.0.1", port=free_port)
+        assert srv["running"] is True
+        assert srv["port"] == free_port
+
+        st = get_dashboard_server_status(ws, host="127.0.0.1", port=free_port)
+        assert st["running"] is True
+    finally:
+        stopped = stop_dashboard_server(ws, host="127.0.0.1", port=free_port)
+        assert stopped["stopped"] is True
+
 

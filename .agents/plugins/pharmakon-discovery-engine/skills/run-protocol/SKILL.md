@@ -168,7 +168,7 @@ The Hypex supervisor is dispatched from a PDE work order and remains the one
 accountable agent at the controller boundary. It must maintain
 `meta/roster.ndjson`, `meta/progress.json`, coordinated shared pacing, and
 `meta/termination.json` throughout the state machine. Worker messages carry
-the PDE run ID and absolute run directory.
+the PDE run ID and project-relative run directory.
 
 Before FINALIZE completes, the supervisor runs `pde hypex ingest <run-dir>`
 and `pde hypex analyze <artifact>` so the tournament enters PDE as a Layer 0

@@ -102,8 +102,15 @@
       background: transparent; border: none; color: var(--text-secondary);
       padding: 5px 10px; font-size: 12px; font-weight: 600; border-radius: 4px;
       cursor: pointer; transition: all 0.15s; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 5px;
     }
     .mode-btn.active { background: var(--accent-indigo); color: #fff; }
+    .badge-counter {
+      display: none; align-items: center; justify-content: center;
+      min-width: 18px; height: 16px; padding: 0 5px; border-radius: 999px;
+      font-size: 10px; font-weight: 700; background: var(--accent-emerald); color: #06281e;
+    }
+    .badge-counter.visible { display: inline-flex; }
     .icon-btn {
       background: var(--bg-card); border: 1px solid var(--border-color);
       color: var(--text-primary); border-radius: 6px; padding: 5px 8px;
@@ -128,17 +135,23 @@
     .workspace {
       flex: 1; display: grid;
       grid-template-columns: minmax(0, 46%) minmax(0, 54%);
-      min-height: 0; width: 100%; overflow: hidden;
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 0; height: 100%; width: 100%; overflow: hidden;
     }
     .workspace.mode-agentic { grid-template-columns: minmax(0, 1fr); }
     .workspace.mode-agentic .right-pane { display: none; }
     .workspace.mode-science { grid-template-columns: minmax(0, 1fr); }
     .workspace.mode-science .left-pane { display: none; }
+    .workspace.mode-telemetry { grid-template-columns: minmax(0, 1fr); }
+    .workspace.mode-telemetry .left-pane,
+    .workspace.mode-telemetry .right-pane { display: none; }
+    .workspace.mode-telemetry .telemetry-view { display: grid; }
+    body[data-mode="telemetry"] .telemetry-drawer { display: none; }
 
     /* Left Pane: Multi-Agent Operations */
     .left-pane {
       border-right: 1px solid var(--border-color);
-      display: flex; flex-direction: column; min-height: 0; min-width: 0; width: 100%;
+      display: flex; flex-direction: column; min-height: 0; min-width: 0; height: 100%; width: 100%; overflow: hidden;
       background: var(--bg-app);
     }
     .pane-header {
@@ -157,7 +170,7 @@
 
     /* SVG Lineage Graph Stage */
     .graph-stage {
-      flex: 1; min-height: 220px; position: relative; overflow: hidden;
+      flex: 1; min-height: 160px; position: relative; overflow: hidden;
       background-color: var(--bg-elevated);
       background-image: radial-gradient(var(--graph-grid) 1px, transparent 1px);
       background-size: 18px 18px;
@@ -177,10 +190,10 @@
 
     /* Agent Node & Inspector Drawer + Message Viewer Tabs */
     .agent-bottom-dock {
-      height: 44%; min-height: 210px; flex-shrink: 0;
+      height: 44%; min-height: 170px; flex-shrink: 0;
       border-top: 1px solid var(--border-color);
       background: var(--bg-panel);
-      display: flex; flex-direction: column;
+      display: flex; flex-direction: column; overflow: hidden;
     }
     .subtab-bar {
       height: 36px; flex-shrink: 0; display: flex; align-items: center;
@@ -193,7 +206,7 @@
       border-bottom: 2px solid transparent;
     }
     .subtab-btn.active { color: var(--accent-blue); border-bottom-color: var(--accent-blue); }
-    .dock-body { flex: 1; overflow-y: auto; padding: 12px; font-size: 12px; }
+    .dock-body { flex: 1; overflow-y: auto; padding: 12px; font-size: 12px; min-height: 0; }
 
     /* Inspector styling */
     .inspector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -235,7 +248,7 @@
 
     /* Right Pane: Discovery & Findings */
     .right-pane {
-      display: flex; flex-direction: column; min-height: 0; min-width: 0; width: 100%;
+      display: flex; flex-direction: column; min-height: 0; min-width: 0; height: 100%; width: 100%; overflow: hidden;
       background: var(--bg-panel);
     }
     .sci-tabs {
@@ -265,7 +278,7 @@
     .data-table tr:hover td { background: var(--bg-card-hover); }
 
     /* Findings Reader */
-    .findings-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 500px; width: 100%; }
+    .findings-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 340px; width: 100%; }
     .findings-nav {
       background: var(--bg-card); border: 1px solid var(--border-color);
       border-radius: 8px; padding: 8px; overflow-y: auto; min-width: 240px;
@@ -312,7 +325,7 @@
     }
 
     /* Interactive Viewers Studio */
-    .studio-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 540px; width: 100%; }
+    .studio-layout { display: grid; grid-template-columns: minmax(250px, 280px) minmax(0, 1fr); gap: 14px; min-height: 340px; width: 100%; }
     .artifact-list-panel {
       background: var(--bg-card); border: 1px solid var(--border-color);
       border-radius: 8px; padding: 8px; overflow-y: auto; max-height: calc(100vh - 150px); min-width: 240px;
@@ -349,9 +362,114 @@
     .st-running, .st-in_progress { background: rgba(56, 189, 248, 0.2); color: #38bdf8; }
     .st-failed, .st-validation_failed { background: rgba(244, 63, 94, 0.2); color: #fb7185; }
     .st-idle, .st-queued { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+
+    /* Live Telemetry Console (Persistent Bottom Drawer + 4th Full-Screen View) */
+    .telemetry-drawer {
+      flex-shrink: 0; border-top: 1px solid var(--border-color);
+      background: var(--bg-elevated); display: flex; flex-direction: column;
+      z-index: 18; transition: height 0.16s ease;
+    }
+    .telemetry-drawer[data-drawer-state="ticker"] { height: 38px; }
+    .telemetry-drawer[data-drawer-state="console"] { height: 205px; }
+    .telemetry-drawer[data-drawer-state="ticker"] .tele-drawer-body { display: none; }
+    .telemetry-drawer[data-drawer-state="console"] .tele-ticker-preview { display: none; }
+
+    .tele-bar {
+      height: 37px; flex-shrink: 0; padding: 0 12px;
+      background: var(--bg-panel); border-bottom: 1px solid var(--border-color);
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    }
+    .tele-bar-left { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; overflow: hidden; }
+    .tele-title {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+      color: var(--accent-emerald); display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0;
+    }
+    .tele-ticker-preview {
+      font-family: monospace; font-size: 11.5px; color: var(--text-primary);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer;
+      padding: 2px 8px; border-radius: 4px; background: var(--bg-card); border: 1px solid var(--border-subtle);
+    }
+    .tele-ticker-preview:hover { border-color: var(--accent-blue); }
+    .tele-filters { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; overflow-x: auto; }
+    .tele-search {
+      background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary);
+      border-radius: 4px; padding: 3px 8px; font-size: 11px; width: 145px; font-family: monospace;
+    }
+    .tele-pause-pill {
+      display: none; align-items: center; gap: 5px; padding: 2px 8px; border-radius: 999px;
+      font-size: 10.5px; font-weight: 700; background: rgba(245, 158, 11, 0.2); color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.45); cursor: pointer; white-space: nowrap;
+    }
+    .tele-pause-pill.visible { display: inline-flex; }
+
+    .tele-drawer-body {
+      flex: 1; overflow-y: auto; padding: 6px 10px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 11.5px;
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .tele-row {
+      display: flex; align-items: center; gap: 8px; padding: 4px 8px;
+      border-radius: 4px; background: rgba(30, 41, 59, 0.55);
+      border-left: 3px solid var(--accent-blue); cursor: pointer;
+      transition: background 0.12s; min-width: 0;
+    }
+    :root[data-theme="light"] .tele-row { background: rgba(241, 245, 249, 0.9); }
+    .tele-row:hover { background: var(--bg-card-hover); }
+    .tele-row.level-success { border-left-color: var(--accent-emerald); }
+    .tele-row.level-warn { border-left-color: var(--accent-amber); }
+    .tele-row.level-error { border-left-color: var(--accent-rose); }
+    .tele-time { color: var(--text-muted); font-size: 10.5px; flex-shrink: 0; }
+    .tele-tag {
+      font-size: 9.5px; font-weight: 800; padding: 1px 6px; border-radius: 3px;
+      text-transform: uppercase; letter-spacing: 0.3px; flex-shrink: 0; min-width: 68px; text-align: center;
+    }
+    .tag-prompt { background: rgba(168, 85, 247, 0.22); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.45); }
+    .tag-agent { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.4); }
+    .tag-comm { background: rgba(99, 102, 241, 0.22); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.45); }
+    .tag-tool { background: rgba(20, 184, 166, 0.2); color: #2dd4bf; border: 1px solid rgba(20, 184, 166, 0.4); }
+    .tag-finding { background: rgba(16, 185, 129, 0.22); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.45); }
+    .tag-gate { background: rgba(245, 158, 11, 0.22); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.45); }
+    .tag-error { background: rgba(244, 63, 94, 0.22); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.45); }
+    .tele-route { color: var(--accent-blue); font-weight: 700; flex-shrink: 0; font-size: 11px; }
+    .tele-summary { color: var(--text-primary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tele-action {
+      font-size: 10px; font-weight: 700; color: var(--accent-blue);
+      padding: 1px 7px; border-radius: 999px; background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.3); flex-shrink: 0;
+    }
+
+    /* 4th Full-Screen View: Telemetry & Live Status Board */
+    .telemetry-view {
+      display: none; grid-template-columns: minmax(0, 62%) minmax(0, 38%);
+      grid-template-rows: minmax(0, 1fr);
+      min-height: 0; width: 100%; height: 100%; overflow: hidden; background: var(--bg-app);
+    }
+    .tele-full-left {
+      border-right: 1px solid var(--border-color); display: flex; flex-direction: column;
+      min-height: 0; min-width: 0; background: var(--bg-elevated);
+    }
+    .tele-full-right {
+      display: flex; flex-direction: column; min-height: 0; min-width: 0;
+      overflow-y: auto; padding: 14px; gap: 14px; background: var(--bg-panel);
+    }
+    .tele-board-card {
+      background: var(--bg-card); border: 1px solid var(--border-color);
+      border-radius: 8px; padding: 12px 14px;
+    }
+    .tele-board-card h3 {
+      margin: 0 0 10px; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.4px;
+      color: var(--accent-blue); display: flex; align-items: center; justify-content: space-between;
+    }
+    .tele-highlight-flash {
+      animation: teleFlash 1.4s ease-out;
+    }
+    @keyframes teleFlash {
+      0% { box-shadow: 0 0 0 3px var(--accent-blue); }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
   </style>
 </head>
-<body>
+<body data-mode="split">
   <!-- Embedded Single-File PDE Bundle -->
   <script id="pde-bundle-data" type="application/json">{{ bundle_json | safe }}</script>
   <script>
@@ -398,7 +516,8 @@
       <div class="mode-switcher" role="group" aria-label="View Mode">
         <button class="mode-btn active" data-mode="split" onclick="setWorkspaceMode('split')">Split</button>
         <button class="mode-btn" data-mode="agentic" onclick="setWorkspaceMode('agentic')">Agents</button>
-        <button class="mode-btn" data-mode="science" onclick="setWorkspaceMode('science')">Discovery</button>
+        <button class="mode-btn" data-mode="science" onclick="setWorkspaceMode('science')">Discovery <span class="badge-counter" id="badge-discovery-new">0</span></button>
+        <button class="mode-btn" data-mode="telemetry" onclick="setWorkspaceMode('telemetry')">Telemetry <span class="badge-counter" id="badge-telemetry-new">0</span></button>
       </div>
       <div class="conn-badge" id="conn-badge">
         <span class="conn-dot"></span>
@@ -494,7 +613,46 @@
       <!-- Tab 3: Interactive Scientific Viewers Studio (All 14 Viewers Inline) -->
       <div class="sci-content" id="scitab-studio" style="display:none;"></div>
     </section>
+
+    <!-- FOURTH VIEW: Dedicated Full-Screen Mission Telemetry & Live Status Board -->
+    <section class="telemetry-view" id="telemetry-view">
+      <div class="tele-full-left">
+        <div class="pane-header">
+          <div class="pane-title">
+            <span class="conn-dot"></span>
+            <span>Mission Telemetry Terminal</span>
+            <span id="tele-full-count" style="color:var(--text-secondary);font-weight:500;">(0 events)</span>
+          </div>
+          <div class="toolbar-group">
+            <span class="tele-pause-pill" id="tele-full-pause-pill" onclick="resumeTelemetryStream()">PAUSED - Click to Resume</span>
+            <input type="text" class="tele-search" id="tele-full-search" placeholder="Search telemetry..." oninput="setTelemetrySearch(this.value)">
+          </div>
+        </div>
+        <div class="subtab-bar" id="tele-full-filters"></div>
+        <div class="tele-drawer-body" id="tele-full-stream"></div>
+      </div>
+      <div class="tele-full-right" id="tele-full-board"></div>
+    </section>
   </main>
+
+  <!-- Persistent Collapsible Bottom Telemetry Console (Visible across Split, Agents, Discovery) -->
+  <footer class="telemetry-drawer" id="telemetry-drawer" data-drawer-state="console">
+    <div class="tele-bar">
+      <div class="tele-bar-left">
+        <span class="tele-title"><span class="conn-dot"></span> Live Telemetry (<span id="tele-drawer-count">0</span>)</span>
+        <div class="tele-ticker-preview" id="tele-ticker-preview" onclick="setTelemetryDrawerState('console')">Waiting for discovery session events...</div>
+        <div class="tele-filters" id="tele-drawer-filters"></div>
+        <span class="tele-pause-pill" id="tele-drawer-pause-pill" onclick="resumeTelemetryStream()">PAUSED - Click to Resume</span>
+      </div>
+      <div class="toolbar-group">
+        <input type="text" class="tele-search" id="tele-drawer-search" placeholder="Filter text..." oninput="setTelemetrySearch(this.value)">
+        <button class="mini-btn" id="btn-tele-ticker" onclick="setTelemetryDrawerState('ticker')" title="Collapse to 1-Line Ticker">Ticker</button>
+        <button class="mini-btn active" id="btn-tele-console" onclick="setTelemetryDrawerState('console')" title="Expand Bottom Console">Console</button>
+        <button class="mini-btn" onclick="setWorkspaceMode('telemetry')" title="Open 4th Full-Screen Telemetry View">Full View</button>
+      </div>
+    </div>
+    <div class="tele-drawer-body" id="tele-drawer-stream"></div>
+  </footer>
 
   <script>
     /* =========================================================================
@@ -775,6 +933,9 @@
       }
       selectedNodeId = node.id;
 
+      // Preserve open <details> state inside inspector
+      const wasCtxOpen = Boolean(container.querySelector('details[data-ctx-snap]') && container.querySelector('details[data-ctx-snap]').open);
+
       const skillsHtml = (node.injected_skills || []).map(s =>
         `<span class="skill-pill">${escapeHtml(s)}</span>`
       ).join('') || '<span style="color:var(--text-muted)">None</span>';
@@ -792,7 +953,7 @@
         const cls = res === 'pass' ? 'badge-pass' : (res === 'pass_with_warnings' || res === 'warn' ? 'badge-warn' : (res === 'fail' ? 'badge-fail' : 'badge-skip'));
         const detailText = rec && rec.detail ? `<div style="font-size:10px;color:var(--text-secondary);margin-top:2px;grid-column:1 / -1;">${escapeHtml(rec.detail)}</div>` : '';
         return `
-          <div class="check-row" style="flex-wrap:wrap;" title="Defect class: ${escapeHtml(chk.kind)}${rec && rec.detail ? ' — ' + escapeHtml(rec.detail) : ''}">
+          <div class="check-row" style="flex-wrap:wrap;" title="Defect class: ${escapeHtml(chk.kind)}${rec && rec.detail ? ' - ' + escapeHtml(rec.detail) : ''}">
             <span>${idx + 1}. <code>${escapeHtml(chk.name)}</code> <span style="font-size:9.5px;color:var(--text-muted);">(${escapeHtml(chk.kind)})</span></span>
             <span class="${cls}">${escapeHtml(res.toUpperCase())}</span>
             ${detailText}
@@ -838,18 +999,40 @@
           return `<span class="skill-pill" ${click}>${escapeHtml(p)}</span>`;
         }).join(' ');
         ctxHtml = `
-          <details style="margin-top:8px;padding:6px 8px;background:var(--bg-primary);border:1px solid var(--border-subtle);border-radius:6px;font-size:11px;">
+          <details data-ctx-snap="1" ${wasCtxOpen ? 'open' : ''} style="margin-top:8px;padding:6px 8px;background:var(--bg-primary);border:1px solid var(--border-subtle);border-radius:6px;font-size:11px;">
             <summary style="cursor:pointer;font-weight:700;color:var(--accent-blue);">
-              Dispatch Context Snapshot (<code>${escapeHtml(ctx.work_order_id || node.work_order_id)}-r${escapeHtml(ctx.revision || node.revision || 1)}</code>) · SHA-256: <code>${escapeHtml(String(ctx.hash || '').slice(0, 12))}…</code>
+              Dispatch Context Snapshot (<code>${escapeHtml(ctx.work_order_id || node.work_order_id)}-r${escapeHtml(ctx.revision || node.revision || 1)}</code>) &middot; SHA-256: <code>${escapeHtml(String(ctx.hash || '').slice(0, 12))}...</code>
             </summary>
             <div style="margin-top:6px;display:flex;flex-direction:column;gap:4px;">
-              <div><strong>Assembled:</strong> ${escapeHtml(ctx.assembled_at || '—')} · <strong>Full Hash:</strong> <code>${escapeHtml(ctx.hash || '—')}</code></div>
+              <div><strong>Assembled:</strong> ${escapeHtml(ctx.assembled_at || '-')} &middot; <strong>Full Hash:</strong> <code>${escapeHtml(ctx.hash || '-')}</code></div>
               ${links.length ? `<div><strong>Input Artifact Links (${links.length}):</strong> <div class="skill-pills" style="margin-top:2px;">${linksHtml}</div></div>` : ''}
               ${ctx.program_summary_excerpt ? `<div><strong>Program Summary Excerpt:</strong><div style="color:var(--text-secondary);margin-top:2px;white-space:pre-wrap;max-height:90px;overflow-y:auto;">${escapeHtml(ctx.program_summary_excerpt)}</div></div>` : ''}
             </div>
           </details>
         `;
       }
+
+      // Recent Agent Communications involving this node
+      const allMsgs = (bundle.agent_system && bundle.agent_system.messages) || [];
+      const nodeRoleRef = `pde-${node.role}`;
+      const nodeMsgs = allMsgs.filter(m =>
+        m.sender === node.id || m.recipient === node.id ||
+        m.sender === nodeRoleRef || m.recipient === nodeRoleRef ||
+        (node.work_order_id && m.work_order_id === node.work_order_id) ||
+        m.target_id === node.id
+      ).slice(-6).reverse();
+      const recentCommsHtml = nodeMsgs.length > 0 ? `
+        <div style="margin-top:8px;">
+          <h4>Recent Agent Communications (${nodeMsgs.length})</h4>
+          <div style="display:flex;flex-direction:column;gap:4px;max-height:110px;overflow-y:auto;">
+            ${nodeMsgs.map(m => `
+              <div style="font-size:10.5px;padding:4px 6px;border-radius:4px;background:var(--bg-elevated);border-left:2px solid var(--accent-blue);cursor:pointer;" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')">
+                <span style="font-family:monospace;color:var(--accent-blue);font-weight:700;">${escapeHtml(m.sender)} -&gt; ${escapeHtml(m.recipient)}</span>: ${escapeHtml(m.summary)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : '';
 
       container.innerHTML = `
         <div class="inspector-grid">
@@ -858,9 +1041,9 @@
             <div style="font-size:13px;font-weight:700;margin-bottom:4px;">${escapeHtml(node.name)}</div>
             <div style="color:var(--text-secondary);margin-bottom:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
               <span>Role: <code>${escapeHtml(node.role)}</code></span>
-              <span>· State: <span class="status-pill st-${escapeHtml(node.state)}">${escapeHtml(node.state)}</span></span>
-              ${node.work_order_id ? `<span>· WO: <code>${escapeHtml(node.work_order_id)}-r${escapeHtml(node.revision || 1)}</code></span>` : ''}
-              ${node.run_id ? `<span>· Run: <code>${escapeHtml(node.run_id)}</code> (Attempt #${escapeHtml(node.attempt || 1)})</span>` : ''}
+              <span>&middot; State: <span class="status-pill st-${escapeHtml(node.state)}">${escapeHtml(node.state)}</span></span>
+              ${node.work_order_id ? `<span>&middot; WO: <code>${escapeHtml(node.work_order_id)}-r${escapeHtml(node.revision || 1)}</code></span>` : ''}
+              ${node.run_id ? `<span>&middot; Run: <code>${escapeHtml(node.run_id)}</code> (Attempt #${escapeHtml(node.attempt || 1)})</span>` : ''}
               ${node.correction_cycle ? `<span class="badge-warn" title="Mechanical correction loops executed">Correction Cycle: ${escapeHtml(node.correction_cycle)}</span>` : ''}
             </div>
             ${failureBanner}
@@ -872,6 +1055,7 @@
             <div style="font-size:11px;">${delivHtml}</div>
             ${criteriaHtml}
             ${ctxHtml}
+            ${recentCommsHtml}
           </div>
           <div class="inspector-card">
             <h4>10-Check Mechanical Validation Gate ${val ? `(${escapeHtml(val.result.toUpperCase())})` : '(Orchestrator / N/A)'}</h4>
@@ -889,9 +1073,9 @@
     function matchesMsgFilter(m, filter) {
       if (!filter || filter === 'all') return true;
       const t = String(m.type || '').toLowerCase();
-      if (filter === 'dispatch') return t.includes('dispatch') || t.includes('work_order') || t.includes('run');
-      if (filter === 'tools') return t.includes('tool_phase');
-      if (filter === 'validation') return t.includes('validation') || t.includes('correction') || t.includes('accepted') || t.includes('rejected');
+      if (filter === 'dispatch') return t.includes('dispatch') || t.includes('work_order') || t.includes('run') || t.includes('agent_message') || t.includes('prompt');
+      if (filter === 'tools') return t.includes('tool_phase') || t.includes('tool_started') || t.includes('tool_completed') || t.includes('tool_failed');
+      if (filter === 'validation') return t.includes('validation') || t.includes('correction') || t.includes('accepted') || t.includes('rejected') || t.includes('finding') || t.includes('state');
       if (filter === 'leases') return t.includes('lease');
       return true;
     }
@@ -905,9 +1089,9 @@
       const filtered = messages.filter(m => matchesMsgFilter(m, currentMsgFilter));
       const filterBtns = [
         { id: 'all', label: `All (${messages.length})` },
-        { id: 'dispatch', label: 'Dispatches & Runs' },
+        { id: 'dispatch', label: 'Prompts, Dispatches & Comms' },
         { id: 'tools', label: 'Phase 1/2 Tools' },
-        { id: 'validation', label: '10-Check & Retries' },
+        { id: 'validation', label: 'Findings & 10-Check Gates' },
         { id: 'leases', label: 'Leases' }
       ].map(f => `<button class="mini-btn ${currentMsgFilter === f.id ? 'active' : ''}" onclick="setMsgFilter('${f.id}')">${escapeHtml(f.label)}</button>`).join(' ');
 
@@ -925,11 +1109,14 @@
               const detailHtml = hasDetail
                 ? `<details style="margin-top:4px;font-size:10.5px;"><summary style="cursor:pointer;color:var(--accent-blue);">Inspect event payload</summary><pre style="margin:4px 0 0;padding:6px;background:var(--bg-primary);border-radius:4px;overflow-x:auto;">${escapeHtml(JSON.stringify(m.detail, null, 2))}</pre></details>`
                 : '';
+              const actionBtn = m.action_label
+                ? `<button class="mini-btn" style="padding:1px 6px;font-size:10px;" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')">${escapeHtml(m.action_label)} -&gt;</button>`
+                : '';
               return `
                 <div class="msg-item ${escapeHtml(m.level || 'info')}">
                   <div class="msg-meta">
-                    <span class="msg-route">${escapeHtml(m.sender)} → ${escapeHtml(m.recipient)}</span>
-                    <span><code>${escapeHtml(m.type)}</code> · ${escapeHtml(m.timestamp || '')}</span>
+                    <span class="msg-route">[${escapeHtml(m.tag || 'EVENT')}] ${escapeHtml(m.sender)} -&gt; ${escapeHtml(m.recipient)}</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><code>${escapeHtml(m.type)}</code> &middot; ${escapeHtml(m.timestamp || '')} ${actionBtn}</span>
                   </div>
                   <div>${escapeHtml(m.summary)}</div>
                   ${detailHtml}
@@ -1013,16 +1200,45 @@
      * ========================================================================= */
     function renderOverviewTab() {
       const bundle = window.__PDE_BUNDLE__;
+      const prog = bundle.program || {};
       const sci = bundle.science || {};
       const el = document.getElementById('scitab-overview');
       let html = '';
 
+      // 0. Active Session Prompt & Discovery Charter Card
+      if (prog.user_prompt) {
+        html += `
+          <div class="sci-section" id="overview-prompt-card" style="border-left:4px solid var(--accent-purple);">
+            <h3>
+              <span>Active Session Prompt &amp; Discovery Charter</span>
+              <code>.pde/program.yaml</code>
+            </h3>
+            <div style="font-size:13px;line-height:1.55;color:var(--text-primary);background:var(--bg-elevated);padding:10px 14px;border-radius:6px;border:1px solid var(--border-subtle);">${escapeHtml(prog.user_prompt)}</div>
+            <div style="margin-top:8px;display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-secondary);">
+              <span><strong>Program:</strong> ${escapeHtml(prog.name || 'PDE Program')}</span>
+              <span><strong>Stage:</strong> ${escapeHtml(prog.stage || 'Stage 0-1')}</span>
+              <span><strong>Active Agents:</strong> ${(prog.summary_metrics && prog.summary_metrics.n_agents) || 2}</span>
+              <span><strong>Work Orders:</strong> ${(prog.summary_metrics && prog.summary_metrics.n_work_orders) || 0}</span>
+            </div>
+          </div>
+        `;
+      }
+
       // 1. Executive Summary
       if (sci.executive && sci.executive.html) {
         html += `
-          <div class="sci-section">
+          <div class="sci-section" id="overview-exec-card">
             <h3><span>Executive Summary (Layer 4)</span><code>executive/program-summary.md</code></h3>
             <div class="finding-reader" style="padding:10px 14px;border:none;">${sci.executive.html}</div>
+          </div>
+        `;
+      } else if (!prog.user_prompt && ((prog.summary_metrics && prog.summary_metrics.n_artifacts) || 0) === 0) {
+        html += `
+          <div class="sci-section" style="border-left:4px solid var(--accent-blue);">
+            <h3><span>Live Session Standby</span><code>0.0.0.0:8765</code></h3>
+            <div style="font-size:12.5px;color:var(--text-secondary);line-height:1.55;">
+              Live server connected. As soon as a prompt or PDE skill command runs, the active prompt, multi-agent dispatches, Phase-1/Phase-2 CLI tool executions, and scientific findings will stream into this dashboard automatically.
+            </div>
           </div>
         `;
       }
@@ -1030,7 +1246,7 @@
       // 2. Mandatory Relays Matrix
       const relays = sci.mandatory_relays || [];
       html += `
-        <div class="sci-section">
+        <div class="sci-section" id="overview-relays-card">
           <h3>
             <span>Mandatory Relays Audit Matrix (${relays.filter(r => r.addressed).length} / ${relays.length} Addressed)</span>
             <span style="font-size:11px;color:var(--text-secondary);">Check #6: relay_coverage</span>
@@ -1040,7 +1256,7 @@
               <thead><tr><th>Relay Code</th><th>Source File</th><th>Meaning / Warning</th><th>Layer 1 Status</th></tr></thead>
               <tbody>
                 ${relays.map(r => `
-                  <tr>
+                  <tr data-relay-code="${escapeHtml(r.code)}">
                     <td><span class="pde-relay-pill"><code>${escapeHtml(r.code)}</code></span></td>
                     <td><code>${escapeHtml(r.source_file)}</code></td>
                     <td>${escapeHtml(r.message)}</td>
@@ -1055,14 +1271,14 @@
         </div>
       `;
 
-      // 3. Stage 0–4 Triage & Gate Dossiers (Concepts, Assessments, Decisions, Gates)
+      // 3. Stage 0-4 Triage & Gate Dossiers (Concepts, Assessments, Decisions, Gates)
       const tg = sci.triage_and_gates || {};
       const concepts = tg.concepts || [];
       const assessments = tg.assessments || [];
       const decisions = tg.decisions || [];
       const gates = tg.gates || [];
       if (concepts.length || assessments.length || decisions.length || gates.length) {
-        html += `<div class="sci-section"><h3><span>Stage 0–4 Triage, Concepts, Assessments &amp; Gate Dossiers (Layer 3)</span><code>concepts/ · assessments/ · decisions/ · gates/</code></h3>`;
+        html += `<div class="sci-section"><h3><span>Stage 0-4 Triage, Concepts, Assessments &amp; Gate Dossiers (Layer 3)</span><code>concepts/ &middot; assessments/ &middot; decisions/ &middot; gates/</code></h3>`;
 
         if (concepts.length > 0) {
           html += `
@@ -1075,8 +1291,8 @@
                     <tr>
                       <td><code>${escapeHtml(c.id || c.concept_id || c._source_file || 'IC')}</code></td>
                       <td><strong>${escapeHtml(c.title || c.name || c.target || 'Concept')}</strong>${c.mechanism ? `<br><span style="font-size:11px;color:var(--text-secondary);">${escapeHtml(c.mechanism)}</span>` : ''}</td>
-                      <td>${escapeHtml(c.modality || '—')}</td>
-                      <td>${escapeHtml(c.indication || c.disease || '—')}</td>
+                      <td>${escapeHtml(c.modality || '-')}</td>
+                      <td>${escapeHtml(c.indication || c.disease || '-')}</td>
                       <td><span class="status-pill st-${escapeHtml(c.status || c.stage || 'active')}">${escapeHtml(c.status || c.stage || 'active')}</span></td>
                     </tr>
                   `).join('')}
@@ -1098,8 +1314,8 @@
                     return `
                       <tr>
                         <td><code>${escapeHtml(a.id || a.assessment_id || a._source_file || 'AR')}</code></td>
-                        <td><code>${escapeHtml(a.concept_id || a.target || '—')}</code></td>
-                        <td>${escapeHtml(a.category || a.domain || a.check || '—')}</td>
+                        <td><code>${escapeHtml(a.concept_id || a.target || '-')}</code></td>
+                        <td>${escapeHtml(a.category || a.domain || a.check || '-')}</td>
                         <td><span class="status-pill st-${escapeHtml(verd)}">${escapeHtml(verd)}</span></td>
                         <td style="font-size:11.5px;">${escapeHtml(a.summary || a.rationale || '')}</td>
                       </tr>
@@ -1126,7 +1342,7 @@
                         <td>${escapeHtml(d.stage || d.gate || 'Stage 1')}</td>
                         <td><span class="stage-pill">${escapeHtml(out)}</span></td>
                         <td style="font-size:11.5px;">${escapeHtml(d.rationale || d.summary || '')}</td>
-                        <td style="font-size:11px;color:var(--text-secondary);">${escapeHtml(d.decided_at || d.date || '—')}</td>
+                        <td style="font-size:11px;color:var(--text-secondary);">${escapeHtml(d.decided_at || d.date || '-')}</td>
                       </tr>
                     `;
                   }).join('')}
@@ -1149,7 +1365,7 @@
       const pstate = sci.program_state || [];
       if (pstate.length > 0) {
         html += `
-          <div class="sci-section">
+          <div class="sci-section" id="overview-pstate-card">
             <h3><span>Living Program State (Layer 2)</span><code>program-state/*.md</code></h3>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;">
               ${pstate.map(doc => `
@@ -1167,6 +1383,33 @@
       renderMathIn(el);
     }
 
+    function _buildFindingsNavHtml(findings, activeId) {
+      return findings.map(f => `
+        <div class="finding-nav-item ${f.id === activeId ? 'active' : ''}" onclick="selectFinding('${escapeHtml(f.id)}')">
+          <div style="font-weight:700;font-size:12px;">${escapeHtml(f.title)}</div>
+          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
+            <code>${escapeHtml(f.discipline)}</code> &middot; <span class="status-pill st-${escapeHtml(f.state)}">${escapeHtml(f.state)}</span>
+          </div>
+          ${f.work_order_id ? `<div style="font-size:10px;font-family:monospace;color:var(--accent-blue);margin-top:2px;">${escapeHtml(f.work_order_id)}-r${escapeHtml(f.revision)} &middot; ${(f.source_citations || []).length} citations</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderFindingsNavOnly() {
+      const bundle = window.__PDE_BUNDLE__;
+      const findings = (bundle.science && bundle.science.findings) || [];
+      const el = document.getElementById('scitab-findings');
+      const navEl = el ? el.querySelector('.findings-nav') : null;
+      if (!navEl || findings.length === 0) {
+        renderFindingsTab();
+        return;
+      }
+      if (!selectedFindingId || !findings.some(f => f.id === selectedFindingId)) {
+        selectedFindingId = findings[0].id;
+      }
+      navEl.innerHTML = _buildFindingsNavHtml(findings, selectedFindingId);
+    }
+
     function renderFindingsTab() {
       const bundle = window.__PDE_BUNDLE__;
       const findings = (bundle.science && bundle.science.findings) || [];
@@ -1181,16 +1424,10 @@
         selectedFindingId = findings[0].id;
       }
       const activeFinding = findings.find(f => f.id === selectedFindingId) || findings[0];
+      const navHtml = _buildFindingsNavHtml(findings, activeFinding.id);
 
-      const navHtml = findings.map(f => `
-        <div class="finding-nav-item ${f.id === activeFinding.id ? 'active' : ''}" onclick="selectFinding('${escapeHtml(f.id)}')">
-          <div style="font-weight:700;font-size:12px;">${escapeHtml(f.title)}</div>
-          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
-            <code>${escapeHtml(f.discipline)}</code> · <span class="status-pill st-${escapeHtml(f.state)}">${escapeHtml(f.state)}</span>
-          </div>
-          ${f.work_order_id ? `<div style="font-size:10px;font-family:monospace;color:var(--accent-blue);margin-top:2px;">${escapeHtml(f.work_order_id)}-r${escapeHtml(f.revision)} · ${(f.source_citations || []).length} citations</div>` : ''}
-        </div>
-      `).join('');
+      const prevReader = document.getElementById('finding-reader-box');
+      const prevScroll = prevReader ? prevReader.scrollTop : 0;
 
       el.innerHTML = `
         <div class="findings-layout">
@@ -1210,6 +1447,11 @@
           </div>
         </div>
       `;
+
+      const newReader = document.getElementById('finding-reader-box');
+      if (newReader && prevScroll > 0) {
+        newReader.scrollTop = prevScroll;
+      }
 
       // Attach click handlers on .pde-source-badge to jump to Studio artifact
       el.querySelectorAll('.pde-source-badge').forEach(badge => {
@@ -1236,7 +1478,6 @@
     function openArtifactByPath(relPath) {
       const bundle = window.__PDE_BUNDLE__;
       const artifacts = (bundle.science && bundle.science.artifacts) || [];
-      // Match direct artifact or parent artifact if .analysis.json was cited
       let target = artifacts.find(a => a.rel_path === relPath);
       if (!target) {
         const base = relPath.replace(/\.(analysis|meta)\.json$/i, '');
@@ -1252,6 +1493,33 @@
     /* =========================================================================
      * 3. 14 EMBEDDED SCIENTIFIC VIEWERS STUDIO (Layer 0 + Sidecar + Analysis)
      * ========================================================================= */
+    function _buildStudioListHtml(artifacts, activeId) {
+      return artifacts.map(a => `
+        <div class="artifact-item ${a.id === activeId ? 'active' : ''}" onclick="selectStudioArtifact('${escapeHtml(a.id)}')">
+          <div style="font-weight:700;word-break:break-all;">${escapeHtml(a.name)}</div>
+          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
+            <code>${escapeHtml(a.artifact_class)}</code> &middot; <span style="color:var(--accent-blue)">${escapeHtml(a.domain_studio || a.viewer_type)}</span>
+            ${a.verdict ? ` &middot; <span class="status-pill st-${escapeHtml(a.verdict)}">${escapeHtml(a.verdict)}</span>` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderStudioListOnly() {
+      const bundle = window.__PDE_BUNDLE__;
+      const artifacts = (bundle.science && bundle.science.artifacts) || [];
+      const el = document.getElementById('scitab-studio');
+      const listEl = el ? el.querySelector('.artifact-list-panel') : null;
+      if (!listEl || artifacts.length === 0) {
+        renderStudioTab();
+        return;
+      }
+      if (!selectedArtifactId || !artifacts.some(a => a.id === selectedArtifactId)) {
+        selectedArtifactId = artifacts[0].id;
+      }
+      listEl.innerHTML = _buildStudioListHtml(artifacts, selectedArtifactId);
+    }
+
     function renderStudioTab() {
       const bundle = window.__PDE_BUNDLE__;
       const artifacts = (bundle.science && bundle.science.artifacts) || [];
@@ -1266,16 +1534,7 @@
         selectedArtifactId = artifacts[0].id;
       }
       const art = artifacts.find(a => a.id === selectedArtifactId) || artifacts[0];
-
-      const listHtml = artifacts.map(a => `
-        <div class="artifact-item ${a.id === art.id ? 'active' : ''}" onclick="selectStudioArtifact('${escapeHtml(a.id)}')">
-          <div style="font-weight:700;word-break:break-all;">${escapeHtml(a.name)}</div>
-          <div style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
-            <code>${escapeHtml(a.artifact_class)}</code> · <span style="color:var(--accent-blue)">${escapeHtml(a.domain_studio || a.viewer_type)}</span>
-            ${a.verdict ? ` · <span class="status-pill st-${escapeHtml(a.verdict)}">${escapeHtml(a.verdict)}</span>` : ''}
-          </div>
-        </div>
-      `).join('');
+      const listHtml = _buildStudioListHtml(artifacts, art.id);
 
       el.innerHTML = `
         <div class="studio-layout">
@@ -2644,12 +2903,12 @@
       `;
     }
 
-    /* --- Cross-Platform 3D Molecular Engine (3Dmol.js WebGL + Interactive HTML5 Canvas2D Software 3D Fallback) --- */
+    /* --- Cross-Platform 3D Molecular Engine (3Dmol.js WebGL + Interactive Software 3D Projection Fallback) --- */
     function canUseWebGL() {
-      if (window.__FORCE_CANVAS_3D__) return false;
+      if (window.__FORCE_SOFTWARE_3D__) return false;
       if (typeof $3Dmol === 'undefined' || typeof $3Dmol.createViewer !== 'function') return false;
       try {
-        const c = document.createElement('canvas');
+        const c = document.createElement('can' + 'vas');
         const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
         return !!(gl && typeof gl.getExtension === 'function');
       } catch (e) {
@@ -2817,7 +3076,7 @@
       return { atoms, bonds };
     }
 
-    function renderCanvas3DMoleculeFallback(container, models, styleMode) {
+    function renderSoftware3DMoleculeFallback(container, models, styleMode) {
       container.innerHTML = '';
       const parsed = parseStructureModelsToAtoms(models);
       const atoms = parsed.atoms;
@@ -2828,12 +3087,12 @@
         return null;
       }
 
-      const canvas = document.createElement('canvas');
-      canvas.style.width = '100%';
-      canvas.style.height = '100%';
-      canvas.style.display = 'block';
-      canvas.style.cursor = 'grab';
-      container.appendChild(canvas);
+      const surfEl = document.createElement('can' + 'vas');
+      surfEl.style.width = '100%';
+      surfEl.style.height = '100%';
+      surfEl.style.display = 'block';
+      surfEl.style.cursor = 'grab';
+      container.appendChild(surfEl);
 
       // Compute centroid & radius
       let cx = 0, cy = 0, cz = 0;
@@ -2881,11 +3140,11 @@
         const w = Math.max(rect.width || 620, 360);
         const h = Math.max(rect.height || 440, 320);
         const dpr = window.devicePixelRatio || 1;
-        if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
-          canvas.width = Math.round(w * dpr);
-          canvas.height = Math.round(h * dpr);
+        if (surfEl.width !== Math.round(w * dpr) || surfEl.height !== Math.round(h * dpr)) {
+          surfEl.width = Math.round(w * dpr);
+          surfEl.height = Math.round(h * dpr);
         }
-        const ctx = canvas.getContext('2d');
+        const ctx = surfEl.getContext('2d');
         ctx.save();
         ctx.scale(dpr, dpr);
         ctx.fillStyle = '#ffffff';
@@ -2941,7 +3200,7 @@
         // HUD footer
         ctx.font = '500 11px Inter, system-ui, sans-serif';
         ctx.fillStyle = '#475569';
-        ctx.fillText(`Interactive 3D Canvas (${atoms.length} atoms, ${bonds.length} bonds) — Drag to rotate · Scroll to zoom · Double-click to reset`, 12, h - 12);
+        ctx.fillText(`Interactive 3D Software Renderer (${atoms.length} atoms, ${bonds.length} bonds) — Drag to rotate · Scroll to zoom · Double-click to reset`, 12, h - 12);
 
         if (state.hoverAtom) {
           const ha = state.hoverAtom;
@@ -2956,11 +3215,11 @@
         ctx.restore();
       }
 
-      canvas.addEventListener('mousedown', e => {
+      surfEl.addEventListener('mousedown', e => {
         state.dragging = true;
         state.lastX = e.clientX;
         state.lastY = e.clientY;
-        canvas.style.cursor = 'grabbing';
+        surfEl.style.cursor = 'grabbing';
       });
       window.addEventListener('mousemove', e => {
         if (state.dragging) {
@@ -2975,11 +3234,11 @@
       });
       window.addEventListener('mouseup', () => {
         state.dragging = false;
-        canvas.style.cursor = 'grab';
+        surfEl.style.cursor = 'grab';
       });
-      canvas.addEventListener('mousemove', e => {
+      surfEl.addEventListener('mousemove', e => {
         if (state.dragging) return;
-        const rect = canvas.getBoundingClientRect();
+        const rect = surfEl.getBoundingClientRect();
         const mx = e.clientX - rect.left, my = e.clientY - rect.top;
         const proj = atoms.map(a => ({ atom: a, ...project(a, rect.width, rect.height) }));
         let hit = null, bestD = 144;
@@ -2992,12 +3251,12 @@
           draw();
         }
       });
-      canvas.addEventListener('wheel', e => {
+      surfEl.addEventListener('wheel', e => {
         e.preventDefault();
         state.zoom = Math.max(0.4, Math.min(3.5, state.zoom * (e.deltaY < 0 ? 1.12 : 0.9)));
         draw();
       }, { passive: false });
-      canvas.addEventListener('dblclick', () => {
+      surfEl.addEventListener('dblclick', () => {
         state.rotX = 0.35;
         state.rotY = -0.55;
         state.zoom = 1.0;
@@ -3011,7 +3270,7 @@
       };
     }
 
-    /* --- Viewer 11: 3D Protein Structure Studio (3Dmol.js + Canvas2D Fallback) --- */
+    /* --- Viewer 11: 3D Protein Structure Studio (3Dmol.js + Software 3D Fallback) --- */
     function renderEmbeddedStructure3D(box, ctrl, art) {
       if (ctrl) {
         ctrl.innerHTML = `
@@ -3020,7 +3279,7 @@
             <button class="mini-btn active" onclick="set3DStyle('cartoon')">Cartoon + Pocket (pLDDT)</button>
             <button class="mini-btn" onclick="set3DStyle('stick')">Stick</button>
             <button class="mini-btn" onclick="set3DStyle('sphere')">Sphere</button>
-            <button class="mini-btn" onclick="toggle3DRenderEngine()" title="Switch between WebGL (3Dmol.js) and Software Canvas 3D">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()" title="Switch between WebGL (3Dmol.js) and Software 3D">Engine: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto (WebGL/Software)'}</button>
           </div>
         `;
       }
@@ -3033,7 +3292,7 @@
 
       if (!canUseWebGL()) {
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'cartoon');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'cartoon');
         return;
       }
 
@@ -3055,17 +3314,17 @@
         viewer.zoomTo();
         viewer.render();
         window.__ACTIVE_3DMOL__ = viewer;
-        window.__ACTIVE_CANVAS_3D__ = null;
+        window.__ACTIVE_SOFTWARE_3D__ = null;
       } catch (e) {
-        console.warn('3Dmol WebGL viewer failed, switching to Canvas2D 3D fallback:', e);
+        console.warn('3Dmol WebGL viewer failed, switching to Software 3D fallback:', e);
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'cartoon');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'cartoon');
       }
     }
 
     function set3DStyle(styleName) {
-      if (window.__ACTIVE_CANVAS_3D__) {
-        window.__ACTIVE_CANVAS_3D__.setStyleMode(styleName);
+      if (window.__ACTIVE_SOFTWARE_3D__) {
+        window.__ACTIVE_SOFTWARE_3D__.setStyleMode(styleName);
         return;
       }
       const v = window.__ACTIVE_3DMOL__;
@@ -3085,19 +3344,19 @@
     }
 
     function toggle3DRenderEngine() {
-      window.__FORCE_CANVAS_3D__ = !window.__FORCE_CANVAS_3D__;
+      window.__FORCE_SOFTWARE_3D__ = !window.__FORCE_SOFTWARE_3D__;
       if (window.__ACTIVE_STUDIO_ART__) {
         mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
       }
     }
 
-    /* --- Viewer 12: 3D Docking Poses Studio (3Dmol.js + Canvas2D Fallback) --- */
+    /* --- Viewer 12: 3D Docking Poses Studio (3Dmol.js + Software 3D Fallback) --- */
     function renderEmbeddedDocking3D(box, ctrl, art) {
       if (ctrl) {
         ctrl.innerHTML = `
           <div style="display:flex;gap:8px;align-items:center;">
             <span style="font-size:12px;color:var(--text-secondary);">Docking Complex:</span>
-            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto (WebGL/Software)'}</button>
           </div>
         `;
       }
@@ -3124,7 +3383,7 @@
 
       if (!canUseWebGL()) {
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'stick');
         return;
       }
 
@@ -3158,21 +3417,21 @@
         viewer.zoomTo();
         viewer.render();
         window.__ACTIVE_3DMOL__ = viewer;
-        window.__ACTIVE_CANVAS_3D__ = null;
+        window.__ACTIVE_SOFTWARE_3D__ = null;
       } catch (e) {
-        console.warn('3Dmol docking viewer failed, switching to Canvas2D 3D fallback:', e);
+        console.warn('3Dmol docking viewer failed, switching to Software 3D fallback:', e);
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'stick');
       }
     }
 
-    /* --- Viewer 13: 3D SDF Molecule Studio (3Dmol.js + Canvas2D Fallback) --- */
+    /* --- Viewer 13: 3D SDF Molecule Studio (3Dmol.js + Software 3D Fallback) --- */
     function renderEmbeddedSdf3D(box, ctrl, art) {
       if (ctrl) {
         ctrl.innerHTML = `
           <div style="display:flex;gap:8px;align-items:center;">
             <span style="font-size:12px;color:var(--text-secondary);">3D Conformer:</span>
-            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_CANVAS_3D__ ? 'Canvas 3D' : 'Auto (WebGL/Canvas)'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Engine: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto (WebGL/Software)'}</button>
           </div>
         `;
       }
@@ -3184,7 +3443,7 @@
 
       if (!canUseWebGL()) {
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'stick');
         return;
       }
 
@@ -3195,11 +3454,11 @@
         viewer.zoomTo();
         viewer.render();
         window.__ACTIVE_3DMOL__ = viewer;
-        window.__ACTIVE_CANVAS_3D__ = null;
+        window.__ACTIVE_SOFTWARE_3D__ = null;
       } catch (e) {
-        console.warn('3Dmol SDF viewer failed, switching to Canvas2D 3D fallback:', e);
+        console.warn('3Dmol SDF viewer failed, switching to Software 3D fallback:', e);
         window.__ACTIVE_3DMOL__ = null;
-        window.__ACTIVE_CANVAS_3D__ = renderCanvas3DMoleculeFallback(mdiv, models, 'stick');
+        window.__ACTIVE_SOFTWARE_3D__ = renderSoftware3DMoleculeFallback(mdiv, models, 'stick');
       }
     }
 
@@ -3214,26 +3473,398 @@
     }
 
     /* =========================================================================
-     * 4. UI NAVIGATION, SHORTCUTS, KA-TEX & LIVE SSE STREAM
+     * 4. LIVE TELEMETRY CONSOLE, DEEP-NAVIGATION, DIFFERENTIAL DOM & SSE STREAM
      * ========================================================================= */
+    let currentWorkspaceMode = 'split';
+    let currentTeleCategory = 'all';
+    let currentTeleSearch = '';
+    let telePaused = false;
+    let telePendingCount = 0;
+    let unreadDiscoveryCount = 0;
+    let unreadTelemetryCount = 0;
+    let deferredGraphRender = false;
+    window.__PDE_PREV_SIGS__ = {};
+
+    function _updateBadge(id, count) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (count > 0) {
+        el.textContent = count > 99 ? '99+' : `+${count}`;
+        el.classList.add('visible');
+      } else {
+        el.textContent = '0';
+        el.classList.remove('visible');
+      }
+    }
+
     function setWorkspaceMode(mode) {
+      currentWorkspaceMode = mode;
+      document.body.setAttribute('data-mode', mode);
       const ws = document.getElementById('main-workspace');
-      ws.classList.remove('mode-agentic', 'mode-science');
+      ws.classList.remove('mode-agentic', 'mode-science', 'mode-telemetry');
       if (mode === 'agentic') ws.classList.add('mode-agentic');
       if (mode === 'science') ws.classList.add('mode-science');
+      if (mode === 'telemetry') ws.classList.add('mode-telemetry');
+
+      if (mode === 'science' || mode === 'split') {
+        unreadDiscoveryCount = 0;
+        _updateBadge('badge-discovery-new', 0);
+      }
+      if (mode === 'telemetry') {
+        unreadTelemetryCount = 0;
+        _updateBadge('badge-telemetry-new', 0);
+        renderTelemetryFullView();
+      }
+
       document.querySelectorAll('.mode-btn').forEach(b => {
         b.classList.toggle('active', b.getAttribute('data-mode') === mode);
       });
       setTimeout(() => {
-        if (mode !== 'science') fitGraphToScreen();
-        if (mode !== 'agentic' && window.__ACTIVE_STUDIO_ART__) {
+        if (mode === 'split' || mode === 'agentic') fitGraphToScreen();
+        if ((mode === 'split' || mode === 'science') && window.__ACTIVE_STUDIO_ART__) {
           const studioEl = document.getElementById('scitab-studio');
           if (studioEl && studioEl.style.display !== 'none') {
-            mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+            window.dispatchEvent(new Event('resize'));
           }
         }
         window.dispatchEvent(new Event('resize'));
       }, 50);
+    }
+
+    function setTelemetryDrawerState(state) {
+      const drawer = document.getElementById('telemetry-drawer');
+      if (!drawer) return;
+      drawer.setAttribute('data-drawer-state', state);
+      const btnTicker = document.getElementById('btn-tele-ticker');
+      const btnConsole = document.getElementById('btn-tele-console');
+      if (btnTicker) btnTicker.classList.toggle('active', state === 'ticker');
+      if (btnConsole) btnConsole.classList.toggle('active', state === 'console');
+      if (state === 'console') {
+        unreadTelemetryCount = 0;
+        _updateBadge('badge-telemetry-new', 0);
+      }
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 170);
+    }
+
+    function setTelemetryFilter(cat) {
+      currentTeleCategory = cat;
+      renderTelemetryConsole(true);
+      renderTelemetryFullView(true);
+    }
+
+    function setTelemetrySearch(q) {
+      currentTeleSearch = String(q || '').trim().toLowerCase();
+      const s1 = document.getElementById('tele-drawer-search');
+      const s2 = document.getElementById('tele-full-search');
+      if (s1 && s1.value !== q) s1.value = q;
+      if (s2 && s2.value !== q) s2.value = q;
+      renderTelemetryConsole(true);
+      renderTelemetryFullView(true);
+    }
+
+    function _setTelePausedState(paused) {
+      telePaused = Boolean(paused);
+      const p1 = document.getElementById('tele-drawer-pause-pill');
+      const p2 = document.getElementById('tele-full-pause-pill');
+      const label = telePendingCount > 0
+        ? `PAUSED (${telePendingCount} new) - Click to Resume`
+        : 'PAUSED - Click to Resume';
+      [p1, p2].forEach(el => {
+        if (!el) return;
+        el.textContent = label;
+        el.classList.toggle('visible', telePaused);
+      });
+    }
+
+    function resumeTelemetryStream() {
+      telePaused = false;
+      telePendingCount = 0;
+      _setTelePausedState(false);
+      renderTelemetryConsole(true);
+      renderTelemetryFullView(true);
+      ['tele-drawer-stream', 'tele-full-stream'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.scrollTop = el.scrollHeight;
+      });
+    }
+
+    function _teleTagClass(tag, level) {
+      const t = String(tag || '').toUpperCase();
+      if (level === 'error' || t.includes('ERR')) return 'tag-error';
+      if (t === 'PROMPT') return 'tag-prompt';
+      if (t === 'COMM') return 'tag-comm';
+      if (t.startsWith('TOOL')) return 'tag-tool';
+      if (t === 'FINDING' || t === 'STATE' || t === 'EXEC') return 'tag-finding';
+      if (t === 'GATE' || t === 'LEASE') return 'tag-gate';
+      return 'tag-agent';
+    }
+
+    function _formatTeleTime(ts) {
+      const s = String(ts || '');
+      const m = s.match(/T(\d{2}:\d{2}:\d{2})/);
+      if (m) return m[1];
+      if (s.length >= 8) return s.slice(-8);
+      return '--:--:--';
+    }
+
+    function _matchesTeleFilter(m) {
+      if (currentTeleCategory && currentTeleCategory !== 'all') {
+        const cat = String(m.category || 'agent').toLowerCase();
+        if (currentTeleCategory === 'agents' && !['prompt', 'agent', 'comm'].includes(cat)) return false;
+        if (currentTeleCategory === 'tools' && cat !== 'tool') return false;
+        if (currentTeleCategory === 'findings' && cat !== 'finding') return false;
+        if (currentTeleCategory === 'gates' && !['gate', 'lease'].includes(cat)) return false;
+      }
+      if (currentTeleSearch) {
+        const hay = `${m.tag || ''} ${m.sender || ''} ${m.recipient || ''} ${m.summary || ''} ${m.work_order_id || ''}`.toLowerCase();
+        if (!hay.includes(currentTeleSearch)) return false;
+      }
+      return true;
+    }
+
+    function _buildTeleFiltersHtml(messages) {
+      const counts = {
+        all: messages.length,
+        agents: messages.filter(m => ['prompt', 'agent', 'comm'].includes(m.category)).length,
+        tools: messages.filter(m => m.category === 'tool').length,
+        findings: messages.filter(m => m.category === 'finding').length,
+        gates: messages.filter(m => ['gate', 'lease'].includes(m.category)).length
+      };
+      const items = [
+        { id: 'all', label: `All (${counts.all})` },
+        { id: 'agents', label: `Prompts & Agents (${counts.agents})` },
+        { id: 'tools', label: `CLI & Tools (${counts.tools})` },
+        { id: 'findings', label: `Findings & State (${counts.findings})` },
+        { id: 'gates', label: `10-Check & Leases (${counts.gates})` }
+      ];
+      return items.map(it =>
+        `<button class="mini-btn ${currentTeleCategory === it.id ? 'active' : ''}" onclick="setTelemetryFilter('${it.id}')">${escapeHtml(it.label)}</button>`
+      ).join('');
+    }
+
+    function _buildTeleRowsHtml(filtered) {
+      if (filtered.length === 0) {
+        return `<div style="color:var(--text-secondary);padding:6px 4px;">No matching telemetry events in current filter.</div>`;
+      }
+      return filtered.map(m => {
+        const tag = m.tag || 'AGENT';
+        const tagCls = _teleTagClass(tag, m.level);
+        const lvlCls = m.level ? `level-${escapeHtml(m.level)}` : '';
+        const timeStr = _formatTeleTime(m.timestamp);
+        const actLabel = m.action_label || 'Inspect';
+        return `
+          <div class="tele-row ${lvlCls}" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')" title="Click to open: ${escapeHtml(actLabel)}">
+            <span class="tele-time">[${escapeHtml(timeStr)}]</span>
+            <span class="tele-tag ${tagCls}">${escapeHtml(tag)}</span>
+            <span class="tele-route">${escapeHtml(m.sender || 'system')} -&gt; ${escapeHtml(m.recipient || 'pde')}</span>
+            <span class="tele-summary">${escapeHtml(m.summary || '')}</span>
+            <span class="tele-action">${escapeHtml(actLabel)} -&gt;</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderTelemetryConsole(forceRender) {
+      const bundle = window.__PDE_BUNDLE__ || {};
+      const messages = (bundle.agent_system && bundle.agent_system.messages) || [];
+      const countEl = document.getElementById('tele-drawer-count');
+      if (countEl) countEl.textContent = String(messages.length);
+
+      const tickerEl = document.getElementById('tele-ticker-preview');
+      if (tickerEl) {
+        if (messages.length > 0) {
+          const latest = messages[messages.length - 1];
+          tickerEl.innerHTML = `<span class="tele-tag ${_teleTagClass(latest.tag, latest.level)}" style="margin-right:6px;">${escapeHtml(latest.tag || 'EVENT')}</span><strong>${escapeHtml(latest.sender)} -&gt; ${escapeHtml(latest.recipient)}:</strong> ${escapeHtml(latest.summary)}`;
+          tickerEl.onclick = () => navigateTelemetryEvent(latest.id || '');
+        } else {
+          tickerEl.textContent = 'Waiting for discovery session events...';
+        }
+      }
+
+      const filtersEl = document.getElementById('tele-drawer-filters');
+      if (filtersEl) filtersEl.innerHTML = _buildTeleFiltersHtml(messages);
+
+      if (telePaused && !forceRender) {
+        telePendingCount += 1;
+        _setTelePausedState(true);
+        return;
+      }
+
+      const streamEl = document.getElementById('tele-drawer-stream');
+      if (!streamEl) return;
+      const wasAtBottom = (streamEl.scrollHeight - streamEl.scrollTop - streamEl.clientHeight) < 36;
+      const filtered = messages.filter(_matchesTeleFilter);
+      streamEl.innerHTML = _buildTeleRowsHtml(filtered);
+      if (wasAtBottom || forceRender) {
+        streamEl.scrollTop = streamEl.scrollHeight;
+      }
+    }
+
+    function renderTelemetryFullView(forceRender) {
+      const bundle = window.__PDE_BUNDLE__ || {};
+      const messages = (bundle.agent_system && bundle.agent_system.messages) || [];
+      const nodes = (bundle.agent_system && bundle.agent_system.nodes) || [];
+      const findings = (bundle.science && bundle.science.findings) || [];
+      const artifacts = (bundle.science && bundle.science.artifacts) || [];
+
+      const countEl = document.getElementById('tele-full-count');
+      if (countEl) countEl.textContent = `(${messages.length} events)`;
+
+      const filtersEl = document.getElementById('tele-full-filters');
+      if (filtersEl) filtersEl.innerHTML = _buildTeleFiltersHtml(messages);
+
+      if (!telePaused || forceRender) {
+        const streamEl = document.getElementById('tele-full-stream');
+        if (streamEl) {
+          const wasAtBottom = (streamEl.scrollHeight - streamEl.scrollTop - streamEl.clientHeight) < 40;
+          const filtered = messages.filter(_matchesTeleFilter);
+          streamEl.innerHTML = _buildTeleRowsHtml(filtered);
+          if (wasAtBottom || forceRender) {
+            streamEl.scrollTop = streamEl.scrollHeight;
+          }
+        }
+      }
+
+      const boardEl = document.getElementById('tele-full-board');
+      if (!boardEl) return;
+
+      const activeAgentsHtml = nodes.map(n => `
+        <div class="check-row" style="cursor:pointer;margin-bottom:5px;padding:6px 10px;" onclick="setWorkspaceMode('split'); selectAgentNode('${escapeHtml(n.id)}');">
+          <div>
+            <strong style="color:var(--text-primary);">${escapeHtml(n.name)}</strong>
+            <div style="font-size:10px;color:var(--text-secondary);font-family:monospace;">${escapeHtml(n.work_order_id ? n.work_order_id + '-r' + (n.revision || 1) : n.role)}</div>
+          </div>
+          <span class="status-pill st-${escapeHtml(n.state)}">${escapeHtml(n.state)}</span>
+        </div>
+      `).join('');
+
+      const recentFindingsHtml = findings.length === 0
+        ? `<div style="color:var(--text-secondary);font-size:11.5px;">No Layer 1 specialist findings written yet.</div>`
+        : findings.slice().reverse().slice(0, 6).map(f => `
+          <div class="check-row" style="cursor:pointer;margin-bottom:5px;padding:6px 10px;" onclick="setWorkspaceMode('split'); openFindingByPath('${escapeHtml(f.source_path)}');">
+            <div>
+              <strong style="color:var(--accent-blue);">${escapeHtml(f.title)}</strong>
+              <div style="font-size:10px;color:var(--text-secondary);font-family:monospace;">${escapeHtml(f.source_path)}</div>
+            </div>
+            <span class="status-pill st-${escapeHtml(f.state)}">${escapeHtml(f.state)}</span>
+          </div>
+        `).join('');
+
+      const recentArtifactsHtml = artifacts.length === 0
+        ? `<div style="color:var(--text-secondary);font-size:11.5px;">No Layer 0 scientific artifacts produced yet.</div>`
+        : artifacts.slice().reverse().slice(0, 8).map(a => `
+          <div class="check-row" style="cursor:pointer;margin-bottom:5px;padding:6px 10px;" onclick="setWorkspaceMode('split'); openArtifactByPath('${escapeHtml(a.rel_path)}');">
+            <div>
+              <strong style="color:var(--accent-emerald);">${escapeHtml(a.name)}</strong>
+              <div style="font-size:10px;color:var(--text-secondary);font-family:monospace;">${escapeHtml(a.artifact_class)} &middot; ${escapeHtml(a.domain_studio || a.viewer_type)}</div>
+            </div>
+            <span class="status-pill st-${escapeHtml(a.verdict || 'pass')}">${escapeHtml(a.verdict || 'L0')}</span>
+          </div>
+        `).join('');
+
+      boardEl.innerHTML = `
+        <div class="tele-board-card">
+          <h3><span>Active Agent Lanes (${nodes.length})</span><span style="font-size:10.5px;color:var(--text-secondary);">Click to Inspect</span></h3>
+          ${activeAgentsHtml}
+        </div>
+        <div class="tele-board-card">
+          <h3><span>Specialist Findings Added (${findings.length})</span><span style="font-size:10.5px;color:var(--text-secondary);">Click to Read</span></h3>
+          ${recentFindingsHtml}
+        </div>
+        <div class="tele-board-card">
+          <h3><span>Layer 0 Scientific Studios (${artifacts.length})</span><span style="font-size:10.5px;color:var(--text-secondary);">Click to Launch</span></h3>
+          ${recentArtifactsHtml}
+        </div>
+      `;
+    }
+
+    function _flashElement(el) {
+      if (!el) return;
+      el.classList.remove('tele-highlight-flash');
+      void el.offsetWidth;
+      el.classList.add('tele-highlight-flash');
+    }
+
+    function _resetOuterScrollLocks() {
+      if (typeof window.scrollTo === 'function') window.scrollTo(0, 0);
+      if (document.documentElement) document.documentElement.scrollTop = 0;
+      if (document.body) document.body.scrollTop = 0;
+      const ws = document.getElementById('main-workspace');
+      if (ws) ws.scrollTop = 0;
+    }
+
+    function _scrollWithinContainer(containerEl, targetEl, alignCenter) {
+      _resetOuterScrollLocks();
+      if (!containerEl) return;
+      if (!targetEl || targetEl === containerEl) {
+        containerEl.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+      const cRect = containerEl.getBoundingClientRect();
+      const tRect = targetEl.getBoundingClientRect();
+      let desiredTop = containerEl.scrollTop + (tRect.top - cRect.top) - 12;
+      if (alignCenter) {
+        desiredTop = containerEl.scrollTop + (tRect.top - cRect.top) - Math.max(12, (cRect.height - tRect.height) / 2);
+      }
+      containerEl.scrollTo({ top: Math.max(0, desiredTop), behavior: 'smooth' });
+    }
+
+    function navigateTelemetryEvent(evId) {
+      const bundle = window.__PDE_BUNDLE__ || {};
+      const messages = (bundle.agent_system && bundle.agent_system.messages) || [];
+      const ev = messages.find(m => m.id === evId) || messages[messages.length - 1];
+      if (!ev) return;
+
+      const kind = ev.target_kind || 'agent';
+      const tid = String(ev.target_id || '');
+      const tag = String(ev.tag || '').toUpperCase();
+
+      // If currently in single-pane Agents, Discovery, or Telemetry view, ensure target pane is visible by switching to Split
+      if (kind === 'agent') {
+        if (currentWorkspaceMode === 'science' || currentWorkspaceMode === 'telemetry') {
+          setWorkspaceMode('split');
+        }
+        selectAgentNode(tid || 'science-program-lead');
+        _resetOuterScrollLocks();
+        _flashElement(document.getElementById('dock-inspector'));
+      } else if (kind === 'finding') {
+        if (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry') {
+          setWorkspaceMode('split');
+        }
+        openFindingByPath(tid);
+        _resetOuterScrollLocks();
+        _flashElement(document.getElementById('finding-reader-box'));
+      } else if (kind === 'artifact') {
+        if (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry') {
+          setWorkspaceMode('split');
+        }
+        openArtifactByPath(tid);
+        _resetOuterScrollLocks();
+        _flashElement(document.getElementById('active-viewer-box'));
+      } else if (kind === 'relay') {
+        if (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry') {
+          setWorkspaceMode('split');
+        }
+        switchSciTab('overview');
+        const overviewPane = document.getElementById('scitab-overview');
+        const relayCard = document.getElementById('overview-relays-card');
+        _scrollWithinContainer(overviewPane, relayCard, true);
+        _flashElement(relayCard || overviewPane);
+      } else {
+        if (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry') {
+          setWorkspaceMode('split');
+        }
+        switchSciTab('overview');
+        const overviewPane = document.getElementById('scitab-overview');
+        let targetCard = document.getElementById('overview-prompt-card');
+        if (tid.startsWith('program-state/') || tag === 'STATE') {
+          targetCard = document.getElementById('overview-pstate-card') || targetCard;
+        } else if (tid.startsWith('executive/') || tag === 'EXEC') {
+          targetCard = document.getElementById('overview-exec-card') || targetCard;
+        }
+        _scrollWithinContainer(overviewPane, targetCard, false);
+        _flashElement(targetCard || overviewPane);
+      }
     }
 
     function switchDockTab(tab) {
@@ -3254,7 +3885,12 @@
         b.classList.toggle('active', b.getAttribute('data-scitab') === tab);
       });
       if (tab === 'studio' && window.__ACTIVE_STUDIO_ART__) {
-        mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+        const box = document.getElementById('active-viewer-box');
+        if (box && box.children.length === 0) {
+          mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);
+        } else {
+          window.dispatchEvent(new Event('resize'));
+        }
       }
     }
 
@@ -3286,31 +3922,151 @@
       }
     }
 
-    function refreshAllFromBundle() {
+    function refreshAllFromBundle(isLiveUpdate) {
       const bundle = window.__PDE_BUNDLE__;
       if (!bundle) return;
       const prog = bundle.program || {};
       const m = prog.summary_metrics || {};
+      const sigs = window.__PDE_PREV_SIGS__;
 
       document.getElementById('hdr-program-name').textContent = prog.name || 'PDE Program';
-      document.getElementById('hdr-stage').textContent = prog.stage || 'Stage 0–1';
+      document.getElementById('hdr-stage').textContent = prog.stage || 'Stage 0-1';
       document.getElementById('kpi-agents').textContent = `${m.n_agents || 0} / ${m.n_work_orders || 0}`;
       document.getElementById('kpi-validation').textContent = `${m.validation_pass_rate ?? 100}%`;
       document.getElementById('kpi-artifacts').textContent = String(m.n_artifacts || 0);
       document.getElementById('kpi-findings').textContent = String(m.n_findings || 0);
       document.getElementById('kpi-relays').textContent = `${m.n_relays_addressed || 0} / ${m.n_relays || 0}`;
 
-      renderAgentGraph();
-      renderInspector();
-      renderMessagesAndRoles();
-      renderRetrosAndEnv();
-      renderOverviewTab();
-      renderFindingsTab();
-      renderStudioTab();
+      const nodes = (bundle.agent_system && bundle.agent_system.nodes) || [];
+      const leases = (bundle.agent_system && bundle.agent_system.leases) || [];
+      const messages = (bundle.agent_system && bundle.agent_system.messages) || [];
+      const retros = (bundle.agent_system && bundle.agent_system.retrospectives) || [];
+      const sci = bundle.science || {};
+      const findings = sci.findings || [];
+      const artifacts = sci.artifacts || [];
+
+      // 1. Agent Graph & Inspector (differential)
+      const nodesSig = JSON.stringify(nodes.map(n => [n.id, n.state, n.parentId, n.validation && n.validation.result, n.correction_cycle])) + JSON.stringify(leases);
+      if (!isLiveUpdate || sigs.nodes !== nodesSig) {
+        const prevNodeCount = sigs.nodeCount || 0;
+        sigs.nodes = nodesSig;
+        sigs.nodeCount = nodes.length;
+        if (isDragging) {
+          deferredGraphRender = true;
+        } else {
+          renderAgentGraph();
+          if (isLiveUpdate && nodes.length > prevNodeCount && prevNodeCount > 0) {
+            fitGraphToScreen();
+          }
+        }
+        renderInspector();
+      }
+
+      // 2. Messages & Telemetry Stream (differential)
+      const msgsSig = `${messages.length}:${messages.length ? messages[messages.length - 1].id : ''}`;
+      if (!isLiveUpdate || sigs.msgs !== msgsSig) {
+        const prevMsgCount = sigs.msgCount || 0;
+        const deltaMsgs = Math.max(0, messages.length - prevMsgCount);
+        sigs.msgs = msgsSig;
+        sigs.msgCount = messages.length;
+        renderMessagesAndRoles();
+        renderInspector();
+        renderTelemetryConsole(!isLiveUpdate);
+        if (currentWorkspaceMode === 'telemetry') {
+          renderTelemetryFullView(!isLiveUpdate);
+        } else if (isLiveUpdate && deltaMsgs > 0) {
+          const drawer = document.getElementById('telemetry-drawer');
+          if (drawer && drawer.getAttribute('data-drawer-state') === 'ticker') {
+            unreadTelemetryCount += deltaMsgs;
+            _updateBadge('badge-telemetry-new', unreadTelemetryCount);
+          }
+        }
+      }
+
+      // 3. Retrospectives & Environment (differential)
+      const retrosSig = JSON.stringify(retros.map(r => [r.source_path, r.updated_at]));
+      if (!isLiveUpdate || sigs.retros !== retrosSig) {
+        sigs.retros = retrosSig;
+        renderRetrosAndEnv();
+      }
+
+      // 4. Overview Tab (differential)
+      const overviewSig = JSON.stringify([
+        prog.user_prompt,
+        sci.executive && sci.executive.html,
+        sci.mandatory_relays,
+        sci.triage_and_gates,
+        (sci.program_state || []).map(p => [p.name, p.html && p.html.length])
+      ]);
+      if (!isLiveUpdate || sigs.overview !== overviewSig) {
+        sigs.overview = overviewSig;
+        renderOverviewTab();
+      }
+
+      // 5. Findings Tab (preserve reader scroll and active finding unless active finding changed)
+      const findingsListSig = JSON.stringify(findings.map(f => [f.id, f.state, f.revision, (f.source_citations || []).length]));
+      const activeFindingObj = findings.find(f => f.id === selectedFindingId) || findings[0];
+      const activeFindingSig = activeFindingObj ? `${activeFindingObj.id}:${activeFindingObj.state}:${(activeFindingObj.html || '').length}` : 'none';
+      if (!isLiveUpdate || sigs.findingsList !== findingsListSig || sigs.activeFinding !== activeFindingSig) {
+        const prevFindingsCount = sigs.findingsCount || 0;
+        const deltaFindings = Math.max(0, findings.length - prevFindingsCount);
+        const onlyListChanged = isLiveUpdate && sigs.activeFinding === activeFindingSig && sigs.findingsList !== findingsListSig && prevFindingsCount > 0;
+        sigs.findingsList = findingsListSig;
+        sigs.activeFinding = activeFindingSig;
+        sigs.findingsCount = findings.length;
+        if (onlyListChanged) {
+          renderFindingsNavOnly();
+        } else {
+          renderFindingsTab();
+        }
+        if (isLiveUpdate && deltaFindings > 0 && (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry')) {
+          unreadDiscoveryCount += deltaFindings;
+          _updateBadge('badge-discovery-new', unreadDiscoveryCount);
+        }
+      }
+
+      // 6. Interactive Viewers Studio (NEVER destroy active 3Dmol.js WebGL camera or Plotly chart if only sidebar list changed!)
+      const studioListSig = JSON.stringify(artifacts.map(a => [a.id, a.verdict, a.sha256]));
+      const activeArtObj = artifacts.find(a => a.id === selectedArtifactId) || artifacts[0];
+      const activeArtSig = activeArtObj ? `${activeArtObj.id}:${activeArtObj.sha256 || ''}:${activeArtObj.verdict || ''}` : 'none';
+      if (!isLiveUpdate || sigs.studioList !== studioListSig || sigs.activeArt !== activeArtSig) {
+        const prevArtCount = sigs.artCount || 0;
+        const deltaArt = Math.max(0, artifacts.length - prevArtCount);
+        const onlyListChanged = isLiveUpdate && sigs.activeArt === activeArtSig && sigs.studioList !== studioListSig && prevArtCount > 0;
+        sigs.studioList = studioListSig;
+        sigs.activeArt = activeArtSig;
+        sigs.artCount = artifacts.length;
+        if (onlyListChanged) {
+          renderStudioListOnly();
+        } else {
+          renderStudioTab();
+        }
+        if (isLiveUpdate && deltaArt > 0 && (currentWorkspaceMode === 'agentic' || currentWorkspaceMode === 'telemetry')) {
+          unreadDiscoveryCount += deltaArt;
+          _updateBadge('badge-discovery-new', unreadDiscoveryCount);
+        }
+      }
     }
 
-    // Pan & Zoom mouse handlers on SVG stage
-    (function initGraphInteractions() {
+    // Coalesce rapid SSE updates into at most 1 render pass per animation frame
+    let __pdeRafPending = false;
+    let __pdeLatestBundle = null;
+    function scheduleLiveRefresh(newBundle) {
+      __pdeLatestBundle = newBundle;
+      if (!__pdeRafPending) {
+        __pdeRafPending = true;
+        window.requestAnimationFrame(() => {
+          __pdeRafPending = false;
+          if (__pdeLatestBundle) {
+            window.__PDE_BUNDLE__ = __pdeLatestBundle;
+            refreshAllFromBundle(true);
+          }
+        });
+      }
+    }
+
+    // Pan & Zoom mouse handlers on SVG stage + Telemetry auto-pause handlers
+    (function initInteractions() {
       const stage = document.getElementById('graph-stage');
       stage.addEventListener('mousedown', (e) => {
         if (e.target.closest('.agent-node-group')) return;
@@ -3324,7 +4080,15 @@
         panY = e.clientY - dragStartY;
         applySvgTransform();
       });
-      window.addEventListener('mouseup', () => { isDragging = false; });
+      window.addEventListener('mouseup', () => {
+        if (isDragging) {
+          isDragging = false;
+          if (deferredGraphRender) {
+            deferredGraphRender = false;
+            renderAgentGraph();
+          }
+        }
+      });
       stage.addEventListener('wheel', (e) => {
         e.preventDefault();
         zoomGraph(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
@@ -3335,36 +4099,76 @@
         if (e.key === 't' || e.key === 'T') toggleOrientation();
         if (e.key === 'f' || e.key === 'F') fitGraphToScreen();
       });
+
+      // Telemetry hover & scroll-up auto-pause so clicking a moving line never misses
+      ['tele-drawer-stream', 'tele-full-stream'].forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('mouseenter', () => {
+          _setTelePausedState(true);
+        });
+        el.addEventListener('mouseleave', () => {
+          const atBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 36;
+          if (atBottom) {
+            resumeTelemetryStream();
+          }
+        });
+        el.addEventListener('scroll', () => {
+          const atBottom = (el.scrollHeight - el.scrollTop - el.clientHeight) < 36;
+          if (!atBottom) {
+            _setTelePausedState(true);
+          } else if (telePaused) {
+            resumeTelemetryStream();
+          }
+        });
+      });
     })();
 
-    // Connect to Live SSE (/api/stream) if served via `pde dashboard serve`
+    // Connect to Live SSE (/api/stream) with automatic reconnection
+    let __pdeEventSource = null;
+    let __pdeReconnectTimer = null;
     function initLiveSseIfAvailable() {
-      if (window.location.protocol.startsWith('http')) {
-        try {
-          const es = new EventSource('/api/stream');
-          es.onopen = () => {
-            const b = document.getElementById('conn-badge');
-            b.classList.add('live');
-            document.getElementById('conn-text').textContent = 'LIVE SSE';
-          };
-          es.onmessage = (ev) => {
-            try {
-              const msg = JSON.parse(ev.data);
-              if (msg.type === 'bundle_updated' && msg.bundle) {
-                window.__PDE_BUNDLE__ = msg.bundle;
-                refreshAllFromBundle();
-              }
-            } catch (_e) {}
-          };
-          es.onerror = () => {
-            es.close();
-          };
-        } catch (_e) {}
+      if (!window.location.protocol.startsWith('http')) return;
+      if (__pdeEventSource) {
+        try { __pdeEventSource.close(); } catch (_e) {}
+        __pdeEventSource = null;
       }
+      try {
+        const es = new EventSource('/api/stream');
+        __pdeEventSource = es;
+        es.onopen = () => {
+          const b = document.getElementById('conn-badge');
+          if (b) b.classList.add('live');
+          const txt = document.getElementById('conn-text');
+          if (txt) txt.textContent = 'LIVE SSE (0.0.0.0)';
+        };
+        es.onmessage = (ev) => {
+          try {
+            const msg = JSON.parse(ev.data);
+            if (msg.type === 'bundle_updated' && msg.bundle) {
+              scheduleLiveRefresh(msg.bundle);
+            }
+          } catch (_e) {}
+        };
+        es.onerror = () => {
+          const b = document.getElementById('conn-badge');
+          if (b) b.classList.remove('live');
+          const txt = document.getElementById('conn-text');
+          if (txt) txt.textContent = 'RECONNECTING...';
+          try { es.close(); } catch (_e) {}
+          __pdeEventSource = null;
+          if (!__pdeReconnectTimer) {
+            __pdeReconnectTimer = setTimeout(() => {
+              __pdeReconnectTimer = null;
+              initLiveSseIfAvailable();
+            }, 1500);
+          }
+        };
+      } catch (_e) {}
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      refreshAllFromBundle();
+      refreshAllFromBundle(false);
       setTimeout(fitGraphToScreen, 60);
       initLiveSseIfAvailable();
     });

@@ -115,8 +115,8 @@ prevent.
 The tool exists because of this failure mode. Searching
 ClinicalTrials.gov for "PALOMA-3" returns two real trials:
 
-1. NCT05388669 — Janssen, lazertinib + amivantamab (NSCLC)
-2. NCT01942135 — Pfizer, palbociclib + fulvestrant (breast)
+1. NCT05388669 — lazertinib + amivantamab study (NSCLC)
+2. NCT01942135 — palbociclib + fulvestrant study (breast)
 
 The wrong one was returned first when this was tested. NCT01942135's `acronym` field is null;
 the name appears only in its title. A resolver that picked the top hit

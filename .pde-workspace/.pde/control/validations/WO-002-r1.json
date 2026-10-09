@@ -2,7 +2,7 @@
   "work_order_id": "WO-002",
   "work_order_revision": 1,
   "run_id": "RUN-002",
-  "validated_at": "2026-10-08T19:43:56Z",
+  "validated_at": "2026-10-09T18:25:02Z",
   "cli_version": "0.3.0",
   "result": "pass",
   "checks": [

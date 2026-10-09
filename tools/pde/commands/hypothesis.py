@@ -258,7 +258,7 @@ def adopt(
         raise ArtifactError(
             f"hypothesis file not found: {file}",
             detail=f"looked in {Path.cwd()} and {project.root}",
-            remedy="pass an absolute path to the hypothesis set file",
+            remedy="pass a project-relative path to the hypothesis set file",
         )
     source = source.resolve()
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)

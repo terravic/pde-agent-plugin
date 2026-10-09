@@ -1,6 +1,7 @@
 name: KRAS-G12D-Selective-Inhibitor
+user_prompt: "Run a multi-disciplinary Stage 2 Hit-to-Lead discovery campaign for a selective non-covalent KRAS G12D Switch-II pocket inhibitor (MRTX1133 series) in pancreatic ductal adenocarcinoma (PDAC): evaluate human genetics, 3D Switch-II pocket druggability and docking poses, medicinal chemistry SAR and ADMET/PK/tox margins, and bypass resistance hypotheses."
 target: KRAS (G12D)
 uniprot_id: P01116
 indication: Pancreatic Ductal Adenocarcinoma (PDAC)
-stage: Stage 2 — Hit-to-Lead & Switch-II Optimization
+stage: Stage 2 - Hit-to-Lead & Switch-II Optimization
 cycle: 2

@@ -10,11 +10,24 @@ Pharmakon Discovery Engine (`pde-agent-plugin`) is a multi-agent pre-clinical dr
 
 When installed in an AI agent workspace, the Pharmakon Discovery Engine acts as a coordinated pre-clinical research team. You do not need to write code or run terminal commands to use it. You can ask questions in plain English, and the agent automatically selects the appropriate scientific databases, runs the analysis, checks the data for accuracy, and updates the visual dashboard.
 
-### How to Start a Research Task
+### How to Prompt the Skill in an Agent Harness and Watch Live Dashboard Updates
 
-Type your question or research goal directly into the chat interface of your agent workspace. The system automatically detects whether your question is about a biological target, a chemical compound, a clinical trial landscape, or a full multi-disciplinary drug discovery program.
+When you use this repository inside an AI agent harness, you can watch the entire scientific workflow unfold visually in your browser while the agent harness is still working:
 
-### Real-World Examples
+1. **Step 1 -- Enter Your Prompt in the Agent Harness Chat**:
+   Type your scientific question or campaign goal in plain English directly into the chat prompt of your agent harness (for example, evaluating a gene target, profiling a compound SMILES, or running a multi-disciplinary target nomination review). The agent harness automatically activates the root skill (`SKILL.md` / `skills/pharmakon-discovery-engine/SKILL.md`).
+2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`)**:
+   As its very first action—before running long scientific computations or spawning specialist subagents—the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
+   - Initializes the active workspace (`.pde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pde-workspace/.pde/program.yaml` and `.pde-workspace/.pde/control/events.ndjson`.
+   - Builds the initial `dashboard.html` showing the `User Prompt` root node connected to the `Science Program Lead` orchestrator.
+   - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to `http://0.0.0.0:8765` (`http://127.0.0.1:8765` locally) and prints the live URL in the chat response.
+3. **Step 3 -- Open `http://0.0.0.0:8765` in Your Browser and Watch Real-Time Progress**:
+   Open `http://0.0.0.0:8765` (or `http://127.0.0.1:8765` on the same machine) right away. Even when your agent harness UI displays `"Thinking..."` while specialist subagents and CLI tools are running in the background, the browser dashboard self-updates every 0.5 seconds via SSE without freezing your cursor, 3D camera, charts, or scroll position:
+   - **In the `Split` and `Agents` Views**: Watch new specialist subagents (`computational-biologist`, `structural-biologist`, `medicinal-chemist`, `admet-dmpk-scientist`, `finding-validator`, `scientific-reviewer`, etc.) appear in the **Agent Lineage Forest** as Work Orders (`WO-001`, `WO-002`, ...) are dispatched, see their status badges transition from `running` to `mechanically_validated` and `scientifically_accepted`, and inspect inter-agent messages.
+   - **In the `Split` and `Discovery` Views**: Watch the **20 Scientific Studios** (3D protein structures, binding pockets, docking poses, ADMET radar plots, gnomAD constraint, tissue expression, hypothesis ELO tournaments) and **Layer 1-4 Markdown Reports** populate automatically as each Phase 1 + Phase 2 tool pair finishes.
+   - **In the `Live Telemetry Console` (Bottom Terminal Drawer & 4th `Telemetry` View)**: Watch a live terminal stream of every event (`PROMPT`, `WO`, `RUN`, `AGENT:MSG`, `TOOL:RUN`, `TOOL:DONE`, `PHASE 1`, `PHASE 2`, `FINDING`, `10-CHECK`), hover or scroll up to automatically pause auto-scrolling, and click any one-liner event to jump directly to the corresponding Agent node, Discovery Studio, or Finding report.
+
+### Real-World Prompt Examples
 
 #### Example 1: Evaluating Whether a Gene Is a Viable Drug Target
 If you are exploring a gene (such as `EGFR`, `KRAS`, or `PCSK9`) and want to know if it is linked to human disease, whether inhibiting it is tolerated in humans, and where it is expressed across healthy organs:
@@ -24,10 +37,11 @@ Evaluate EGFR as a therapeutic target for non-small cell lung cancer. Check huma
 ```
 
 **What the system does:**
+- Bootstraps the live session on `http://0.0.0.0:8765` with target `EGFR` and indication `NSCLC`.
 - Queries human genetics databases (gnomAD, Open Targets, ClinVar, GWAS Catalog) to verify disease links and loss-of-function constraint.
 - Queries the Human Protein Atlas and GTEx to measure RNA expression across 50 human tissues.
 - Retrieves 3D protein structures from the AlphaFold Database and evaluates per-residue structural confidence.
-- Produces a cited summary report and updates `dashboard.html` with interactive genetic constraint, tissue expression, and 3D protein structure studios.
+- Produces a cited summary report and updates `dashboard.html` in real time with interactive genetic constraint, tissue expression, and 3D protein structure studios.
 
 #### Example 2: Checking a Chemical Molecule's Drug-Likeness and Safety Profile
 If you have a chemical structure (represented as a SMILES text string or a compound name/ID) and want to check its physical properties, potential toxicity flags, and how the body might process it:
@@ -91,25 +105,123 @@ Run our proprietary CNS blood-brain barrier scoring script (examples/byoa/propri
 - Computes SHA-256 cryptographic hashes of both your private input file and your algorithm file in the `.meta.json` provenance sidecar (proving which version of your algorithm produced the numbers without copying your source code into reports).
 - Runs offline Phase 2 evaluation (`pde custom analyze`) to classify each candidate (`PASS`, `WARN`, `FAIL`) and attaches mandatory external-algorithm and threshold caveats.
 
-### Viewing Your Results in the Interactive Dashboard
+### Managing and Navigating the Live Interactive Dashboard (`http://0.0.0.0:8765`)
 
-After any task completes, open `dashboard.html` (located in the project root directory) in any web browser, or run the local live-streaming server:
+While the skill automatically starts the background live server when prompted, you can also start, check, or stop the server or log custom inter-agent messages manually at any time:
 
 ```bash
-./bin/pde dashboard serve --port 8765
+# Start or update the non-blocking background server on 0.0.0.0:8765
+./bin/pde dashboard start --prompt "Evaluate EGFR in NSCLC" --host 0.0.0.0 --port 8765
+
+# Check whether the background server is listening and which workspace it is tracking
+./bin/pde dashboard status
+
+# Record an explicit inter-agent communication event in the live stream
+./bin/pde dashboard message --from science-program-lead --to structural-biologist \
+  --summary "Prioritize Switch-II pocket druggability on PDB 7RT2"
+
+# Stop the background server
+./bin/pde dashboard stop
 ```
 
-When opened directly as a file, the header displays `STANDALONE SNAPSHOT`, meaning all data and charts are embedded inside the HTML file for offline viewing. When opened through `./bin/pde dashboard serve`, the indicator switches to `LIVE STREAM (SSE)` and automatically refreshes the browser whenever an agent updates the workspace.
+You can also open `dashboard.html` (located in the project root directory or inside `.pde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pde dashboard serve --host 0.0.0.0 --port 8765`. When connected to `http://0.0.0.0:8765`, the top bar displays `LIVE SSE (0.0.0.0)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect Plotly charts, expand accordions, and scroll through findings while new telemetry arrives.
 
-Inside `dashboard.html`, the interface is organized into two synchronized panes:
-1. **Left Pane (Multi-Agent Lineage & Control Plane)**:
-   - **Agent Forest**: An interactive diagram showing the orchestrator and specialist subagents, their live status, cursor-anchored zoom controls, and a node inspector drawer displaying frozen context snapshots, acceptance criteria, and the 10-check validation scorecard.
+Inside `dashboard.html`, the top-bar mode switcher provides **4 synchronized views** (`Split` | `Agents` | `Discovery` | `Telemetry`) plus a persistent collapsible **Live Telemetry Console** at the bottom of `Split`, `Agents`, and `Discovery` views:
+1. **Left Pane (`Split` & `Agents` Views -- Multi-Agent Lineage & Control Plane)**:
+   - **Agent Forest**: An interactive diagram showing the `User Prompt` root, the `Science Program Lead`, and all specialist subagents, their live status (`running`, `in_progress`, `mechanically_validated`, `scientifically_accepted`), cursor-anchored zoom controls, and a node inspector drawer displaying frozen context snapshots, acceptance criteria, recent inter-agent communications, and the 10-check validation scorecard.
    - **Work Orders, Runs, Leases, and Event Stream**: Filterable tables and timelines tracking every task dispatch, resource lock, validation check, and review cycle.
-2. **Right Pane (Scientific Studios, Dossiers & Governance)**:
+2. **Right Pane (`Split` & `Discovery` Views -- Scientific Studios, Dossiers & Governance)**:
+   - **Active Session Prompt & Discovery Charter**: Displays the user prompt that initiated the session alongside live program metrics.
    - **20 Scientific Studios**: Interactive visualizers for 3D protein structures, binding pockets, docking poses, residue contacts, pLDDT profiles, PAE matrices, gnomAD genetic constraint, tissue expression, multi-omics/variants/phenotypes, 2D chemical structures, BRICS fragments, medicinal chemistry rules/alerts/cliffs, ADMET radar plots, in vivo PK and DDI, bioactivity dose-response curves, preclinical toxicology margins, hypothesis ELO tournaments, clinical/patent landscapes, and raw JSON trees.
    - **Findings (L1), Program State (L2), Executive & Gates (L4)**: Rendered scientific reports with highlighted inline provenance citations and mandatory relay badges.
    - **Concepts / Assessments / Decisions**: Stage 0-4 therapeutic concept cards, domain assessment matrices, and gate decision packets.
    - **Retrospectives & Readiness**: Post-run retrospectives and an environment readiness matrix showing available CLI binaries, Python libraries, and API credentials.
+3. **Live Telemetry Console (Persistent Bottom Drawer + 4th `Telemetry` Full-Screen View)**:
+   - **Bottom Terminal Drawer**: Visible across `Split`, `Agents`, and `Discovery` views with `Ticker` (`38px`), `Console` (`210px`), and `Full View` toggles, category filter pills (`ALL`, `PROMPT`, `AGENT`, `TOOL`, `DATA`, `FINDING`, `GATE`), text search, and automatic hover/scroll pause (`[PAUSED - NEW EVENTS STREAMING | Resume Auto-Scroll]`) so moving lines never jump while you read or click.
+   - **4th `Telemetry` View**: Full-screen **Mission Telemetry & Live Status Board** combining a left column of Active Agents & In-Flight Work Orders, a center live terminal stream, and a right contextual detail inspector.
+   - **One-Click Deep Navigation**: Clicking any one-liner in the telemetry stream automatically opens the corresponding Agent Lineage Inspector, Layer 0 Scientific Studio viewer, Layer 1 Finding report, or 10-Check Validation Scorecard.
+
+---
+
+## Where the Skill, Subagents, Runtime Engine, and Output Artifacts Are Stored and Executed
+
+When the Pharmakon Discovery Engine is executed inside an AI agent harness, its skills, subagent definitions, CLI tools, and output artifacts follow a strict separation between **read-only plugin/tool definitions** and **tracked campaign workspace artifacts**. All paths below are relative to the repository root (`./`).
+
+### 1. Where the Skill and 22 Subagents Are Stored & Loaded by an Agent Harness
+
+The repository maintains canonical authoring templates in `skills/` and `templates/`, and compiles them via `pde_plugin/build_targets.py` into the standard `.agents/` plugin hierarchy discovered by agent harnesses:
+
+| Component | Source Path (Authoring) | Compiled Agent Harness Path (Loaded at Runtime) | Purpose |
+| :--- | :--- | :--- | :--- |
+| **Root Skill Entrypoint** | `SKILL.md` and `skills/pharmakon-discovery-engine/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/pharmakon-discovery-engine/SKILL.md` | Primary entrypoint loaded when a user prompts the skill; orchestrates session bootstrap, Work Orders, and dashboard updates. |
+| **Domain & Governance Skills (43 Skills)** | `skills/<skill-name>/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/<skill-name>/SKILL.md` (and `dist/skill-bundles/<skill-name>.zip`) | Domain-specific instructions teaching agents exact two-phase `./bin/pde` CLI commands, thresholds, and mandatory relays. |
+| **Specialist Subagents (22 Roles)** | `templates/<role-name>/` | `.agents/plugins/pharmakon-discovery-engine/agents/pde-<role-name>.md` | Subagent definitions (`pde-science-program-lead`, `pde-computational-biologist`, `pde-structural-biologist`, `pde-medicinal-chemist`, `pde-computational-chemist`, `pde-admet-dmpk-scientist`, `pde-experimental-biologist`, `pde-preclinical-toxicologist`, `pde-regulatory-scientist`, `pde-finding-validator`, `pde-scientific-reviewer`, `pde-research-operations-controller`, `pde-head-of-discovery`, `pde-project-curator`, `pde-bootstrapper`, and 7 `pde-hypex-*` roles). |
+| **Scientific Integrity Rules** | `docs/tool-design-guidance.md` | `.agents/plugins/pharmakon-discovery-engine/rules/pde-scientific-integrity.md` | Always-on governance rules enforcing the Two-Phase Execution Invariant, Layer 0 SHA-256 provenance, mandatory relays, and dashboard synchronization. |
+| **Plugin & MCP Manifests** | `pde_plugin/build_targets.py` | `.agents/plugins.json`, `.agents/plugins/pharmakon-discovery-engine/plugin.json`, and `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | Registers the plugin, skills, subagents, and JSON-RPC 2.0 MCP server (`pde_plugin/mcp_server.py`) with the agent harness. |
+
+### 2. How the Skill, Subagents, and CLI Engine Execute at Runtime
+
+When you submit a prompt in the agent harness, execution flows through four layers without bogging down the LLM with manual telemetry calls:
+
+1. **Session Bootstrap (`skills/pharmakon-discovery-engine/scripts/start_live_session.py`)**:
+   The primary skill agent runs `start_live_session.py` (or `pde_bootstrap_session` via MCP / `./bin/pde dashboard start`), which initializes `.pde-workspace/` (or a custom `--project <dir>`), writes `.pde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`.
+2. **Work-Order Dispatch & Subagent Invocation (`skills/pharmakon-discovery-engine/scripts/dispatch_workorder.py`)**:
+   For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pde-<role-name>`) in the agent harness.
+3. **Deterministic Two-Phase CLI Execution (`./bin/pde` -> `.venv` + `tools/pde/`)**:
+   Each specialist subagent executes `./bin/pde <domain> <phase1-cmd>` followed immediately by `./bin/pde <domain> analyze`. The `./bin/pde` wrapper activates the local Python virtual environment (`.venv`) and dispatches to `tools/pde/cli.py` and `tools/pde/commands/<domain>.py` (or `bin/hypex`, `bin/elo`, and `bin/prox` for hypothesis tournaments).
+4. **Zero-Overhead Passive Telemetry Capture (`tools/pde/common.py` & `tools/pde/commands/dashboard.py`)**:
+   - **CLI Hook**: Every non-exempt domain command is wrapped by `enforce_phase_two()` in `tools/pde/common.py`, which automatically appends `tool.started` (`TOOL:RUN`), `tool.completed` (`TOOL:DONE`), and `tool.failed` (`TOOL:ERR`) events (with duration and argument previews) into `.pde-workspace/.pde/control/events.ndjson`.
+   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html`.
+
+### 3. Where Output Artifacts, Control State, and Dashboard Files Are Stored (`.pde-workspace/`)
+
+By default, all runtime state and scientific outputs are stored in `.pde-workspace/` (or in any custom campaign directory initialized with `./bin/pde init <workspace-dir>` and passed via `--project <workspace-dir>` or `$PDE_PROJECT`):
+
+```text
+.pde-workspace/                                  # Active campaign workspace root (default)
+|-- active-project.json                          # Repo-relative pointer to the currently active workspace
+|-- dashboard.html                               # Workspace-local standalone interactive HTML dashboard
+|-- .pde/                                        # Control plane, configuration, and telemetry store
+|   |-- program.yaml                             # Active user prompt, program name, target, indication, stage
+|   |-- thresholds.yaml                          # Frozen scientific decision thresholds for Phase 2 analysis
+|   |-- scratchpad/                              # Ephemeral specialist working notes
+|   '-- control/
+|       |-- events.ndjson                        # Append-only chronological telemetry log (prompts, WOs, runs, CLI tools, messages)
+|       |-- dashboard-server.json                # Background HTTP/SSE server PID, host (0.0.0.0), port (8765), and URL state
+|       |-- work-orders/                         # YAML records for dispatched Work Orders (WO-001.yaml, ...)
+|       |-- runs/                                # Execution run records and retry lineage (RUN-001.yaml, ...)
+|       |-- contexts/                            # Frozen input context snapshots (CTX-001.json, ...)
+|       |-- leases/                              # Active/released write-path resource locks
+|       |-- validations/                         # 10-check mechanical validation scorecards (WO-001.json, ...)
+|       |-- concepts/                            # Control-plane Stage 0-1 therapeutic concept records
+|       |-- assessments/                         # Control-plane domain assessment records
+|       |-- decisions/                           # Control-plane gate decision records
+|       '-- snapshots/                           # Frozen gate policy snapshots
+|-- raw/                                         # LAYER 0: Machine-generated raw data + cryptographic sidecars
+|   |-- genetics/                                # e.g., EGFR.gnomad-constraint.json + .meta.json + .analysis.json
+|   |-- expression/                              # e.g., EGFR.tissue.json + .meta.json + .analysis.json
+|   |-- structures/                              # e.g., AF-P00533-F1-model_v4.cif, .pae.json, .pockets.json + sidecars
+|   |-- compounds/                               # e.g., erlotinib.descriptors.json, .3d.sdf, .brics.json + sidecars
+|   |-- admet/                                   # e.g., erlotinib.predict.json + .meta.json + .analysis.json
+|   |-- docking/                                 # e.g., poses.pdbqt, docking_result.json, contacts.json + sidecars
+|   |-- bioactivity/                             # e.g., HTS dose-response, selectivity panels, private CSV ingests + sidecars
+|   |-- pk/                                      # e.g., Non-compartmental PK, allometric scaling, DDI predictions + sidecars
+|   |-- tox/                                     # e.g., Repeat-dose NOAEL margins, genotoxicity batteries + sidecars
+|   |-- mpo/                                     # e.g., Multi-parameter optimization & BYOA custom algorithm outputs + sidecars
+|   '-- hypotheses/                              # e.g., Co-Scientist / Hypex ELO tournament corpora + sidecars
+|-- findings/                                    # LAYER 1: Validated specialist Markdown reports (with {source:...} & Relays)
+|-- program-state/                               # LAYER 2: Living program state maintained by Science Program Lead
+|   |-- active-series.md                         # Current chemical series and target status
+|   |-- liability-tracker.md                     # Tracked safety, ADMET, and structural liabilities
+|   |-- decision-log.md                          # Chronological log of accepted findings and program decisions
+|   '-- open-questions.md                        # Unresolved scientific questions queued for next Work Orders
+|-- concepts/                                    # LAYER 3: Human-readable therapeutic concept cards
+|-- assessments/                                 # LAYER 3: Structured domain assessment summaries
+|-- decisions/                                   # LAYER 3: Stage gate decision memos
+|-- gates/                                       # LAYER 3: Stage 1-3 nomination and transition gate packages
+|-- executive/                                   # LAYER 4: Executive synthesis (executive/program-summary.md)
+'-- retrospectives/                              # Post-run operational retrospectives and environment audits
+```
 
 ---
 
@@ -149,7 +261,10 @@ All paths below are relative to the repository root (`./`):
 |-- skills/
 |   |-- pharmakon-discovery-engine/
 |   |   |-- SKILL.md                             # Primary orchestrator skill instructions
-|   |   |-- scripts/                             # Work-order dispatch and CLI runner helpers
+|   |   |-- scripts/
+|   |   |   |-- start_live_session.py            # Prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
+|   |   |   |-- dispatch_workorder.py            # Atomic work-order intake and specialist brief generator
+|   |   |   '-- pde_runner.py                    # Portable CLI execution wrapper
 |   |   '-- references/
 |   |       |-- role-skill-matrix.md             # Mapping of 22 specialist roles to 43 skills
 |   |       '-- stage0-3-playbook.md             # Stage 0-3 decision gates and deliverable checklist
@@ -216,8 +331,14 @@ All paths below are relative to the repository root (`./`):
 |   |-- project-curator/                         # Dossier site and dashboard curator
 |   '-- hypex-*/                                 # 7 hypothesis exploration tournament worker templates
 |-- tools/
+|   |-- bootstrap-preflight.sh                   # Host prerequisite check script (Python 3.11+, venv/uv, Go)
+|   |-- install.sh                               # Cross-platform environment and binary provisioner
+|   |-- bin/                                     # Self-contained tool binary directory (pde, hypex, elo, prox)
 |   |-- env-manifest.txt                         # Canonical environment manifest hashed into ENV_VERSION
 |   |-- ENV_VERSION                              # SHA-256 environment digest stamped into sidecars
+|   |-- ENV_HISTORY                              # Chronological log of stamped environment digests
+|   |-- ENV_SOURCE                               # Provenance metadata for the active environment stamp
+|   |-- manifests/                               # Historical environment manifest snapshots by SHA-256
 |   |-- requirements.lock                        # Locked Python package versions
 |   |-- pde/
 |   |   |-- cli.py                               # Click CLI entrypoint (42 command groups + extension loader)
@@ -244,8 +365,11 @@ All paths below are relative to the repository root (`./`):
 |   |-- alphafold-complex-prediction.md          # Multi-chain complex prediction reference
 |   |-- quickstart-pilot.md                      # Campaign initialization and operations guide
 |   |-- pilot-handoff.md                         # Operational calibration notes
+|   |-- hypex-integration.md                     # Hypothesis exploration subsystem integration notes
 |   '-- code-of-conduct.md                       # Contributor code of conduct
+|-- .pde-workspace/                              # Reference pre-clinical campaign workspace (Layer 0-4 artifacts)
 |-- .agents/
+|   |-- plugins.json                             # Agent harness plugin registry manifest
 |   '-- plugins/
 |       '-- pharmakon-discovery-engine/          # Compiled agent harness plugin directory
 |-- dist/
@@ -263,7 +387,7 @@ All paths below are relative to the repository root (`./`):
 
 ## Bringing Your Own Private Data & Proprietary Algorithms (BYOA)
 
-Organizations and researchers frequently have private experimental datasets (in-house HTS screens, internal ADMET/PK tables, proprietary compound series) and proprietary computational models ("secret sauce" QSAR models, custom multiparameter scoring functions, compiled C++/Rust physics binaries, or local containers) that must remain strictly local.
+Organizations and researchers frequently have private experimental datasets (in-house HTS screens, internal ADMET/PK tables, proprietary compound series) and proprietary computational models (in-house QSAR models, custom multiparameter scoring functions, compiled C++/Rust physics binaries, or local containers) that must remain strictly local.
 
 PDE provides three extension mechanisms that preserve full cryptographic provenance (`.meta.json`), offline Phase 2 threshold evaluation (`.analysis.json`), and mechanical finding validation:
 
@@ -357,7 +481,7 @@ Every workflow executed by `pde-agent-plugin` enforces four scientific integrity
 
 ### 1. Environment Provisioning & Initialization (Ubuntu Linux & macOS)
 
-Whether you are running in **Antigravity on Ubuntu Linux** or **Gemini Enterprise on macOS**, run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI binaries (`bin/hypex`, `bin/elo`, `bin/prox`):
+Whether you are running on **Ubuntu Linux** or **macOS**, run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI binaries (`bin/hypex`, `bin/elo`, `bin/prox`):
 
 ```bash
 # 1. Check host prerequisites (python3>=3.11, venv/uv, optional go)
@@ -371,9 +495,9 @@ source ./bin/env.sh
 ./bin/pde doctor
 ```
 
-> **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux vs. macOS):**
-> - **macOS (Gemini Enterprise / Safari / Chrome):** Uses hardware-accelerated WebGL (`3Dmol.js`) for 3D molecular studios and `Plotly.js` for 2D scientific charts automatically.
-> - **Ubuntu Linux (Antigravity / Electron Webviews / Headless X11 or Wayland):** If hardware WebGL is disabled in the embedded Linux webview or external CDN scripts are restricted by Content Security Policy, `dashboard.html` automatically falls back to its built-in **Interactive HTML5 Canvas2D 3D Engine** (supporting drag-to-rotate, scroll-to-zoom, residue/atom hover inspection, and `Cartoon` / `Stick` / `Sphere` styles) and **Inline SVG Chart Renderer**. You can also manually switch between `Auto (WebGL/Canvas)` and `Canvas 3D` at any time using the **Engine** button in the 3D studio toolbar.
+> **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux & macOS):**
+> - **Desktop Browsers (macOS & Linux):** Uses hardware-accelerated WebGL (`3Dmol.js`) for 3D molecular studios and `Plotly.js` for 2D scientific charts automatically.
+> - **Headless or Embedded Linux Webviews (X11 / Wayland / Restricted CSP):** If hardware WebGL is disabled in the embedded webview or external CDN scripts are restricted by Content Security Policy, `dashboard.html` automatically falls back to its built-in **Interactive Software 3D Projection Engine** (supporting drag-to-rotate, scroll-to-zoom, residue/atom hover inspection, and `Cartoon` / `Stick` / `Sphere` styles) and **Inline SVG Chart Renderer**. You can also manually switch between `Auto (WebGL/Software)` and `Software 3D` at any time using the **Engine** button in the 3D studio toolbar.
 
 ### 2. Two-Phase CLI Examples
 
