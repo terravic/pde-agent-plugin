@@ -12,10 +12,12 @@
 
 """Stdio MCP Server for the Pharmakon Discovery Engine (`pde-engine`).
 
-Exposes the 4 portable tool bridge functions as MCP tools for any MCP-compatible
+Exposes the 6 portable tool bridge functions as MCP tools for any MCP-compatible
 agent harness:
+- ``pde_bootstrap_session``
 - ``pde_exec``
 - ``pde_dispatch_workorder``
+- ``pde_log_agent_message``
 - ``pde_validate_and_gate``
 - ``pde_render_dashboard``
 """
@@ -23,6 +25,8 @@ agent harness:
 from __future__ import annotations
 
 from typing import Any
+
+from mcp.types import ToolAnnotations
 
 try:
     from mcp.server.mcpserver import MCPServer
@@ -51,7 +55,14 @@ mcp = MCPServer(
 )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
 def pde_bootstrap_session(
     prompt: str,
     program_name: str | None = None,
@@ -73,7 +84,14 @@ def pde_bootstrap_session(
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=True,
+        idempotentHint=False,
+        openWorldHint=True,
+    )
+)
 def pde_exec(
     command: str,
     project_dir: str | None = None,
@@ -87,7 +105,14 @@ def pde_exec(
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
 def pde_dispatch_workorder(
     spec: dict[str, Any],
     project_dir: str | None = None,
@@ -96,7 +121,14 @@ def pde_dispatch_workorder(
     return _dispatch_workorder(spec=spec, project_dir=project_dir)
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
 def pde_log_agent_message(
     from_agent: str,
     to_agent: str,
@@ -114,7 +146,14 @@ def pde_log_agent_message(
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
 def pde_validate_and_gate(
     work_order_id: str,
     run_id: str | None = None,
@@ -128,7 +167,14 @@ def pde_validate_and_gate(
     )
 
 
-@mcp.tool()
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=True,
+        openWorldHint=False,
+    )
+)
 def pde_render_dashboard(
     project_dir: str | None = None,
     output_path: str | None = None,

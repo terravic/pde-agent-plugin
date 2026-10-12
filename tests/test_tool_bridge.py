@@ -232,5 +232,60 @@ def test_data_integrity_failure_halts_without_retry(tmp_path: Path) -> None:
     assert "source_tags_resolve" in gate["checks_failed"]
 
 
-def test_mcp_server_exposes_all_4_tools() -> None:
+async def test_mcp_server_exposes_all_6_tools_with_complete_boolean_annotations() -> None:
     assert mcp.name == "pde-engine"
+    tools = await mcp.list_tools()
+    by_name = {t.name: t for t in tools}
+
+    expected_hints = {
+        "pde_bootstrap_session": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pde_exec": {
+            "readOnlyHint": False,
+            "destructiveHint": True,
+            "idempotentHint": False,
+            "openWorldHint": True,
+        },
+        "pde_dispatch_workorder": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pde_log_agent_message": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pde_validate_and_gate": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pde_render_dashboard": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": False,
+        },
+    }
+
+    assert set(by_name.keys()) == set(expected_hints.keys())
+
+    for tool_name, expected in expected_hints.items():
+        tool = by_name[tool_name]
+        assert tool.annotations is not None, f"{tool_name} is missing ToolAnnotations"
+        dumped = tool.annotations.model_dump(by_alias=True, exclude_none=True)
+        for hint_key, expected_val in expected.items():
+            assert hint_key in dumped, f"{tool_name} missing {hint_key}"
+            assert isinstance(dumped[hint_key], bool), f"{tool_name}.{hint_key} must be bool"
+            assert dumped[hint_key] is expected_val, (
+                f"{tool_name}.{hint_key} expected {expected_val}, got {dumped[hint_key]}"
+            )
+

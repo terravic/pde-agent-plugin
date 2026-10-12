@@ -149,8 +149,8 @@ Language model agents operating on biomedical research tasks without determinist
 | Root Skill Discovery | `SKILL.md`, `skills/pharmakon-discovery-engine/SKILL.md` | Primary skill entrypoints loaded by agent harnesses to route domain requests and orchestrate work orders. |
 | Agent Harness Plugin | `.agents/plugins/pharmakon-discovery-engine/` | Compiled plugin directory containing `plugin.json`, `rules/pde-scientific-integrity.md`, 22 subagent definitions (`agents/*.md`), and 43 skills (`skills/`). |
 | Portable Skill Bundles | `dist/skill-bundles/*.zip` | Standalone zip archives for each skill with bundled reference documentation. |
-| Python Tool Bridge | `pde_plugin/tool_bridge.py` | Typed Python functions (`ALL_PDE_TOOLS`) wrapping `bin/pde` CLI commands for direct function-calling frameworks. |
-| MCP Server | `pde_plugin/mcp_server.py` | JSON-RPC 2.0 Model Context Protocol stdio server exposing all `pde_*` tools. |
+| Python Tool Bridge | `pde_plugin/tool_bridge.py` | Typed Python functions (`pde_bootstrap_session`, `pde_exec`, `pde_dispatch_workorder`, `pde_log_agent_message`, `pde_validate_and_gate`, `pde_render_dashboard`) wrapping `bin/pde` CLI commands and control-plane workflows. |
+| MCP Server | `pde_plugin/mcp_server.py`, `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | JSON-RPC 2.0 Model Context Protocol stdio server (`pde-engine` / `pde-mcp`) exposing all 6 `pde_*` tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`). |
 | CLI Engine | `bin/pde` (`tools/pde/cli.py`) | Click-based command-line interface implementing 42 domain and operational command groups plus dynamic extension loading. |
 | Environment Provisioner | `tools/bootstrap-preflight.sh`, `tools/install.sh`, `bin/env.sh` | Cross-platform host prerequisite checker and provisioner for `.venv`, `[science]` dependencies, `bin/hypex`, `bin/elo`, `bin/prox`, and `tools/ENV_VERSION` stamping on Ubuntu Linux and macOS. |
 | BYOA & Private Data Extension | `bin/pde custom` (`tools/pde/commands/custom.py`), `examples/byoa/` | Two-phase ingestion (`pde custom ingest`), proprietary algorithm execution (`pde custom run`), and offline evaluation (`pde custom analyze`) with SHA-256 data/code provenance. |
@@ -186,7 +186,7 @@ All scientific domain commands in `bin/pde` follow a mandatory two-phase executi
   - Whenever the `geometric` backend executes, `pde pocket run` emits the mandatory relay `pocket.geometric_fallback_backend` in `.pockets.meta.json` (propagated by `pde pocket analyze` into `.pocket.analysis.json`), and `pde doctor` classifies missing `fpocket` as a non-blocking `CAVEAT`.
 
 ### 4.3 Mechanical Validation Gate (`bin/pde validate check`)
-Before a specialist work order can transition from `submitted` to `mechanically_validated`, it must pass 10 automated checks:
+Building on the 4-layer hierarchy, before a specialist work order can transition from `submitted` to `mechanically_validated`, it must pass 10 automated checks:
 1. `deliverables_exist`: Deliverable files exist at the declared `findings/` paths.
 2. `report_headings`: Required YAML frontmatter and structured Markdown sections are present.
 3. `paths_resolve`: All declared `layer0_sources` and referenced files exist under `raw/`.
@@ -247,6 +247,18 @@ Running `bin/pde dashboard build --standalone` (or calling `pde_render_dashboard
      - `Concepts / Assessments / Decisions`: Stage 0-4 therapeutic concept cards (`concepts/`), domain assessment matrices (`assessments/`), and gate decision records (`decisions/`).
      - `Retrospectives & Readiness`: Specialist run retrospectives (`retrospectives/*.md`) and an environment readiness matrix reporting CLI binary status, Python library availability, and API credential configuration.
 
+### 4.6 Model Context Protocol (MCP) Server & Tool Annotations (`pde_plugin/mcp_server.py`)
+The stdio MCP server (`pde-engine`, registered via `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` and the `pde-mcp` console entrypoint) exposes 6 orchestration and execution tools backed by `pde_plugin/tool_bridge.py`. Every tool declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
+
+| MCP Tool Name | Handler Behavior | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| `pde_bootstrap_session` | Initializes `.pde/program.yaml` from the user prompt, logs `prompt.received`, builds `dashboard.html`, and starts/verifies the non-blocking HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
+| `pde_exec` | Executes any two-phase or control-plane `pde` CLI subcommand (`python -m pde.cli ...`) and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
+| `pde_dispatch_workorder` | Executes the 4-step Work Order intake ceremony (writes spec YAML, creates/commits `WO-###`, freezes context snapshot, acquires resource lease, starts `RUN-###`, and returns `specialist_brief`). | `false` | `false` | `false` | `false` |
+| `pde_log_agent_message` | Appends an inter-agent communication event (`agent.message`) to `.pde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
+| `pde_validate_and_gate` | Runs the 10-check mechanical validation gate (`pde validate check`) and routes to `PASSED` (releases leases), `CORRECTION_REQUIRED` (up to 2 retry cycles), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
+| `pde_render_dashboard` | Deterministically renders the standalone interactive `dashboard.html` from local workspace state without appending control events or calling external APIs. | `false` | `false` | `true` | `false` |
+
 ---
 
 ## 5. Non-Functional Requirements
@@ -264,5 +276,6 @@ The build and test suite (`tests/`) verifies:
 - `tests/test_custom_byoa.py`: Validates two-phase private CSV ingestion (`pde custom ingest`), proprietary Python algorithm execution (`pde custom run`), offline evaluation (`pde custom analyze`), relay attribution (`pde relays`), and dynamic Click extension loading.
 - `tests/test_pocket_geometric.py`: Validates the built-in Python/NumPy geometric pocket detector (`pde pocket run --backend [geometric|auto]`) and offline `pde pocket analyze` (global and `--near`) across PDB and mmCIF structures, `pocket.geometric_fallback_backend` relay propagation, and `pde docking prepare` grid-box compatibility.
 - `tests/test_targets_compile.py`: Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`.
-- `tests/test_tool_bridge.py`: Validates the two-phase execution lifecycle (`pde_genetics_profile`, `pde_compound_profile`, `pde_admet_predict`), Layer 0 sidecar generation, and MCP server tool registration.
+- `tests/test_tool_bridge.py`: Validates `pde_exec` CLI execution, `pde_dispatch_workorder` 4-step intake and single-flight resource lease locking, `pde_validate_and_gate` 10-check validation gate (mechanical correction loop and `DATA_INTEGRITY` immediate halt), `pde_render_dashboard` output, and `pde-engine` MCP server exposure of all 6 tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`).
 - `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pde-workspace/dashboard.html`, confirming all multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks (`bootstrap_ready`), cross-platform 3D (`canUseWebGL`, `renderSoftware3DMoleculeFallback`) and 2D (`renderPlotWithFallback`, `renderSvgChartFallback`) failover renderers, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios render from real Layer 0-4 artifacts.
+

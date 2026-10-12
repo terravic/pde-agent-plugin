@@ -163,6 +163,7 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     assert 'data-mode="telemetry"' in html_text
     assert 'id="telemetry-drawer"' in html_text
     assert 'id="telemetry-view"' in html_text
+    assert ':root[data-theme="light"] .lease-pill' in html_text
     assert agent_sys["environment"]["bootstrap_ready"] is True
     assert out_path == out_html
 

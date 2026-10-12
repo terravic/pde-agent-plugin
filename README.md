@@ -1,6 +1,6 @@
 # Pharmakon Discovery Engine (`pde-agent-plugin`)
 
-Pharmakon Discovery Engine (`pde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a deterministic two-phase command-line engine (`bin/pde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
+Pharmakon Discovery Engine (`pde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pde-engine` / `pde_plugin.mcp_server`) exposing 6 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
 
 ![Pharmakon Discovery Engine Skill Workflow and Dashboard Overview](assets/pde-skill-overview.png)
 
@@ -17,7 +17,7 @@ When you use this repository inside an AI agent harness, you can watch the entir
 1. **Step 1 -- Enter Your Prompt in the Agent Harness Chat**:
    Type your scientific question or campaign goal in plain English directly into the chat prompt of your agent harness (for example, evaluating a gene target, profiling a compound SMILES, or running a multi-disciplinary target nomination review). The agent harness automatically activates the root skill (`SKILL.md` / `skills/pharmakon-discovery-engine/SKILL.md`).
 2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`)**:
-   As its very first action—before running long scientific computations or spawning specialist subagents—the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
+   As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
    - Initializes the active workspace (`.pde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pde-workspace/.pde/program.yaml` and `.pde-workspace/.pde/control/events.ndjson`.
    - Builds the initial `dashboard.html` showing the `User Prompt` root node connected to the `Science Program Lead` orchestrator.
    - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to `http://0.0.0.0:8765` (`http://127.0.0.1:8765` locally) and prints the live URL in the chat response.
@@ -140,6 +140,102 @@ Inside `dashboard.html`, the top-bar mode switcher provides **4 synchronized vie
    - **Bottom Terminal Drawer**: Visible across `Split`, `Agents`, and `Discovery` views with `Ticker` (`38px`), `Console` (`210px`), and `Full View` toggles, category filter pills (`ALL`, `PROMPT`, `AGENT`, `TOOL`, `DATA`, `FINDING`, `GATE`), text search, and automatic hover/scroll pause (`[PAUSED - NEW EVENTS STREAMING | Resume Auto-Scroll]`) so moving lines never jump while you read or click.
    - **4th `Telemetry` View**: Full-screen **Mission Telemetry & Live Status Board** combining a left column of Active Agents & In-Flight Work Orders, a center live terminal stream, and a right contextual detail inspector.
    - **One-Click Deep Navigation**: Clicking any one-liner in the telemetry stream automatically opens the corresponding Agent Lineage Inspector, Layer 0 Scientific Studio viewer, Layer 1 Finding report, or 10-Check Validation Scorecard.
+
+---
+
+## Using the Built-In MCP Server (`pde-engine`)
+
+In addition to its 43 Markdown skills and `./bin/pde` CLI, this repository includes a built-in JSON-RPC 2.0 **Model Context Protocol (MCP) stdio server** (`pde-engine`) implemented in `pde_plugin/mcp_server.py` (backed by `pde_plugin/tool_bridge.py`). Any MCP-compatible agent harness or client can invoke PDE's session bootstrap, two-phase scientific CLI, work-order orchestration, inter-agent telemetry, 10-check validation gate, and dashboard builder directly as structured MCP tool calls.
+
+### 1. Connecting the MCP Server to an Agent Harness or MCP Client
+
+- **Automatic Plugin Registration (`.agents/`)**:
+  When this repository is opened in an agent harness that reads `.agents/plugins.json`, the plugin manifest (`.agents/plugins/pharmakon-discovery-engine/plugin.json`) automatically registers `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`.
+- **Manual `mcpServers` Configuration**:
+  Add the `pde-engine` entry to your MCP host configuration file (matching `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`, with paths relative to the repository root `./`):
+
+```json
+{
+  "mcpServers": {
+    "pde-engine": {
+      "command": ".venv/bin/python",
+      "args": [
+        "-m",
+        "pde_plugin.mcp_server"
+      ],
+      "cwd": ".",
+      "env": {
+        "PDE_ROOT": ".",
+        "PYTHONPATH": ".:./tools:./tools/vendor/hypex"
+      }
+    }
+  }
+}
+```
+
+*(If `.venv/bin` is on your `PATH`, you can also launch the server directly via the `pde-mcp` console entrypoint defined in `pyproject.toml`.)*
+
+### 2. Exposed MCP Tools & `ToolAnnotations`
+
+Every tool registered on `pde-engine` declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
+
+| MCP Tool Name | Parameters | Purpose & Return Value | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
+| :--- | :--- | :--- | :---: | :---: | :---: | :---: |
+| **`pde_bootstrap_session`** | `prompt: str`, `program_name?: str`, `stage?: int`, `project_dir?: str`, `host: str = "0.0.0.0"`, `port: int = 8765`, `start_server: bool = True` | Initializes `.pde/program.yaml` from the user's prompt, logs `prompt.received`, builds the initial `dashboard.html`, and starts/verifies the live HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
+| **`pde_exec`** | `command: str`, `project_dir?: str`, `auto_refresh_dashboard: bool = True` | Executes any `pde` CLI command (e.g., `"doctor --json"`, `"genetics fetch EGFR --json"`, `"genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json"`), parses JSON stdout/stderr, and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
+| **`pde_dispatch_workorder`** | `spec: dict[str, Any]`, `project_dir?: str` | Automates the 4-step Work Order intake ceremony: writes the spec YAML, creates and commits `WO-###`, freezes the context snapshot (`CTX-*`), acquires any non-standard resource lease, starts `RUN-###`, and returns the `specialist_brief`. | `false` | `false` | `false` | `false` |
+| **`pde_log_agent_message`** | `from_agent: str`, `to_agent: str`, `summary: str`, `work_order_id?: str`, `project_dir?: str` | Appends an explicit `agent.message` inter-agent communication event to `.pde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
+| **`pde_validate_and_gate`** | `work_order_id: str`, `run_id?: str`, `project_dir?: str` | Transitions the work order to `submitted`, runs the 10-check mechanical validator (`pde validate check`), and routes to `PASSED` (releases leases), `CORRECTION_REQUIRED` (up to 2 in-place retry cycles with `correction_prompt`), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
+| **`pde_render_dashboard`** | `project_dir?: str`, `output_path?: str` | Deterministically builds the self-contained interactive `dashboard.html` from the workspace's Layer 0-4 artifacts and control-plane records and returns summary metrics. | `false` | `false` | `true` | `false` |
+
+### 3. End-to-End MCP Tool Call Workflow
+
+Below is a typical sequence of MCP tool calls made by an agent harness during a discovery session:
+
+```python
+# 1. Bootstrap the live session and start the real-time dashboard on http://0.0.0.0:8765
+pde_bootstrap_session(
+    prompt="Evaluate EGFR target genetics and pocket druggability in NSCLC",
+    program_name="EGFR-NSCLC",
+    stage=1,
+)
+
+# 2. Execute a two-phase domain workflow via pde_exec (Phase 1 fetch -> Phase 2 analyze)
+pde_exec(command="genetics fetch EGFR --json")
+pde_exec(command="genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json")
+
+# 3. Dispatch a tracked multi-agent Work Order with an exclusive resource lease
+dispatch = pde_dispatch_workorder(
+    spec={
+        "decision_question": "Assess EGFR kinase domain pocket druggability.",
+        "requested_role": "structural-biologist",
+        "stage": 1,
+        "cycle": 1,
+        "resource_class": "af3",
+        "deliverables": {
+            "layer_0_classes": ["pde.pocket"],
+            "layer_1": ["findings/structural-biology/egfr-pockets.md"],
+        },
+    }
+)
+
+# 4. Log inter-agent coordination in the live telemetry stream
+pde_log_agent_message(
+    from_agent="science-program-lead",
+    to_agent="structural-biologist",
+    summary="Prioritize ATP-cleft and allosteric C-helix pocket druggability.",
+    work_order_id=dispatch["work_order_id"],
+)
+
+# 5. Run the 10-check mechanical validation gate and release the resource lease
+gate = pde_validate_and_gate(
+    work_order_id=dispatch["work_order_id"],
+    run_id=dispatch["run_id"],
+)
+
+# 6. Render the standalone interactive HTML dashboard
+pde_render_dashboard()
+```
 
 ---
 
