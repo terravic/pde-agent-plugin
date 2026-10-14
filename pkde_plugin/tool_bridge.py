@@ -91,7 +91,7 @@ def resolve_project_root(project_dir: str | Path | None = None) -> Path:
 
 
 def _build_env(project_root: Path) -> dict[str, str]:
-    """Construct portable environment variables for bin/env.sh."""
+    """Construct portable, hermetic environment variables for bin/env.sh."""
     env = os.environ.copy()
     env["PKDE_ROOT"] = str(REPO_ROOT)
     env["PKDE_PROJECT"] = str(project_root)
@@ -101,9 +101,9 @@ def _build_env(project_root: Path) -> dict[str, str]:
         str(TOOLS_DIR),
         str(VENDOR_HYPEX_DIR),
     ]
-    existing_py = env.get("PYTHONPATH", "")
-    if existing_py:
-        py_paths.append(existing_py)
+    extra_py = env.get("PKDE_EXTRA_PYTHONPATH", "").strip()
+    if extra_py:
+        py_paths.append(extra_py)
     env["PYTHONPATH"] = os.pathsep.join(py_paths)
 
     bin_paths = [str(REPO_ROOT / "bin")]

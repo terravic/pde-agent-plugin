@@ -400,6 +400,27 @@ trigger: always_on
     }
 
 
+def _sync_root_skill_resources(repo_root: Path) -> None:
+    """Keep top-level SKILL.md, scripts/, and references/ synced with skills/pharmakon-discovery-engine/."""
+    primary_skill_dir = repo_root / "skills" / "pharmakon-discovery-engine"
+    if not primary_skill_dir.is_dir():
+        return
+
+    root_skill_md = repo_root / "SKILL.md"
+    sub_skill_md = primary_skill_dir / "SKILL.md"
+    if root_skill_md.is_file():
+        shutil.copy2(root_skill_md, sub_skill_md)
+
+    for subdir_name in ("scripts", "references"):
+        src_dir = primary_skill_dir / subdir_name
+        dst_dir = repo_root / subdir_name
+        if src_dir.is_dir():
+            dst_dir.mkdir(parents=True, exist_ok=True)
+            for item in sorted(src_dir.iterdir()):
+                if item.is_file():
+                    shutil.copy2(item, dst_dir / item.name)
+
+
 def build_all_targets(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     """Compile all skills, agent plugin files, and packaged .zip skill bundles."""
     skills_dir = repo_root / "skills"
@@ -407,7 +428,9 @@ def build_all_targets(repo_root: Path = REPO_ROOT) -> dict[str, Any]:
     if skill_bundles_dir.exists():
         shutil.rmtree(skill_bundles_dir)
 
+    _sync_root_skill_resources(repo_root)
     sanitized = sanitize_and_fix_skills(skills_dir)
+    _sync_root_skill_resources(repo_root)
     plugin_result = build_agent_plugin(repo_root)
     packaged = package_all_skills_to_dir(skills_dir, skill_bundles_dir)
 

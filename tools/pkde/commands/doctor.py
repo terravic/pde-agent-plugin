@@ -811,17 +811,34 @@ def _check_pacing(report: Report) -> None:
         )
 
 
-def _check_gwas_catalog(report: Report) -> None:
+def _doctor_http_timeout() -> float:
+    try:
+        return float(os.environ.get("PKDE_DOCTOR_HTTP_TIMEOUT", "5"))
+    except ValueError:
+        return 5.0
+
+
+def _is_forced_offline() -> bool:
+    return os.environ.get("PKDE_OFFLINE", "").strip().lower() in ("1", "true", "yes")
+
+
+def _check_gwas_catalog(report: Report) -> bool:
     """Probe the GWAS Catalog REST API base URL for reachability.
 
-    A lightweight connectivity check — hits the API root, not a full gene
-    query. Reports CAVEAT (not CAPABILITY) because the GWAS Catalog being
-    down does not prevent other tools from working.
-
-    Added for issue #47: the ``associations/search/findByGene`` endpoint
-    was removed; this check surfaces whether the API itself is reachable,
-    separate from whether the specific endpoint exists.
+    Returns True if any HTTP response was received (proving outbound HTTPS),
+    False if the connection failed or timed out.
     """
+    api_url = "https://www.ebi.ac.uk/gwas/rest/api"
+    if _is_forced_offline():
+        report.add(
+            "gwas catalog api",
+            WARN,
+            f"{api_url} skipped (PKDE_OFFLINE=1)",
+            "the GWAS Catalog REST API is disabled in offline mode",
+            kind=CAVEAT,
+        )
+        return False
+
     try:
         import requests as _requests
     except ImportError:
@@ -832,11 +849,10 @@ def _check_gwas_catalog(report: Report) -> None:
             "install requests to enable GWAS Catalog connectivity checks",
             kind=CAVEAT,
         )
-        return
+        return False
 
-    api_url = "https://www.ebi.ac.uk/gwas/rest/api"
     try:
-        resp = _requests.get(api_url, timeout=10)
+        resp = _requests.get(api_url, timeout=_doctor_http_timeout())
         if resp.status_code == 200:
             report.add(
                 "gwas catalog api",
@@ -857,6 +873,7 @@ def _check_gwas_catalog(report: Report) -> None:
                 "--source gwas-catalog queries will likely fail",
                 kind=CAVEAT,
             )
+        return True
     except _requests.ConnectionError:
         report.add(
             "gwas catalog api",
@@ -866,15 +883,17 @@ def _check_gwas_catalog(report: Report) -> None:
             "environment; --source gwas-catalog queries will fail",
             kind=CAVEAT,
         )
+        return False
     except _requests.Timeout:
         report.add(
             "gwas catalog api",
             WARN,
-            f"{api_url} timed out after 10 seconds",
+            f"{api_url} timed out",
             "the GWAS Catalog REST API is slow or unreachable; "
             "--source gwas-catalog queries may fail or hang",
             kind=CAVEAT,
         )
+        return False
     except Exception as exc:
         report.add(
             "gwas catalog api",
@@ -883,20 +902,22 @@ def _check_gwas_catalog(report: Report) -> None:
             "unexpected error probing the GWAS Catalog REST API",
             kind=CAVEAT,
         )
+        return False
 
 
-def _check_disignatlas(report: Report) -> None:
-    """Probe the DisigNAtlas landing page for reachability.
+def _check_disignatlas(report: Report) -> bool:
+    """Probe the DisigNAtlas landing page for reachability."""
+    url = "https://www.inbirg.com/disignatlas/"
+    if _is_forced_offline():
+        report.add(
+            "disignatlas endpoint",
+            WARN,
+            f"{url} skipped (PKDE_OFFLINE=1)",
+            "DisigNAtlas transcriptomics data is unavailable in offline mode",
+            kind=CAVEAT,
+        )
+        return False
 
-    A lightweight connectivity check — hits the landing page, not a full
-    search query.  Reports CAVEAT (not CAPABILITY) because DisigNAtlas being
-    down does not prevent other tools from working; GEO search may partially
-    compensate.
-
-    Added for issue #51: ``pkde disignatlas search`` threw a raw
-    ``ConnectionError`` traceback when the endpoint was unreachable;
-    this check surfaces reachability at ``pkde doctor`` time.
-    """
     try:
         import requests as _requests
     except ImportError:
@@ -907,11 +928,10 @@ def _check_disignatlas(report: Report) -> None:
             "install requests to enable DisigNAtlas connectivity checks",
             kind=CAVEAT,
         )
-        return
+        return False
 
-    url = "https://www.inbirg.com/disignatlas/"
     try:
-        resp = _requests.get(url, timeout=10)
+        resp = _requests.get(url, timeout=_doctor_http_timeout())
         if resp.status_code == 200:
             report.add(
                 "disignatlas endpoint",
@@ -927,6 +947,7 @@ def _check_disignatlas(report: Report) -> None:
                 "GEO search may partially compensate",
                 kind=CAVEAT,
             )
+        return True
     except _requests.ConnectionError:
         report.add(
             "disignatlas endpoint",
@@ -936,15 +957,17 @@ def _check_disignatlas(report: Report) -> None:
             "GEO search may partially compensate",
             kind=CAVEAT,
         )
+        return False
     except _requests.Timeout:
         report.add(
             "disignatlas endpoint",
             WARN,
-            f"{url} timed out after 10 seconds",
+            f"{url} timed out",
             "DisigNAtlas transcriptomics data is unavailable; "
             "GEO search may partially compensate",
             kind=CAVEAT,
         )
+        return False
     except _requests.RequestException as exc:
         report.add(
             "disignatlas endpoint",
@@ -954,15 +977,22 @@ def _check_disignatlas(report: Report) -> None:
             "GEO search may partially compensate",
             kind=CAVEAT,
         )
+        return False
 
 
-def _check_askcos(report: Report) -> None:
-    """Probe the ASKCOS retrosynthesis API for reachability.
+def _check_askcos(report: Report) -> bool:
+    """Probe the ASKCOS retrosynthesis API for reachability."""
+    url = "https://askcos.mit.edu/api/frontend-config/get-all-config"
+    if _is_forced_offline():
+        report.add(
+            "askcos api",
+            WARN,
+            "askcos.mit.edu skipped (PKDE_OFFLINE=1)",
+            "the ASKCOS retrosynthesis API is disabled in offline mode",
+            kind=CAVEAT,
+        )
+        return False
 
-    A lightweight connectivity check -- hits the frontend config endpoint,
-    not a full retrosynthesis query. Reports CAVEAT (not CAPABILITY) because
-    ASKCOS being down does not prevent other tools from working.
-    """
     try:
         import requests as _requests
     except ImportError:
@@ -973,11 +1003,10 @@ def _check_askcos(report: Report) -> None:
             "install requests to enable ASKCOS connectivity checks",
             kind=CAVEAT,
         )
-        return
+        return False
 
-    url = "https://askcos.mit.edu/api/frontend-config/get-all-config"
     try:
-        resp = _requests.get(url, timeout=10)
+        resp = _requests.get(url, timeout=_doctor_http_timeout())
         if resp.status_code == 200:
             report.add(
                 "askcos api",
@@ -993,6 +1022,7 @@ def _check_askcos(report: Report) -> None:
                 "`pkde retro search` queries may fail",
                 kind=CAVEAT,
             )
+        return True
     except _requests.ConnectionError:
         report.add(
             "askcos api",
@@ -1002,15 +1032,17 @@ def _check_askcos(report: Report) -> None:
             "environment; `pkde retro search` queries will fail",
             kind=CAVEAT,
         )
+        return False
     except _requests.Timeout:
         report.add(
             "askcos api",
             WARN,
-            "askcos.mit.edu timed out after 10 seconds",
+            "askcos.mit.edu timed out",
             "the ASKCOS retrosynthesis API is slow or unreachable; "
             "`pkde retro search` queries may fail or hang",
             kind=CAVEAT,
         )
+        return False
     except Exception as exc:
         report.add(
             "askcos api",
@@ -1019,6 +1051,64 @@ def _check_askcos(report: Report) -> None:
             "unexpected error probing the ASKCOS retrosynthesis API",
             kind=CAVEAT,
         )
+        return False
+
+
+def _check_external_scientific_apis(
+    report: Report,
+    prior_probes: list[bool],
+) -> bool:
+    """Summarize whether outbound scientific APIs are reachable from this sandbox."""
+    if _is_forced_offline():
+        report.add(
+            "external scientific apis",
+            WARN,
+            "0 of 3 probed external endpoints reachable (PKDE_OFFLINE=1)",
+            "sandbox is in offline/local-only mode; online fetch commands "
+            "(genetics, alphafold, pubchem, literature, trials) will fail. "
+            "Run local-compute tools only (pkde custom, compound, bioactivity, "
+            "sar, pk, tox, pocket) or halt with ENVIRONMENT_BLOCKED if the "
+            "user query requires online database retrieval",
+            kind=CAPABILITY,
+        )
+        return False
+
+    reachable_count = sum(1 for r in prior_probes if r)
+    total_probed = len(prior_probes)
+
+    if reachable_count == 0:
+        # Try one fast fallback probe to UniProt REST before declaring offline sandbox
+        try:
+            import requests as _requests
+
+            total_probed += 1
+            resp = _requests.get(
+                "https://rest.uniprot.org/uniprotkb/P15056.json?fields=accession",
+                timeout=min(3.0, _doctor_http_timeout()),
+            )
+            if resp.status_code < 500:
+                reachable_count += 1
+        except Exception:
+            pass
+
+    if reachable_count > 0:
+        report.add(
+            "external scientific apis",
+            OK,
+            f"outbound HTTPS reachable ({reachable_count}/{total_probed} probed endpoints responded)",
+        )
+        return True
+
+    report.add(
+        "external scientific apis",
+        WARN,
+        f"0 of {total_probed} probed external endpoints reachable — sandbox blocks outbound network",
+        "online fetch commands (genetics, alphafold, pubchem, literature, trials) will fail; "
+        "use local-compute tools only (pkde custom, compound, bioactivity, sar, pk, tox, pocket) "
+        "or halt with ENVIRONMENT_BLOCKED if the user prompt requires external database retrieval",
+        kind=CAPABILITY,
+    )
+    return False
 
 
 def _check_known_faults(report: Report) -> None:
@@ -1372,7 +1462,12 @@ def get_capability_snapshot() -> dict[str, str]:
 # --- command ---------------------------------------------------------------
 
 
-def _verdict(report: Report, *, strict: bool = False) -> None:
+def _verdict(
+    report: Report,
+    *,
+    strict: bool = False,
+    execution_mode: str = "full",
+) -> None:
     """Say what the reader should do, because the count does not.
 
     Eight skills tell an agent to "run pkde doctor to confirm the
@@ -1407,18 +1502,30 @@ def _verdict(report: Report, *, strict: bool = False) -> None:
             )
         return
 
-    # "Warnings are expected here" belongs in the tool, not in the eight
-    # skills that point at it. I gave skills-lead a sentence ending "a
-    # healthy install has about fourteen" and they patched it into all
-    # eight — a cached count in prose, the exact defect template-builder
-    # removed from this repo the same morning, failing in the direction
-    # that makes a healthy system look broken. The tool knows its own
-    # count and can say so without anyone caching it.
-    click.echo(
-        "PROCEED — nothing above stops work. Warnings are expected on a "
-        "healthy install; judge by this verdict, not by how many there are. "
-        "What they mean:"
-    )
+    if execution_mode == "degraded_offline":
+        click.echo(
+            "DEGRADED (LOCAL-ONLY SANDBOX) — Outbound scientific APIs are unreachable "
+            "in this environment (`execution_mode: degraded_offline`)."
+        )
+        click.echo(
+            "  - Do NOT dispatch Work Orders that fetch from external databases "
+            "(genetics, alphafold, pubchem, literature, trials, expression, etc.)."
+        )
+        click.echo(
+            "  - If the user provided local or custom files, run local-compute tools "
+            "only (`pkde custom`, `compound`, `bioactivity`, `sar`, `pk`, `tox`, `pocket`)."
+        )
+        click.echo(
+            "  - If the user prompt requires external database retrieval and no local "
+            "data was provided, HALT IMMEDIATELY and report `ENVIRONMENT_BLOCKED` "
+            "rather than creating empty Work Orders or gate packages."
+        )
+    else:
+        click.echo(
+            "PROCEED — nothing above stops work. Warnings are expected on a "
+            "healthy install; judge by this verdict, not by how many there are. "
+            "What they mean:"
+        )
     if capability:
         click.echo(
             f"  {len(capability)} thing(s) you cannot run: "
@@ -1487,9 +1594,12 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
     _check_credentials(report)
     _check_thresholds(report)
     _check_pacing(report)
-    _check_gwas_catalog(report)
-    _check_disignatlas(report)
-    _check_askcos(report)
+    gwas_ok = _check_gwas_catalog(report)
+    disig_ok = _check_disignatlas(report)
+    askcos_ok = _check_askcos(report)
+    network_reachable = _check_external_scientific_apis(
+        report, [gwas_ok, disig_ok, askcos_ok]
+    )
     _check_hypothesis_strategies(report)
     _check_phase_two_contract(report)
     _check_known_faults(report)
@@ -1501,6 +1611,13 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
             if check.status == WARN and check.kind == HOUSEKEEPING:
                 check.status = FAIL
 
+    if report.failures:
+        execution_mode = "blocked"
+    elif not network_reachable:
+        execution_mode = "degraded_offline"
+    else:
+        execution_mode = "full"
+
     if as_json:
         click.echo(
             json.dumps(
@@ -1508,6 +1625,8 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
                     "cli_version": env.CLI_VERSION,
                     "env_version": env.env_version(),
                     "ok": not report.failures,
+                    "execution_mode": execution_mode,
+                    "network_reachable": network_reachable,
                     "checks": [c.__dict__ for c in report.checks],
                     "capability_snapshot": get_capability_snapshot(),
                 },
@@ -1525,6 +1644,6 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
             click.echo(f"{len(report.failures)} check(s) FAILED:")
             for check in report.failures:
                 click.echo(f"  - {check.name}: {check.remedy}")
-        _verdict(report, strict=strict)
+        _verdict(report, strict=strict, execution_mode=execution_mode)
 
     sys.exit(1 if report.failures else 0)

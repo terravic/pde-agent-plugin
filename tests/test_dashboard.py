@@ -274,3 +274,22 @@ def test_background_server_start_status_stop(tmp_path: Path) -> None:
         assert stopped["stopped"] is True
 
 
+def test_dashboard_safe_write_fallback_and_temp_cleanup(tmp_path: Path) -> None:
+    """Verify dashboard build falls back cleanly when os.replace is blocked and leaves no .tmp.html files."""
+    from unittest.mock import patch
+
+    ws = tmp_path / "sandbox-dash"
+    ws.mkdir(parents=True, exist_ok=True)
+
+    stranded = ws / "tmp_stranded_12345.tmp.html"
+    stranded.write_text("stale temp content", encoding="utf-8")
+
+    with patch("pkde.commands.dashboard.os.replace", side_effect=PermissionError("rename blocked")):
+        out_path, _ = build_dashboard_html(ws, output_path=ws / "dashboard.html")
+
+    assert out_path.is_file()
+    assert "PkDE" in out_path.read_text(encoding="utf-8")
+    assert list(ws.glob("*.tmp.html")) == []
+
+
+

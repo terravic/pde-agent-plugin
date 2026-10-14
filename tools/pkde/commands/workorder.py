@@ -1671,3 +1671,112 @@ def accept_all_cmd(
         )
 
     emit.flush()
+
+
+# ---------------------------------------------------------------------------
+# dispatch & validate-and-gate (CLI equivalents of MCP orchestration tools)
+# ---------------------------------------------------------------------------
+
+
+@workorder.command("dispatch")
+@click.option(
+    "--spec",
+    "--from",
+    "spec_input",
+    required=True,
+    help="Path to JSON/YAML work order spec file or inline JSON string.",
+)
+@output_options
+@pass_state
+def dispatch_cmd(
+    state: AppState,
+    spec_input: str,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Execute the 4-step Work Order intake ceremony and emit the specialist brief.
+
+    CLI equivalent of the ``pkde_dispatch_workorder`` MCP tool and
+    ``scripts/dispatch_workorder.py``. Creates and commits the work order,
+    freezes its context snapshot, acquires any non-standard resource lease,
+    creates and starts the run record, and prints the dispatch bundle.
+    """
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_dispatch_workorder
+
+    project = state.project()
+    raw_spec = spec_input.strip()
+    if raw_spec.startswith("{"):
+        try:
+            spec_data = _json.loads(raw_spec)
+        except ValueError as exc:
+            raise SchemaError(
+                "invalid inline JSON passed to --spec",
+                detail=str(exc),
+            ) from exc
+    else:
+        spec_path = _resolve_yaml_path(project.root, raw_spec)
+        spec_data = _load_yaml(spec_path)
+
+    res = pkde_dispatch_workorder(spec=spec_data, project_dir=str(project.root))
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        if res.get("ok"):
+            click.echo(
+                f"Dispatched {res.get('work_order_id')} (r{res.get('revision')}) "
+                f"run {res.get('run_id')} -> {res.get('subagent_name')}"
+            )
+            click.echo("")
+            click.echo(res.get("specialist_brief", ""))
+        else:
+            click.echo(
+                f"Dispatch failed ({res.get('status')}): {res.get('error') or res.get('remedy')}",
+                err=True,
+            )
+    if not res.get("ok"):
+        raise SystemExit(1)
+
+
+@workorder.command("validate-and-gate")
+@click.argument("wo_id")
+@click.option(
+    "--run-id",
+    default=None,
+    help="Optional run ID override (auto-detected from latest revision if omitted).",
+)
+@output_options
+@pass_state
+def validate_and_gate_cmd(
+    state: AppState,
+    wo_id: str,
+    run_id: str | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Run the 10-check validation gate and correction routing on a Work Order.
+
+    CLI equivalent of the ``pkde_validate_and_gate`` MCP tool.
+    """
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_validate_and_gate
+
+    project = state.project()
+    res = pkde_validate_and_gate(
+        work_order_id=wo_id,
+        run_id=run_id,
+        project_dir=str(project.root),
+    )
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(
+            f"Work order {wo_id}: status={res.get('status')} "
+            f"(validation_result={res.get('validation_result')})"
+        )
+        if res.get("correction_prompt"):
+            click.echo("")
+            click.echo(res["correction_prompt"])
+    if not res.get("ok"):
+        raise SystemExit(1)
+

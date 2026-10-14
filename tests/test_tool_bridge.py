@@ -289,3 +289,120 @@ async def test_mcp_server_exposes_all_6_tools_with_complete_boolean_annotations(
                 f"{tool_name}.{hint_key} expected {expected_val}, got {dumped[hint_key]}"
             )
 
+
+def test_cli_workorder_dispatch_and_validate_gate(tmp_path: Path) -> None:
+    """Verify workorder dispatch and validate-and-gate execute natively via ./bin/pkde CLI."""
+    ws = tmp_path / "ws-cli-dispatch"
+    spec_json = json.dumps(
+        {
+            "decision_question": "Assess target genetics for BRAF via CLI dispatch.",
+            "requested_role": "computational-biologist",
+            "stage": 1,
+            "cycle": 1,
+            "deliverables": {
+                "layer_0_classes": ["pkde.genetics"],
+                "layer_1": ["findings/computational-biology/braf.md"],
+            },
+        }
+    )
+    res_dispatch = pkde_exec(
+        f"workorder dispatch --spec {json.dumps(spec_json)} --json",
+        project_dir=str(ws),
+        auto_refresh_dashboard=False,
+    )
+    assert res_dispatch["ok"] is True
+    data = res_dispatch["data"]
+    assert isinstance(data, dict)
+    assert data["status"] == "DISPATCHED"
+    wo_id = data["work_order_id"]
+    run_id = data["run_id"]
+
+    res_gate = pkde_exec(
+        f"workorder validate-and-gate {wo_id} --run-id {run_id} --json",
+        project_dir=str(ws),
+        auto_refresh_dashboard=False,
+    )
+    gate_data = res_gate["data"]
+    assert isinstance(gate_data, dict)
+    assert gate_data["status"] == "CORRECTION_REQUIRED"
+    assert gate_data["work_order_id"] == wo_id
+
+
+def test_hermetic_pythonpath_isolation(tmp_path: Path) -> None:
+    """Verify bin/env.sh, bin/pkde, and _build_env isolate from incompatible host PYTHONPATH."""
+    import os
+    import subprocess
+    from unittest.mock import patch
+    from pkde_plugin.tool_bridge import REPO_ROOT, _build_env
+
+    poison_dir = tmp_path / "poison_site_packages"
+    poison_numpy = poison_dir / "numpy"
+    poison_numpy.mkdir(parents=True, exist_ok=True)
+    (poison_numpy / "__init__.py").write_text(
+        "raise ModuleNotFoundError(\"No module named 'numpy._core._multiarray_umath'\")\n",
+        encoding="utf-8",
+    )
+
+    with patch.dict(os.environ, {"PYTHONPATH": str(poison_dir), "PKDE_OFFLINE": "1"}):
+        built_env = _build_env(tmp_path / "ws")
+        assert str(poison_dir) not in built_env["PYTHONPATH"].split(os.pathsep)
+
+        proc = subprocess.run(
+            [str(REPO_ROOT / "bin" / "pkde"), "doctor", "--json"],
+            cwd=str(REPO_ROOT),
+            env={**os.environ, "PYTHONPATH": str(poison_dir), "PKDE_OFFLINE": "1"},
+            capture_output=True,
+            text=True,
+            timeout=15,
+        )
+        assert proc.returncode == 0, f"Doctor failed under poisoned PYTHONPATH: {proc.stderr}"
+        payload = json.loads(proc.stdout)
+        assert payload["ok"] is True
+
+
+def test_doctor_offline_degraded_mode(tmp_path: Path) -> None:
+    """Verify pkde doctor reports execution_mode='degraded_offline' when outbound network is unavailable."""
+    import os
+    import subprocess
+    from pkde_plugin.tool_bridge import REPO_ROOT
+
+    env = {
+        **os.environ,
+        "PKDE_OFFLINE": "1",
+        "PKDE_PROJECT": str(tmp_path / "ws-offline"),
+    }
+    subprocess.run(
+        [str(REPO_ROOT / "bin" / "pkde"), "init", str(tmp_path / "ws-offline")],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+
+    proc_json = subprocess.run(
+        [str(REPO_ROOT / "bin" / "pkde"), "doctor", "--json"],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert proc_json.returncode == 0
+    doc = json.loads(proc_json.stdout)
+    assert doc["execution_mode"] == "degraded_offline"
+    assert doc["network_reachable"] is False
+
+    proc_txt = subprocess.run(
+        [str(REPO_ROOT / "bin" / "pkde"), "doctor"],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert proc_txt.returncode == 0
+    assert "DEGRADED (LOCAL-ONLY SANDBOX)" in proc_txt.stdout
+    assert "ENVIRONMENT_BLOCKED" in proc_txt.stdout
+
+

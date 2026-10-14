@@ -2016,6 +2016,44 @@ def collect_dashboard_bundle(project_root: Path | str) -> dict[str, Any]:
     return bundle
 
 
+def _safe_write_html(target_path: Path, rendered: str) -> None:
+    """Atomically write HTML when possible, falling back to direct write in sandboxes.
+
+    Always cleans up temporary `.tmp.html` files so restricted filesystems
+    that block ``os.replace`` never crash the build or strand temp files.
+    """
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        for stale_tmp in target_path.parent.glob("tmp*.tmp.html"):
+            try:
+                stale_tmp.unlink(missing_ok=True)
+            except OSError:
+                pass
+    except OSError:
+        pass
+
+    tmp_path: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=str(target_path.parent),
+            delete=False,
+            suffix=".tmp.html",
+        ) as tmp:
+            tmp.write(rendered)
+            tmp_path = Path(tmp.name)
+        os.replace(tmp_path, target_path)
+    except OSError:
+        target_path.write_text(rendered, encoding="utf-8")
+    finally:
+        if tmp_path is not None:
+            try:
+                tmp_path.unlink(missing_ok=True)
+            except OSError:
+                pass
+
+
 def build_dashboard_html(
     project_root: Path | str,
     output_path: Path | str | None = None,
@@ -2052,23 +2090,13 @@ def build_dashboard_html(
     else:
         target_path = root / "dashboard.html"
 
-    target_path.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.NamedTemporaryFile(
-        "w",
-        encoding="utf-8",
-        dir=str(target_path.parent),
-        delete=False,
-        suffix=".tmp.html",
-    ) as tmp:
-        tmp.write(rendered)
-        tmp_path = Path(tmp.name)
-    os.replace(tmp_path, target_path)
+    _safe_write_html(target_path, rendered)
 
     # Also keep <project_root>/dashboard.html synced if a custom output path was passed
     default_project_dash = root / "dashboard.html"
     if target_path.resolve() != default_project_dash.resolve() and root.is_dir():
         try:
-            default_project_dash.write_text(rendered, encoding="utf-8")
+            _safe_write_html(default_project_dash, rendered)
         except OSError:
             pass
 
@@ -2096,16 +2124,7 @@ def build_dashboard_html(
                     pass
             if should_sync_root:
                 try:
-                    with tempfile.NamedTemporaryFile(
-                        "w",
-                        encoding="utf-8",
-                        dir=str(repo_root),
-                        delete=False,
-                        suffix=".tmp.html",
-                    ) as rtmp:
-                        rtmp.write(rendered)
-                        rtmp_path = Path(rtmp.name)
-                    os.replace(rtmp_path, repo_dash)
+                    _safe_write_html(repo_dash, rendered)
                 except OSError:
                     pass
 

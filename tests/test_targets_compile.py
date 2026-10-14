@@ -136,3 +136,21 @@ def test_skill_zip_bundles_valid() -> None:
     with zipfile.ZipFile(bundles_dir / "pkde-dashboard.zip", "r") as zf:
         dash_names = zf.namelist()
         assert "scripts/render_dashboard.py" in dash_names
+
+
+def test_bundled_scripts_and_references_synced() -> None:
+    """Verify bundled scripts and references exist at both repository root and skill directory."""
+    expected_rel_paths = [
+        "scripts/start_live_session.py",
+        "scripts/pkde_runner.py",
+        "scripts/dispatch_workorder.py",
+        "references/role-skill-matrix.md",
+        "references/stage0-3-playbook.md",
+    ]
+    for rel in expected_rel_paths:
+        root_file = REPO_ROOT / rel
+        skill_file = REPO_ROOT / "skills" / "pharmakon-discovery-engine" / rel
+        assert root_file.is_file(), f"Missing root resource: {root_file}"
+        assert skill_file.is_file(), f"Missing skill resource: {skill_file}"
+        assert root_file.read_text(encoding="utf-8") == skill_file.read_text(encoding="utf-8")
+
