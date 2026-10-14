@@ -46,7 +46,7 @@ a finding relies on it. Entry points include:
   or `trials`. `auto` dispatches identifiers by their type and sends
   names to both registries.
 - **No authentication** needed — both registries are public APIs.
-- Run `pde doctor` before first use. It ends with a verdict line:
+- Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
   which results need careful reading, and which are the tooling lead's
@@ -57,8 +57,8 @@ a finding relies on it. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Does this citation resolve to a real record? | `pde litref resolve <CITATION> [--source auto\|literature\|trials]` | `raw/literature/<slug>.trials.json`<br>`raw/literature/<slug>.literature.json`<br>`raw/literature/<slug>.meta.json` |
-| What is the verdict? | `pde litref analyze <CITATION>` | `raw/literature/<slug>.analysis.json` |
+| Does this citation resolve to a real record? | `pkde litref resolve <CITATION> [--source auto\|literature\|trials]` | `raw/literature/<slug>.trials.json`<br>`raw/literature/<slug>.literature.json`<br>`raw/literature/<slug>.meta.json` |
+| What is the verdict? | `pkde litref analyze <CITATION>` | `raw/literature/<slug>.analysis.json` |
 
 Run `resolve` before `analyze`. `analyze` reads from disk and applies
 the `litref` threshold set. The only threshold is

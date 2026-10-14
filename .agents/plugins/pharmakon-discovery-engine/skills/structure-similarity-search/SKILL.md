@@ -35,15 +35,15 @@ in public databases. Entry points include:
 - **No authentication** needed -- both registries are public APIs.
 - **Source selection** (`--source`): `pubchem`, `chembl`, or `both`
   (default).
-- Run `pde doctor` before first use.
+- Run `pkde doctor` before first use.
 
 ## 3. Tool invocations
 
 | Question | Run | Writes to |
 |---|---|---|
-| What known compounds are structurally similar? | `pde similar search <SMILES> [--source both] [--threshold <T>] [--max-results 20]` | `raw/compounds/<slug>.similar-<source>.json` + `.meta.json` |
-| What known compounds contain this substructure? | `pde similar substructure <SMILES> [--source both] [--max-results 20]` | `raw/compounds/<slug>.substruct-<source>.json` + `.meta.json` |
-| What is the verdict? | `pde similar analyze <SMILES>` | `raw/compounds/<slug>.similar.analysis.json` |
+| What known compounds are structurally similar? | `pkde similar search <SMILES> [--source both] [--threshold <T>] [--max-results 20]` | `raw/compounds/<slug>.similar-<source>.json` + `.meta.json` |
+| What known compounds contain this substructure? | `pkde similar substructure <SMILES> [--source both] [--max-results 20]` | `raw/compounds/<slug>.substruct-<source>.json` + `.meta.json` |
+| What is the verdict? | `pkde similar analyze <SMILES>` | `raw/compounds/<slug>.similar.analysis.json` |
 
 Run `search` or `substructure` before `analyze`. `analyze` reads from
 disk and applies the `similar-search` threshold set. No network.

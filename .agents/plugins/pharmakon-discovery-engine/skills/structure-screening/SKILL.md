@@ -52,20 +52,20 @@ duplicate it. The relationship is:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Screen structures for druggable pockets | `pde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule` | Evidence assessment records (stdout / `--json`) |
-| Screen with site-specific query | `pde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule --near A:145,A:146` | Evidence assessment records with site relevance |
-| Screen with custom budget | `pde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule --max-structures 3 --max-seconds 120` | Budget-bounded assessment records |
+| Screen structures for druggable pockets | `pkde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule` | Evidence assessment records (stdout / `--json`) |
+| Screen with site-specific query | `pkde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule --near A:145,A:146` | Evidence assessment records with site relevance |
+| Screen with custom budget | `pkde structure-screen run <STRUCTURE>... --concept-ref IC-NNN --modality small_molecule --max-structures 3 --max-seconds 120` | Budget-bounded assessment records |
 
-The `structure-screen run` command internally invokes `pde pocket run`
-then `pde pocket analyze` for each candidate structure within the
-screen budget. It produces `pde.evidence-assessment.v1` records with
+The `structure-screen run` command internally invokes `pkde pocket run`
+then `pkde pocket analyze` for each candidate structure within the
+screen budget. It produces `pkde.evidence-assessment.v1` records with
 relay codes and scoping preserved from the underlying pocket analysis.
 
 Options:
 
 - `--concept-ref` (required): concept reference (IC-NNN) the screen is for.
 - `--modality` (required): intervention modality (`small_molecule`, `molecular_glue`, `antibody`, etc.). Non-pocket-relevant modalities produce a `not_yet_applicable` assessment immediately.
-- `--near`: residues defining the intervention site (CHAIN:RESNUM, comma-separated). Passed through to `pde pocket analyze --near`.
+- `--near`: residues defining the intervention site (CHAIN:RESNUM, comma-separated). Passed through to `pkde pocket analyze --near`.
 - `--source`: structure source type (`pdb`, `alphafold_db`, `existing_model`). Default: `pdb`.
 - `--experimental/--no-experimental`: whether structures are experimental. Auto-detected from source type if omitted.
 - `--max-structures`: maximum structures to evaluate (default: 5).
@@ -112,8 +112,8 @@ justification.
 
 For each candidate structure within the screen budget:
 
-1. Run `pde pocket run <STRUCTURE>` to detect pockets.
-2. Run `pde pocket analyze <POCKETS_RECORD>` to judge tractability.
+1. Run `pkde pocket run <STRUCTURE>` to detect pockets.
+2. Run `pkde pocket analyze <POCKETS_RECORD>` to judge tractability.
 3. If site residues are known, use `--near` to assess the specific
    intervention site.
 
@@ -129,7 +129,7 @@ relevance to the intended intervention site.**
 
 ### Step 5: Produce evidence assessment records
 
-For each evaluated structure, produce a `pde.evidence-assessment.v1`
+For each evaluated structure, produce a `pkde.evidence-assessment.v1`
 record that:
 
 - Carries the evidence status mapped from the pocket verdict
@@ -189,7 +189,7 @@ relay carrying the calibration numbers.
 
 Following this workflow produces:
 
-- One or more `pde.evidence-assessment.v1` records per target,
+- One or more `pkde.evidence-assessment.v1` records per target,
   one per evaluated structure.
 - Each record carries the evidence status, relay codes, provenance,
   confidence, and rationale.

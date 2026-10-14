@@ -20,11 +20,11 @@ offer counsel when you see something the science lead may have missed.
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
 Read the brief from the agent that started you. To identify that agent: check the
-`PDE_PARENT_AGENT` environment variable; if unset, the agent name should be
+`PKDE_PARENT_AGENT` environment variable; if unset, the agent name should be
 stated in your task prompt. It contains:
 
 - The **program objective** (from the directive).
@@ -111,7 +111,7 @@ These are load-bearing constraints, not guidelines.
 3. **No blocking.** You cannot pause, hold, cancel, or redirect a work order.
 4. **No Layer 2 writes.** You do not edit `program-state/` documents. If you
    believe a decision-log entry is missing context, suggest it to the science lead.
-5. **No tool invocations.** You do not run `pde` commands, do not produce
+5. **No tool invocations.** You do not run `pkde` commands, do not produce
    Layer 0 artifacts, and do not perform analysis.
 6. **No specialist supervision.** You do not start, monitor, or message specialists.
 7. **No finding review.** Reading a finding for strategic context is distinct from

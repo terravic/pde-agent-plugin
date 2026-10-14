@@ -24,7 +24,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 # Detection marker injected into themed pages.
-THEME_MARKER = "<!-- pde-theme-system -->"
+THEME_MARKER = "<!-- pkde-theme-system -->"
 
 # Web Fonts — one <link> tag loading all theme families.
 WEB_FONTS_LINK = (
@@ -41,7 +41,7 @@ WEB_FONTS_LINK = (
 # so the page never flashes in the wrong colours (FOUC prevention).
 FOUC_SCRIPT = (
     "<script>"
-    "(function(){var t=localStorage.getItem('pde-theme');"
+    "(function(){var t=localStorage.getItem('pkde-theme');"
     "if(t)document.documentElement.setAttribute('data-theme',t)})()"
     "</script>"
 )
@@ -52,7 +52,7 @@ FOUC_SCRIPT = (
 
 THEME_CSS = """\
 <style>
-/* pde-theme-system */
+/* pkde-theme-system */
 
 /* ---- Clean (default): light, sans-serif ---- */
 :root, [data-theme="clean"] {
@@ -288,11 +288,11 @@ nav a:hover, .nav a:hover {
 }
 
 /* Theme chooser widget */
-.pde-theme-chooser {
+.pkde-theme-chooser {
   display: inline-block;
   margin-left: 1rem;
 }
-.pde-theme-chooser select {
+.pkde-theme-chooser select {
   font-family: var(--font-family);
   font-size: 0.85rem;
   padding: 0.25rem 0.5rem;
@@ -302,15 +302,15 @@ nav a:hover, .nav a:hover {
   color: var(--text-primary);
   cursor: pointer;
 }
-.pde-theme-chooser select:hover {
+.pkde-theme-chooser select:hover {
   border-color: var(--accent-color);
 }
 </style>"""
 
 # Theme chooser dropdown HTML.
 THEME_CHOOSER = (
-    '<span class="pde-theme-chooser">'
-    '<select id="pde-theme-select" aria-label="Choose theme">'
+    '<span class="pkde-theme-chooser">'
+    '<select id="pkde-theme-select" aria-label="Choose theme">'
     '<option value="clean">Clean</option>'
     '<option value="dark">Dark</option>'
     '<option value="serif">Serif</option>'
@@ -323,15 +323,15 @@ THEME_CHOOSER = (
 THEME_SCRIPT = """\
 <script>
 (function() {
-  var sel = document.getElementById('pde-theme-select');
+  var sel = document.getElementById('pkde-theme-select');
   if (!sel) return;
-  var saved = localStorage.getItem('pde-theme') || 'clean';
+  var saved = localStorage.getItem('pkde-theme') || 'clean';
   document.documentElement.setAttribute('data-theme', saved);
   sel.value = saved;
   sel.addEventListener('change', function() {
     var t = sel.value;
     document.documentElement.setAttribute('data-theme', t);
-    localStorage.setItem('pde-theme', t);
+    localStorage.setItem('pkde-theme', t);
   });
 })();
 </script>"""

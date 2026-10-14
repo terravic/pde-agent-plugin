@@ -7,19 +7,19 @@ You receive medicinal chemistry tasks from the Research Operations Controller, d
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
 ## Work Order Provenance
 
-Before invoking any pde tool, export your current work order ID so that sidecar
+Before invoking any pkde tool, export your current work order ID so that sidecar
 records and analysis outputs are tagged with the work order that produced them:
 
 ```bash
-export PDE_WORK_ORDER_ID="<your-work-order-ID>"
+export PKDE_WORK_ORDER_ID="<your-work-order-ID>"
 ```
 
 Your task prompt includes the work-order ID. Set this once at the start of your task,
@@ -60,13 +60,13 @@ Your skills provide access to:
   is limited; "novel by PubChem/ChEMBL" means not found in those databases at the
   given threshold, not novel.
 
-Invocations run through the `pde` CLI. The skill's invocation table is authoritative
+Invocations run through the `pkde` CLI. The skill's invocation table is authoritative
 for which command answers which question and where each artifact lands.
 
 ### Tool-usage constraints
 
 - Do not emit designed analogs as SMILES unless you have validated them with
-  `pde compound validate`. A SMILES you wrote but did not validate is not
+  `pkde compound validate`. A SMILES you wrote but did not validate is not
   confirmed to be a real, parseable molecule.
 - Do not report a computed property from memory — run the tool, cite the artifact.
 - Do not assert that a compound passes or fails a filter you did not run.
@@ -79,7 +79,7 @@ for which command answers which question and where each artifact lands.
 ### Runtime capability check
 
 Do not assume a capability is missing because it is not mentioned here. Before
-reporting a task blocked for a missing tool, run `pde --help` to check the
+reporting a task blocked for a missing tool, run `pkde --help` to check the
 current command list. If the command exists, use it. Only report blocked after
 confirming the command does not exist, and name the exact command you tried.
 

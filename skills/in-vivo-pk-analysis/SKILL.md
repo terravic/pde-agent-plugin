@@ -33,17 +33,17 @@ or project human dose parameters. Entry points include:
 ## 2. Preconditions
 
 - **Input (NCA path)**: a JSON file matching schema
-  `pde.pk-study.v1` for `ingest`, containing species, route,
+  `pkde.pk-study.v1` for `ingest`, containing species, route,
   dose, time points, and concentrations. At least 3 time points
   required.
 - **Input (DDI path)**: a JSON file matching schema
-  `pde.pk-ddi-input.v1` for `ddi`, containing compound_id,
+  `pkde.pk-ddi-input.v1` for `ddi`, containing compound_id,
   cmax_unbound, and per-isoform CYP inhibition data with Ki or
   IC50 values in matching units.
 - **scipy/numpy**: recommended for numerical stability in linear
   regression (terminal phase fitting, allometric regression). The
   tool falls back to manual computation if unavailable.
-- **Environment**: run `pde doctor` before first use. It ends
+- **Environment**: run `pkde doctor` before first use. It ends
   with a verdict line: `STOP` means fix or report before running
   anything; `PROCEED` means work. Do not judge by the warning
   count; the verdict line grades them for you.
@@ -54,11 +54,11 @@ or project human dose parameters. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Parse and validate a PK study | `pde pk ingest <input_file>` | `raw/pk/{study_id}.pk-study.json`<br>`raw/pk/{study_id}.pk-study.meta.json` |
-| Compute NCA parameters | `pde pk nca <study_file>` | `raw/pk/{study_id}.pk-nca.json`<br>`raw/pk/{study_id}.pk-nca.meta.json` |
-| Scale animal PK to human | `pde pk scale <nca_files...>` | `raw/pk/{compound_id}.pk-scaling.json`<br>`raw/pk/{compound_id}.pk-scaling.meta.json` |
-| Predict DDI risk | `pde pk ddi <input_file>` | `raw/pk/{compound_id}.pk-ddi.json`<br>`raw/pk/{compound_id}.pk-ddi.meta.json` |
-| Apply thresholds and produce verdict | `pde pk analyze <path>` | `raw/pk/{stem}.pk.analysis.json` |
+| Parse and validate a PK study | `pkde pk ingest <input_file>` | `raw/pk/{study_id}.pk-study.json`<br>`raw/pk/{study_id}.pk-study.meta.json` |
+| Compute NCA parameters | `pkde pk nca <study_file>` | `raw/pk/{study_id}.pk-nca.json`<br>`raw/pk/{study_id}.pk-nca.meta.json` |
+| Scale animal PK to human | `pkde pk scale <nca_files...>` | `raw/pk/{compound_id}.pk-scaling.json`<br>`raw/pk/{compound_id}.pk-scaling.meta.json` |
+| Predict DDI risk | `pkde pk ddi <input_file>` | `raw/pk/{compound_id}.pk-ddi.json`<br>`raw/pk/{compound_id}.pk-ddi.meta.json` |
+| Apply thresholds and produce verdict | `pkde pk analyze <path>` | `raw/pk/{stem}.pk.analysis.json` |
 
 Run phase 1 (`ingest`, `nca`, `scale`, `ddi`) before phase 2
 (`analyze`). `analyze` reads from disk and can be re-run with
@@ -94,7 +94,7 @@ depend on the artifact type:
 The `therapeutic_exposure_adequacy` threshold in `pk-parameters@1.0`
 is UNRESOLVED -- no universal default exists. **Do not invent a
 value.** A program-specific value must be set in
-`.pde/thresholds.yaml` before exposure adequacy assessments can
+`.pkde/thresholds.yaml` before exposure adequacy assessments can
 be made. The analysis records this gap explicitly.
 
 Thresholds are cited by name. The values in force are in the
@@ -195,7 +195,7 @@ estimate, and do not proceed on an assumed result.
 - **Inventing a therapeutic_exposure_adequacy value.** This
   threshold is UNRESOLVED. The analysis records the gap. Do not
   supply a plausible number -- the program must set one in
-  `.pde/thresholds.yaml` with a recorded justification.
+  `.pkde/thresholds.yaml` with a recorded justification.
 - **Mixing IV and non-IV NCA files in allometric scaling.** IV
   produces CL and Vd; non-IV produces CL/F and Vd/F. The tool
   refuses this, but do not attempt to combine them manually.

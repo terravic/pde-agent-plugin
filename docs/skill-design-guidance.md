@@ -1,9 +1,9 @@
-# PDE Skill Design Guidance
+# PkDE Skill Design Guidance
 
 **Status**: v0.1. Expect revision after the pilot conversion (co-scientist, AlphaFold, AlphaGenome).
-**Purpose**: the standard for writing pde skills, and the reference for converting `upstream-science-skills` one at a time.
+**Purpose**: the standard for writing pkde skills, and the reference for converting `upstream-science-skills` one at a time.
 **Companion**: [`tool-design-guidance.md`](tool-design-guidance.md). That document is normative for paths, sidecars, and thresholds.
-**Context**: [`pde-plan.md`](pde-plan.md) §5 and §7.
+**Context**: [`pkde-plan.md`](pkde-plan.md) §5 and §7.
 
 This document's specialist-neutral grouping rule applies to **science capability
 skills**. Procedural orchestration skills may bind to the Science Program Lead or
@@ -14,9 +14,9 @@ placement rules are defined in
 
 ---
 
-## 1. What a pde skill is
+## 1. What a pkde skill is
 
-A pde science skill is a routing and interpretation contract for a **capability** — a group of tools that share the rules for reading their results.
+A pkde science skill is a routing and interpretation contract for a **capability** — a group of tools that share the rules for reading their results.
 
 A skill is not a manual for a tool. A skill is also not the property of one specialist. The same capability serves different roles, asking different questions, at different stages. The role-specific part belongs in the template. See §3.
 
@@ -40,7 +40,7 @@ What remains is what a model cannot get from the tool output alone: whether to r
 
 ## 2. Group by shared interpretation contract; name by capability
 
-Upstream science-skills uses one skill per database. That fits a general-purpose corpus, where any user might want gnomAD alone. PDE is a pipeline. Its tools cluster.
+Upstream science-skills uses one skill per database. That fits a general-purpose corpus, where any user might want gnomAD alone. PkDE is a pipeline. Its tools cluster.
 
 ### Grouping test
 
@@ -73,7 +73,7 @@ Do not group tools because they belong to the same scientific field. Foldseek an
 
 ### Expected count
 
-Applied across the corpus, the grouping test should give **8 to 12 pde skills**, not a 1:1 conversion of the ~38 upstream skills.
+Applied across the corpus, the grouping test should give **8 to 12 pkde skills**, not a 1:1 conversion of the ~38 upstream skills.
 
 That number is an outcome of applying the test, not a target. At 30, the test is not being applied. At 4, contexts are being merged that do not share an interpretation contract.
 
@@ -104,7 +104,7 @@ Nine things make up a skill. Six are scoped to the tool and do not vary by role:
 
 Two vary by role: which question is being asked, and what happens next. One varies by program: the threshold.
 
-That last one is the precedent. Thresholds vary by program, so they moved out of the skill into `.pde/thresholds.yaml`. Nobody forked a skill per program. Question and consequence vary by role, so they move out too — into the template. The `skills:` list in `agent.yaml` is the capability grant. The always-loaded descriptions do the routing.
+That last one is the precedent. Thresholds vary by program, so they moved out of the skill into `.pkde/thresholds.yaml`. Nobody forked a skill per program. Question and consequence vary by role, so they move out too — into the template. The `skills:` list in `agent.yaml` is the capability grant. The always-loaded descriptions do the routing.
 
 Bake a role into a skill and one cluster becomes four skills. Each restates the same invocation table and the same output paths. Four copies of the artifact contract is four chances for it to drift. A drifted invocation table makes an agent guess a path, then invent what it would have found there.
 
@@ -174,9 +174,9 @@ This section connects the skill to the CLI. Write it as a table: question, comma
 
 | Question | Run | Writes to |
 |---|---|---|
-| How confident is the fold? | `pde alphafold fetch <UNIPROT>`<br>`pde alphafold analyze <UNIPROT>` | `raw/structures/AF-<id>.cif`<br>`raw/structures/AF-<id>.meta.json`<br>`raw/structures/AF-<id>.analysis.json` |
-| Is there an experimental structure? | `pde pdb search --uniprot <UNIPROT>` | `raw/structures/pdb-search-<id>.json` |
-| Is the pocket druggable? | `pde fpocket run raw/structures/AF-<id>.cif` | `raw/structures/AF-<id>.pockets.json`<br>`raw/structures/AF-<id>.pockets.analysis.json` |
+| How confident is the fold? | `pkde alphafold fetch <UNIPROT>`<br>`pkde alphafold analyze <UNIPROT>` | `raw/structures/AF-<id>.cif`<br>`raw/structures/AF-<id>.meta.json`<br>`raw/structures/AF-<id>.analysis.json` |
+| Is there an experimental structure? | `pkde pdb search --uniprot <UNIPROT>` | `raw/structures/pdb-search-<id>.json` |
+| Is the pocket druggable? | `pkde fpocket run raw/structures/AF-<id>.cif` | `raw/structures/AF-<id>.pockets.json`<br>`raw/structures/AF-<id>.pockets.analysis.json` |
 
 Run `fetch` before `analyze`. `analyze` reads from disk and can be re-run without re-querying.
 ```
@@ -185,7 +185,7 @@ Three rules:
 
 1. **Every capability the skill claims needs a row.** No row means the skill must not claim it. An agent asked for a pocket volume with no pocket tool will produce a plausible invented number.
 2. **Show the paths.** The agent must not guess where output went. It should cite the path in a Layer 1 finding without re-deriving it. Everything in the table lands under `raw/`. Model outputs, sidecars, and `.analysis.json` are all Layer 0.
-3. **Do not restate `--help`.** Give two or three canonical invocations. `pde <tool> --help` is the option reference. A second copy will drift.
+3. **Do not restate `--help`.** Give two or three canonical invocations. `pkde <tool> --help` is the option reference. A second copy will drift.
 
 ### 4.5 Interpretation contract
 
@@ -195,7 +195,7 @@ Include:
 
 - **Mandatory relays.** Warnings that must reach the report unchanged. Isoform substitution is the model case — analyzing an isoform instead of the canonical sequence invalidates everything downstream.
 
-  **Name the code, not the warning text.** Relays carry registered codes such as `afdb.partial_coverage`, emitted top-level in the sidecar and `.analysis.json`. Cite the code and state what it obliges the specialist to do. Do not restate the message: prose is reworded between builds, and a skill that matched on the old wording goes quietly stale. This is the same rule as thresholds, for the same reason — cite the name, let the CLI own the value. Run `pde relays` for the registry, and see [`tool-design-guidance.md`](tool-design-guidance.md) §5.1.
+  **Name the code, not the warning text.** Relays carry registered codes such as `afdb.partial_coverage`, emitted top-level in the sidecar and `.analysis.json`. Cite the code and state what it obliges the specialist to do. Do not restate the message: prose is reworded between builds, and a skill that matched on the old wording goes quietly stale. This is the same rule as thresholds, for the same reason — cite the name, let the CLI own the value. Run `pkde relays` for the registry, and see [`tool-design-guidance.md`](tool-design-guidance.md) §5.1.
 
   A relay is an instruction, not a caveat. `afdb.partial_coverage` does not mean "mention that coverage is partial"; it means the confidence metrics describe the modelled region, so any claim about the protein must be scoped to that region or withheld.
 - **Synthesis rules.** How to combine outputs across the grouped tools into one judgment.
@@ -226,7 +226,7 @@ Two parts.
 
 | Content | Where it belongs | Why |
 |---|---|---|
-| Install instructions | Shared environment; `pde doctor` | If it is not installed, fail loudly. Do not let the agent improvise a fix. |
+| Install instructions | Shared environment; `pkde doctor` | If it is not installed, fail loudly. Do not let the agent improvise a fix. |
 | Endpoint URLs, project IDs | CLI environment config | `pharma_skills` ships two hardcoded endpoints with mismatched project numbers. This failure is not hypothetical. |
 | Threshold values | CLI config, stamped into output | Must be program-configurable and testable. |
 | API parameter enumerations | `references/`, loaded on demand, or `--help` | Progressive disclosure keeps the always-loaded surface small. |
@@ -240,11 +240,11 @@ Two parts.
 
 In order:
 
-1. **Decide the capability.** Does this become its own pde skill, or fold into a group? Most database skills fold. Then list every role that could use it. If the list has more than one name, make sure no part of the skill assumes only the first.
+1. **Decide the capability.** Does this become its own pkde skill, or fold into a group? Most database skills fold. Then list every role that could use it. If the list has more than one name, make sure no part of the skill assumes only the first.
 2. **Move the scripts into the CLI** as `<tool> fetch` and `<tool> analyze` subcommands. Keep the logic. Change the I/O contract per `tool-design-guidance.md`.
 3. **Lift threshold constants out of the script** into CLI config. `analyze_plddt.py` has five module constants. Those become named, overridable, and cited in output.
 4. **Keep the interpretation prose.** The upstream `## Interpreting the Output` sections are the valuable content and mostly survive intact.
-5. **Rewrite the description** with a negative clause naming pde siblings, not upstream skill names.
+5. **Rewrite the description** with a negative clause naming pkde siblings, not upstream skill names.
 6. **Build the invocation table** from the new CLI subcommands.
 7. **Delete** prerequisites, install steps, and the license side-effect block. Handle licensing once, centrally.
 8. **Record provenance.** Upstream repo, commit, and license, in frontmatter or a `NOTICE`. Upstream is Apache 2.0 for code and CC-BY 4.0 for materials. Attribution is required and cheap.

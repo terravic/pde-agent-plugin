@@ -10,13 +10,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the Unified Multi-Agent + PDE Interactive Scientific Dashboard (`pde dashboard`)."""
+"""Tests for the Unified Multi-Agent + PkDE Interactive Scientific Dashboard (`pkde dashboard`)."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from pde.commands.dashboard import (
+from pkde.commands.dashboard import (
     ALL_10_CHECKS,
     _classify_viewer,
     _detect_domain_studio,
@@ -24,7 +24,7 @@ from pde.commands.dashboard import (
     build_dashboard_html,
     collect_dashboard_bundle,
 )
-from pde.core.context import init_project
+from pkde.core.context import init_project
 from tests._fixture_workspace import populate_demo_workspace
 
 
@@ -34,7 +34,7 @@ def test_dashboard_created_on_init_and_incremental_population(tmp_path: Path) ->
     dash_file = ws / "dashboard.html"
     assert dash_file.is_file(), "dashboard.html should be created immediately upon init_project"
     initial_html = dash_file.read_text(encoding="utf-8")
-    assert "window.__PDE_BUNDLE__" in initial_html
+    assert "window.__PKDE_BUNDLE__" in initial_html
 
 
 def test_viewer_classification_covers_all_14_types() -> None:
@@ -63,12 +63,12 @@ def test_viewer_classification_covers_all_14_types() -> None:
 
 
 def test_detect_domain_studio_covers_all_specialist_domains() -> None:
-    assert _detect_domain_studio("KRAS_G12D_panel.json", "pde.bioactivity", {}, {}) == ("bioactivity_studio", "Bioactivity, Dose-Response & Selectivity Studio")
-    assert _detect_domain_studio("rat_iv_po.pk.json", "pde.pk", {}, {}) == ("pk_studio", "PK / NCA / Scaling & DDI Studio")
-    assert _detect_domain_studio("repeat_dose_14d.json", "pde.tox", {}, {}) == ("tox_studio", "Preclinical Toxicology & Safety Studio")
-    assert _detect_domain_studio("MRTX1133.descriptors.json", "pde.descriptors", {}, {}) == ("medchem_studio", "MedChem Descriptors, Alerts & SAR Studio")
-    assert _detect_domain_studio("rs12345.alphagenome.json", "pde.genomics", {}, {}) == ("omics_studio", "Genomics, Variant Effect & Transcriptomics Studio")
-    assert _detect_domain_studio("kras.trials.json", "pde.pipeline", {}, {}) == ("competitive_studio", "Clinical Pipeline, Patent & Manufacturing Studio")
+    assert _detect_domain_studio("KRAS_G12D_panel.json", "pkde.bioactivity", {}, {}) == ("bioactivity_studio", "Bioactivity, Dose-Response & Selectivity Studio")
+    assert _detect_domain_studio("rat_iv_po.pk.json", "pkde.pk", {}, {}) == ("pk_studio", "PK / NCA / Scaling & DDI Studio")
+    assert _detect_domain_studio("repeat_dose_14d.json", "pkde.tox", {}, {}) == ("tox_studio", "Preclinical Toxicology & Safety Studio")
+    assert _detect_domain_studio("MRTX1133.descriptors.json", "pkde.descriptors", {}, {}) == ("medchem_studio", "MedChem Descriptors, Alerts & SAR Studio")
+    assert _detect_domain_studio("rs12345.alphagenome.json", "pkde.genomics", {}, {}) == ("omics_studio", "Genomics, Variant Effect & Transcriptomics Studio")
+    assert _detect_domain_studio("kras.trials.json", "pkde.pipeline", {}, {}) == ("competitive_studio", "Clinical Pipeline, Patent & Manufacturing Studio")
 
 
 def test_roles_catalog_loads_all_22_roles() -> None:
@@ -140,7 +140,7 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
     out_path, _ = build_dashboard_html(ws, standalone_mode=True)
     assert out_html.is_file()
     html_text = out_html.read_text(encoding="utf-8")
-    assert "window.__PDE_BUNDLE__" in html_text
+    assert "window.__PKDE_BUNDLE__" in html_text
     assert "KRAS-G12D-Selective-Inhibitor" in html_text
     assert "buildLineageForest" in html_text
     assert "renderPlotWithFallback" in html_text
@@ -169,17 +169,17 @@ def test_dashboard_bundle_and_standalone_html(tmp_path: Path) -> None:
 
 
 def test_prompt_bootstrap_and_passive_cli_telemetry(tmp_path: Path) -> None:
-    from pde_plugin.tool_bridge import (
-        pde_bootstrap_session,
-        pde_exec,
-        pde_log_agent_message,
+    from pkde_plugin.tool_bridge import (
+        pkde_bootstrap_session,
+        pkde_exec,
+        pkde_log_agent_message,
     )
 
     ws = tmp_path / "prompt-session"
     prompt_text = "Evaluate aspirin physicochemical properties and ADMET profile."
 
     # 1. Bootstrap session from user prompt (without binding a background port in unit test)
-    boot = pde_bootstrap_session(
+    boot = pkde_bootstrap_session(
         prompt=prompt_text,
         program_name="Aspirin-Fast-Track",
         stage=1,
@@ -191,21 +191,21 @@ def test_prompt_bootstrap_and_passive_cli_telemetry(tmp_path: Path) -> None:
     assert (ws / "dashboard.html").is_file()
 
     # 2. Log an explicit inter-agent communication
-    comm = pde_log_agent_message(
+    comm = pkde_log_agent_message(
         from_agent="science-program-lead",
-        to_agent="pde-medicinal-chemist",
+        to_agent="pkde-medicinal-chemist",
         summary="Dispatching fast-path compound descriptor and alert profiling for aspirin.",
         project_dir=str(ws),
     )
     assert comm["ok"] is True
 
     # 3. Execute two-phase CLI commands and verify passive CLI telemetry capture
-    r1 = pde_exec(
+    r1 = pkde_exec(
         'compound profile "CC(=O)Oc1ccccc1C(=O)O" --name aspirin --json',
         project_dir=str(ws),
     )
     assert r1["ok"] is True
-    r2 = pde_exec("compound analyze aspirin --json", project_dir=str(ws))
+    r2 = pkde_exec("compound analyze aspirin --json", project_dir=str(ws))
     assert r2["ok"] is True
 
     # 4. Write a Layer 1 finding report to verify filesystem discovery telemetry
@@ -248,7 +248,7 @@ def test_prompt_bootstrap_and_passive_cli_telemetry(tmp_path: Path) -> None:
 
 def test_background_server_start_status_stop(tmp_path: Path) -> None:
     import socket
-    from pde.commands.dashboard import (
+    from pkde.commands.dashboard import (
         ensure_dashboard_server,
         get_dashboard_server_status,
         stop_dashboard_server,

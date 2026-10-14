@@ -39,7 +39,7 @@ an intervention concept:
   Optionally `entity_ref` (compound SMILES, sequence identifier, or
   construct ID) and `delivery_assumptions` (route, formulation, vehicle).
 - **SA-score** (optional): if a small-molecule concept has a structure,
-  an existing SA-score record from `pde compound sa-score` can be
+  an existing SA-score record from `pkde compound sa-score` can be
   incorporated.  The SA-score is NOT recomputed by this skill — use
   the existing `compound sa-score` command to compute it first.
 - **RDKit** (optional): if installed, complexity heuristics
@@ -53,14 +53,14 @@ an intervention concept:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Does this concept have a plausible manufacturing path? | `pde manufacturing assess-stage0 <CONCEPT_PATH>` | `raw/manufacturing/<IC-NNN>.manufacturing-stage0.json` |
-| What are the stage-gated requirement structures? | `pde manufacturing stage-requirements` | (stdout only) |
-| What is this compound's SA-score? (prerequisite) | `pde compound sa-score <SMILES>` | `raw/compounds/<slug>.sa-score.json` |
+| Does this concept have a plausible manufacturing path? | `pkde manufacturing assess-stage0 <CONCEPT_PATH>` | `raw/manufacturing/<IC-NNN>.manufacturing-stage0.json` |
+| What are the stage-gated requirement structures? | `pkde manufacturing stage-requirements` | (stdout only) |
+| What is this compound's SA-score? (prerequisite) | `pkde compound sa-score <SMILES>` | `raw/compounds/<slug>.sa-score.json` |
 
 To incorporate SA-score into the manufacturing assessment:
 ```
-pde compound sa-score <SMILES>
-pde manufacturing assess-stage0 <CONCEPT_PATH> --sa-score-path raw/compounds/<slug>.sa-score.json
+pkde compound sa-score <SMILES>
+pkde manufacturing assess-stage0 <CONCEPT_PATH> --sa-score-path raw/compounds/<slug>.sa-score.json
 ```
 
 ## 4. Interpretation contract

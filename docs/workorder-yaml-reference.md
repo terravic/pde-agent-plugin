@@ -1,10 +1,10 @@
 # Work Order YAML Reference
 
-Reference for the YAML schema accepted by `pde workorder create --from <file>`.
+Reference for the YAML schema accepted by `pkde workorder create --from <file>`.
 
 > **Alias:** `wo` is a shorthand for `workorder`. Every command below works
-> identically with either name — e.g. `pde wo create` and
-> `pde workorder create` are the same command.
+> identically with either name — e.g. `pkde wo create` and
+> `pkde workorder create` are the same command.
 
 For the design rationale behind work orders, see
 [orchestration-design-guidance.md](orchestration-design-guidance.md) sections 3-5.
@@ -161,18 +161,18 @@ arrow represents a legal transition.
 ### Transition mode
 
 All run transitions are explicit CLI invocations — no transition is automatic.
-A new run is created in the `queued` state by `pde run create <WO-ID>`, and
+A new run is created in the `queued` state by `pkde run create <WO-ID>`, and
 every subsequent transition is performed with
-`pde run transition <RUN-ID> <STATE>`.
+`pkde run transition <RUN-ID> <STATE>`.
 
 ### Commands
 
 | Command | Effect |
 |---------|--------|
-| `pde run create <WO-ID>` | Creates a new run targeting the latest committed revision, in `queued` state. |
-| `pde run transition <RUN-ID> <STATE>` | Advances the run to `<STATE>` if the transition is legal. |
+| `pkde run create <WO-ID>` | Creates a new run targeting the latest committed revision, in `queued` state. |
+| `pkde run transition <RUN-ID> <STATE>` | Advances the run to `<STATE>` if the transition is legal. |
 
-If you attempt an illegal transition, `pde run transition` exits with code 9
+If you attempt an illegal transition, `pkde run transition` exits with code 9
 (`Refusal`) and reports the current state, the rejected target, and the set of
 legal targets — so you can discover the valid next states from the error message
 itself. This section documents the full graph upfront to remove the need to
@@ -334,12 +334,12 @@ Each entry in `artifact_links` is a dict with:
 | `path`        | string | Path relative to the project root. Must not escape the project root. |
 | `description` | string | What this artifact provides. |
 
-When a work order is **committed** (`pde workorder commit`), the CLI:
+When a work order is **committed** (`pkde workorder commit`), the CLI:
 
 1. Resolves each `path` relative to the project root.
 2. Verifies the file exists and is within the project boundary.
 3. Computes a `sha256` checksum for each artifact and stores it in the link.
-4. Creates a context snapshot record under `.pde/control/contexts/`.
+4. Creates a context snapshot record under `.pkde/control/contexts/`.
 
 <!-- NOTE: §8 numbering follows §7; update if sections are reordered. -->
 
@@ -359,8 +359,8 @@ order lifecycle, each enforcing a different constraint:
 
 | Check point          | Command               | What it checks |
 |----------------------|-----------------------|----------------|
-| **Type check**       | `pde workorder create` | `deliverables` must be a `dict`, not a `list`. Rejects the wrong container type. |
-| **Schema check**     | `pde validate check`   | The dict must contain at least one of the recognized keys: `layer_1` and/or `layer_0_classes` (alias: `layer_0`). A dict with only arbitrary keys causes 5 of 8 mechanical checks to skip, which is treated as a failure. |
+| **Type check**       | `pkde workorder create` | `deliverables` must be a `dict`, not a `list`. Rejects the wrong container type. |
+| **Schema check**     | `pkde validate check`   | The dict must contain at least one of the recognized keys: `layer_1` and/or `layer_0_classes` (alias: `layer_0`). A dict with only arbitrary keys causes 5 of 8 mechanical checks to skip, which is treated as a failure. |
 
 A work order that passes creation (type check) can still fail validation
 (schema check) if its `deliverables` dict uses unrecognized keys.
@@ -379,7 +379,7 @@ Both may be present when a work order covers raw artifacts and a written report.
 
 Values in `layer_0_classes` must be registered artifact-class names — each
 one corresponds to a subdirectory under `raw/` in the project. The
-authoritative list lives in `tools/pde/core/context.py` (`ARTIFACT_DIRS`).
+authoritative list lives in `tools/pkde/core/context.py` (`ARTIFACT_DIRS`).
 
 <!-- MAINTENANCE NOTE: This list is inlined for convenience. If it drifts from
      ARTIFACT_DIRS in core/context.py, context.py is the source of truth.
@@ -439,18 +439,18 @@ the content fields and creates a context snapshot with artifact checksums.
 
 ```bash
 # Step 1: create the work order in proposed state.
-pde workorder create --from wo-spec.yaml
+pkde workorder create --from wo-spec.yaml
 # → WO-003 created (revision 1, state: proposed)
 
 # Step 2: commit it — freezes content, creates context snapshot.
-pde workorder commit WO-003
+pkde workorder commit WO-003
 # → WO-003 committed (revision 1)
 ```
 
 Between create and commit you may update content fields with
-`pde workorder update WO-003 --from updated-spec.yaml` as many times as
+`pkde workorder update WO-003 --from updated-spec.yaml` as many times as
 needed. Once committed, content is frozen; further changes require a new
-revision (`pde workorder revise`).
+revision (`pkde workorder revise`).
 
 ### Single-step shortcut
 
@@ -458,7 +458,7 @@ When the YAML is already final and no intermediate edits are needed, pass
 `--commit` to create both records in one invocation:
 
 ```bash
-pde workorder create --from wo-spec.yaml --commit
+pkde workorder create --from wo-spec.yaml --commit
 # → WO-003 created and committed (revision 1, state: committed)
 ```
 
@@ -470,9 +470,9 @@ commands separately.
 
 | Situation | Command |
 |-----------|---------|
-| YAML is final, ready to queue immediately | `pde wo create --from spec.yaml --commit` |
-| Need to review or edit after creation | `pde wo create --from spec.yaml`, then `pde wo commit <ID>` |
-| Updating a proposed WO before committing | `pde wo update <ID> --from updated.yaml` |
+| YAML is final, ready to queue immediately | `pkde wo create --from spec.yaml --commit` |
+| Need to review or edit after creation | `pkde wo create --from spec.yaml`, then `pkde wo commit <ID>` |
+| Updating a proposed WO before committing | `pkde wo update <ID> --from updated.yaml` |
 
 
 ---
@@ -490,7 +490,7 @@ submitted → mechanically_validated` — is mechanical bookkeeping.
 ### Usage
 
 ```bash
-pde wo accept <ID>
+pkde wo accept <ID>
 ```
 
 ### What it does
@@ -509,7 +509,7 @@ pde wo accept <ID>
    scientific judgment:
 
    ```bash
-   pde workorder transition <ID> scientifically_accepted
+   pkde workorder transition <ID> scientifically_accepted
    ```
 
 4. **Stops at `validation_failed`** if any check fails, surfacing the same
@@ -523,7 +523,7 @@ pde wo accept <ID>
 
 ```bash
 # Full chain from committed:
-pde wo accept WO-003
+pkde wo accept WO-003
 #   WO-003: committed → queued
 #   WO-003: queued → in_progress
 #   WO-003: in_progress → submitted
@@ -537,17 +537,17 @@ pde wo accept WO-003
 #   WO-003: submitted → mechanically_validated  [validation PASS]
 #
 #   WO-003 is now mechanically_validated and ready for scientific acceptance.
-#     pde workorder transition WO-003 scientifically_accepted
+#     pkde workorder transition WO-003 scientifically_accepted
 
 # Starting partway through (already in_progress):
-pde wo accept WO-003
+pkde wo accept WO-003
 #   WO-003: in_progress → submitted
 #
 #   Running mechanical validation on WO-003...
 #   ...
 
 # Validation failure — stops with actionable output:
-pde wo accept WO-003
+pkde wo accept WO-003
 #   WO-003: committed → queued
 #   WO-003: queued → in_progress
 #   WO-003: in_progress → submitted
@@ -563,7 +563,7 @@ pde wo accept WO-003
 #
 #   Remedy:
 #     1. Fix the failing deliverables and resubmit, or
-#     2. Use `pde workorder override WO-003` to override eligible checks
+#     2. Use `pkde workorder override WO-003` to override eligible checks
 ```
 
 ### What it does NOT do
@@ -571,12 +571,12 @@ pde wo accept WO-003
 - **Does not auto-transition to `scientifically_accepted`** — that is a
   human judgment call.
 - **Does not bypass the #178 override guard** — `validation_failed →
-  mechanically_validated` still requires `pde workorder override`.
+  mechanically_validated` still requires `pkde workorder override`.
 - **Does not bypass the #237 submitted-bypass guard** — the real
   `validate check` logic runs; the `submitted → mechanically_validated`
   transition is never a direct state flip.
 - **Does not handle `proposed` state** — the WO must be committed first
-  (`pde workorder commit <ID>`).
+  (`pkde workorder commit <ID>`).
 
 ### Interaction with override and retry
 
@@ -584,8 +584,8 @@ If `accept` stops at `validation_failed`:
 
 | Next step | Command |
 |-----------|---------|
-| Fix deliverables and retry | `pde workorder transition <ID> in_progress`, fix issues, `pde wo accept <ID>` |
-| Override eligible checks | `pde workorder override <ID> --reason "..." --evidence "..." --checks "..." --actor "..."` |
+| Fix deliverables and retry | `pkde workorder transition <ID> in_progress`, fix issues, `pkde wo accept <ID>` |
+| Override eligible checks | `pkde workorder override <ID> --reason "..." --evidence "..." --checks "..." --actor "..."` |
 
 ---
 
@@ -605,10 +605,10 @@ order.
 ### Foundational Claim Check
 
 **What it is.** A lightweight, single work order that tests ONE foundational
-claim identified as contradicted during `pde coscientist analyze`. The outcome
+claim identified as contradicted during `pkde coscientist analyze`. The outcome
 is binary: SUPPORTED or REFUTED.
 
-**When to use it.** After `pde coscientist analyze` flags contradicted claims
+**When to use it.** After `pkde coscientist analyze` flags contradicted claims
 on the recommended idea (verdict `leader-with-advisories`), instead of
 immediately dispatching a full validation cohort (e.g. 5 parallel work orders),
 dispatch this single claim-check first. It targets the most-contradicted
@@ -630,7 +630,7 @@ full analysis cycle.
 **Example workflow:**
 
 ```
-1. pde coscientist analyze tournament.json
+1. pkde coscientist analyze tournament.json
    → Verdict: leader-with-advisories
    → Leader: GENE_X (3 contradicted claims)
 
@@ -639,7 +639,7 @@ full analysis cycle.
       wo-gene-x-claim-check.yaml
    # Edit wo-gene-x-claim-check.yaml — fill in all [PLACEHOLDER] values
 
-3. pde workorder create --from wo-gene-x-claim-check.yaml --commit
+3. pkde workorder create --from wo-gene-x-claim-check.yaml --commit
    → WO-007 created and committed
 
 4. Execute WO-007 (single specialist, fast turnaround)

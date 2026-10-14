@@ -14,12 +14,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from pde_plugin.tool_bridge import pde_dispatch_workorder  # noqa: E402
+from pkde_plugin.tool_bridge import pkde_dispatch_workorder  # noqa: E402
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Dispatch a PDE Work Order and generate the specialist brief."
+        description="Dispatch a PkDE Work Order and generate the specialist brief."
     )
     parser.add_argument(
         "--spec",
@@ -29,7 +29,7 @@ def main() -> int:
     parser.add_argument(
         "--project",
         default=None,
-        help="Optional PDE project workspace directory override.",
+        help="Optional PkDE project workspace directory override.",
     )
     args = parser.parse_args()
 
@@ -40,7 +40,7 @@ def main() -> int:
         spec_path = Path(spec_arg).expanduser().resolve()
         spec = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
 
-    res = pde_dispatch_workorder(spec=spec, project_dir=args.project)
+    res = pkde_dispatch_workorder(spec=spec, project_dir=args.project)
     print(json.dumps(res, indent=2))
     return 0 if res.get("ok") else 1
 

@@ -36,7 +36,7 @@ partial writes. Concurrent ID allocation is safe via filesystem locking.`,
 // defaultRunsDir is the default base directory for runs.
 const defaultRunsDir = "executions"
 
-// defaultSchemaDir resolves schemas installed beside the executable by PDE's
+// defaultSchemaDir resolves schemas installed beside the executable by PkDE's
 // bootstrapper. The source-tree fallback keeps upstream development commands
 // working from the repository root.
 func defaultSchemaDir() string {

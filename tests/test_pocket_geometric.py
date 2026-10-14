@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Tests for the built-in Python/NumPy geometric pocket detector fallback in `pde pocket`."""
+"""Tests for the built-in Python/NumPy geometric pocket detector fallback in `pkde pocket`."""
 
 from __future__ import annotations
 
@@ -22,15 +22,15 @@ from pathlib import Path
 
 from click.testing import CliRunner
 
-os.environ.setdefault("PDE_NO_DIRTY_WARNING", "1")
+os.environ.setdefault("PKDE_NO_DIRTY_WARNING", "1")
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-from pde.cli import cli  # noqa: E402
-from pde.commands.docking import _compute_grid_box, _locate_pocket_atoms  # noqa: E402
-from pde.core.context import init_project  # noqa: E402
+from pkde.cli import cli  # noqa: E402
+from pkde.commands.docking import _compute_grid_box, _locate_pocket_atoms  # noqa: E402
+from pkde.core.context import init_project  # noqa: E402
 
 
 def _write_synthetic_cavity_pdb(path: Path) -> None:
@@ -108,7 +108,7 @@ def _write_synthetic_cavity_cif(path: Path) -> None:
 
 
 def test_geometric_pocket_run_analyze_and_docking_grid_pdb(tmp_path: Path) -> None:
-    """Test two-phase `pde pocket run --backend geometric` + `pde pocket analyze` and docking grid derivation on PDB."""
+    """Test two-phase `pkde pocket run --backend geometric` + `pkde pocket analyze` and docking grid derivation on PDB."""
     proj_dir = init_project(tmp_path / "prog_pocket_pdb")
     runner = CliRunner()
 
@@ -116,7 +116,7 @@ def test_geometric_pocket_run_analyze_and_docking_grid_pdb(tmp_path: Path) -> No
     pdb_path.parent.mkdir(parents=True, exist_ok=True)
     _write_synthetic_cavity_pdb(pdb_path)
 
-    # Phase 1: pde pocket run --backend geometric
+    # Phase 1: pkde pocket run --backend geometric
     res_run = runner.invoke(
         cli,
         [
@@ -152,7 +152,7 @@ def test_geometric_pocket_run_analyze_and_docking_grid_pdb(tmp_path: Path) -> No
     meta_relays = {r["code"] for r in meta_doc.get("mandatory_relays", [])}
     assert "pocket.geometric_fallback_backend" in meta_relays
 
-    # Phase 2A: pde pocket analyze (whole structure)
+    # Phase 2A: pkde pocket analyze (whole structure)
     res_analyze = runner.invoke(
         cli,
         [
@@ -170,7 +170,7 @@ def test_geometric_pocket_run_analyze_and_docking_grid_pdb(tmp_path: Path) -> No
     analysis_relays = {r["code"] for r in analysis.get("mandatory_relays", [])}
     assert "pocket.geometric_fallback_backend" in analysis_relays
 
-    # Phase 2B: pde pocket analyze --near (site-specific)
+    # Phase 2B: pkde pocket analyze --near (site-specific)
     lining = pockets_record["pockets"][0]["residues"]
     assert len(lining) >= 1
     first_res = f"{lining[0]['chain']}:{lining[0]['resnum']}"
@@ -202,7 +202,7 @@ def test_geometric_pocket_run_analyze_and_docking_grid_pdb(tmp_path: Path) -> No
 
 
 def test_geometric_pocket_auto_fallback_cif(tmp_path: Path) -> None:
-    """Test two-phase `pde pocket run --backend auto` + `pde pocket analyze` and docking grid derivation on mmCIF."""
+    """Test two-phase `pkde pocket run --backend auto` + `pkde pocket analyze` and docking grid derivation on mmCIF."""
     proj_dir = init_project(tmp_path / "prog_pocket_cif")
     runner = CliRunner()
 
@@ -210,7 +210,7 @@ def test_geometric_pocket_auto_fallback_cif(tmp_path: Path) -> None:
     cif_path.parent.mkdir(parents=True, exist_ok=True)
     _write_synthetic_cavity_cif(cif_path)
 
-    # Phase 1: pde pocket run --backend auto
+    # Phase 1: pkde pocket run --backend auto
     res_run = runner.invoke(
         cli,
         [
@@ -230,7 +230,7 @@ def test_geometric_pocket_auto_fallback_cif(tmp_path: Path) -> None:
 
     pockets_json_path = proj_dir / "raw" / "structures" / "1SYN.pockets.json"
     fpocket_tree = proj_dir / "raw" / "structures" / "1SYN_fpocket"
-    # Phase 2: pde pocket analyze
+    # Phase 2: pkde pocket analyze
     res_analyze = runner.invoke(
         cli,
         [
@@ -254,7 +254,7 @@ def test_geometric_pocket_auto_fallback_cif(tmp_path: Path) -> None:
 
 
 def test_relays_registry_includes_geometric_fallback() -> None:
-    """Verify `pde relays --json` attributes `pocket.geometric_fallback_backend` to `pocket run`."""
+    """Verify `pkde relays --json` attributes `pocket.geometric_fallback_backend` to `pocket run`."""
     runner = CliRunner()
     res = runner.invoke(cli, ["relays", "--json"])
     assert res.exit_code == 0, res.output

@@ -20,9 +20,9 @@ import zipfile
 
 import yaml
 
-from pde.commands.dashboard import _load_roles_catalog
-from pde_plugin.build_targets import REPO_ROOT, build_all_targets
-from pde_plugin.sync_skills_to_registry import discover_skills, parse_frontmatter
+from pkde.commands.dashboard import _load_roles_catalog
+from pkde_plugin.build_targets import REPO_ROOT, build_all_targets
+from pkde_plugin.sync_skills_to_registry import discover_skills, parse_frontmatter
 
 
 def _assert_valid_single_line_frontmatter(raw_md: str, expected_name: str, label: str) -> None:
@@ -89,7 +89,7 @@ def test_agent_plugin_and_22_subagents_generated() -> None:
     plugin_dir = REPO_ROOT / ".agents" / "plugins" / "pharmakon-discovery-engine"
     assert (plugin_dir / "plugin.json").is_file()
     assert (plugin_dir / "mcp_config.json").is_file()
-    assert (plugin_dir / "rules" / "pde-scientific-integrity.md").is_file()
+    assert (plugin_dir / "rules" / "pkde-scientific-integrity.md").is_file()
 
     plugin_skill_dirs = [
         p for p in sorted((plugin_dir / "skills").iterdir()) if p.is_dir() and (p / "SKILL.md").is_file()
@@ -102,15 +102,15 @@ def test_agent_plugin_and_22_subagents_generated() -> None:
             f".agents/plugins/pharmakon-discovery-engine/skills/{psdir.name}/SKILL.md",
         )
 
-    agent_files = sorted((plugin_dir / "agents").glob("pde-*.md"))
+    agent_files = sorted((plugin_dir / "agents").glob("pkde-*.md"))
     assert len(agent_files) == 22
 
     catalog = _load_roles_catalog()
     for role_name, role_info in catalog.items():
-        agent_md_path = plugin_dir / "agents" / f"pde-{role_name}.md"
+        agent_md_path = plugin_dir / "agents" / f"pkde-{role_name}.md"
         assert agent_md_path.is_file(), f"Missing subagent file {agent_md_path}"
         content = agent_md_path.read_text(encoding="utf-8")
-        _assert_valid_single_line_frontmatter(content, f"pde-{role_name}", str(agent_md_path))
+        _assert_valid_single_line_frontmatter(content, f"pkde-{role_name}", str(agent_md_path))
         for sk in role_info["skills"]:
             assert sk in content
 
@@ -128,11 +128,11 @@ def test_skill_zip_bundles_valid() -> None:
 
     # Confirm the two primary skills contain their executable scripts
     with zipfile.ZipFile(bundles_dir / "pharmakon-discovery-engine.zip", "r") as zf:
-        pde_names = zf.namelist()
-        assert "scripts/start_live_session.py" in pde_names
-        assert "scripts/pde_runner.py" in pde_names
-        assert "scripts/dispatch_workorder.py" in pde_names
+        pkde_names = zf.namelist()
+        assert "scripts/start_live_session.py" in pkde_names
+        assert "scripts/pkde_runner.py" in pkde_names
+        assert "scripts/dispatch_workorder.py" in pkde_names
 
-    with zipfile.ZipFile(bundles_dir / "pde-dashboard.zip", "r") as zf:
+    with zipfile.ZipFile(bundles_dir / "pkde-dashboard.zip", "r") as zf:
         dash_names = zf.namelist()
         assert "scripts/render_dashboard.py" in dash_names

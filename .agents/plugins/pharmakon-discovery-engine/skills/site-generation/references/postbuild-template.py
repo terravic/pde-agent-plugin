@@ -4,9 +4,9 @@ Post-build orchestrator template.
 
 Copy this file into your project root or site-tools/ directory and adapt
 the FIXES list and fix functions to your program's needs.  Run after every
-`pde site build` and before verification:
+`pkde site build` and before verification:
 
-    pde site build
+    pkde site build
     python3 postbuild.py _site/
     # verify and serve
 

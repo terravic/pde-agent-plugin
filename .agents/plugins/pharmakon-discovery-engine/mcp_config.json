@@ -1,14 +1,14 @@
 {
   "mcpServers": {
-    "pde-engine": {
+    "pkde-engine": {
       "command": ".venv/bin/python",
       "args": [
         "-m",
-        "pde_plugin.mcp_server"
+        "pkde_plugin.mcp_server"
       ],
       "cwd": ".",
       "env": {
-        "PDE_ROOT": ".",
+        "PKDE_ROOT": ".",
         "PYTHONPATH": ".:./tools:./tools/vendor/hypex"
       }
     }

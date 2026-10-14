@@ -1,0 +1,17 @@
+{
+  "resource": "hypex-supervisor",
+  "resource_class": "hypex-supervisor",
+  "state": "released",
+  "work_order_id": "WO-005",
+  "holder_wo_id": "WO-005",
+  "work_order_revision": 1,
+  "run_id": "RUN-005",
+  "holder_run_id": "RUN-005",
+  "holder_agent": "pkde-hypex-supervisor",
+  "granted_at": "2026-10-14T20:06:18Z",
+  "acquired_at": "2026-10-14T20:06:18Z",
+  "ttl_minutes": 60,
+  "expires_at": "2026-10-14T20:06:18Z",
+  "extensions": 0,
+  "released_at": "2026-10-14T20:06:22Z"
+}

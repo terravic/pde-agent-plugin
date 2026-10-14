@@ -8,7 +8,7 @@ into them.
 
 ## [date] — [short decision title]
 
-**Decision record**: DR-NNN (structured record in `.pde/control/decisions/`)
+**Decision record**: DR-NNN (structured record in `.pkde/control/decisions/`)
 
 **Context**: What information was available at the time of this decision.
 Cite the accepted findings and program state that informed it.

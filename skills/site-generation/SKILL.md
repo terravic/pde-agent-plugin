@@ -1,8 +1,8 @@
 ---
 name: site-generation
-description: "Builds and publishes the PDE static dossier site (pde site build) and the unified PDE interactive standalone UI dashboard (pde dashboard build --standalone)."
+description: "Builds and publishes the PkDE static dossier site (pkde site build) and the unified PkDE interactive standalone UI dashboard (pkde dashboard build --standalone)."
 metadata:
-  display_name: PDE Static Dossier Site & Standalone Dashboard Publication
+  display_name: PkDE Static Dossier Site & Standalone Dashboard Publication
 ---
 
 # Site Generation
@@ -11,7 +11,7 @@ How the project curator builds, post-processes, and verifies the navigable HTML 
 
 ## When to Build
 
-Trigger `pde site build` whenever the source material has changed in a way that should be reflected on the site:
+Trigger `pkde site build` whenever the source material has changed in a way that should be reflected on the site:
 
 - A new work order has been accepted
 - Program state documents have been updated
@@ -24,13 +24,13 @@ Trigger `pde site build` whenever the source material has changed in a way that 
 ### Basic Build
 
 ```bash
-pde site build
+pkde site build
 ```
 
 By default, `raw/` artifacts are copied into `_site/raw/` so the built site is self-contained. Viewer `?file=` URLs resolve within the site directory. To disable bundling and revert to the previous layout where viewers reference `raw/` outside the site tree, pass `--no-bundle-raw`:
 
 ```bash
-pde site build --no-bundle-raw
+pkde site build --no-bundle-raw
 ```
 
 ### With Retrospectives (Managed Agent Environments)
@@ -38,7 +38,7 @@ pde site build --no-bundle-raw
 When running inside a managed agent environment, retrospectives live on the shared volume. Pass them explicitly so the build can include them:
 
 ```bash
-pde site build --retrospectives-dir retrospectives/
+pkde site build --retrospectives-dir retrospectives/
 ```
 
 ### Output
@@ -151,7 +151,7 @@ The site includes 13 auto-wired specialized HTML viewers for scientific data fil
 
 ## Post-Build Processing
 
-After `pde site build` completes and before verification, run a post-build orchestrator to fix known rendering gaps in the build output. Every fix script must be **idempotent** — safe to re-run after every build without accumulating changes.
+After `pkde site build` completes and before verification, run a post-build orchestrator to fix known rendering gaps in the build output. Every fix script must be **idempotent** — safe to re-run after every build without accumulating changes.
 
 ### Why This Phase Exists
 
@@ -181,7 +181,7 @@ The build tool renders markdown to HTML deterministically but does not handle ev
 ### Invoking Post-Build Processing
 
 ```bash
-pde site build
+pkde site build
 python3 postbuild.py _site/
 # then verify and serve
 ```
@@ -223,7 +223,7 @@ When content is owned by this program, fix the source markdown so the correction
 Run [`references/fix_infra_refs.py`](references/fix_infra_refs.py) after each build to detect infrastructure details that leaked into generated HTML. The script scans only — it does not modify files. Review its output and apply edits using the strategy table above.
 
 ```bash
-pde site build
+pkde site build
 python3 postbuild.py _site/
 python3 references/fix_infra_refs.py _site/
 ```
@@ -240,14 +240,14 @@ After post-build processing, verify:
 
 ## Exporting a Relocatable Archive
 
-`pde site export` packages the built site into a standalone `.zip` archive suitable for upload to any static file host.
+`pkde site export` packages the built site into a standalone `.zip` archive suitable for upload to any static file host.
 
 ```bash
-pde site export
-pde site export -o custom-name.zip
+pkde site export
+pkde site export -o custom-name.zip
 ```
 
-- Prerequisite: run `pde site build` first. The command validates that `index.html` exists in the site directory.
+- Prerequisite: run `pkde site build` first. The command validates that `index.html` exists in the site directory.
 - Default output: `<project-slug>-site.zip` in the project root.
 - The archive contains the full `_site/` tree with `index.html` at the archive root. Hidden files and directories are excluded.
 - Uses `--site-dir` to override the default `_site` source directory.
@@ -258,9 +258,9 @@ pde site export -o custom-name.zip
 Exported archives reference external CDN resources by default (Web Fonts, 3Dmol.js, Plotly.js, highlight.js). When opened offline or on restricted networks, viewers may not function correctly. Run [`references/fix_localize_cdn.py`](references/fix_localize_cdn.py) as a post-build step to download these resources into a local `vendor/` directory and rewrite HTML references to use local paths:
 
 ```bash
-pde site build
+pkde site build
 python3 fix_localize_cdn.py _site/
-pde site export
+pkde site export
 ```
 
 The script is idempotent and creates a `vendor/manifest.json` listing all localized resources. See the table below for the known CDN dependencies:
@@ -293,18 +293,18 @@ done
 
 ### 2. Expose via Local Server
 
-Use `pde dashboard build --standalone` or `pde dashboard serve --port 8765`:
+Use `pkde dashboard build --standalone` or `pkde dashboard serve --port 8765`:
 
 ```bash
-pde dashboard build --standalone  # or: pde dashboard serve --port 8765
+pkde dashboard build --standalone  # or: pkde dashboard serve --port 8765
 ```
 
 ### 3. Iterative rebuild-and-serve
 
-For iterative workflows (rebuild -> post-process -> verify -> revise), keep the server running and rebuild in place. Each `pde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately — no server restart required. The agent can stay retained for revisions in this mode.
+For iterative workflows (rebuild -> post-process -> verify -> revise), keep the server running and rebuild in place. Each `pkde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately — no server restart required. The agent can stay retained for revisions in this mode.
 
 ## What This Skill Does NOT Cover
 
-- **Remote object-storage publishing.** The `pde site export` command produces archives suitable for static hosting, but remote bucket deployment is outside the scope of this skill. This skill covers generation, export, and local serving, not remote hosting.
+- **Remote object-storage publishing.** The `pkde site export` command produces archives suitable for static hosting, but remote bucket deployment is outside the scope of this skill. This skill covers generation, export, and local serving, not remote hosting.
 - **Viewer development.** Viewers are checked into the repo and are not modified at build time.
 - **Content authorship.** The agent prepares markdown content before building; the CLI renders it deterministically.

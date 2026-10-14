@@ -44,7 +44,7 @@ tournament run. Entry points include:
   raw run directory to `analyze`.
 - **No authentication** needed — the tool reads local files only.
 - **No network** — `ingest` and `analyze` are both offline.
-- Run `pde doctor` before first use. It ends with a verdict line:
+- Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
   which results need careful reading, and which are the tooling lead's
@@ -55,8 +55,8 @@ tournament run. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Normalise this tournament run | `pde hypex ingest <RUN-DIR>` | `raw/hypotheses/hx-<slug>.hypex.json`<br>`raw/hypotheses/hx-<slug>.run.tar.zst`<br>`raw/hypotheses/hx-<slug>.meta.json` |
-| Is the ranking admissible? Which hypotheses are flagged? | `pde hypex analyze <ARTIFACT>` | `raw/hypotheses/hx-<slug>.analysis.json` |
+| Normalise this tournament run | `pkde hypex ingest <RUN-DIR>` | `raw/hypotheses/hx-<slug>.hypex.json`<br>`raw/hypotheses/hx-<slug>.run.tar.zst`<br>`raw/hypotheses/hx-<slug>.meta.json` |
+| Is the ranking admissible? Which hypotheses are flagged? | `pkde hypex analyze <ARTIFACT>` | `raw/hypotheses/hx-<slug>.analysis.json` |
 
 Run `ingest` before `analyze`. `analyze` reads from disk and applies the
 `hypex@1.0` threshold set. It can be re-run with different thresholds
@@ -141,7 +141,7 @@ not a floor of exceptions. A phantom citation *rate*
 computation here where it was not for co-scientist.
 
 **Why this holds:** The citation manifest's `summary.total` comes from
-the `pde.citation-manifest.v1` schema, which counts every citation the
+the `pkde.citation-manifest.v1` schema, which counts every citation the
 extractor found — verified, suspect, phantom, and unverified alike.
 Unlike Co-Scientist's exception list, the manifest is a complete
 enumeration of what the extractor saw.
@@ -255,12 +255,12 @@ Check `mandatory_relays` in both the `.analysis.json` and the
 
 ### Assessment core
 
-The `analyze` command emits `pde.hypothesis-assessment.v1` alongside the
+The `analyze` command emits `pkde.hypothesis-assessment.v1` alongside the
 analysis. This is the shared contract across all stage 0 strategies:
 
 ```json
 {
-  "schema": "pde.hypothesis-assessment.v1",
+  "schema": "pkde.hypothesis-assessment.v1",
   "strategy": "hypex",
   "source_artifact": "raw/hypotheses/hx-<slug>.hypex.json",
   "source_sha256": "...",
@@ -376,7 +376,7 @@ proceed on an assumed result.
   `balanced`, ±90 at `focus_on_breakthroughs`). It is not an ELO. Do
   not write it into a field named `elo` or compare it against an ELO
   threshold.
-- **Silently collapsing the v2 loop to one epoch.** The PDE Hypex contract is
+- **Silently collapsing the v2 loop to one epoch.** The PkDE Hypex contract is
   multi-epoch. A run may stop after one epoch only when an explicit budget or
   error condition requires finalization, and its termination reason must say
   so. Do not label such a run converged or substitute the retired pilot flow.

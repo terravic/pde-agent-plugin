@@ -1,0 +1,65 @@
+{"type":"prompt.received","subject_id":"science-program-lead","from_state":"idle","to_state":"running","actor":"user","detail":{"prompt":"Run a multi-disciplinary Stage 2 Hit-to-Lead discovery campaign for a selective non-covalent KRAS G12D Switch-II pocket inhibitor (MRTX1133 series) in pancreatic ductal adenocarcinoma (PDAC): evaluate human genetics, 3D Switch-II pocket druggability and docking poses, medicinal chemistry SAR and ADMET/PK/tox margins, and bypass resistance hypotheses.","summary":"User prompt received by Science Program Lead: \"Run a multi-disciplinary Stage 2 Hit-to-Lead discovery campaign for a selective non-covalent KRAS G12D Switch-II pocket inhibitor (MRTX1133 series) in pancreatic ductal adenocarcinoma (PDAC): evaluate human genetics, 3D Switch-II pocket druggability and docking poses, medicinal chemistry SAR and ADMET/PK/tox margins, and bypass resistance hypotheses.\""},"timestamp":"2026-10-14T20:05:39Z"}
+{"type":"agent.message","subject_id":"research-operations-controller","actor":"science-program-lead","detail":{"recipient":"research-operations-controller","summary":"Chartered Stage 2 Cycle 2 KRAS G12D campaign (DEC-001); authorizing 5 parallel specialist work orders (WO-001 through WO-005)."},"timestamp":"2026-10-14T20:05:39Z"}
+{"type":"workorder.transition","subject_id":"WO-001","revision":1,"from_state":null,"to_state":"proposed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:40Z"}
+{"type":"workorder.transition","subject_id":"WO-001","revision":1,"from_state":"proposed","to_state":"committed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:40Z"}
+{"type":"workorder.transition","subject_id":"WO-001","revision":1,"from_state":"committed","to_state":"queued","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:40Z"}
+{"type":"workorder.transition","subject_id":"WO-001","revision":1,"from_state":"queued","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:41Z"}
+{"type":"run.transition","subject_id":"RUN-001","from_state":null,"to_state":"queued","timestamp":"2026-10-14T20:05:42Z"}
+{"type":"run.transition","subject_id":"RUN-001","from_state":"queued","to_state":"starting","timestamp":"2026-10-14T20:05:43Z"}
+{"type":"run.transition","subject_id":"RUN-001","from_state":"starting","to_state":"running","timestamp":"2026-10-14T20:05:43Z"}
+{"type":"dispatch.subagent","subject_id":"WO-001","revision":1,"actor":"discovery-lead","detail":{"requested_role":"computational-biologist","subagent_name":"pkde-computational-biologist","run_id":"RUN-001","decision_question":"Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk."},"timestamp":"2026-10-14T20:05:43Z"}
+{"type":"workorder.transition","subject_id":"WO-001","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:44Z"}
+{"type":"validation.completed","subject_id":"WO-001","revision":1,"from_state":"submitted","to_state":"mechanically_validated","detail":{"result":"pass","checks_failed":[]},"timestamp":"2026-10-14T20:05:45Z"}
+{"type":"run.transition","subject_id":"RUN-001","from_state":"running","to_state":"succeeded","timestamp":"2026-10-14T20:05:45Z"}
+{"type":"workorder.transition","subject_id":"WO-002","revision":1,"from_state":null,"to_state":"proposed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:47Z"}
+{"type":"workorder.transition","subject_id":"WO-002","revision":1,"from_state":"proposed","to_state":"committed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:47Z"}
+{"type":"workorder.transition","subject_id":"WO-002","revision":1,"from_state":"committed","to_state":"queued","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:48Z"}
+{"type":"workorder.transition","subject_id":"WO-002","revision":1,"from_state":"queued","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:48Z"}
+{"type":"run.transition","subject_id":"RUN-002","from_state":null,"to_state":"queued","timestamp":"2026-10-14T20:05:49Z"}
+{"type":"run.transition","subject_id":"RUN-002","from_state":"queued","to_state":"starting","timestamp":"2026-10-14T20:05:50Z"}
+{"type":"run.transition","subject_id":"RUN-002","from_state":"starting","to_state":"running","timestamp":"2026-10-14T20:05:50Z"}
+{"type":"lease.acquired","subject_id":"af3","actor":"WO-002","detail":{"run_id":"RUN-002","resource_class":"af3"},"timestamp":"2026-10-14T20:05:51Z"}
+{"type":"dispatch.subagent","subject_id":"WO-002","revision":1,"actor":"discovery-lead","detail":{"requested_role":"structural-biologist","subagent_name":"pkde-structural-biologist","run_id":"RUN-002","decision_question":"Characterize KRAS G12D structure confidence (pLDDT/PAE) and Switch-II pocket (SII-P) druggability."},"timestamp":"2026-10-14T20:05:51Z"}
+{"type":"workorder.transition","subject_id":"WO-002","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:51Z"}
+{"type":"validation.completed","subject_id":"WO-002","revision":1,"from_state":"submitted","to_state":"mechanically_validated","detail":{"result":"pass","checks_failed":[]},"timestamp":"2026-10-14T20:05:52Z"}
+{"type":"run.transition","subject_id":"RUN-002","from_state":"running","to_state":"succeeded","timestamp":"2026-10-14T20:05:53Z"}
+{"type":"lease.released","subject_id":"af3","actor":"WO-002","detail":{"resource_class":"af3"},"timestamp":"2026-10-14T20:05:53Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":null,"to_state":"proposed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:54Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"proposed","to_state":"committed","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:54Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"committed","to_state":"queued","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:55Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"queued","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:56Z"}
+{"type":"run.transition","subject_id":"RUN-003","from_state":null,"to_state":"queued","timestamp":"2026-10-14T20:05:57Z"}
+{"type":"run.transition","subject_id":"RUN-003","from_state":"queued","to_state":"starting","timestamp":"2026-10-14T20:05:58Z"}
+{"type":"run.transition","subject_id":"RUN-003","from_state":"starting","to_state":"running","timestamp":"2026-10-14T20:05:58Z"}
+{"type":"dispatch.subagent","subject_id":"WO-003","revision":1,"actor":"discovery-lead","detail":{"requested_role":"medicinal-chemist","subagent_name":"pkde-medicinal-chemist","run_id":"RUN-003","decision_question":"Profile lead series MRTX1133 3D conformer, BRICS fragment SAR, and 5-axis ADMET properties."},"timestamp":"2026-10-14T20:05:59Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:05:59Z"}
+{"type":"validation.completed","subject_id":"WO-003","revision":1,"from_state":"submitted","to_state":"validation_failed","detail":{"result":"fail","checks_failed":["relay_coverage"]},"timestamp":"2026-10-14T20:06:00Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"validation_failed","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:01Z"}
+{"type":"correction_returned","subject_id":"WO-003","revision":1,"actor":"validator","detail":{"correction_cycle":1,"checks_failed":["relay_coverage"]},"timestamp":"2026-10-14T20:06:01Z"}
+{"type":"workorder.transition","subject_id":"WO-003","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:02Z"}
+{"type":"validation.completed","subject_id":"WO-003","revision":1,"from_state":"submitted","to_state":"mechanically_validated","detail":{"result":"pass","checks_failed":[]},"timestamp":"2026-10-14T20:06:03Z"}
+{"type":"run.transition","subject_id":"RUN-003","from_state":"running","to_state":"succeeded","timestamp":"2026-10-14T20:06:03Z"}
+{"type":"workorder.transition","subject_id":"WO-004","revision":1,"from_state":null,"to_state":"proposed","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:05Z"}
+{"type":"workorder.transition","subject_id":"WO-004","revision":1,"from_state":"proposed","to_state":"committed","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:05Z"}
+{"type":"workorder.transition","subject_id":"WO-004","revision":1,"from_state":"committed","to_state":"queued","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:06Z"}
+{"type":"workorder.transition","subject_id":"WO-004","revision":1,"from_state":"queued","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:07Z"}
+{"type":"run.transition","subject_id":"RUN-004","from_state":null,"to_state":"queued","timestamp":"2026-10-14T20:06:07Z"}
+{"type":"run.transition","subject_id":"RUN-004","from_state":"queued","to_state":"starting","timestamp":"2026-10-14T20:06:08Z"}
+{"type":"run.transition","subject_id":"RUN-004","from_state":"starting","to_state":"running","timestamp":"2026-10-14T20:06:09Z"}
+{"type":"dispatch.subagent","subject_id":"WO-004","revision":1,"actor":"discovery-lead","detail":{"requested_role":"computational-chemist","subagent_name":"pkde-computational-chemist","run_id":"RUN-004","decision_question":"Dock MRTX1133 into KRAS G12D Switch-II pocket and quantify Asp12 salt-bridge and His95/Tyr96 contacts."},"timestamp":"2026-10-14T20:06:09Z"}
+{"type":"workorder.transition","subject_id":"WO-004","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:10Z"}
+{"type":"validation.completed","subject_id":"WO-004","revision":1,"from_state":"submitted","to_state":"mechanically_validated","detail":{"result":"pass","checks_failed":[]},"timestamp":"2026-10-14T20:06:11Z"}
+{"type":"run.transition","subject_id":"RUN-004","from_state":"running","to_state":"succeeded","timestamp":"2026-10-14T20:06:12Z"}
+{"type":"workorder.transition","subject_id":"WO-005","revision":1,"from_state":null,"to_state":"proposed","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:14Z"}
+{"type":"workorder.transition","subject_id":"WO-005","revision":1,"from_state":"proposed","to_state":"committed","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:14Z"}
+{"type":"workorder.transition","subject_id":"WO-005","revision":1,"from_state":"committed","to_state":"queued","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:15Z"}
+{"type":"workorder.transition","subject_id":"WO-005","revision":1,"from_state":"queued","to_state":"in_progress","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:16Z"}
+{"type":"run.transition","subject_id":"RUN-005","from_state":null,"to_state":"queued","timestamp":"2026-10-14T20:06:16Z"}
+{"type":"run.transition","subject_id":"RUN-005","from_state":"queued","to_state":"starting","timestamp":"2026-10-14T20:06:17Z"}
+{"type":"run.transition","subject_id":"RUN-005","from_state":"starting","to_state":"running","timestamp":"2026-10-14T20:06:18Z"}
+{"type":"lease.acquired","subject_id":"hypex-supervisor","actor":"WO-005","detail":{"run_id":"RUN-005","resource_class":"hypex-supervisor"},"timestamp":"2026-10-14T20:06:18Z"}
+{"type":"dispatch.subagent","subject_id":"WO-005","revision":1,"actor":"discovery-lead","detail":{"requested_role":"hypex-supervisor","subagent_name":"pkde-hypex-supervisor","run_id":"RUN-005","decision_question":"Run Co-Scientist / Hypex ELO tournament to rank rational combination & secondary resistance hypotheses for KRAS G12D inhibition."},"timestamp":"2026-10-14T20:06:18Z"}
+{"type":"workorder.transition","subject_id":"WO-005","revision":1,"from_state":"in_progress","to_state":"submitted","actor":null,"detail":null,"timestamp":"2026-10-14T20:06:19Z"}
+{"type":"validation.completed","subject_id":"WO-005","revision":1,"from_state":"submitted","to_state":"mechanically_validated","detail":{"result":"pass","checks_failed":[]},"timestamp":"2026-10-14T20:06:20Z"}
+{"type":"run.transition","subject_id":"RUN-005","from_state":"running","to_state":"succeeded","timestamp":"2026-10-14T20:06:21Z"}
+{"type":"lease.released","subject_id":"hypex-supervisor","actor":"WO-005","detail":{"resource_class":"hypex-supervisor"},"timestamp":"2026-10-14T20:06:22Z"}

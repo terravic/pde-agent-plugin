@@ -1,23 +1,23 @@
 #!/usr/bin/env bash
-PDE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-export PDE_ROOT
-export PDE_TOOLS_HOME="$PDE_ROOT/tools"
-export PDE_ENV_SOURCE="$PDE_TOOLS_HOME/ENV_VERSION"
-export PYTHONPATH="$PDE_ROOT:$PDE_ROOT/tools:$PDE_ROOT/tools/vendor/hypex:${PYTHONPATH:-}"
-if [ -d "$PDE_ROOT/.venv/bin" ]; then
-  export PATH="$PDE_ROOT/bin:$PDE_ROOT/.venv/bin:$PATH"
+PKDE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export PKDE_ROOT
+export PKDE_TOOLS_HOME="$PKDE_ROOT/tools"
+export PKDE_ENV_SOURCE="$PKDE_TOOLS_HOME/ENV_VERSION"
+export PYTHONPATH="$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex:${PYTHONPATH:-}"
+if [ -d "$PKDE_ROOT/.venv/bin" ]; then
+  export PATH="$PKDE_ROOT/bin:$PKDE_ROOT/.venv/bin:$PATH"
 else
-  export PATH="$PDE_ROOT/bin:$PATH"
+  export PATH="$PKDE_ROOT/bin:$PATH"
 fi
-export PDE_NO_DIRTY_WARNING=1
-if [ -z "${PDE_PROJECT:-}" ]; then
-  if [ -d "$PDE_ROOT/.pde-workspace/.pde" ] && [ -d "$PDE_ROOT/.pde-workspace/raw" ] && [ -n "$(ls -A "$PDE_ROOT/.pde-workspace/raw" 2>/dev/null)" ]; then
-    export PDE_PROJECT="$PDE_ROOT/.pde-workspace"
+export PKDE_NO_DIRTY_WARNING=1
+if [ -z "${PKDE_PROJECT:-}" ]; then
+  if [ -d "$PKDE_ROOT/.pkde-workspace/.pkde" ] && [ -d "$PKDE_ROOT/.pkde-workspace/raw" ] && [ -n "$(ls -A "$PKDE_ROOT/.pkde-workspace/raw" 2>/dev/null)" ]; then
+    export PKDE_PROJECT="$PKDE_ROOT/.pkde-workspace"
   else
-    export PDE_PROJECT="$PDE_ROOT/.pde-workspace/default-program"
-    if [ ! -d "$PDE_PROJECT/.pde" ]; then
-      mkdir -p "$PDE_ROOT/.pde-workspace"
-      python3 -m pde.cli init "$PDE_PROJECT" >/dev/null 2>&1 || true
+    export PKDE_PROJECT="$PKDE_ROOT/.pkde-workspace/default-program"
+    if [ ! -d "$PKDE_PROJECT/.pkde" ]; then
+      mkdir -p "$PKDE_ROOT/.pkde-workspace"
+      python3 -m pkde.cli init "$PKDE_PROJECT" >/dev/null 2>&1 || true
     fi
   fi
 fi

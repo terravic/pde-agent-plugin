@@ -46,7 +46,7 @@ Entry points include:
 - **Network access** required for `resolve` (queries PubChem PUG REST
   and ChEMBL REST). `analyze` is offline.
 - **No authentication** needed — both registries are public APIs.
-- Run `pde doctor` before first use. It ends with a verdict line:
+- Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
   which results need careful reading, and which are the tooling lead's
@@ -57,8 +57,8 @@ Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Does this compound identifier resolve? | `pde compreg resolve <IDENTIFIER> [--source auto\|pubchem\|chembl]` | `raw/compounds/<slug>.registry-pubchem.json`<br>`raw/compounds/<slug>.registry-chembl.json`<br>`raw/compounds/<slug>.meta.json` |
-| What is the outcome? | `pde compreg analyze <IDENTIFIER>` | `raw/compounds/<slug>.analysis.json` |
+| Does this compound identifier resolve? | `pkde compreg resolve <IDENTIFIER> [--source auto\|pubchem\|chembl]` | `raw/compounds/<slug>.registry-pubchem.json`<br>`raw/compounds/<slug>.registry-chembl.json`<br>`raw/compounds/<slug>.meta.json` |
+| What is the outcome? | `pkde compreg analyze <IDENTIFIER>` | `raw/compounds/<slug>.analysis.json` |
 
 Run `resolve` before `analyze`. `analyze` reads from disk and applies
 the `compreg` threshold set. No network.
@@ -234,14 +234,14 @@ need to know what is already published about the compound:
 - Determining drug development phase (ChEMBL max_phase).
 
 **Input is a PubChem CID (integer).** Resolve to a CID first via
-`pde compreg resolve` if you have a name. This enforces identity
+`pkde compreg resolve` if you have a name. This enforces identity
 resolution before annotation — the annotation tool does not accept
 names, preventing annotation of the wrong compound.
 
 **Do not use when:**
 
 - You need to verify that a compound identifier exists
-  -> use `pde compreg resolve` (section 3).
+  -> use `pkde compreg resolve` (section 3).
 - You need bioactivity data, dose-response curves, or target-activity
   relationships -> `bioactivity-landscape`.
 - You need computed molecular descriptors or structural alerts
@@ -254,7 +254,7 @@ names, preventing annotation of the wrong compound.
   and ChEMBL REST). `analyze-annotation` is offline.
 - **No authentication** needed — both registries are public APIs.
 - **Identity resolution first**: the CID should have been verified via
-  `pde compreg resolve` before annotating. The CID-only input
+  `pkde compreg resolve` before annotating. The CID-only input
   contract enforces this sequence — if you only have a name, you must
   resolve it first.
 
@@ -262,8 +262,8 @@ names, preventing annotation of the wrong compound.
 
 | Question | Run | Writes to |
 |---|---|---|
-| What is known about this compound (synonyms, drug status, MoA)? | `pde pubchem annotate <CID>` | `raw/compounds/<slug>.pubchem-annotation.json`<br>`raw/compounds/<slug>.pubchem-annotation.meta.json` |
-| Is this a known drug? What is its development status? | `pde pubchem analyze-annotation <CID>` | `raw/compounds/<slug>.pubchem-annotation.analysis.json` |
+| What is known about this compound (synonyms, drug status, MoA)? | `pkde pubchem annotate <CID>` | `raw/compounds/<slug>.pubchem-annotation.json`<br>`raw/compounds/<slug>.pubchem-annotation.meta.json` |
+| Is this a known drug? What is its development status? | `pkde pubchem analyze-annotation <CID>` | `raw/compounds/<slug>.pubchem-annotation.analysis.json` |
 
 Run `annotate` before `analyze-annotation`. `analyze-annotation` reads
 from disk and applies the `pubchem-annotation` threshold set. No

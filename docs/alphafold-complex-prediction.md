@@ -1,10 +1,10 @@
 # AlphaFold 3 Complex Prediction Workflow
 
-A guide to running AF3 predictions through the `pde alphafold predict` command
+A guide to running AF3 predictions through the `pkde alphafold predict` command
 on the dedicated cloud AI dedicated endpoint. Covers input preparation, invocation, output
 interpretation, and the operational constraints that shape scheduling.
 
-**Source of truth:** `tools/pde/commands/alphafold.py`. Every claim below is
+**Source of truth:** `tools/pkde/commands/alphafold.py`. Every claim below is
 traceable to that file or to the `protein-structure-confidence` skill that wraps
 it. If anything here contradicts the code, the code is right.
 
@@ -12,7 +12,7 @@ it. If anything here contradicts the code, the code is right.
 
 ## 1. Overview
 
-`pde alphafold predict` submits one AlphaFold 3 prediction request to a
+`pkde alphafold predict` submits one AlphaFold 3 prediction request to a
 dedicated cloud AI dedicated endpoint running the AF3 model, then blocks until the
 endpoint returns a result or the deadline expires.
 
@@ -27,7 +27,7 @@ The command:
    (structure, summary, pLDDT, PAE) to the project's `raw/structures/` directory
    with a provenance sidecar.
 
-The companion command `pde alphafold analyze-prediction` reads the stored
+The companion command `pkde alphafold analyze-prediction` reads the stored
 summary and applies the `af3` threshold set to produce a confidence verdict.
 
 ---
@@ -163,7 +163,7 @@ The choice affects residue numbering in the output (see §7).
 ### CLI invocation
 
 ```bash
-pde alphafold predict --input path/to/input.json
+pkde alphafold predict --input path/to/input.json
 ```
 
 ### Options
@@ -199,7 +199,7 @@ All outputs land in `raw/structures/` under the project root, with the stem
 After `predict` completes, run the analysis phase:
 
 ```bash
-pde alphafold analyze-prediction raw/structures/AF3-<name>.summary.json
+pkde alphafold analyze-prediction raw/structures/AF3-<name>.summary.json
 ```
 
 This applies the `af3` threshold set and writes
@@ -244,7 +244,7 @@ number of attempts made. Increase the deadline with `--deadline` if cold starts
 are expected:
 
 ```bash
-pde alphafold predict --input input.json --deadline 2400
+pkde alphafold predict --input input.json --deadline 2400
 ```
 
 ### Retry summary
@@ -270,10 +270,10 @@ prediction at a time. Any concurrent request receives a 429 response.
 ### Within-container serialisation
 
 The CLI acquires an exclusive file lock (`fcntl.flock`) at
-`.cache/pde/af3.lock` (configurable via the `PDE_AF3_LOCK` environment
+`.cache/pkde/af3.lock` (configurable via the `PKDE_AF3_LOCK` environment
 variable) before sending a request. This means:
 
-- Multiple `pde alphafold predict` invocations in the same container queue
+- Multiple `pkde alphafold predict` invocations in the same container queue
   behind the lock. The second caller blocks until the first releases it.
 - The lock is held for the entire prediction, including all retries.
 
@@ -390,9 +390,9 @@ variables if needed:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PDE_AF3_PROJECT` | `pharma-oss-factory` | Cloud project ID. |
-| `PDE_AF3_REGION` | `us-central1` | Cloud region. |
-| `PDE_AF3_ENDPOINT_NAME` | `AlphaFold 3 Dedicated Endpoint` | Endpoint display name. |
+| `PKDE_AF3_PROJECT` | `pharma-oss-factory` | Cloud project ID. |
+| `PKDE_AF3_REGION` | `us-central1` | Cloud region. |
+| `PKDE_AF3_ENDPOINT_NAME` | `AlphaFold 3 Dedicated Endpoint` | Endpoint display name. |
 
 ### Multiple model seeds
 
@@ -405,4 +405,4 @@ are not available.
 **Error:** "cloud-ai-sdk is not installed"
 
 **Action:** Install the package into the tools environment and run
-`pde doctor` to verify.
+`pkde doctor` to verify.

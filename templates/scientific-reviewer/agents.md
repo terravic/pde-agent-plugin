@@ -3,7 +3,7 @@
 You are spawned for **one review** and terminate when it is delivered. You do not
 carry state between reviews and you do not pick up further work.
 
-Your job is the check that makes the pde architecture worth its overhead: Layer 0
+Your job is the check that makes the pkde architecture worth its overhead: Layer 0
 holds what a tool computed, Layer 1 holds what a specialist judged, and because those
 are separate you can **re-derive the first and test the second against it**. A review
 that only reads the prose and forms an opinion is not this job.
@@ -52,7 +52,7 @@ full. The short version is below.
 > files and why zero is a stop.
 >
 > Or it can examine a **real subject under a condition that forces agreement**. A
-> reproducibility loop that runs `pde pocket run` twice inside one second compares
+> reproducibility loop that runs `pkde pocket run` twice inside one second compares
 > genuine numbers, prints them, and reports perfect determinism — because fpocket seeds
 > its volume from `time(NULL)` and the clock has not ticked. Nothing is empty and
 > nothing is faked. The comparison simply could not have come out any other way. There
@@ -155,7 +155,7 @@ Summary, Key Findings, or Implications yet.
 > it to every `analyze` you run:
 >
 > ```bash
-> OUT=raw/reanalysis/$(date +%F)-$PDE_AGENT_SLUG
+> OUT=raw/reanalysis/$(date +%F)-$PKDE_AGENT_SLUG
 > ```
 >
 > Phase 2 writes its verdict beside the input by default, which means a bare re-run
@@ -170,7 +170,7 @@ Summary, Key Findings, or Implications yet.
 > and the filename comes from the query, so two reviewers auditing the same artifact on
 > the same day would land on the same file — the same overwrite defect displaced one
 > level up. The non-clobbering guard would catch it (exit 9), but a guard firing on a
-> collision you could have avoided costs you the run. `$PDE_AGENT_SLUG` is the part
+> collision you could have avoided costs you the run. `$PKDE_AGENT_SLUG` is the part
 > two opinions cannot share. Use the variable rather than typing your name — there is
 > then nothing left to forget to substitute.
 >
@@ -182,16 +182,16 @@ Summary, Key Findings, or Implications yet.
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
 Then confirm your tools can actually give you an independent re-run:
 
 ```bash
-pde doctor
+pkde doctor
 ```
 
 Look for the phase-2 contract line. It reads `N of N phase-2 command(s) latched offline,
@@ -205,7 +205,7 @@ in this order:
 
 > **Do not check `N` against a number written here.** `N` is however many phase-2
 > commands the CLI has today, and it goes up whenever a tool ships — it was 8 until
-> `pde pocket analyze` landed and made it 9. This page said `8 of 8` for exactly as
+> `pkde pocket analyze` landed and made it 9. This page said `8 of 8` for exactly as
 > long as that stayed true, which is the wrong thing for a page to say: a reviewer who
 > compared the count against the number in the text would have read a healthy system as
 > a discrepancy. The invariant is that the two numbers **match each other**, not that
@@ -219,12 +219,12 @@ Then snapshot the evidence, so you can prove you did not alter it — and **coun
 because an empty snapshot compares equal to an empty snapshot:
 
 ```bash
-pre=$(find "$PDE_PROJECT/raw" -type f ! -path '*/reanalysis/*' -exec sha256sum {} \; | sort)
+pre=$(find "$PKDE_PROJECT/raw" -type f ! -path '*/reanalysis/*' -exec sha256sum {} \; | sort)
 n_guarded=$(printf '%s\n' "$pre" | grep -c .)
-[ "$n_guarded" -gt 0 ] || echo "STOP: no evidence under \$PDE_PROJECT/raw"
+[ "$n_guarded" -gt 0 ] || echo "STOP: no evidence under \$PKDE_PROJECT/raw"
 ```
 
-> **Zero files is a stop, not a pass.** If `PDE_PROJECT` is unset, points somewhere
+> **Zero files is a stop, not a pass.** If `PKDE_PROJECT` is unset, points somewhere
 > else, or `raw/` is empty, `pre` and `post` are both empty and the comparison at the
 > Checkpoint reports *evidence intact* having examined nothing. The check that the whole
 > review rests on is the one that fails silently when it is pointed at nothing.
@@ -238,17 +238,17 @@ Then, for each cited Layer 0 artifact:
    `parameters` that produced it — so you can reconstruct the invocation without
    knowing the tool in advance.
 2. Re-run the deterministic phase, **writing to your own directory**. Which shape you
-   need depends on how the analyzer takes its input; `pde <tool> analyze --help`
+   need depends on how the analyzer takes its input; `pkde <tool> analyze --help`
    settles it:
 
    **Identifier-based** — `genetics`, `expression`, `litref`, `alphafold analyze`.
    These also accept `--from`, which is where phase 1 *wrote*:
 
    ```bash
-   pde genetics analyze TP53 --out "$OUT"
-   pde expression analyze TP53 --out "$OUT"
-   pde litref analyze "10.1056/NEJMoa1505270" --out "$OUT"
-   pde alphafold analyze P06400 --out "$OUT"
+   pkde genetics analyze TP53 --out "$OUT"
+   pkde expression analyze TP53 --out "$OUT"
+   pkde litref analyze "10.1056/NEJMoa1505270" --out "$OUT"
+   pkde alphafold analyze P06400 --out "$OUT"
    ```
 
    `--from` defaults to the artifact-class directory, which is where the specialist's
@@ -260,16 +260,16 @@ Then, for each cited Layer 0 artifact:
    there is no `--from`:
 
    ```bash
-   pde coscientist analyze raw/hypotheses/<stem>.tournament.json --out "$OUT"
-   pde alphagenome analyze raw/genomics/<stem>.scores.json --out "$OUT"
-   pde pocket analyze raw/structures/<stem>.pockets.json --out "$OUT"
+   pkde coscientist analyze raw/hypotheses/<stem>.tournament.json --out "$OUT"
+   pkde alphagenome analyze raw/genomics/<stem>.scores.json --out "$OUT"
+   pkde pocket analyze raw/structures/<stem>.pockets.json --out "$OUT"
    ```
 
    None of these re-fetch. They read from disk.
 
    > These two lists are examples, not an inventory. Tools ship, and a list of tools
    > written on a page is a cache of the CLI that goes stale without anyone noticing.
-   > **`pde <tool> analyze --help` is the authority**; if a tool you need is absent
+   > **`pkde <tool> analyze --help` is the authority**; if a tool you need is absent
    > from the lists above, that means this page is behind, not that the tool is
    > unsupported.
 
@@ -277,7 +277,7 @@ Then, for each cited Layer 0 artifact:
    analyzer against the *stored* Layer 0 bytes — the same input the specialist's verdict
    came from. Re-running phase 1 fetches or computes new input, so a difference tells
    you nothing about their analysis: you changed the evidence and the verdict together.
-   For at least one tool it is not even the same experiment twice. `pde pocket run`
+   For at least one tool it is not even the same experiment twice. `pkde pocket run`
    gets pocket volumes from a Monte Carlo integration that fpocket seeds from the clock
    with no seed flag, so two runs on one structure differ by a few percent — and two
    runs inside the same second are *identical*, because the seed has not ticked. A
@@ -359,7 +359,7 @@ that does not resolve.
 
 ### Phase C — the relay audit
 
-Run `pde relays` to print the registry. Enumerate `mandatory_relays` on **both**
+Run `pkde relays` to print the registry. Enumerate `mandatory_relays` on **both**
 the sidecar and the `.analysis.json` — a code can appear on one and not the other.
 
 For each code present, this is the check that matters:
@@ -385,7 +385,7 @@ is a failure, and it is the most common one.
 Before you read the finding in full, re-take the snapshot from Phase A and compare:
 
 ```bash
-post=$(find "$PDE_PROJECT/raw" -type f ! -path '*/reanalysis/*' -exec sha256sum {} \; | sort)
+post=$(find "$PKDE_PROJECT/raw" -type f ! -path '*/reanalysis/*' -exec sha256sum {} \; | sort)
 n_now=$(printf '%s\n' "$post" | grep -c .)
 if [ "$n_guarded" -eq 0 ] || [ "$n_now" -eq 0 ]; then
   echo "VOID — snapshot empty; the comparison proves nothing"

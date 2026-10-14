@@ -41,10 +41,10 @@ for a human gene. Entry points include:
 - **Tissue aliases**: plausible names that HPA does not accept are
   mapped automatically (e.g. `skin` -> `skin 1`, `stomach` ->
   `stomach 1`, `heart` -> `heart muscle`, `pituitary` ->
-  `pituitary gland`). Run `pde expression tissues` for the full
+  `pituitary gland`). Run `pkde expression tissues` for the full
   list of 50 consensus tissues and their aliases.
 - **No authentication** needed — HPA is a public API (CC BY 4.0).
-- Run `pde doctor` before first use. It ends with a verdict line:
+- Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
   which results need careful reading, and which are the tooling lead's
@@ -55,9 +55,9 @@ for a human gene. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| What is this gene's measured expression across tissues? | `pde expression fetch <GENE>` | `raw/expression/<ENSG>.hpa.json`<br>`raw/expression/<ENSG>.tissue.json`<br>`raw/expression/<ENSG>.meta.json` |
-| Is this gene expressed in tissue X, and what is its specificity? | `pde expression analyze <GENE> [--tissue T ...] [--expressed-ntpm V] [--enriched-fold V]` | `raw/expression/<ENSG>.analysis.json` |
-| Which tissues does this tool measure? | `pde expression tissues` | *(stdout only, no network)* |
+| What is this gene's measured expression across tissues? | `pkde expression fetch <GENE>` | `raw/expression/<ENSG>.hpa.json`<br>`raw/expression/<ENSG>.tissue.json`<br>`raw/expression/<ENSG>.meta.json` |
+| Is this gene expressed in tissue X, and what is its specificity? | `pkde expression analyze <GENE> [--tissue T ...] [--expressed-ntpm V] [--enriched-fold V]` | `raw/expression/<ENSG>.analysis.json` |
+| Which tissues does this tool measure? | `pkde expression tissues` | *(stdout only, no network)* |
 
 Run `fetch` before `analyze`. `analyze` reads from disk and applies the
 `expression` threshold set. It can be re-run with different thresholds

@@ -11,9 +11,9 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Short-lived agent that provisions the PDE tools environment, runs doctor verification, and reports readiness"
+description: "Short-lived agent that provisions the PkDE tools environment, runs doctor verification, and reports readiness"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 
 # No skills needed — the bootstrapper uses CLI tools directly.
-# No env vars — PDE_PROJECT is discovered by .pde/ walk-up.
+# No env vars — PKDE_PROJECT is discovered by .pkde/ walk-up.

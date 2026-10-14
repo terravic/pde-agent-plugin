@@ -1,0 +1,28 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/genomics/KRAS.gnomad-constraint.json",
+  "env_version": "sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48",
+  "source_sha256": "dbfb9c311bec268a8046c5f54cccda5d4c63354a02d413910f77fae36d850e9f",
+  "threshold_set": "genetics-v1",
+  "work_order_id": "WO-001",
+  "analyzed_at": "2026-10-14T20:05:43Z",
+  "verdict": "go_with_caution",
+  "summary": "KRAS is strongly constrained against loss-of-function (pLI=0.98, LOEUF=0.24); mutant-selective G12D targeting is mandatory to spare wild-type KRAS.",
+  "thresholds_applied": {
+    "pLI_essential_cutoff": 0.9,
+    "loeuf_constrained": 0.35
+  },
+  "metrics": {
+    "pLI": 0.98,
+    "LOEUF": 0.24,
+    "mis_z": 3.42
+  },
+  "mandatory_relays": [
+    {
+      "code": "ESSENTIAL_GENE_WT_SPARING_REQUIRED",
+      "target_role": "medicinal-chemist",
+      "detail": "KRAS pLI=0.98 and LOEUF=0.24 require >=50x G12D vs WT selectivity."
+    }
+  ]
+}

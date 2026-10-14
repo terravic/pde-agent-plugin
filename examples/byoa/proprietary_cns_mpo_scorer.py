@@ -14,7 +14,7 @@
 """Reference Bring-Your-Own-Algorithm (BYOA) Script: Proprietary CNS BBB Scorer.
 
 Demonstrates how a user or organization can plug a private computational model
-or proprietary scoring function into the Pharmakon Discovery Engine (PDE)
+or proprietary scoring function into the Pharmakon Discovery Engine (PkDE)
 without exposing their proprietary source code to external endpoints.
 
 Contract:
@@ -24,8 +24,8 @@ Contract:
       1. Unbound brain partition (`kp_uu_brain`, weight 0.45)
       2. P-gp / BCRP efflux ratio (`mdck_er`, weight 0.30)
       3. CNS physicochemical desirability (`mw`, `tpsa`, `logp`, `hbd`, `pka`, weight 0.25)
-  - Emits structured JSON records consumed by `pde custom run` (Phase 1) and
-    evaluated offline by `pde custom analyze` (Phase 2).
+  - Emits structured JSON records consumed by `pkde custom run` (Phase 1) and
+    evaluated offline by `pkde custom analyze` (Phase 2).
 """
 
 from __future__ import annotations

@@ -24,8 +24,8 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-from pde.cli import cli, load_extension_commands  # noqa: E402
-from pde.core.context import init_project  # noqa: E402
+from pkde.cli import cli, load_extension_commands  # noqa: E402
+from pkde.core.context import init_project  # noqa: E402
 
 
 def test_byoa_example_files_exist() -> None:
@@ -182,7 +182,7 @@ def test_custom_run_and_analyze_proprietary_algorithm(tmp_path: Path) -> None:
 
 
 def test_relays_enumeration_has_no_orphans() -> None:
-    """Verify `pde relays --json` attributes all custom relays with zero orphans."""
+    """Verify `pkde relays --json` attributes all custom relays with zero orphans."""
     runner = CliRunner()
     res = runner.invoke(cli, ["relays", "--json"])
     assert res.exit_code == 0, res.output
@@ -203,9 +203,9 @@ def test_dynamic_extension_command_loader(tmp_path: Path) -> None:
     plugin_file = ext_dir / "private_qsar.py"
     plugin_file.write_text(
         """import click
-from pde.common import PDEGroup
+from pkde.common import PkDEGroup
 
-@click.group(cls=PDEGroup, name="private-qsar")
+@click.group(cls=PkDEGroup, name="private-qsar")
 def command():
     \"\"\"Private QSAR extension.\"\"\"
 

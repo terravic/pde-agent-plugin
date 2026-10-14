@@ -6,7 +6,7 @@ description: "Supervisor run protocol -- state machine, worker lifecycle, budget
 # Run Protocol (v2)
 
 This skill defines the supervisor's protocol for orchestrating a research
-exploration run. The PDE port uses multi-epoch looping, evolution, meta-review
+exploration run. The PkDE port uses multi-epoch looping, evolution, meta-review
 steering, convergence detection, and a finalization phase. The initial
 generation-through-tournament sequence is followed by the v2 states and epoch
 loop; the retired single-epoch pilot is not a fallback mode.
@@ -34,7 +34,7 @@ that advances to the next state.
 | REVIEW_EVOLVED | Review evolved variants (recurrent mode) | 1 `hypex-reflection` |
 | TOURNAMENT_REMATCH | Evolved variants compete; mandatory parent rematches | 1–3 `hypex-tournament` |
 | META | Produce per-epoch steering memo | 1 `hypex-meta-review` |
-| FINALIZE | Task meta-review agent for final report, then publish PDE artifacts | 1 `hypex-meta-review` |
+| FINALIZE | Task meta-review agent for final report, then publish PkDE artifacts | 1 `hypex-meta-review` |
 | DONE | Signal completion | None |
 
 ---
@@ -162,18 +162,18 @@ header:
 
 ---
 
-## PDE Subgraph Boundary
+## PkDE Subgraph Boundary
 
-The Hypex supervisor is dispatched from a PDE work order and remains the one
+The Hypex supervisor is dispatched from a PkDE work order and remains the one
 accountable agent at the controller boundary. It must maintain
 `meta/roster.ndjson`, `meta/progress.json`, coordinated shared pacing, and
 `meta/termination.json` throughout the state machine. Worker messages carry
-the PDE run ID and project-relative run directory.
+the PkDE run ID and project-relative run directory.
 
-Before FINALIZE completes, the supervisor runs `pde hypex ingest <run-dir>`
-and `pde hypex analyze <artifact>` so the tournament enters PDE as a Layer 0
-`pde.hypex.v1` artifact plus `pde.hypothesis-assessment.v1` analysis. Only
-those PDE artifact paths, the final Hypex report path, and the termination
+Before FINALIZE completes, the supervisor runs `pkde hypex ingest <run-dir>`
+and `pkde hypex analyze <artifact>` so the tournament enters PkDE as a Layer 0
+`pkde.hypex.v1` artifact plus `pkde.hypothesis-assessment.v1` analysis. Only
+those PkDE artifact paths, the final Hypex report path, and the termination
 summary cross back to the research-operations controller.
 
 ---
@@ -189,7 +189,7 @@ focus areas.
 
 ### Actions
 
-1. **Parse the research goal** from the PDE work order supplied by the
+1. **Parse the research goal** from the PkDE work order supplied by the
    dispatching controller. A direct launch may use a command like:
 
    ```
@@ -913,7 +913,7 @@ EOF
 ## State: FINALIZE (new in v2)
 
 **Purpose:** Task the meta-review agent to produce the final research report,
-then publish the completed run into PDE's Layer 0 artifact model.
+then publish the completed run into PkDE's Layer 0 artifact model.
 
 ### Entry Condition
 
@@ -956,15 +956,15 @@ then publish the completed run into PDE's Layer 0 artifact model.
    ls ${ARTIFACT_PATH}/<run-id>/report/final.md
    ```
 
-5. **Write `meta/termination.json`, then publish through PDE:**
+5. **Write `meta/termination.json`, then publish through PkDE:**
 
    ```bash
    hypex validate --run <run-id> --run-dir "${ARTIFACT_PATH}"
-   pde hypex ingest "${ARTIFACT_PATH}/<run-id>" --json
-   pde hypex analyze <raw-hypex-artifact> --json
+   pkde hypex ingest "${ARTIFACT_PATH}/<run-id>" --json
+   pkde hypex analyze <raw-hypex-artifact> --json
    ```
 
-6. **Report the final report and PDE artifact paths to the dispatching agent.**
+6. **Report the final report and PkDE artifact paths to the dispatching agent.**
 
 ### Error Handling
 
@@ -976,7 +976,7 @@ then publish the completed run into PDE's Layer 0 artifact model.
 ### Exit Condition
 
 - Final report written to `report/final.md` (or fallback summary written).
-- PDE artifacts verified and report delivered to the dispatching agent.
+- PkDE artifacts verified and report delivered to the dispatching agent.
 
 ---
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# PDE Tools Environment Installer & Provisioner (Ubuntu Linux & macOS)
+# PkDE Tools Environment Installer & Provisioner (Ubuntu Linux & macOS)
 # Usage: ./tools/install.sh [--update] [--core-only] [--binaries-only]
 set -euo pipefail
 
 TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PDE_ROOT="$(cd "$TOOLS_DIR/.." && pwd)"
-VENV_DIR="$PDE_ROOT/.venv"
-BIN_DIR="$PDE_ROOT/bin"
+PKDE_ROOT="$(cd "$TOOLS_DIR/.." && pwd)"
+VENV_DIR="$PKDE_ROOT/.venv"
+BIN_DIR="$PKDE_ROOT/bin"
 TOOLS_BIN_DIR="$TOOLS_DIR/bin"
 
 MODE="full"
@@ -24,7 +24,7 @@ for arg in "$@"; do
   esac
 done
 
-echo "==> PDE Provisioner starting (mode: $MODE, root: $PDE_ROOT)"
+echo "==> PkDE Provisioner starting (mode: $MODE, root: $PKDE_ROOT)"
 mkdir -p "$BIN_DIR" "$TOOLS_BIN_DIR"
 
 # 1. Python virtual environment & packages
@@ -39,23 +39,23 @@ if [ "$MODE" != "binaries-only" ]; then
   fi
 
   if [ "$MODE" = "core-only" ]; then
-    echo "==> Installing PDE core dependencies..."
+    echo "==> Installing PkDE core dependencies..."
     if command -v uv >/dev/null 2>&1; then
-      uv pip install --python "$VENV_DIR/bin/python" -e "$PDE_ROOT"
+      uv pip install --python "$VENV_DIR/bin/python" -e "$PKDE_ROOT"
     else
       "$VENV_DIR/bin/pip" install --upgrade pip
-      "$VENV_DIR/bin/pip" install -e "$PDE_ROOT"
+      "$VENV_DIR/bin/pip" install -e "$PKDE_ROOT"
     fi
   else
-    echo "==> Installing PDE + [science] + [dev] dependencies (rdkit, gemmi, biopython, scipy, pubchempy)..."
+    echo "==> Installing PkDE + [science] + [dev] dependencies (rdkit, gemmi, biopython, scipy, pubchempy)..."
     if command -v uv >/dev/null 2>&1; then
-      uv pip install --python "$VENV_DIR/bin/python" -e "${PDE_ROOT}[science]" pytest pytest-asyncio || exit 3
+      uv pip install --python "$VENV_DIR/bin/python" -e "${PKDE_ROOT}[science]" pytest pytest-asyncio || exit 3
       if [ -d "$TOOLS_DIR/vendor/hypex/hypothesis-explorer/tools/prox" ]; then
         uv pip install --python "$VENV_DIR/bin/python" -e "$TOOLS_DIR/vendor/hypex/hypothesis-explorer/tools/prox" || true
       fi
     else
       "$VENV_DIR/bin/pip" install --upgrade pip
-      "$VENV_DIR/bin/pip" install -e "${PDE_ROOT}[science]" pytest pytest-asyncio || exit 3
+      "$VENV_DIR/bin/pip" install -e "${PKDE_ROOT}[science]" pytest pytest-asyncio || exit 3
       if [ -d "$TOOLS_DIR/vendor/hypex/hypothesis-explorer/tools/prox" ]; then
         "$VENV_DIR/bin/pip" install -e "$TOOLS_DIR/vendor/hypex/hypothesis-explorer/tools/prox" || true
       fi
@@ -133,17 +133,17 @@ chmod +x "$BIN_DIR/prox"
 cp -f "$BIN_DIR/prox" "$TOOLS_BIN_DIR/prox"
 chmod +x "$TOOLS_BIN_DIR/prox"
 
-# Also copy pde into tools/bin/pde so tools_home/bin is self-contained
-if [ -f "$BIN_DIR/pde" ]; then
-  cp -f "$BIN_DIR/pde" "$TOOLS_BIN_DIR/pde"
-  chmod +x "$TOOLS_BIN_DIR/pde"
+# Also copy pkde into tools/bin/pkde so tools_home/bin is self-contained
+if [ -f "$BIN_DIR/pkde" ]; then
+  cp -f "$BIN_DIR/pkde" "$TOOLS_BIN_DIR/pkde"
+  chmod +x "$TOOLS_BIN_DIR/pkde"
 fi
 
 # 3. Stamp the environment manifest
-echo "==> Stamping PDE environment manifest (ENV_VERSION)..."
+echo "==> Stamping PkDE environment manifest (ENV_VERSION)..."
 (
   source "$BIN_DIR/env.sh"
-  "$BIN_DIR/pde" env stamp --note "provisioned via tools/install.sh ($MODE)" >/dev/null 2>&1 || true
+  "$BIN_DIR/pkde" env stamp --note "provisioned via tools/install.sh ($MODE)" >/dev/null 2>&1 || true
 )
 
-echo "==> PDE Provisioner complete!"
+echo "==> PkDE Provisioner complete!"

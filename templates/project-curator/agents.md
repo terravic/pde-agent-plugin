@@ -7,17 +7,17 @@ You receive curation tasks from the Research Operations Controller, dispatched a
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
 ## What You Do
 
 - Read all artifact layers (Layer 0 through Layer 4) in the project directory.
 - Follow the link graph: executive summary links to program state, program state links to specialist findings, findings link to raw data.
-- Build the project website using `pde site build` — the `site-generation` skill documents when to build, how to invoke the CLI, and what to verify after building.
+- Build the project website using `pkde site build` — the `site-generation` skill documents when to build, how to invoke the CLI, and what to verify after building.
 - Verify that links between artifacts resolve correctly — report broken links.
 - Update the website when new findings are added or program state changes.
 

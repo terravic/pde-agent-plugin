@@ -7,9 +7,9 @@ in the built site, stores them in a ``vendor/`` directory, and rewrites HTML
 references to use local paths.  Handles transitive references such as
 Web Fonts CSS that pulls ``.woff2`` files from ``static-fonts.cdn.example.org``.
 
-Run after ``pde site build`` and before verification::
+Run after ``pkde site build`` and before verification::
 
-    pde site build
+    pkde site build
     python3 fix_localize_cdn.py _site/
     # verify and serve
 

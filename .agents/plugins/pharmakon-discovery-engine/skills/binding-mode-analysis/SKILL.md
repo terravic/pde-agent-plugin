@@ -35,7 +35,7 @@ predicted binding strength. Entry points include:
 ## 2. Preconditions
 
 - **Structure file + pocket record** (for `prepare`): a PDB or mmCIF
-  coordinate file and a `.pockets.json` from `pde pocket run`.
+  coordinate file and a `.pockets.json` from `pkde pocket run`.
 - **Receptor PDBQT + gridbox JSON + ligand(s)** (for `run`): outputs
   from `prepare`, plus one or more ligand files (SDF, MOL, or
   PDBQT). SDF/MOL ligands are converted to PDBQT automatically.
@@ -47,17 +47,17 @@ predicted binding strength. Entry points include:
   `run` already require.
 - **Dependencies**: Meeko (`mk_prepare_receptor.py`,
   `mk_prepare_ligand.py`) and the AutoDock Vina binary. Run
-  `pde doctor` before first use.
+  `pkde doctor` before first use.
 - **No authentication** needed — all operations are offline.
 
 ## 3. Tool invocations
 
 | Question | Run | Writes to |
 |---|---|---|
-| Prepare a receptor for docking | `pde docking prepare <STRUCTURE> <POCKET_RECORD>` | `raw/docking/<stem>.receptor.pdbqt`<br>`raw/docking/<stem>.gridbox.json`<br>`raw/docking/<stem>.prepare.meta.json` |
-| Score a ligand against a receptor | `pde docking run <RECEPTOR> <GRIDBOX> <LIGAND...>` | `raw/docking/<ligand_stem>.docking_result.json`<br>`raw/docking/<ligand_stem>.poses.pdbqt`<br>`raw/docking/<ligand_stem>.docking.meta.json` |
-| Classify poses by binding strength | `pde docking analyze <DOCKING_RESULT>` | `raw/docking/<stem>.docking.analysis.json` |
-| Does a docked pose contact a named residue? | `pde docking contacts <POSES_PDBQT> <RECEPTOR_PDBQT> [--cutoff N]` | `raw/docking/<stem>.contacts.json`<br>`raw/docking/<stem>.contacts.meta.json` |
+| Prepare a receptor for docking | `pkde docking prepare <STRUCTURE> <POCKET_RECORD>` | `raw/docking/<stem>.receptor.pdbqt`<br>`raw/docking/<stem>.gridbox.json`<br>`raw/docking/<stem>.prepare.meta.json` |
+| Score a ligand against a receptor | `pkde docking run <RECEPTOR> <GRIDBOX> <LIGAND...>` | `raw/docking/<ligand_stem>.docking_result.json`<br>`raw/docking/<ligand_stem>.poses.pdbqt`<br>`raw/docking/<ligand_stem>.docking.meta.json` |
+| Classify poses by binding strength | `pkde docking analyze <DOCKING_RESULT>` | `raw/docking/<stem>.docking.analysis.json` |
+| Does a docked pose contact a named residue? | `pkde docking contacts <POSES_PDBQT> <RECEPTOR_PDBQT> [--cutoff N]` | `raw/docking/<stem>.contacts.json`<br>`raw/docking/<stem>.contacts.meta.json` |
 
 Three-phase workflow: run `prepare` before `run`, and `run` before
 `analyze`. `prepare` and `run` produce Layer 0 artifacts; `analyze`

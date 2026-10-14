@@ -33,14 +33,14 @@ for _p in (str(REPO_ROOT), str(REPO_ROOT / "tools")):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from pde.core.context import init_project  # noqa: E402
-from pde.core.env import CLI_VERSION, env_version  # noqa: E402
-from pde.core.provenance import sha256_file  # noqa: E402
-from pde_plugin.tool_bridge import (  # noqa: E402
-    pde_dispatch_workorder,
-    pde_exec,
-    pde_render_dashboard,
-    pde_validate_and_gate,
+from pkde.core.context import init_project  # noqa: E402
+from pkde.core.env import CLI_VERSION, env_version  # noqa: E402
+from pkde.core.provenance import sha256_file  # noqa: E402
+from pkde_plugin.tool_bridge import (  # noqa: E402
+    pkde_dispatch_workorder,
+    pkde_exec,
+    pkde_render_dashboard,
+    pkde_validate_and_gate,
 )
 
 
@@ -124,14 +124,14 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
     workspace_dir.mkdir(parents=True, exist_ok=True)
     init_project(workspace_dir)
 
-    # Configure .pde/program.yaml with initial user_prompt
+    # Configure .pkde/program.yaml with initial user_prompt
     user_prompt = (
         "Run a multi-disciplinary Stage 2 Hit-to-Lead discovery campaign for a selective "
         "non-covalent KRAS G12D Switch-II pocket inhibitor (MRTX1133 series) in pancreatic "
         "ductal adenocarcinoma (PDAC): evaluate human genetics, 3D Switch-II pocket druggability "
         "and docking poses, medicinal chemistry SAR and ADMET/PK/tox margins, and bypass resistance hypotheses."
     )
-    (workspace_dir / ".pde" / "program.yaml").write_text(
+    (workspace_dir / ".pkde" / "program.yaml").write_text(
         "name: KRAS-G12D-Selective-Inhibitor\n"
         f"user_prompt: {json.dumps(user_prompt)}\n"
         "target: KRAS (G12D)\n"
@@ -141,7 +141,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "cycle: 2\n",
         encoding="utf-8",
     )
-    from pde.core import controlstore as _cs
+    from pkde.core import controlstore as _cs
 
     _cs.append_event(
         workspace_dir,
@@ -173,14 +173,14 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
     # ------------------------------------------------------------------
     # WO-001: Computational Biologist (Genetics & Tissue Expression)
     # ------------------------------------------------------------------
-    wo1 = pde_dispatch_workorder(
+    wo1 = pkde_dispatch_workorder(
         {
             "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.",
             "requested_role": "computational-biologist",
             "stage": 1,
             "cycle": 1,
             "deliverables": {
-                "layer_0_classes": ["pde.genetics", "pde.gtex"],
+                "layer_0_classes": ["pkde.genetics", "pkde.gtex"],
                 "layer_1": ["findings/computational-biology/kras-genetics-expression.md"],
             },
         },
@@ -209,7 +209,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo1_id,
-        command="pde genetics fetch KRAS --json",
+        command="pkde genetics fetch KRAS --json",
         threshold_set="genetics-v1",
         verdict="go_with_caution",
         summary="KRAS is strongly constrained against loss-of-function (pLI=0.98, LOEUF=0.24); mutant-selective G12D targeting is mandatory to spare wild-type KRAS.",
@@ -242,7 +242,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo1_id,
-        command="pde gtex fetch KRAS --json",
+        command="pkde gtex fetch KRAS --json",
         threshold_set="expression-v1",
         verdict="pass",
         summary="Broad baseline WT expression across GI tract and lung (max 48.5 TPM in Colon); confirms need for G12D salt-bridge selectivity.",
@@ -283,13 +283,13 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "Wild-type KRAS sparing is the primary design constraint for Stage 2 hit-to-lead.\n",
         encoding="utf-8",
     )
-    pde_validate_and_gate(wo1_id, run1_id, project_dir=str(workspace_dir))
-    pde_exec(f"workorder accept {wo1_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
+    pkde_validate_and_gate(wo1_id, run1_id, project_dir=str(workspace_dir))
+    pkde_exec(f"workorder accept {wo1_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
 
     # ------------------------------------------------------------------
     # WO-002: Structural Biologist (AlphaFold 3 Structure, PAE & Pockets)
     # ------------------------------------------------------------------
-    wo2 = pde_dispatch_workorder(
+    wo2 = pkde_dispatch_workorder(
         {
             "decision_question": "Characterize KRAS G12D structure confidence (pLDDT/PAE) and Switch-II pocket (SII-P) druggability.",
             "requested_role": "structural-biologist",
@@ -297,7 +297,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "cycle": 1,
             "resource_class": "af3",
             "deliverables": {
-                "layer_0_classes": ["pde.structures", "pde.pocket"],
+                "layer_0_classes": ["pkde.structures", "pkde.pocket"],
                 "layer_1": ["findings/structural-biology/kras-g12d-structure-pockets.md"],
             },
         },
@@ -323,7 +323,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "switch_ii_mean_plddt": 88.6,
         },
         wo_id=wo2_id,
-        command="pde alphafold fetch P01116 --json",
+        command="pkde alphafold fetch P01116 --json",
         threshold_set="structure-v1",
         verdict="pass",
         summary="High-confidence G-domain fold (mean pLDDT 91.4, pTM 0.91) with well-defined Switch-II pocket.",
@@ -353,7 +353,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "predicted_aligned_error": pae_matrix,
         },
         wo_id=wo2_id,
-        command="pde alphafold pae P01116 --json",
+        command="pkde alphafold pae P01116 --json",
         threshold_set="structure-v1",
         verdict="pass",
         summary="Low inter-residue PAE across the catalytic G-domain core (mean PAE 3.18 A).",
@@ -466,7 +466,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "raw/structures/KRAS_G12D.cif",
         cif_content,
         wo_id=wo2_id,
-        command="pde structure fetch 7RPZ --format cif --json",
+        command="pkde structure fetch 7RPZ --format cif --json",
         threshold_set="structure-v1",
         verdict="pass",
         summary="High-resolution Switch-II pocket receptor coordinates prepared for Asp12 salt-bridge docking.",
@@ -502,7 +502,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo2_id,
-        command="pde pocket detect raw/structures/KRAS_G12D.cif --json",
+        command="pkde pocket detect raw/structures/KRAS_G12D.cif --json",
         threshold_set="pocket-v1",
         verdict="pass",
         summary="Switch-II allosteric pocket (POCKET_1_SIIP) is highly druggable (score 0.84, volume 542.6 A^3) with direct access to Asp12 carboxylate.",
@@ -542,21 +542,21 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "Prioritize pyrido[4,3-d]pyrimidine scaffolds projecting a (1R,5S)-3,8-diazabicyclo[3.2.1]octane warhead toward Asp12.\n",
         encoding="utf-8",
     )
-    pde_validate_and_gate(wo2_id, run2_id, project_dir=str(workspace_dir))
-    pde_exec(f"workorder accept {wo2_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
+    pkde_validate_and_gate(wo2_id, run2_id, project_dir=str(workspace_dir))
+    pkde_exec(f"workorder accept {wo2_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
 
     # ------------------------------------------------------------------
     # WO-003: Medicinal Chemist & ADMET (Compound SDF, BRICS SAR, ADMET Radar)
     # Includes an authentic 1-cycle mechanical correction loop demonstration!
     # ------------------------------------------------------------------
-    wo3 = pde_dispatch_workorder(
+    wo3 = pkde_dispatch_workorder(
         {
             "decision_question": "Profile lead series MRTX1133 3D conformer, BRICS fragment SAR, and 5-axis ADMET properties.",
             "requested_role": "medicinal-chemist",
             "stage": 2,
             "cycle": 1,
             "deliverables": {
-                "layer_0_classes": ["pde.compounds", "pde.sar", "pde.admet"],
+                "layer_0_classes": ["pkde.compounds", "pkde.sar", "pkde.admet"],
                 "layer_1": ["findings/medicinal-chemistry/mrtx1133-sar-admet.md"],
             },
         },
@@ -594,7 +594,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "raw/compounds/MRTX1133.3d.sdf",
         sdf_content,
         wo_id=wo3_id,
-        command="pde compound conformer MRTX1133 --json",
+        command="pkde compound conformer MRTX1133 --json",
         threshold_set="compound-v1",
         verdict="pass",
         summary="Low-energy 3D conformer generated for MRTX1133 with protonated diazabicyclooctane amine.",
@@ -641,7 +641,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo3_id,
-        command="pde mmp brics MRTX1133 --json",
+        command="pkde mmp brics MRTX1133 --json",
         threshold_set="sar-v1",
         verdict="pass",
         summary="BRICS decomposition identifies 4 pharmacophoric synthons; FRAG-01 diazabicyclooctane provides -4.8 kcal/mol Asp12 anchor.",
@@ -678,7 +678,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             },
         },
         wo_id=wo3_id,
-        command="pde admet predict MRTX1133 --json",
+        command="pkde admet predict MRTX1133 --json",
         threshold_set="admet-v1",
         verdict="pass_with_warnings",
         summary="Favorable metabolic stability (HLM t1/2=68 min) and hERG margin (IC50=14.2 uM), but moderate permeability (Papp=2.4e-6 cm/s, F%=11.5%).",
@@ -704,7 +704,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         encoding="utf-8",
     )
     # Trigger Cycle 1 validation -> returns CORRECTION_REQUIRED and transitions validation_failed -> in_progress
-    pde_validate_and_gate(wo3_id, run3_id, project_dir=str(workspace_dir))
+    pkde_validate_and_gate(wo3_id, run3_id, project_dir=str(workspace_dir))
 
     # Now write the corrected Layer 1 report addressing the relay & all checks
     finding_wo3_path.write_text(
@@ -732,20 +732,20 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "Advance MRTX1133 to Switch-II docking and contact mapping while initiating phenolic prodrug synthesis.\n",
         encoding="utf-8",
     )
-    pde_validate_and_gate(wo3_id, run3_id, project_dir=str(workspace_dir))
-    pde_exec(f"workorder accept {wo3_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
+    pkde_validate_and_gate(wo3_id, run3_id, project_dir=str(workspace_dir))
+    pkde_exec(f"workorder accept {wo3_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
 
     # ------------------------------------------------------------------
     # WO-004: Computational Chemist (Docking Poses, Scores & Contact Map)
     # ------------------------------------------------------------------
-    wo4 = pde_dispatch_workorder(
+    wo4 = pkde_dispatch_workorder(
         {
             "decision_question": "Dock MRTX1133 into KRAS G12D Switch-II pocket and quantify Asp12 salt-bridge and His95/Tyr96 contacts.",
             "requested_role": "computational-chemist",
             "stage": 2,
             "cycle": 1,
             "deliverables": {
-                "layer_0_classes": ["pde.docking", "pde.bioactivity"],
+                "layer_0_classes": ["pkde.docking", "pkde.bioactivity"],
                 "layer_1": ["findings/computational-chemistry/mrtx1133-siip-docking.md"],
             },
         },
@@ -771,7 +771,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo4_id,
-        command="pde docking run MRTX1133 --receptor raw/structures/KRAS_G12D.cif --json",
+        command="pkde docking run MRTX1133 --receptor raw/structures/KRAS_G12D.cif --json",
         threshold_set="docking-v1",
         verdict="pass",
         summary="Top pose achieves -11.4 kcal/mol in KRAS G12D SII-P with 2.74 A Asp12 salt bridge and -3.6 kcal/mol selectivity over WT.",
@@ -801,7 +801,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "TER\n"
         ),
         wo_id=wo4_id,
-        command="pde docking prepare-receptor raw/structures/KRAS_G12D.cif --json",
+        command="pkde docking prepare-receptor raw/structures/KRAS_G12D.cif --json",
         threshold_set="docking-v1",
         verdict="pass",
         summary="Prepared PDBQT receptor for KRAS G12D.",
@@ -823,7 +823,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "ENDMDL\n"
         ),
         wo_id=wo4_id,
-        command="pde docking poses MRTX1133 --json",
+        command="pkde docking poses MRTX1133 --json",
         threshold_set="docking-v1",
         verdict="pass",
         summary="Top Vina docking poses for MRTX1133 in KRAS G12D SII-P.",
@@ -848,7 +848,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo4_id,
-        command="pde docking contacts raw/docking/MRTX1133_SIIP.poses.pdbqt --json",
+        command="pkde docking contacts raw/docking/MRTX1133_SIIP.poses.pdbqt --json",
         threshold_set="docking-v1",
         verdict="pass",
         summary="6 key protein-ligand interactions identified, anchored by the 2.74 A Asp12 bidentate salt bridge.",
@@ -879,7 +879,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo4_id,
-        command="pde assay fetch MRTX1133 --json",
+        command="pkde assay fetch MRTX1133 --json",
         threshold_set="bioactivity-v1",
         verdict="pass",
         summary="SPR confirms KRAS G12D Kd=0.2 nM with 725-fold selectivity over wild-type KRAS (Kd=145 nM).",
@@ -914,13 +914,13 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "Lock the Asp12 diazabicyclooctane + 3-hydroxynaphthyl core for Stage 3 lead optimization.\n",
         encoding="utf-8",
     )
-    pde_validate_and_gate(wo4_id, run4_id, project_dir=str(workspace_dir))
-    pde_exec(f"workorder accept {wo4_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
+    pkde_validate_and_gate(wo4_id, run4_id, project_dir=str(workspace_dir))
+    pkde_exec(f"workorder accept {wo4_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
 
     # ------------------------------------------------------------------
     # WO-005: Hypex Supervisor (Co-Scientist / Hypex ELO Tournament)
     # ------------------------------------------------------------------
-    wo5 = pde_dispatch_workorder(
+    wo5 = pkde_dispatch_workorder(
         {
             "decision_question": "Run Co-Scientist / Hypex ELO tournament to rank rational combination & secondary resistance hypotheses for KRAS G12D inhibition.",
             "requested_role": "hypex-supervisor",
@@ -928,7 +928,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             "cycle": 2,
             "resource_class": "hypex-supervisor",
             "deliverables": {
-                "layer_0_classes": ["pde.hypotheses"],
+                "layer_0_classes": ["pkde.hypotheses"],
                 "layer_1": ["findings/computational-biology/kras-hypex-tournament.md"],
             },
         },
@@ -1022,7 +1022,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
             ],
         },
         wo_id=wo5_id,
-        command="pde hypex tournament run --goal 'KRAS G12D resistance and optimization' --json",
+        command="pkde hypex tournament run --goal 'KRAS G12D resistance and optimization' --json",
         threshold_set="hypex-v1",
         verdict="pass",
         summary="Co-Scientist / Hypex tournament (24 matches, 4 hypotheses) ranks HYP-001 (MRTX1133 + SHP2 pulsatile blockade, ELO 1648) #1.",
@@ -1058,8 +1058,8 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "Advance `HYP-001` (combination biology) and `HYP-002`/`HYP-003` (Cycle 2 chemistry) into Stage 3 nominations.\n",
         encoding="utf-8",
     )
-    pde_validate_and_gate(wo5_id, run5_id, project_dir=str(workspace_dir))
-    pde_exec(f"workorder accept {wo5_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
+    pkde_validate_and_gate(wo5_id, run5_id, project_dir=str(workspace_dir))
+    pkde_exec(f"workorder accept {wo5_id} --json", project_dir=str(workspace_dir), auto_refresh_dashboard=False)
 
     # ------------------------------------------------------------------
     # Populate Layer 3 Concepts, Assessments, Decisions & Retrospectives
@@ -1162,7 +1162,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
     )
 
     # Render the self-contained Interactive Scientific Dashboard in the workspace (dashboard.html)
-    ws_dash = pde_render_dashboard(project_dir=str(workspace_dir))
+    ws_dash = pkde_render_dashboard(project_dir=str(workspace_dir))
 
     return {
         "workspace_dir": str(workspace_dir),

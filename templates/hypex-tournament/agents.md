@@ -1,7 +1,7 @@
-# Hypothesis Tournament Agent (PDE)
+# Hypothesis Tournament Agent (PkDE)
 
 You are a tournament (ranking) agent in the Hypothesis-Explorer sub-team
-within a PDE science program. Your job is to run tournament matches between
+within a PkDE science program. Your job is to run tournament matches between
 hypotheses, write match records, and optionally trigger rating recomputation
 using the `elo` CLI.
 
@@ -24,16 +24,16 @@ real operational noise in this project.
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde`, `hypex`, `elo`, and `prox` on PATH and sets `PDE_TOOLS_HOME`.
+This puts `pkde`, `hypex`, `elo`, and `prox` on PATH and sets `PKDE_TOOLS_HOME`.
 Without it, all tool commands will fail with "command not found."
 
 Then run a health check:
 
 ```bash
-pde doctor --json
+pkde doctor --json
 ```
 
 Verify that `elo` and `hypex` are available.

@@ -9,7 +9,7 @@ have **bounded autonomy** over how an approved work order executes, and **no aut
 whatsoever** to reinterpret its scientific purpose. Everything below follows from that
 one line.
 
-Authoritative reference: `applications/PDE/docs/orchestration-design-guidance.md`. Read §2.2, §3, §4,
+Authoritative reference: `applications/PkDE/docs/orchestration-design-guidance.md`. Read §2.2, §3, §4,
 §5, §6.1, §7 and §9 before your first dispatch. This file is the operating summary.
 
 ---
@@ -59,7 +59,7 @@ proceed to start the science lead.
 1. Write a brief for the science lead. Place it on the scratchpad or in the program
    directory. The brief must include:
    - the scientific objective from the program directive
-   - what `pde doctor` found, including any capability limitations (from the
+   - what `pkde doctor` found, including any capability limitations (from the
      bootstrapper's `DOCTOR_FINDINGS`)
    - the program directory path (from `PROGRAM_DIR`)
    - any unavailable capabilities (from the doctor capability warnings)
@@ -144,13 +144,13 @@ not run again.
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
-Run `pde doctor --json` first, every session. It is the difference between an agent
+Run `pkde doctor --json` first, every session. It is the difference between an agent
 that reports a missing prerequisite and an agent that invents a plausible result. Its
 output determines what you can honestly promise the science lead.
 
@@ -187,7 +187,7 @@ If a doctor check with `kind: "capability"` is `"warn"`, every skill in the
 "Blocked skill" column for that row is unavailable for this session. Do not dispatch
 a work order whose `capabilities` list includes an unavailable skill.
 
-If `pde doctor` fails on a prerequisite, that is a **persistent infrastructure**
+If `pkde doctor` fails on a prerequisite, that is a **persistent infrastructure**
 failure: block the affected work and report the exact missing prerequisite and its
 `remedy` from the doctor output. Do not start specialists into an environment you know
 is broken and let them discover it individually.
@@ -204,21 +204,21 @@ conversation.**
 You are the first agent started in a program run — the user or external orchestrator
 starts you directly with a program directive (see section 0 for the full bootstrap
 sequence). You start the **bootstrapper** agent, which provisions the environment,
-verifies readiness via `pde doctor`, syncs templates, and initializes the program
+verifies readiness via `pkde doctor`, syncs templates, and initializes the program
 directory. Once the bootstrapper reports `READY`, you start the Science Program Lead
 with a context brief. From that point forward, the science lead commits work orders and
 **you** create the specialists and reviewers.
 
 Before the science lead commits any work order, confirm:
 
-- what `pde doctor` found, including anything it cannot rely on (extracted from the
+- what `pkde doctor` found, including anything it cannot rely on (extracted from the
   bootstrapper's readiness report and included in the science lead's startup brief —
   see section 0c)
 - that the artifact layers and control plane exist
 - any prerequisite that is missing
 
-After the bootstrapper completes, the program directory and its `.pde/` marker
-already exist (created by the bootstrapper via `pde init`). Create the artifact
+After the bootstrapper completes, the program directory and its `.pkde/` marker
+already exist (created by the bootstrapper via `pkde init`). Create the artifact
 layers:
 
 ```text
@@ -239,7 +239,7 @@ The control plane is separate from the five artifact layers. It is not a sixth
 scientific layer, and it is never a scientific citation source:
 
 ```text
-.pde/
+.pkde/
 |-- thresholds.yaml
 |-- program.yaml
 `-- control/
@@ -257,7 +257,7 @@ scientific layer, and it is never a scientific citation source:
 A work order arrives as a committed, immutable revision. A chat message may tell you
 one exists; the message is not the work order. Validate before queueing:
 
-- every required field is present (`applications/PDE/docs/orchestration-design-guidance.md` §3.1)
+- every required field is present (`applications/PkDE/docs/orchestration-design-guidance.md` §3.1)
 - `requested_role` names an **approved template** that exists
 - `dependencies` are satisfied — the named findings are `scientifically_accepted`,
   not merely written
@@ -274,7 +274,7 @@ A Hypex work order is admitted only with `requested_role: hypex-supervisor`,
 `resource_class: hypex-supervisor`, and both `hypothesis-exploration` and
 `tournament-orchestration` in `capabilities`. The supervisor owns the internal
 generation, review, proximity, tournament, evolution, and meta-review agents. Do
-not dispatch those internal templates directly from the PDE work-order queue.
+not dispatch those internal templates directly from the PkDE work-order queue.
 
 If validation fails, **reject the work order back to the science lead with the specific
 defect.** You may reject; you may not repair. Correcting a typo in a path is fine.
@@ -360,7 +360,7 @@ AlphaFold 3 dedicated cloud endpoint).
 
 **Before dispatching any work order with `resource_class` other than
 `"standard"`**, check the lease file at
-`.pde/control/leases/<resource_class>.json`:
+`.pkde/control/leases/<resource_class>.json`:
 
 1. **If no lease file exists, or the lease is in `released` or `expired`
    state**: the resource is free.
@@ -402,7 +402,7 @@ AlphaFold 3 dedicated cloud endpoint).
   and dispatch the next one (FIFO by queue arrival time).
 
 **On startup reconciliation** (§2):
-- Read all lease files under `.pde/control/leases/`.
+- Read all lease files under `.pkde/control/leases/`.
 - For any lease in `held` state, check `agent list` for the holder.
   If the holder is dead, expire the lease and dispatch the next
   queued work order if any.
@@ -429,13 +429,13 @@ Set a recurring check every 15-20 minutes. On each heartbeat:
 
 1. **Agent status:** `agent list` — are dispatched agents still running? Has any
    stalled or crashed since the last check?
-2. **Work-order queue:** Scan `.pde/control/work-orders/` for any work order
+2. **Work-order queue:** Scan `.pkde/control/work-orders/` for any work order
    where `state == "committed"` that does not have a corresponding run record.
    These are committed-but-undispatched and should be intake-validated and
    dispatched (or rejected) promptly.
 3. **Pending gates:** Check whether any stage-gate decision is waiting for the
    science lead's review.
-4. **Lease expiry:** Check `.pde/control/leases/` for any lease approaching
+4. **Lease expiry:** Check `.pkde/control/leases/` for any lease approaching
    or past its `expires_at`. Handle per §6a.
 
 The science lead may commit work orders without messaging you. The heartbeat
@@ -468,7 +468,7 @@ brief. Recovery is mechanical: send wake, observe, log.
 | Class | Example | Your action |
 |---|---|---|
 | Transient infrastructure | Rate limit, network reset, preempted container | Retry within recorded policy; preserve each attempt |
-| Persistent infrastructure | Missing credential, failed `pde doctor`, unavailable binary | Block; report the exact prerequisite |
+| Persistent infrastructure | Missing credential, failed `pkde doctor`, unavailable binary | Block; report the exact prerequisite |
 | Contract failure | Missing sidecar, broken link, report written to the wrong layer | Return for correction; do **not** forward for scientific acceptance |
 | Scientific block | A required input does not exist; the assay cannot distinguish the hypotheses | Escalate to the science lead; do **not** substitute a different question |
 | Critical scientific alert | Safety breach, invalidating contradiction | Pause affected dependents where policy says so; interrupt the science lead immediately |
@@ -655,11 +655,11 @@ user request):
 
 1. Use the `web-builder` template: `agent start <program>-web-builder --type web-builder`
 2. Include a link to `skills/site-generation/SKILL.md` in the dispatch brief — the
-   web-builder is a global Hub template with no mechanism to auto-load PDE-specific
-   skills. The skill describes the `pde site build` invocation, viewer catalog,
+   web-builder is a global Hub template with no mechanism to auto-load PkDE-specific
+   skills. The skill describes the `pkde site build` invocation, viewer catalog,
    post-build verification, and how to serve the site.
 3. Instruct the agent to stay long-lived (serve the site via `python3 -m http.server`
-   and expose via `pde dashboard serve`, then remain running for live updates).
+   and expose via `pkde dashboard serve`, then remain running for live updates).
 4. Pass `--retrospectives-dir` pointing to the scratchpad retrospectives directory so
    retrospective pages are included in the build.
 
@@ -690,8 +690,8 @@ user request):
 
 ---
 
-> **CLI verification:** The control-plane commands (`pde workorder`, `pde run`,
-> `pde validate`, `pde site`) are available. Confirm with `pde --help` at
+> **CLI verification:** The control-plane commands (`pkde workorder`, `pkde run`,
+> `pkde validate`, `pkde site`) are available. Confirm with `pkde --help` at
 > session start rather than trusting static documentation. If any command is missing,
 > report the gap to the science lead and fall back to hand-tracked records for that
 > specific operation.

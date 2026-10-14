@@ -1,6 +1,6 @@
 ---
 name: literature-search
-description: "Search and retrieve scientific literature -- PubMed, preprint servers (arXiv, bioRxiv), and PubMed Central full text. Use when discovering what has been published on a topic, gene, compound, or disease, when establishing the volume and recency of literature for a target, when retrieving full-text articles, or when searching preprint servers for recent work. Do not use to verify that a specific citation exists (use citation-verification), to search cancer genomics databases (use pde cbioportal), or to assess whether a paper supports a claim."
+description: "Search and retrieve scientific literature -- PubMed, preprint servers (arXiv, bioRxiv), and PubMed Central full text. Use when discovering what has been published on a topic, gene, compound, or disease, when establishing the volume and recency of literature for a target, when retrieving full-text articles, or when searching preprint servers for recent work. Do not use to verify that a specific citation exists (use citation-verification), to search cancer genomics databases (use pkde cbioportal), or to assess whether a paper supports a claim."
 ---
 
 ## 1. When to use, and when not
@@ -26,7 +26,7 @@ literature. Entry points include:
 
 - You need to verify that a specific PMID, DOI, or NCT number resolves
   to a real record → `citation-verification`.
-- You need cancer genomics study data → `pde cbioportal search`.
+- You need cancer genomics study data → `pkde cbioportal search`.
 - You need to count how many papers support a specific claim — a keyword
   search counts matches, not evidence.
 
@@ -34,20 +34,20 @@ literature. Entry points include:
 
 | Question type | Command | Skill |
 |---|---|---|
-| What has been published on a topic? | `pde pubmed search` | this skill |
-| What does the result set look like? | `pde pubmed analyze` | this skill |
-| Fetch full text of a PMC article | `pde pubmed fulltext` | this skill |
-| Find recent preprints (physics, CS, math) | `pde preprint search --source arxiv` | this skill |
-| Find recent preprints (biology, life sciences) | `pde preprint search --source biorxiv` | this skill |
-| Verify a citation (PMID, DOI, NCT) exists | `pde cite verify` | citation-verification |
-| Resolve a literature identifier | `pde litref resolve` | citation-resolution |
-| Find cancer genomics studies | `pde cbioportal search` | (genomics) |
+| What has been published on a topic? | `pkde pubmed search` | this skill |
+| What does the result set look like? | `pkde pubmed analyze` | this skill |
+| Fetch full text of a PMC article | `pkde pubmed fulltext` | this skill |
+| Find recent preprints (physics, CS, math) | `pkde preprint search --source arxiv` | this skill |
+| Find recent preprints (biology, life sciences) | `pkde preprint search --source biorxiv` | this skill |
+| Verify a citation (PMID, DOI, NCT) exists | `pkde cite verify` | citation-verification |
+| Resolve a literature identifier | `pkde litref resolve` | citation-resolution |
+| Find cancer genomics studies | `pkde cbioportal search` | (genomics) |
 
 ## 2. Preconditions
 
 - **Query input**: a PubMed search string. Supports PubMed syntax:
   keywords, MeSH terms, Boolean operators (AND, OR, NOT), and field
-  tags ([Title], [Author], etc.). `pde pubmed search --help` for
+  tags ([Title], [Author], etc.). `pkde pubmed search --help` for
   details.
 - **No authentication** needed — NCBI E-utilities are public.
 - **Rate limiting**: NCBI allows 3 requests/sec without an API key.
@@ -59,30 +59,30 @@ literature. Entry points include:
   that use different terminology, are indexed under different MeSH
   headings, or are not yet indexed. The `search_not_exhaustive` relay
   carries this caveat.
-- Run `pde doctor` before first use.
+- Run `pkde doctor` before first use.
 
 ## 3. Tool invocations
 
 | Question | Run | Writes to |
 |---|---|---|
-| What has been published on this topic? | `pde pubmed search <QUERY> [--max-results N] [--sort relevance\|date]` | `raw/literature/<slug>.esearch.json`<br>`raw/literature/<slug>.efetch.xml`<br>`raw/literature/<slug>.pubmed-search.json`<br>`raw/literature/<slug>.meta.json` |
-| What does the result set look like? | `pde pubmed analyze <QUERY>` | `raw/literature/<slug>.pubmed-search.analysis.json` |
-| Fetch full text of a PMC article | `pde pubmed fulltext <PMCID>` | `raw/literature/<pmcid>.fulltext.json` |
-| Find preprints on a topic (arXiv) | `pde preprint search --source arxiv <QUERY>` | `raw/literature/<slug>.preprint-search.json` |
-| Find bioRxiv preprints on a topic | `pde preprint search --source biorxiv <QUERY>` | `raw/literature/<slug>.preprint-search.json` |
+| What has been published on this topic? | `pkde pubmed search <QUERY> [--max-results N] [--sort relevance\|date]` | `raw/literature/<slug>.esearch.json`<br>`raw/literature/<slug>.efetch.xml`<br>`raw/literature/<slug>.pubmed-search.json`<br>`raw/literature/<slug>.meta.json` |
+| What does the result set look like? | `pkde pubmed analyze <QUERY>` | `raw/literature/<slug>.pubmed-search.analysis.json` |
+| Fetch full text of a PMC article | `pkde pubmed fulltext <PMCID>` | `raw/literature/<pmcid>.fulltext.json` |
+| Find preprints on a topic (arXiv) | `pkde preprint search --source arxiv <QUERY>` | `raw/literature/<slug>.preprint-search.json` |
+| Find bioRxiv preprints on a topic | `pkde preprint search --source biorxiv <QUERY>` | `raw/literature/<slug>.preprint-search.json` |
 
 Run `search` before `analyze`. `analyze` reads from disk and produces
 summary statistics without network access.
 
 ### When to prefer preprint over pubmed
 
-Use `pde preprint search --source arxiv` when looking for recent,
+Use `pkde preprint search --source arxiv` when looking for recent,
 not-yet-peer-reviewed work — preprints appear on arXiv days after
 submission, whereas PubMed indexes peer-reviewed publications which
-may lag months behind. Use `pde preprint search --source biorxiv`
+may lag months behind. Use `pkde preprint search --source biorxiv`
 when looking for recent biology and life-sciences preprints — bioRxiv
 covers wet-lab biology, genomics, neuroscience, and related fields
-that arXiv does not. Use `pde pubmed search` when looking for
+that arXiv does not. Use `pkde pubmed search` when looking for
 peer-reviewed literature with MeSH indexing, journal provenance, and
 the quality signal that peer review provides.
 
@@ -211,10 +211,10 @@ proceed on an assumed result.
 
 ---
 
-## 6. PubMed via SQL Warehouse (`pde pubmed-bq`)
+## 6. PubMed via SQL Warehouse (`pkde pubmed-bq`)
 
-In addition to the NCBI E-utilities path (`pde pubmed`), this skill
-covers `pde pubmed-bq`, which queries the PubMed dataset hosted on a
+In addition to the NCBI E-utilities path (`pkde pubmed`), this skill
+covers `pkde pubmed-bq`, which queries the PubMed dataset hosted on a
 Cloud SQL Warehouse. This warehouse path enables SQL-based filtering with larger
 result sets, date range filters, and journal filters.
 
@@ -232,15 +232,15 @@ result sets, date range filters, and journal filters.
   Credentials (`cloud-auth auth application-default login` or
   `CLOUD_APPLICATION_CREDENTIALS`).
 - **Dataset**: defaults to `public-data.nih_nlm.pubmed`.
-  Override with `--bq-dataset` or `$PDE_PUBMED_BQ_DATASET`.
+  Override with `--bq-dataset` or `$PKDE_PUBMED_BQ_DATASET`.
 - **Dependency**: `cloud-bq>=3.0` must be installed.
 
 ### Tool invocations
 
 | Question | Run | Writes to |
 |---|---|---|
-| Search PubMed via SQL Warehouse | `pde pubmed-bq search <QUERY> [--max-results N] [--year-from Y] [--year-to Y] [--journal J] [--bq-dataset D]` | `raw/literature/<slug>.pubmed-bq.json`<br>`raw/literature/<slug>.pubmed-bq.meta.json` |
-| Summarise SQL Warehouse results | `pde pubmed-bq analyze <QUERY>` | `raw/literature/<slug>.pubmed-bq.analysis.json` |
+| Search PubMed via SQL Warehouse | `pkde pubmed-bq search <QUERY> [--max-results N] [--year-from Y] [--year-to Y] [--journal J] [--bq-dataset D]` | `raw/literature/<slug>.pubmed-bq.json`<br>`raw/literature/<slug>.pubmed-bq.meta.json` |
+| Summarise SQL Warehouse results | `pkde pubmed-bq analyze <QUERY>` | `raw/literature/<slug>.pubmed-bq.analysis.json` |
 
 Run `search` before `analyze`. `analyze` reads from disk and produces
 summary statistics (year distribution, journal distribution, abstract
@@ -254,7 +254,7 @@ keyword frequency) without network access.
 
 ### Interpretation
 
-The same interpretation contract from `pde pubmed` (section 4) applies:
+The same interpretation contract from `pkde pubmed` (section 4) applies:
 results are a keyword-based sample, not a comprehensive survey. The
 `search_not_exhaustive` relay must be satisfied. The retrieval-vs-total
 gap applies here as well — `--max-results` caps the retrieval.
@@ -263,15 +263,15 @@ gap applies here as well — `--max-results` caps the retrieval.
 
 ## 7. Related genomics commands
 
-For cancer genomics data, use `pde cbioportal search` and
-`pde cbioportal analyze`. cBioPortal aggregates genomic data from
+For cancer genomics data, use `pkde cbioportal search` and
+`pkde cbioportal analyze`. cBioPortal aggregates genomic data from
 large-scale cancer studies (TCGA, AACR GENIE, institutional cohorts).
 Artifacts land under `raw/expression/`.
 
 | Question | Run | Writes to |
 |---|---|---|
-| What cancer genomics studies match a query? | `pde cbioportal search <QUERY> [--cancer-type T] [--study S] [--max-results N]` | `raw/expression/<slug>.cbioportal-search.json`<br>`raw/expression/<slug>.cbioportal.meta.json` |
-| What do the cBioPortal results show? | `pde cbioportal analyze <ARTIFACT>` | `raw/expression/<slug>.cbioportal-search.analysis.json` |
+| What cancer genomics studies match a query? | `pkde cbioportal search <QUERY> [--cancer-type T] [--study S] [--max-results N]` | `raw/expression/<slug>.cbioportal-search.json`<br>`raw/expression/<slug>.cbioportal.meta.json` |
+| What do the cBioPortal results show? | `pkde cbioportal analyze <ARTIFACT>` | `raw/expression/<slug>.cbioportal-search.analysis.json` |
 
 cBioPortal is a cancer genomics resource, not a literature database.
 Results are study-level metadata (study ID, name, cancer type, sample

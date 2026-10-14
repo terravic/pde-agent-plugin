@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "pde-agent-plugin"
 version = "0.3.0"
-description = "Pharmakon Discovery Engine (PDE) Agent Plugin, Domain Skills, Interactive Scientific Dashboard, and MCP Server"
+description = "Pharmakon Discovery Engine (PkDE) Agent Plugin, Domain Skills, Interactive Scientific Dashboard, and MCP Server"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -47,12 +47,12 @@ dev = [
 ]
 
 [project.scripts]
-pde = "pde.cli:main"
-pde-mcp = "pde_plugin.mcp_server:main"
-pde-build-targets = "pde_plugin.build_targets:main"
+pkde = "pkde.cli:main"
+pkde-mcp = "pkde_plugin.mcp_server:main"
+pkde-build-targets = "pkde_plugin.build_targets:main"
 
 [tool.hatch.build.targets.wheel]
-packages = ["pde_plugin", "tools/pde"]
+packages = ["pkde_plugin", "tools/pkde"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

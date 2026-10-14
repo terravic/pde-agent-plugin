@@ -1,13 +1,13 @@
 ---
 name: artifact-conventions
-description: "Defines the 4-layer PDE artifact hierarchy (Layer 0 raw/ + .meta.json + .analysis.json, Layer 1 findings/, Layer 2 program-state/, Layer 4 executive/), inline {source: ...} provenance tags, mandatory relays, and 10-check validation rules."
+description: "Defines the 4-layer PkDE artifact hierarchy (Layer 0 raw/ + .meta.json + .analysis.json, Layer 1 findings/, Layer 2 program-state/, Layer 4 executive/), inline {source: ...} provenance tags, mandatory relays, and 10-check validation rules."
 metadata:
-  display_name: PDE Artifact Conventions & 4-Layer Hierarchy
+  display_name: PkDE Artifact Conventions & 4-Layer Hierarchy
 ---
 
 # Artifact Conventions
 
-Standard report format, headings, and linking conventions for all pde project artifacts.
+Standard report format, headings, and linking conventions for all pkde project artifacts.
 
 ## Project Filesystem
 
@@ -155,7 +155,7 @@ The source tag is the one the finding-validator checks mechanically.
 ### Citing analysis records
 
 `.analysis.json` records carry a `written_by` field (from
-`$PDE_AGENT_SLUG`). Since two records can now legitimately describe
+`$PKDE_AGENT_SLUG`). Since two records can now legitimately describe
 the same artifact — the specialist's original and a reviewer's
 re-analysis — anything citing an analysis should cite it by `written_by`
 and path, not by path alone. A finding that says "the analysis shows..."
@@ -203,16 +203,16 @@ it read. A bare re-run therefore overwrites the record it was sent to
 check, and the auditor compares its own output against itself. The
 `--out` flag redirects the output. Analyzers come in two shapes:
 
-    OUT=raw/reanalysis/$(date +%F)-$PDE_AGENT_SLUG
+    OUT=raw/reanalysis/$(date +%F)-$PKDE_AGENT_SLUG
 
     # Identifier-based (genetics, expression, litref, alphafold analyze):
-    pde genetics analyze TP53 --out "$OUT"
+    pkde genetics analyze TP53 --out "$OUT"
 
     # Path-based (coscientist, alphagenome, alphafold analyze-prediction):
-    pde coscientist analyze raw/hypotheses/<stem>.tournament.json --out "$OUT"
+    pkde coscientist analyze raw/hypotheses/<stem>.tournament.json --out "$OUT"
 
-Run `pde <tool> analyze --help` to confirm which shape a command
-uses. `$PDE_AGENT_SLUG` is set in the agent environment. Use it in
+Run `pkde <tool> analyze --help` to confirm which shape a command
+uses. `$PKDE_AGENT_SLUG` is set in the agent environment. Use it in
 preference to a literal `<agent>` placeholder.
 
 This path is under `raw/` because the content is tool output —

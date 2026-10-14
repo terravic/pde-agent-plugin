@@ -3,9 +3,9 @@
 Scan generated HTML for infrastructure-detail leakage.
 
 Reports findings for the web-builder to act on — does NOT modify any files.
-Run after ``pde site build`` and post-build processing:
+Run after ``pkde site build`` and post-build processing:
 
-    pde site build
+    pkde site build
     python3 postbuild.py _site/
     python3 references/fix_infra_refs.py _site/
 

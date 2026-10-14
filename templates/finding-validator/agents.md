@@ -29,11 +29,11 @@ select a finding yourself.
 Activate the tools environment:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
 ---
 
@@ -62,7 +62,7 @@ It does not go to the science lead.
 
 - [ ] **Relay codes addressed.** Every code in `mandatory_relays` — on the sidecar
       **and** on the `.analysis.json` — is addressed in the Layer 1 finding. Run
-      `pde relays` for the registry.
+      `pkde relays` for the registry.
 
   > Know the limit of what you are testing. You confirm the code is *addressed* — it
   > appears in the finding in connection with the condition it names. Whether the finding

@@ -191,7 +191,7 @@ A good steering memo:
 
 Produce a comprehensive research report when the system converges or the
 exploration budget is exhausted. This is the primary deliverable of the
-PDE Hypex subgraph — it should be well-structured, evidence-based,
+PkDE Hypex subgraph — it should be well-structured, evidence-based,
 and actionable for a research team planning follow-up experiments.
 
 ### Input
@@ -228,14 +228,14 @@ top 10:
 #### Step 2: Verify Evidence (Top 10 Only)
 
 For each hypothesis in the top 10, independently verify its key evidence claims
-using PDE's citation and literature commands:
+using PkDE's citation and literature commands:
 
 ```bash
 # Verify the complete Hypex evidence array
-pde cite verify <run-dir>/hypotheses/H-XXXX.json --out raw/citations
+pkde cite verify <run-dir>/hypotheses/H-XXXX.json --out raw/citations
 
-# Resolve any PMID, arXiv identifier, or DOI into a PDE literature artifact
-pde litref resolve <identifier> --json
+# Resolve any PMID, arXiv identifier, or DOI into a PkDE literature artifact
+pkde litref resolve <identifier> --json
 ```
 
 Check that each cited paper actually supports the claim made in the hypothesis's
@@ -386,7 +386,7 @@ learned, what guidance was most effective, what patterns persisted]
 A good final report:
 - Ranks hypotheses by the standings the tool emits, not by the author's subjective preference
 - Includes Elo trajectories showing how rankings evolved across epochs
-- Independently verifies citations for all top-10 hypotheses using PDE citation tooling
+- Independently verifies citations for all top-10 hypotheses using PkDE citation tooling
 - Distinguishes between verified and unverified claims with clear markers
 - Identifies unresolved contradictions between hypotheses, not just within them
 - Provides an experimental roadmap that is prioritized and phased

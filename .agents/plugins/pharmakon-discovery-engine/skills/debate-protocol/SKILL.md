@@ -11,7 +11,7 @@ in your own reasoning and strengthen the hypothesis before it faces external
 review.
 
 This protocol contributes records to a run that the supervisor ultimately
-publishes with `pde hypex analyze`; workers do not publish a separate result.
+publishes with `pkde hypex analyze`; workers do not publish a separate result.
 
 ## Purpose
 
@@ -47,7 +47,7 @@ Run 3–5 turns total, depending on complexity.
 Present the hypothesis in its initial form:
 
 - State the core claim and mechanism.
-- Present supporting evidence with identifiers returned by PDE literature commands.
+- Present supporting evidence with identifiers returned by PkDE literature commands.
 - List the testable predictions.
 - Propose initial experiments.
 
@@ -66,7 +66,7 @@ Challenge the hypothesis on multiple axes:
 - **Prior art:** Has this idea been proposed before? Search for existing
   literature that already tests this hypothesis.
 - **Contradicting evidence:** Search for papers that directly contradict the
-  claim. Use `pde pubmed search` or `pde preprint search --source arxiv` with terms designed to
+  claim. Use `pkde pubmed search` or `pkde preprint search --source arxiv` with terms designed to
   find counter-evidence.
 
 #### Turn 3: Defend (Advocate)

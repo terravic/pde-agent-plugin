@@ -1,4 +1,4 @@
-# pde environment manifest
+# pkde environment manifest
 # The sha256 of this file is ENV_VERSION, the value stamped into every
 # artifact sidecar. It holds no timestamp and no absolute path, so the
 # same environment hashes the same on any day in any container.
@@ -81,5 +81,5 @@ zstandard==0.25.0
 [binaries]
 elo	0fe58c7a7d9e219261fcd147aa60071b570df1442f23008ee12f3572100ab9ec	3387621
 hypex	cafe43c65d4e2c4f44efe1e076c8825cb81ae1495e1b13f5931a3a1a8c2e4b93	4292837
-pde	c66d1de99b4cbfd263205da5e75b9c156b5014e42d6370f8ef0324eb045efb83	129
+pkde	cc053f72fd2d6b3c1b6dd8ccda20882c2125836fccc29b3d0aa70f3388a04092	130
 prox	3cf028e92aa401b1b3b59043298a1fb316afec9770500d74c8ba0ce389495b45	506

@@ -1,6 +1,6 @@
 ---
 name: competitive-differentiation
-description: "Evaluates competitive clinical pipelines, mechanism-of-action differentiation, patent/trial density, and target product profile positioning using pde trials, pde patent, and pde differentiation."
+description: "Evaluates competitive clinical pipelines, mechanism-of-action differentiation, patent/trial density, and target product profile positioning using pkde trials, pkde patent, and pkde differentiation."
 metadata:
   display_name: Competitive Landscape & Clinical Differentiation Analysis
 ---
@@ -11,7 +11,7 @@ metadata:
 
 Interpret competitive landscape and patent search results for a concept,
 producing structured findings that separate three independent dimensions.
-This skill applies after `pde patent search` has been run and patent data
+This skill applies after `pkde patent search` has been run and patent data
 is available.
 
 ## When to use
@@ -85,7 +85,7 @@ No patent search finding may be presented as exhaustive.
 
 ## Mapping to assessment records
 
-The differentiation assessment produces `pde.evidence-assessment.v1`
+The differentiation assessment produces `pkde.evidence-assessment.v1`
 records with the following evidence types:
 
 | Dimension | evidence_type | Rationale |
@@ -107,11 +107,11 @@ the evidence domain rather than the specific tool.
 ## Workflow
 
 ```
-1. Run `pde patent search "<target>"` to fetch patent data.
-2. Run `pde differentiation assess <target> --concept IC-NNN
+1. Run `pkde patent search "<target>"` to fetch patent data.
+2. Run `pkde differentiation assess <target> --concept IC-NNN
        --modality <modality> --indication <indication>`.
 3. Review the three-dimension output.
-4. Run `pde differentiation report <target> --concept IC-NNN`
+4. Run `pkde differentiation report <target> --concept IC-NNN`
    to generate assessment records.
 5. Write the assessment records to the control store using
    `controlstore.write_record()`.
@@ -121,7 +121,7 @@ the evidence domain rather than the specific tool.
 
 When Hypex generation or reflection produces hypotheses about a target:
 
-1. The **generation agent** should use `pde patent search` as part of
+1. The **generation agent** should use `pkde patent search` as part of
    its Phase 1 broad exploration to check for existing IP.
 2. The **reflection agent** should check patent landscape as part of
    its Phase 2c prior art search.

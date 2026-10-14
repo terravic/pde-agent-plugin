@@ -2,7 +2,7 @@
 name: program-state-management
 description: "Maintains Layer 2 program-state artifacts (active-series.md, liability-tracker.md, decision-log.md, open-questions.md) and Layer 4 executive synthesis across multi-cycle drug discovery campaigns."
 metadata:
-  display_name: PDE Layer 2 Program State & Decision Log Management
+  display_name: PkDE Layer 2 Program State & Decision Log Management
 ---
 
 # Program State Management
@@ -147,7 +147,7 @@ Before acting on Layer 2 state, the orchestrator verifies:
 
 ### Concept lifecycle rules
 
-When concept records exist under `.pde/control/concepts/`, the
+When concept records exist under `.pkde/control/concepts/`, the
 following additional rules apply:
 
 **Concept state machine.** Concept state transitions follow the
@@ -233,8 +233,8 @@ triaged sits in the decision surface without being acted on.
 ### Assessment and decision record integrity checks
 
 The pre-routing integrity check is extended to cover structured
-assessment and decision records (`.pde/control/assessments/`,
-`.pde/control/decisions/`):
+assessment and decision records (`.pkde/control/assessments/`,
+`.pkde/control/decisions/`):
 
 - **Evidence/execution mutual constraint.** Every assessment with
   `execution_outcome != "completed"` must have
@@ -244,7 +244,7 @@ assessment and decision records (`.pde/control/assessments/`,
 
 - **Decision supporting-assessment references.** Every decision's
   `supporting_assessments` entries reference assessment records
-  (`AR-NNN`) that actually exist in `.pde/control/assessments/`.
+  (`AR-NNN`) that actually exist in `.pkde/control/assessments/`.
   A dangling reference is a warning — the decision's evidence chain
   is broken.
 

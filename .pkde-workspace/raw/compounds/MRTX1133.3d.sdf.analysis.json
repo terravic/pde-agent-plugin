@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "record_type": "analysis",
+  "source": "raw/compounds/MRTX1133.3d.sdf",
+  "env_version": "sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48",
+  "source_sha256": "180ce46cdffe628521e03d542977f80a1da46e078e4e1c8c50168c22473beecf",
+  "threshold_set": "compound-v1",
+  "work_order_id": "WO-003",
+  "analyzed_at": "2026-10-14T20:05:59Z",
+  "verdict": "pass",
+  "summary": "Low-energy 3D conformer generated for MRTX1133 with protonated diazabicyclooctane amine.",
+  "thresholds_applied": {
+    "max_strain_energy_kcal": 5.0
+  },
+  "metrics": {},
+  "mandatory_relays": []
+}

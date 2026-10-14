@@ -12,7 +12,7 @@ records its lineage — parent IDs and the operator used — so the system can
 track evolutionary history and enforce mandatory rematches.
 
 This protocol contributes records to a run that the supervisor ultimately
-publishes with `pde hypex analyze`; workers do not publish a separate result.
+publishes with `pkde hypex analyze`; workers do not publish a separate result.
 
 ---
 
@@ -35,13 +35,13 @@ missing citations.
 
    ```bash
    # PubMed for peer-reviewed biomedical evidence
-   pde pubmed search "<mechanism>[MeSH Terms] AND <target>[MeSH Terms]" --max-results 20
+   pkde pubmed search "<mechanism>[MeSH Terms] AND <target>[MeSH Terms]" --max-results 20
 
    # arXiv for computational/theoretical evidence
-   pde preprint search --source arxiv "cat:<category> AND abs:<keywords>" --max-results 10
+   pkde preprint search --source arxiv "cat:<category> AND abs:<keywords>" --max-results 10
 
    # bioRxiv for recent preprints
-   pde preprint search --source biorxiv "<keywords>" --max-results 10
+   pkde preprint search --source biorxiv "<keywords>" --max-results 10
    ```
 
 3. **If new supporting evidence is found:** Strengthen the claim with additional
@@ -171,17 +171,17 @@ clear evidence-based weaknesses to fix.
 
    ```bash
    # Cross-category arXiv search — look for structural analogies
-   pde preprint search --source arxiv "cat:q-bio.MN AND abs:<analogous mechanism>" --max-results 10
-   pde preprint search --source arxiv "cat:cs.AI AND abs:<phenomenon keyword>" --max-results 10
-   pde preprint search --source arxiv "cat:physics.bio-ph AND abs:<system keyword>" --max-results 10
+   pkde preprint search --source arxiv "cat:q-bio.MN AND abs:<analogous mechanism>" --max-results 10
+   pkde preprint search --source arxiv "cat:cs.AI AND abs:<phenomenon keyword>" --max-results 10
+   pkde preprint search --source arxiv "cat:physics.bio-ph AND abs:<system keyword>" --max-results 10
 
    # Cross-domain PubMed search
-   pde pubmed search "<distant field mechanism>[MeSH Terms] AND <target system>[MeSH Terms]" --max-results 15
+   pkde pubmed search "<distant field mechanism>[MeSH Terms] AND <target system>[MeSH Terms]" --max-results 15
 
-   # Broad exploration for unexpected connections (PDE fan-out)
-   pde pubmed search "<phenomenon> <distant field keyword>" --max-results 15
-   pde preprint search --source arxiv "<phenomenon> <distant field keyword>" --max-results 10
-   pde preprint search --source biorxiv "<phenomenon> <distant field keyword>" --max-results 10
+   # Broad exploration for unexpected connections (PkDE fan-out)
+   pkde pubmed search "<phenomenon> <distant field keyword>" --max-results 15
+   pkde preprint search --source arxiv "<phenomenon> <distant field keyword>" --max-results 10
+   pkde preprint search --source biorxiv "<phenomenon> <distant field keyword>" --max-results 10
    ```
 
 3. Identify a transferable insight: a mechanism, mathematical framework,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Initialize a live PDE discovery session from the user's prompt and start the dashboard server."""
+"""Initialize a live PkDE discovery session from the user's prompt and start the dashboard server."""
 
 from __future__ import annotations
 
@@ -12,12 +12,12 @@ REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from pde_plugin.tool_bridge import pde_bootstrap_session  # noqa: E402
+from pkde_plugin.tool_bridge import pkde_bootstrap_session  # noqa: E402
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Bootstrap a PDE session from the user prompt and start the live dashboard server on 0.0.0.0:8765."
+        description="Bootstrap a PkDE session from the user prompt and start the live dashboard server on 0.0.0.0:8765."
     )
     parser.add_argument(
         "--prompt",
@@ -38,7 +38,7 @@ def main() -> int:
     parser.add_argument(
         "--project",
         default=None,
-        help="Optional PDE project workspace directory override.",
+        help="Optional PkDE project workspace directory override.",
     )
     parser.add_argument(
         "--host",
@@ -58,7 +58,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    res = pde_bootstrap_session(
+    res = pkde_bootstrap_session(
         prompt=args.prompt,
         program_name=args.program_name,
         stage=args.stage,

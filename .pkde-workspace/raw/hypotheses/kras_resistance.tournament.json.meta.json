@@ -1,0 +1,23 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pkde hypex tournament run --goal 'KRAS G12D resistance and optimization' --json",
+  "cli_version": "0.3.0",
+  "env_version": "sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48",
+  "created_at": "2026-10-14T20:06:19Z",
+  "work_order_id": "WO-005",
+  "outputs": [
+    {
+      "path": "raw/hypotheses/kras_resistance.tournament.json",
+      "sha256": "089f05fbf1feab7f698c128d879d46ecd3862e4eba0dbd6241b1ca8f5ee25275",
+      "bytes": 3544
+    }
+  ],
+  "mandatory_relays": [
+    {
+      "code": "HYPEX_TOP_RANKED_SHP2_COMBO",
+      "target_role": "experimental-biologist",
+      "detail": "Validate HYP-001 (ELO 1648) in AsPC-1 and GP2d PDAC lines with 72h pERK rebound readout."
+    }
+  ]
+}

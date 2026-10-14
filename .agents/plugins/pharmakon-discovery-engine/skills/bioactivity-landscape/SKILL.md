@@ -39,7 +39,7 @@ screening or dose-response results. Entry points include:
 
 ## 2. Preconditions
 
-- **Input**: a canonical assay JSON file (schema `pde.assay.v1`) with
+- **Input**: a canonical assay JSON file (schema `pkde.assay.v1`) with
   a top-level `schema` field and a `data` array. Each data point
   requires: `well_id`, `compound_id`, `readout_value`, `readout_type`
   (`percent_inhibition` or `fold_change`), `assay_type`, `plate_id`,
@@ -50,11 +50,11 @@ screening or dose-response results. Entry points include:
 - **Control wells** (`POS_CTRL`, `NEG_CTRL`, `POS`, `NEG`, `DMSO`,
   `POSITIVE_CONTROL`, `NEGATIVE_CONTROL`) are used for Z-factor
   calculation but excluded from compound analysis.
-- **scipy** required for dose-response curve fitting. Run `pde doctor`
+- **scipy** required for dose-response curve fitting. Run `pkde doctor`
   before first use — its verdict line (`STOP` or `PROCEED`) is the gate.
 - **No authentication** needed — all operations are offline.
 - **Selectivity input**: a canonical selectivity panel JSON (schema
-  `pde.selectivity-panel.v1`) with `compound_id`, `primary_target`,
+  `pkde.selectivity-panel.v1`) with `compound_id`, `primary_target`,
   and `off_targets` array (max 10,000). Per target: `name`,
   `activity_type` (IC50 or Ki, must be uniform — mixed panels refused),
   `activity_value` (positive numeric, nM), `activity_unit`. Optional
@@ -64,10 +64,10 @@ screening or dose-response results. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| Ingest and validate assay data | `pde assay ingest <ASSAY_FILE>` | `raw/assays/<name>.assay.json`<br>`raw/assays/<name>.meta.json` |
-| Analyze screen quality, activity, and dose-response | `pde assay analyze <ARTIFACT>` | `raw/assays/<stem>.analysis.json` |
-| Compute selectivity ratios from a panel | `pde selectivity compare <PANEL_FILE>` | `raw/assays/<slug>.selectivity.json`<br>`raw/assays/<slug>.meta.json` |
-| Apply margin thresholds to stored selectivity data | `pde selectivity analyze <ARTIFACT>` | `raw/assays/<slug>.analysis.json` |
+| Ingest and validate assay data | `pkde assay ingest <ASSAY_FILE>` | `raw/assays/<name>.assay.json`<br>`raw/assays/<name>.meta.json` |
+| Analyze screen quality, activity, and dose-response | `pkde assay analyze <ARTIFACT>` | `raw/assays/<stem>.analysis.json` |
+| Compute selectivity ratios from a panel | `pkde selectivity compare <PANEL_FILE>` | `raw/assays/<slug>.selectivity.json`<br>`raw/assays/<slug>.meta.json` |
+| Apply margin thresholds to stored selectivity data | `pkde selectivity analyze <ARTIFACT>` | `raw/assays/<slug>.analysis.json` |
 
 Run `ingest` before `analyze`. `analyze` reads stored data from disk
 and can be re-run with different thresholds without re-ingesting.
@@ -131,7 +131,7 @@ on the per-compound record:
 - `hill_slope_max` — **UNRESOLVED**. Do not invent a value.
 - `r_squared_floor` — **UNRESOLVED**. Do not invent a value.
 
-The operator must set these in `.pde/thresholds.yaml` with a
+The operator must set these in `.pkde/thresholds.yaml` with a
 recorded justification. When a threshold is UNRESOLVED, the
 corresponding check does not run and no activity classification is
 made. The absence of a check is not permission to call a compound

@@ -1,11 +1,13 @@
 {
-  "commit": "fc077abe50742cde16120b8a6579511d988e0ea5",
+  "commit": "ec56a794944139adbab0f138a7710fb978986f37",
   "dirty": true,
   "dirty_inputs": [
-    "ools/install.sh"
+    "ools/install.sh",
+    "tools/vendor/hypex/README.md",
+    "tools/vendor/hypex/hypothesis-explorer/tools/hypex/cmd/root.go"
   ],
   "on_origin": true,
   "remote_ref": "origin/main",
-  "stamped_at": "2026-10-09T17:03:53Z",
-  "env_version": "sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333"
+  "stamped_at": "2026-10-14T20:05:26Z",
+  "env_version": "sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48"
 }

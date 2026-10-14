@@ -1,6 +1,6 @@
 # Pilot Bootstrapping Quickstart
 
-Start a pde program from a blank environment. One user action; everything else
+Start a pkde program from a blank environment. One user action; everything else
 is automated by the controller.
 
 ---
@@ -21,13 +21,13 @@ Before starting, confirm:
 
 | Variable | Purpose | Notes |
 |---|---|---|
-| `PDE_VENV` | Override venv location | Default: `tools/.venv` |
-| `PDE_TOOLS_HOME` | Where the env stamp and `env.sh` land | Default: `tools` |
+| `PKDE_VENV` | Override venv location | Default: `tools/.venv` |
+| `PKDE_TOOLS_HOME` | Where the env stamp and `env.sh` land | Default: `tools` |
 | `CLOUD_APPLICATION_CREDENTIALS` | AlphaFold 3 (dedicated cloud) access | Required for AF3 predictions |
 | `ALPHAGENOME_API_KEY` | AlphaGenome access | Required for AlphaGenome skills |
 
 > **Note:** The volume path `tools/` is an environment
-> default. Your deployment may use a different path — set `PDE_TOOLS_HOME`
+> default. Your deployment may use a different path — set `PKDE_TOOLS_HOME`
 > to override. See [environment-specific notes](#7-environment-specific-notes).
 
 ---
@@ -77,16 +77,16 @@ Installs the Python venv, pip dependencies, and non-pip binaries (AutoDock Vina,
 fpocket). Then activates via:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
 > `env.sh` — not the venv's `activate` directly. `env.sh` also adds provisioned
-> binaries to `PATH` and sets `PDE_TOOLS_HOME`.
+> binaries to `PATH` and sets `PKDE_TOOLS_HOME`.
 
 ### 3b. Doctor verification
 
 ```bash
-pde doctor --json
+pkde doctor --json
 ```
 
 Checks that all tools, credentials, and dependencies are present. Any `"fail"`
@@ -104,11 +104,11 @@ Pushes all agent templates to the hub. Must complete before starting any agent.
 ### 3d. Program directory
 
 ```bash
-pde init <directory>
+pkde init <directory>
 ```
 
-Creates the program root with `.pde/` marker and `raw/` tree. If continuing
-from a prior phase, the controller detects the existing `.pde/` and skips
+Creates the program root with `.pkde/` marker and `raw/` tree. If continuing
+from a prior phase, the controller detects the existing `.pkde/` and skips
 init.
 
 ### 3e. Start the Science Program Lead
@@ -143,8 +143,8 @@ After bootstrap completes, expect:
 ### Check environment health
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
-pde doctor
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+pkde doctor
 ```
 
 - **`STOP`** verdict: a prerequisite is broken — fix before proceeding.
@@ -154,13 +154,13 @@ pde doctor
 ### Check program state
 
 ```bash
-ls -la <program-directory>/.pde/
+ls -la <program-directory>/.pkde/
 ```
 
-The `.pde/` directory should contain:
+The `.pkde/` directory should contain:
 
 ```
-.pde/
+.pkde/
 |-- thresholds.yaml
 |-- program.yaml
 '-- control/
@@ -180,8 +180,8 @@ The `.pde/` directory should contain:
 ### Continuing from a prior phase
 
 If continuing from a prior phase, the existing program directory is the source of
-truth. Point the controller at it — do not re-run `pde init`. The controller
-detects the existing `.pde/` marker and preserves the control state.
+truth. Point the controller at it — do not re-run `pkde init`. The controller
+detects the existing `.pkde/` marker and preserves the control state.
 
 ### External data (e.g., co-scientist results)
 
@@ -237,7 +237,7 @@ Common causes:
 ### Doctor FAIL
 
 ```bash
-pde doctor --json
+pkde doctor --json
 ```
 
 Each failed check includes a `remedy` field. Common issues:
@@ -277,16 +277,16 @@ the brief. If the controller has stopped, check its output for the failure point
 
 The default tools home is `tools/`. This path is set by:
 
-1. The `PDE_TOOLS_HOME` environment variable (highest precedence)
+1. The `PKDE_TOOLS_HOME` environment variable (highest precedence)
 2. The default compiled into `install.sh`
 
-If your deployment uses a different volume layout, set `PDE_TOOLS_HOME` before
+If your deployment uses a different volume layout, set `PKDE_TOOLS_HOME` before
 starting the controller, or ensure the controller's environment includes it.
 
 ### Venv location
 
 The venv defaults to `tools/.venv` but can be placed on a shared volume via
-`PDE_VENV` so multiple agents use one environment without each building their
+`PKDE_VENV` so multiple agents use one environment without each building their
 own copy.
 
 ### Pilot processes

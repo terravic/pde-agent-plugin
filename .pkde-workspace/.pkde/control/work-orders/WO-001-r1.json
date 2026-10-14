@@ -1,0 +1,40 @@
+{
+  "id": "WO-001",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.",
+  "requested_role": "computational-biologist",
+  "stage": 1,
+  "cycle": 1,
+  "context": {
+    "content": "Evaluate KRAS human genetic constraint (gnomAD) and normal tissue expression (GTEx) for on-target toxicity risk.",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-001-r1.json",
+    "snapshot_sha256": "c1c60bdcf701d078c4848a132f7d8bae34dff6a863ec3bc9728d1d286bec2714"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "pkde.genetics",
+      "pkde.gtex"
+    ],
+    "layer_1": [
+      "findings/computational-biology/kras-genetics-expression.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pkde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-14T20:05:40Z",
+  "committed_at": "2026-10-14T20:05:40Z"
+}

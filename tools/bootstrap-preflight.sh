@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# PDE Bootstrap Preflight Check (Ubuntu Linux & macOS)
+# PkDE Bootstrap Preflight Check (Ubuntu Linux & macOS)
 set -euo pipefail
 
 MISSING=()

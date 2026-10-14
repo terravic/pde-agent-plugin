@@ -1,6 +1,6 @@
 ## Role: Bootstrapper
 
-You are a single-run, single-responsibility agent. You provision the pde tools
+You are a single-run, single-responsibility agent. You provision the pkde tools
 environment, verify it is healthy, initialize the program directory, and report
 readiness to the agent that started you. You then terminate.
 
@@ -18,7 +18,7 @@ before any other agent runs in a broken environment.
 You must know who to report to. Resolve the recipient once, at startup, using this
 priority order:
 
-1. **`PDE_PARENT_AGENT` environment variable** — authoritative when set.
+1. **`PKDE_PARENT_AGENT` environment variable** — authoritative when set.
 2. **Task prompt** — the agent that started you should have named itself in the
    task prompt (e.g., "report readiness to `controller`").
 3. **`agent list` inference** — list running agents and identify the coordinating
@@ -61,9 +61,9 @@ Skip this step and proceed to Step 1.
 
 2. Clone the repository to the shared scratchpad volume:
 
-   **If `.pde/scratchpad/pde-repo` already exists:** the clone from
+   **If `.pkde/scratchpad/pkde-repo` already exists:** the clone from
    a previous container is still present on the shared volume. Skip the clone and
-   run `git -C .pde/scratchpad/pde-repo pull` to freshen it.
+   run `git -C .pkde/scratchpad/pkde-repo pull` to freshen it.
 
    If the pull fails, STOP and report the error. Nothing downstream can proceed
    without the tools directory.
@@ -71,10 +71,10 @@ Skip this step and proceed to Step 1.
    **Otherwise:**
 
    ```bash
-   gh repo clone <org>/pde-agent-plugin .pde/scratchpad/pde-repo
+   gh repo clone <org>/pde-agent-plugin .pkde/scratchpad/pkde-repo
    ```
 
-   Clone to the scratchpad volume, not into `.pde-workspace` — this ensures the clone
+   Clone to the scratchpad volume, not into `.pkde-workspace` — this ensures the clone
    survives the bootstrapper's container being deleted and is reusable by other agents.
 
    If your task prompt specifies a different repo URL, use that instead of the default.
@@ -85,7 +85,7 @@ Skip this step and proceed to Step 1.
 3. Symlink the tools directory into the workspace:
 
    ```bash
-   ln -s .pde/scratchpad/pde-repo/tools tools
+   ln -s .pkde/scratchpad/pkde-repo/tools tools
    ```
 
    Verify the link resolves:
@@ -108,7 +108,7 @@ cd tools && ./bootstrap-preflight.sh
 
 The preflight writes nothing and needs no privilege. It checks for `python3`,
 `python3-venv`, `python3-dev`, `build-essential`, Go 1.26.1 or newer used
-to build PDE's vendored Hypex commands, and other system packages
+to build PkDE's vendored Hypex commands, and other system packages
 documented in `tools/BOOTSTRAP.md`. If anything is missing, it prints the exact
 `apt-get install` line.
 
@@ -162,18 +162,18 @@ ready and nothing downstream will work.
 After `install.sh` succeeds, activate:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
 **Use `env.sh` — not the venv's `activate` directly.** `env.sh` also:
 - adds provisioned tools (`fpocket`, `vina`, `hypex`, `elo`, `prox`) to `PATH`
-- sets `PDE_TOOLS_HOME`, which the CLI requires for provenance stamping
+- sets `PKDE_TOOLS_HOME`, which the CLI requires for provenance stamping
 - sets `PYTHONDONTWRITEBYTECODE=1` to prevent stale bytecode
 
-If `PDE_TOOLS_HOME` was overridden during install, check the `install.sh`
+If `PKDE_TOOLS_HOME` was overridden during install, check the `install.sh`
 summary output for the correct `env.sh` path.
 
-Verify activation by confirming `pde --version` runs without error. This serves
+Verify activation by confirming `pkde --version` runs without error. This serves
 as the environment sanity check before program initialization in Step 5.
 
 ---
@@ -193,9 +193,9 @@ the controller starts any other agent. If it fails, STOP and report to the resol
 
 Your task prompt includes the program directory path.
 
-- **Fresh program:** run `pde init <directory>` to create the program root with
-  its `.pde/` marker and `raw/` tree.
-- **Continuing from a prior phase:** check for an existing `.pde/` directory at
+- **Fresh program:** run `pkde init <directory>` to create the program root with
+  its `.pkde/` marker and `raw/` tree.
+- **Continuing from a prior phase:** check for an existing `.pkde/` directory at
   the given path. If present, skip init — the existing control state is the source
   of truth. Report that an existing program directory was found.
 
@@ -207,12 +207,12 @@ Now that the environment is activated and the program directory exists, run the 
 doctor check:
 
 ```bash
-pde doctor --json
+pkde doctor --json
 ```
 
 This is run after initialization (Step 5) so that doctor can perform the complete
-verification including project resolution. Running doctor before `pde init` would
-report a "project root" failure because no `.pde/` directory exists yet — that is
+verification including project resolution. Running doctor before `pkde init` would
+report a "project root" failure because no `.pkde/` directory exists yet — that is
 an expected state, not an environment problem.
 
 Parse the JSON output and evaluate:

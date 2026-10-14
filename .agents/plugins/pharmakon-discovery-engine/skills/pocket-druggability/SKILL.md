@@ -42,11 +42,11 @@ in a protein structure. Entry points include:
   `--backend [auto|fpocket|geometric]` (default `auto`). When `fpocket`
   is on `PATH`, `auto` uses the native `fpocket` binary; when `fpocket`
   is absent (or `--backend geometric` is passed), `run` automatically
-  falls back to PDE's built-in Python/NumPy 3D lattice PSP-enclosure
+  falls back to PkDE's built-in Python/NumPy 3D lattice PSP-enclosure
   pocket detector and emits the `pocket.geometric_fallback_backend`
   mandatory relay in `.pockets.meta.json`. Passing `--backend fpocket`
   explicitly when `fpocket` is missing raises a `DependencyError`
-  pointing to `tools/install.sh`. Run `pde doctor` before first use. It
+  pointing to `tools/install.sh`. Run `pkde doctor` before first use. It
   ends with a verdict line: `STOP` means fix or report before running
   anything; `PROCEED` means work, and the grouped warnings tell you
   which commands would refuse, which results need careful reading, and
@@ -60,9 +60,9 @@ in a protein structure. Entry points include:
 
 | Question | Run | Writes to |
 |---|---|---|
-| What pockets does this structure have? | `pde pocket run <STRUCTURE> [--backend auto\|fpocket\|geometric]` | `raw/structures/<stem>.pockets.json`<br>`raw/structures/<stem>.pockets.meta.json`<br>`raw/structures/<stem>_fpocket/` (full fpocket tree) |
-| Is this structure druggable? | `pde pocket analyze <POCKETS_RECORD>` | `raw/structures/<stem>.pocket.analysis.json` |
-| Is there a pocket at this interface? | `pde pocket analyze <POCKETS_RECORD> --near A:145,A:146,B:12` | `raw/structures/<stem>.pocket.analysis.json` |
+| What pockets does this structure have? | `pkde pocket run <STRUCTURE> [--backend auto\|fpocket\|geometric]` | `raw/structures/<stem>.pockets.json`<br>`raw/structures/<stem>.pockets.meta.json`<br>`raw/structures/<stem>_fpocket/` (full fpocket tree) |
+| Is this structure druggable? | `pkde pocket analyze <POCKETS_RECORD>` | `raw/structures/<stem>.pocket.analysis.json` |
+| Is there a pocket at this interface? | `pkde pocket analyze <POCKETS_RECORD> --near A:145,A:146,B:12` | `raw/structures/<stem>.pocket.analysis.json` |
 
 Run `run` before `analyze`. `analyze` reads from disk and applies the
 `pocket` threshold set. It can be re-run with different thresholds
@@ -219,7 +219,7 @@ a stop. Do not conflate them.
 | `fpocket.single_conformation` | Qualifier | The reported score bands as borderline or not-druggable, or no pocket lines the requested site (conditional) | Write the negative as "no druggable pocket in this conformation of <structure>", naming the structure. One structure cannot support "this site cannot be drugged": three CDK2 crystal structures of the same ATP site score 0.17, 0.29 and 0.94. A score under the cutoff is a reason to score another conformation, not a reason to drop a target. |
 | `fpocket.conformation_dependent` | Qualifier | The structure is not established as experimental (conditional) | Say which conformation was scored, and do not convert a low score into a claim about the target. The druggability model was trained on crystal structures; on a predicted or modelled structure a low score is a statement about the model, not about whether the site can be drugged. |
 | `fpocket.druggability_is_not_affinity` | Stop | The reported score bands as druggable (conditional) | Report the site as having drug-like cavity geometry. Do not report it as evidence that a compound will bind or how tightly. The score describes the shape, volume and hydrophobicity of a cavity with no ligand in it; affinity is a property of a compound–site pair. If the question being answered is about binding or potency, the answer is that the question is untooled — not that the pocket scored 0.94. |
-| `pocket.geometric_fallback_backend` | Qualifier | `pde pocket run` executed with the built-in Python `geometric` backend instead of external `fpocket` (conditional) | State that pockets were detected using PDE's built-in Python geometric pocket detector (`backend: geometric`) because the external `fpocket` binary was not used. Reported `drug_score` and `volume` are heuristic estimates from lattice cavity enclosure and residue hydrophobicity, not native Voronoi alpha-sphere regression scores. |
+| `pocket.geometric_fallback_backend` | Qualifier | `pkde pocket run` executed with the built-in Python `geometric` backend instead of external `fpocket` (conditional) | State that pockets were detected using PkDE's built-in Python geometric pocket detector (`backend: geometric`) because the external `fpocket` binary was not used. Reported `drug_score` and `volume` are heuristic estimates from lattice cavity enclosure and residue hydrophobicity, not native Voronoi alpha-sphere regression scores. |
 
 Check `mandatory_relays` in both the `.pocket.analysis.json` and the
 `.pockets.meta.json`. Every relay code present must be satisfied in the

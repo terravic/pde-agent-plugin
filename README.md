@@ -1,8 +1,8 @@
-# Pharmakon Discovery Engine (`pde-agent-plugin`)
+# Pharmakon Discovery Engine (`PkDE` — `pkde-agent-plugin`)
 
-Pharmakon Discovery Engine (`pde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pde-engine` / `pde_plugin.mcp_server`) exposing 6 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
+Pharmakon Discovery Engine (`PkDE`, `pkde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pkde-engine` / `pkde_plugin.mcp_server`) exposing 6 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pkde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
 
-![Pharmakon Discovery Engine Skill Workflow and Dashboard Overview](assets/pde-skill-overview.png)
+![Pharmakon Discovery Engine Skill Workflow and Dashboard Overview](assets/pkde-skill-overview.png)
 
 ---
 
@@ -17,8 +17,8 @@ When you use this repository inside an AI agent harness, you can watch the entir
 1. **Step 1 -- Enter Your Prompt in the Agent Harness Chat**:
    Type your scientific question or campaign goal in plain English directly into the chat prompt of your agent harness (for example, evaluating a gene target, profiling a compound SMILES, or running a multi-disciplinary target nomination review). The agent harness automatically activates the root skill (`SKILL.md` / `skills/pharmakon-discovery-engine/SKILL.md`).
 2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`)**:
-   As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
-   - Initializes the active workspace (`.pde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pde-workspace/.pde/program.yaml` and `.pde-workspace/.pde/control/events.ndjson`.
+   As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pkde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
+   - Initializes the active workspace (`.pkde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pkde-workspace/.pkde/program.yaml` and `.pkde-workspace/.pkde/control/events.ndjson`.
    - Builds the initial `dashboard.html` showing the `User Prompt` root node connected to the `Science Program Lead` orchestrator.
    - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to `http://0.0.0.0:8765` (`http://127.0.0.1:8765` locally) and prints the live URL in the chat response.
 3. **Step 3 -- Open `http://0.0.0.0:8765` in Your Browser and Watch Real-Time Progress**:
@@ -64,7 +64,7 @@ Retrieve the structure for human KRAS (UniProt P01116), identify all potential b
 ```
 
 **What the system does:**
-- Downloads the 3D protein coordinates and detects surface and buried cavities using either `fpocket` (when installed on `PATH`) or PDE's built-in Python/NumPy 3D lattice geometric cavity detector (`--backend [auto|fpocket|geometric]`), ensuring pocket detection runs even on systems without external C binaries.
+- Downloads the 3D protein coordinates and detects surface and buried cavities using either `fpocket` (when installed on `PATH`) or PkDE's built-in Python/NumPy 3D lattice geometric cavity detector (`--backend [auto|fpocket|geometric]`), ensuring pocket detection runs even on systems without external C binaries.
 - Scores each pocket for druggability, volume, and residue hydrophobicity, and records the `pocket.geometric_fallback_backend` provenance relay when the built-in detector is used.
 - If a ligand is provided, prepares the docking grid box from the detected pocket coordinates and docks the molecule (`AutoDock Vina`) to estimate binding affinity (kcal/mol) and map specific amino acid residue contacts.
 
@@ -101,9 +101,9 @@ Run our proprietary CNS blood-brain barrier scoring script (examples/byoa/propri
 ```
 
 **What the system does:**
-- Executes your proprietary script or binary locally via `pde custom run` and captures its structured output into `raw/mpo/`.
+- Executes your proprietary script or binary locally via `pkde custom run` and captures its structured output into `raw/mpo/`.
 - Computes SHA-256 cryptographic hashes of both your private input file and your algorithm file in the `.meta.json` provenance sidecar (proving which version of your algorithm produced the numbers without copying your source code into reports).
-- Runs offline Phase 2 evaluation (`pde custom analyze`) to classify each candidate (`PASS`, `WARN`, `FAIL`) and attaches mandatory external-algorithm and threshold caveats.
+- Runs offline Phase 2 evaluation (`pkde custom analyze`) to classify each candidate (`PASS`, `WARN`, `FAIL`) and attaches mandatory external-algorithm and threshold caveats.
 
 ### Managing and Navigating the Live Interactive Dashboard (`http://0.0.0.0:8765`)
 
@@ -111,20 +111,20 @@ While the skill automatically starts the background live server when prompted, y
 
 ```bash
 # Start or update the non-blocking background server on 0.0.0.0:8765
-./bin/pde dashboard start --prompt "Evaluate EGFR in NSCLC" --host 0.0.0.0 --port 8765
+./bin/pkde dashboard start --prompt "Evaluate EGFR in NSCLC" --host 0.0.0.0 --port 8765
 
 # Check whether the background server is listening and which workspace it is tracking
-./bin/pde dashboard status
+./bin/pkde dashboard status
 
 # Record an explicit inter-agent communication event in the live stream
-./bin/pde dashboard message --from science-program-lead --to structural-biologist \
+./bin/pkde dashboard message --from science-program-lead --to structural-biologist \
   --summary "Prioritize Switch-II pocket druggability on PDB 7RT2"
 
 # Stop the background server
-./bin/pde dashboard stop
+./bin/pkde dashboard stop
 ```
 
-You can also open `dashboard.html` (located in the project root directory or inside `.pde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pde dashboard serve --host 0.0.0.0 --port 8765`. When connected to `http://0.0.0.0:8765`, the top bar displays `LIVE SSE (0.0.0.0)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect Plotly charts, expand accordions, and scroll through findings while new telemetry arrives.
+You can also open `dashboard.html` (located in the project root directory or inside `.pkde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pkde dashboard serve --host 0.0.0.0 --port 8765`. When connected to `http://0.0.0.0:8765`, the top bar displays `LIVE SSE (0.0.0.0)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect Plotly charts, expand accordions, and scroll through findings while new telemetry arrives.
 
 Inside `dashboard.html`, the top-bar mode switcher provides **4 synchronized views** (`Split` | `Agents` | `Discovery` | `Telemetry`) plus a persistent collapsible **Live Telemetry Console** at the bottom of `Split`, `Agents`, and `Discovery` views:
 1. **Left Pane (`Split` & `Agents` Views -- Multi-Agent Lineage & Control Plane)**:
@@ -143,29 +143,29 @@ Inside `dashboard.html`, the top-bar mode switcher provides **4 synchronized vie
 
 ---
 
-## Using the Built-In MCP Server (`pde-engine`)
+## Using the Built-In MCP Server (`pkde-engine`)
 
-In addition to its 43 Markdown skills and `./bin/pde` CLI, this repository includes a built-in JSON-RPC 2.0 **Model Context Protocol (MCP) stdio server** (`pde-engine`) implemented in `pde_plugin/mcp_server.py` (backed by `pde_plugin/tool_bridge.py`). Any MCP-compatible agent harness or client can invoke PDE's session bootstrap, two-phase scientific CLI, work-order orchestration, inter-agent telemetry, 10-check validation gate, and dashboard builder directly as structured MCP tool calls.
+In addition to its 43 Markdown skills and `./bin/pkde` CLI, this repository includes a built-in JSON-RPC 2.0 **Model Context Protocol (MCP) stdio server** (`pkde-engine`) implemented in `pkde_plugin/mcp_server.py` (backed by `pkde_plugin/tool_bridge.py`). Any MCP-compatible agent harness or client can invoke PkDE's session bootstrap, two-phase scientific CLI, work-order orchestration, inter-agent telemetry, 10-check validation gate, and dashboard builder directly as structured MCP tool calls.
 
 ### 1. Connecting the MCP Server to an Agent Harness or MCP Client
 
 - **Automatic Plugin Registration (`.agents/`)**:
   When this repository is opened in an agent harness that reads `.agents/plugins.json`, the plugin manifest (`.agents/plugins/pharmakon-discovery-engine/plugin.json`) automatically registers `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`.
 - **Manual `mcpServers` Configuration**:
-  Add the `pde-engine` entry to your MCP host configuration file (matching `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`, with paths relative to the repository root `./`):
+  Add the `pkde-engine` entry to your MCP host configuration file (matching `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`, with paths relative to the repository root `./`):
 
 ```json
 {
   "mcpServers": {
-    "pde-engine": {
+    "pkde-engine": {
       "command": ".venv/bin/python",
       "args": [
         "-m",
-        "pde_plugin.mcp_server"
+        "pkde_plugin.mcp_server"
       ],
       "cwd": ".",
       "env": {
-        "PDE_ROOT": ".",
+        "PKDE_ROOT": ".",
         "PYTHONPATH": ".:./tools:./tools/vendor/hypex"
       }
     }
@@ -173,20 +173,20 @@ In addition to its 43 Markdown skills and `./bin/pde` CLI, this repository inclu
 }
 ```
 
-*(If `.venv/bin` is on your `PATH`, you can also launch the server directly via the `pde-mcp` console entrypoint defined in `pyproject.toml`.)*
+*(If `.venv/bin` is on your `PATH`, you can also launch the server directly via the `pkde-mcp` console entrypoint defined in `pyproject.toml`.)*
 
 ### 2. Exposed MCP Tools & `ToolAnnotations`
 
-Every tool registered on `pde-engine` declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
+Every tool registered on `pkde-engine` declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
 
 | MCP Tool Name | Parameters | Purpose & Return Value | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| **`pde_bootstrap_session`** | `prompt: str`, `program_name?: str`, `stage?: int`, `project_dir?: str`, `host: str = "0.0.0.0"`, `port: int = 8765`, `start_server: bool = True` | Initializes `.pde/program.yaml` from the user's prompt, logs `prompt.received`, builds the initial `dashboard.html`, and starts/verifies the live HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
-| **`pde_exec`** | `command: str`, `project_dir?: str`, `auto_refresh_dashboard: bool = True` | Executes any `pde` CLI command (e.g., `"doctor --json"`, `"genetics fetch EGFR --json"`, `"genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json"`), parses JSON stdout/stderr, and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
-| **`pde_dispatch_workorder`** | `spec: dict[str, Any]`, `project_dir?: str` | Automates the 4-step Work Order intake ceremony: writes the spec YAML, creates and commits `WO-###`, freezes the context snapshot (`CTX-*`), acquires any non-standard resource lease, starts `RUN-###`, and returns the `specialist_brief`. | `false` | `false` | `false` | `false` |
-| **`pde_log_agent_message`** | `from_agent: str`, `to_agent: str`, `summary: str`, `work_order_id?: str`, `project_dir?: str` | Appends an explicit `agent.message` inter-agent communication event to `.pde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
-| **`pde_validate_and_gate`** | `work_order_id: str`, `run_id?: str`, `project_dir?: str` | Transitions the work order to `submitted`, runs the 10-check mechanical validator (`pde validate check`), and routes to `PASSED` (releases leases), `CORRECTION_REQUIRED` (up to 2 in-place retry cycles with `correction_prompt`), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
-| **`pde_render_dashboard`** | `project_dir?: str`, `output_path?: str` | Deterministically builds the self-contained interactive `dashboard.html` from the workspace's Layer 0-4 artifacts and control-plane records and returns summary metrics. | `false` | `false` | `true` | `false` |
+| **`pkde_bootstrap_session`** | `prompt: str`, `program_name?: str`, `stage?: int`, `project_dir?: str`, `host: str = "0.0.0.0"`, `port: int = 8765`, `start_server: bool = True` | Initializes `.pkde/program.yaml` from the user's prompt, logs `prompt.received`, builds the initial `dashboard.html`, and starts/verifies the live HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
+| **`pkde_exec`** | `command: str`, `project_dir?: str`, `auto_refresh_dashboard: bool = True` | Executes any `pkde` CLI command (e.g., `"doctor --json"`, `"genetics fetch EGFR --json"`, `"genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json"`), parses JSON stdout/stderr, and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
+| **`pkde_dispatch_workorder`** | `spec: dict[str, Any]`, `project_dir?: str` | Automates the 4-step Work Order intake ceremony: writes the spec YAML, creates and commits `WO-###`, freezes the context snapshot (`CTX-*`), acquires any non-standard resource lease, starts `RUN-###`, and returns the `specialist_brief`. | `false` | `false` | `false` | `false` |
+| **`pkde_log_agent_message`** | `from_agent: str`, `to_agent: str`, `summary: str`, `work_order_id?: str`, `project_dir?: str` | Appends an explicit `agent.message` inter-agent communication event to `.pkde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
+| **`pkde_validate_and_gate`** | `work_order_id: str`, `run_id?: str`, `project_dir?: str` | Transitions the work order to `submitted`, runs the 10-check mechanical validator (`pkde validate check`), and routes to `PASSED` (releases leases), `CORRECTION_REQUIRED` (up to 2 in-place retry cycles with `correction_prompt`), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
+| **`pkde_render_dashboard`** | `project_dir?: str`, `output_path?: str` | Deterministically builds the self-contained interactive `dashboard.html` from the workspace's Layer 0-4 artifacts and control-plane records and returns summary metrics. | `false` | `false` | `true` | `false` |
 
 ### 3. End-to-End MCP Tool Call Workflow
 
@@ -194,18 +194,18 @@ Below is a typical sequence of MCP tool calls made by an agent harness during a 
 
 ```python
 # 1. Bootstrap the live session and start the real-time dashboard on http://0.0.0.0:8765
-pde_bootstrap_session(
+pkde_bootstrap_session(
     prompt="Evaluate EGFR target genetics and pocket druggability in NSCLC",
     program_name="EGFR-NSCLC",
     stage=1,
 )
 
-# 2. Execute a two-phase domain workflow via pde_exec (Phase 1 fetch -> Phase 2 analyze)
-pde_exec(command="genetics fetch EGFR --json")
-pde_exec(command="genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json")
+# 2. Execute a two-phase domain workflow via pkde_exec (Phase 1 fetch -> Phase 2 analyze)
+pkde_exec(command="genetics fetch EGFR --json")
+pkde_exec(command="genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json")
 
 # 3. Dispatch a tracked multi-agent Work Order with an exclusive resource lease
-dispatch = pde_dispatch_workorder(
+dispatch = pkde_dispatch_workorder(
     spec={
         "decision_question": "Assess EGFR kinase domain pocket druggability.",
         "requested_role": "structural-biologist",
@@ -213,14 +213,14 @@ dispatch = pde_dispatch_workorder(
         "cycle": 1,
         "resource_class": "af3",
         "deliverables": {
-            "layer_0_classes": ["pde.pocket"],
+            "layer_0_classes": ["pkde.pocket"],
             "layer_1": ["findings/structural-biology/egfr-pockets.md"],
         },
     }
 )
 
 # 4. Log inter-agent coordination in the live telemetry stream
-pde_log_agent_message(
+pkde_log_agent_message(
     from_agent="science-program-lead",
     to_agent="structural-biologist",
     summary="Prioritize ATP-cleft and allosteric C-helix pocket druggability.",
@@ -228,13 +228,13 @@ pde_log_agent_message(
 )
 
 # 5. Run the 10-check mechanical validation gate and release the resource lease
-gate = pde_validate_and_gate(
+gate = pkde_validate_and_gate(
     work_order_id=dispatch["work_order_id"],
     run_id=dispatch["run_id"],
 )
 
 # 6. Render the standalone interactive HTML dashboard
-pde_render_dashboard()
+pkde_render_dashboard()
 ```
 
 ---
@@ -245,39 +245,39 @@ When the Pharmakon Discovery Engine is executed inside an AI agent harness, its 
 
 ### 1. Where the Skill and 22 Subagents Are Stored & Loaded by an Agent Harness
 
-The repository maintains canonical authoring templates in `skills/` and `templates/`, and compiles them via `pde_plugin/build_targets.py` into the standard `.agents/` plugin hierarchy discovered by agent harnesses:
+The repository maintains canonical authoring templates in `skills/` and `templates/`, and compiles them via `pkde_plugin/build_targets.py` into the standard `.agents/` plugin hierarchy discovered by agent harnesses:
 
 | Component | Source Path (Authoring) | Compiled Agent Harness Path (Loaded at Runtime) | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Root Skill Entrypoint** | `SKILL.md` and `skills/pharmakon-discovery-engine/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/pharmakon-discovery-engine/SKILL.md` | Primary entrypoint loaded when a user prompts the skill; orchestrates session bootstrap, Work Orders, and dashboard updates. |
-| **Domain & Governance Skills (43 Skills)** | `skills/<skill-name>/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/<skill-name>/SKILL.md` (and `dist/skill-bundles/<skill-name>.zip`) | Domain-specific instructions teaching agents exact two-phase `./bin/pde` CLI commands, thresholds, and mandatory relays. |
-| **Specialist Subagents (22 Roles)** | `templates/<role-name>/` | `.agents/plugins/pharmakon-discovery-engine/agents/pde-<role-name>.md` | Subagent definitions (`pde-science-program-lead`, `pde-computational-biologist`, `pde-structural-biologist`, `pde-medicinal-chemist`, `pde-computational-chemist`, `pde-admet-dmpk-scientist`, `pde-experimental-biologist`, `pde-preclinical-toxicologist`, `pde-regulatory-scientist`, `pde-finding-validator`, `pde-scientific-reviewer`, `pde-research-operations-controller`, `pde-head-of-discovery`, `pde-project-curator`, `pde-bootstrapper`, and 7 `pde-hypex-*` roles). |
-| **Scientific Integrity Rules** | `docs/tool-design-guidance.md` | `.agents/plugins/pharmakon-discovery-engine/rules/pde-scientific-integrity.md` | Always-on governance rules enforcing the Two-Phase Execution Invariant, Layer 0 SHA-256 provenance, mandatory relays, and dashboard synchronization. |
-| **Plugin & MCP Manifests** | `pde_plugin/build_targets.py` | `.agents/plugins.json`, `.agents/plugins/pharmakon-discovery-engine/plugin.json`, and `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | Registers the plugin, skills, subagents, and JSON-RPC 2.0 MCP server (`pde_plugin/mcp_server.py`) with the agent harness. |
+| **Domain & Governance Skills (43 Skills)** | `skills/<skill-name>/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/<skill-name>/SKILL.md` (and `dist/skill-bundles/<skill-name>.zip`) | Domain-specific instructions teaching agents exact two-phase `./bin/pkde` CLI commands, thresholds, and mandatory relays. |
+| **Specialist Subagents (22 Roles)** | `templates/<role-name>/` | `.agents/plugins/pharmakon-discovery-engine/agents/pkde-<role-name>.md` | Subagent definitions (`pkde-science-program-lead`, `pkde-computational-biologist`, `pkde-structural-biologist`, `pkde-medicinal-chemist`, `pkde-computational-chemist`, `pkde-admet-dmpk-scientist`, `pkde-experimental-biologist`, `pkde-preclinical-toxicologist`, `pkde-regulatory-scientist`, `pkde-finding-validator`, `pkde-scientific-reviewer`, `pkde-research-operations-controller`, `pkde-head-of-discovery`, `pkde-project-curator`, `pkde-bootstrapper`, and 7 `pkde-hypex-*` roles). |
+| **Scientific Integrity Rules** | `docs/tool-design-guidance.md` | `.agents/plugins/pharmakon-discovery-engine/rules/pkde-scientific-integrity.md` | Always-on governance rules enforcing the Two-Phase Execution Invariant, Layer 0 SHA-256 provenance, mandatory relays, and dashboard synchronization. |
+| **Plugin & MCP Manifests** | `pkde_plugin/build_targets.py` | `.agents/plugins.json`, `.agents/plugins/pharmakon-discovery-engine/plugin.json`, and `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | Registers the plugin, skills, subagents, and JSON-RPC 2.0 MCP server (`pkde_plugin/mcp_server.py`) with the agent harness. |
 
 ### 2. How the Skill, Subagents, and CLI Engine Execute at Runtime
 
 When you submit a prompt in the agent harness, execution flows through four layers without bogging down the LLM with manual telemetry calls:
 
 1. **Session Bootstrap (`skills/pharmakon-discovery-engine/scripts/start_live_session.py`)**:
-   The primary skill agent runs `start_live_session.py` (or `pde_bootstrap_session` via MCP / `./bin/pde dashboard start`), which initializes `.pde-workspace/` (or a custom `--project <dir>`), writes `.pde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`.
+   The primary skill agent runs `start_live_session.py` (or `pkde_bootstrap_session` via MCP / `./bin/pkde dashboard start`), which initializes `.pkde-workspace/` (or a custom `--project <dir>`), writes `.pkde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`.
 2. **Work-Order Dispatch & Subagent Invocation (`skills/pharmakon-discovery-engine/scripts/dispatch_workorder.py`)**:
-   For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pde-<role-name>`) in the agent harness.
-3. **Deterministic Two-Phase CLI Execution (`./bin/pde` -> `.venv` + `tools/pde/`)**:
-   Each specialist subagent executes `./bin/pde <domain> <phase1-cmd>` followed immediately by `./bin/pde <domain> analyze`. The `./bin/pde` wrapper activates the local Python virtual environment (`.venv`) and dispatches to `tools/pde/cli.py` and `tools/pde/commands/<domain>.py` (or `bin/hypex`, `bin/elo`, and `bin/prox` for hypothesis tournaments).
-4. **Zero-Overhead Passive Telemetry Capture (`tools/pde/common.py` & `tools/pde/commands/dashboard.py`)**:
-   - **CLI Hook**: Every non-exempt domain command is wrapped by `enforce_phase_two()` in `tools/pde/common.py`, which automatically appends `tool.started` (`TOOL:RUN`), `tool.completed` (`TOOL:DONE`), and `tool.failed` (`TOOL:ERR`) events (with duration and argument previews) into `.pde-workspace/.pde/control/events.ndjson`.
-   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html`.
+   For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pkde-<role-name>`) in the agent harness.
+3. **Deterministic Two-Phase CLI Execution (`./bin/pkde` -> `.venv` + `tools/pkde/`)**:
+   Each specialist subagent executes `./bin/pkde <domain> <phase1-cmd>` followed immediately by `./bin/pkde <domain> analyze`. The `./bin/pkde` wrapper activates the local Python virtual environment (`.venv`) and dispatches to `tools/pkde/cli.py` and `tools/pkde/commands/<domain>.py` (or `bin/hypex`, `bin/elo`, and `bin/prox` for hypothesis tournaments).
+4. **Zero-Overhead Passive Telemetry Capture (`tools/pkde/common.py` & `tools/pkde/commands/dashboard.py`)**:
+   - **CLI Hook**: Every non-exempt domain command is wrapped by `enforce_phase_two()` in `tools/pkde/common.py`, which automatically appends `tool.started` (`TOOL:RUN`), `tool.completed` (`TOOL:DONE`), and `tool.failed` (`TOOL:ERR`) events (with duration and argument previews) into `.pkde-workspace/.pkde/control/events.ndjson`.
+   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pkde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html`.
 
-### 3. Where Output Artifacts, Control State, and Dashboard Files Are Stored (`.pde-workspace/`)
+### 3. Where Output Artifacts, Control State, and Dashboard Files Are Stored (`.pkde-workspace/`)
 
-By default, all runtime state and scientific outputs are stored in `.pde-workspace/` (or in any custom campaign directory initialized with `./bin/pde init <workspace-dir>` and passed via `--project <workspace-dir>` or `$PDE_PROJECT`):
+By default, all runtime state and scientific outputs are stored in `.pkde-workspace/` (or in any custom campaign directory initialized with `./bin/pkde init <workspace-dir>` and passed via `--project <workspace-dir>` or `$PKDE_PROJECT`):
 
 ```text
-.pde-workspace/                                  # Active campaign workspace root (default)
+.pkde-workspace/                                  # Active campaign workspace root (default)
 |-- active-project.json                          # Repo-relative pointer to the currently active workspace
 |-- dashboard.html                               # Workspace-local standalone interactive HTML dashboard
-|-- .pde/                                        # Control plane, configuration, and telemetry store
+|-- .pkde/                                        # Control plane, configuration, and telemetry store
 |   |-- program.yaml                             # Active user prompt, program name, target, indication, stage
 |   |-- thresholds.yaml                          # Frozen scientific decision thresholds for Phase 2 analysis
 |   |-- scratchpad/                              # Ephemeral specialist working notes
@@ -335,17 +335,17 @@ All paths below are relative to the repository root (`./`):
 |-- uv.lock                                      # Deterministic dependency lockfile
 |-- dashboard.html                               # Standalone interactive multi-agent & viewer dashboard
 |-- assets/
-|   |-- pde-skill-overview.png                   # System workflow, data I/O, and UI dashboard diagram (PNG)
-|   '-- pde-skill-overview.svg                   # Vector source for system workflow diagram (SVG)
+|   |-- pkde-skill-overview.png                   # System workflow, data I/O, and UI dashboard diagram (PNG)
+|   '-- pkde-skill-overview.svg                   # Vector source for system workflow diagram (SVG)
 |-- bin/
-|   |-- pde                                      # Primary PDE command-line executable
+|   |-- pkde                                      # Primary PkDE command-line executable
 |   |-- env.sh                                   # Environment activation script (PATH and venv setup)
 |   |-- hypex                                    # Hypothesis exploration datastore binary
 |   |-- elo                                      # Pairwise ELO rating and tournament pairing binary
 |   '-- prox                                     # Hypothesis semantic clustering and deduplication CLI
-|-- pde_plugin/
+|-- pkde_plugin/
 |   |-- __init__.py                              # Plugin package exports
-|   |-- tool_bridge.py                           # Python function wrappers for two-phase PDE CLI execution
+|   |-- tool_bridge.py                           # Python function wrappers for two-phase PkDE CLI execution
 |   |-- mcp_server.py                            # JSON-RPC 2.0 Model Context Protocol (MCP) stdio server
 |   |-- build_targets.py                         # Target compiler (.agents/ plugin and dist/skill-bundles/)
 |   '-- sync_skills_to_registry.py               # Skill synchronization utility
@@ -360,11 +360,11 @@ All paths below are relative to the repository root (`./`):
 |   |   |-- scripts/
 |   |   |   |-- start_live_session.py            # Prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
 |   |   |   |-- dispatch_workorder.py            # Atomic work-order intake and specialist brief generator
-|   |   |   '-- pde_runner.py                    # Portable CLI execution wrapper
+|   |   |   '-- pkde_runner.py                    # Portable CLI execution wrapper
 |   |   '-- references/
 |   |       |-- role-skill-matrix.md             # Mapping of 22 specialist roles to 43 skills
 |   |       '-- stage0-3-playbook.md             # Stage 0-3 decision gates and deliverable checklist
-|   |-- pde-dashboard/
+|   |-- pkde-dashboard/
 |   |   |-- SKILL.md                             # Dashboard generation and inspection skill
 |   |   '-- scripts/
 |   |       '-- render_dashboard.py              # Standalone dashboard builder script
@@ -429,14 +429,14 @@ All paths below are relative to the repository root (`./`):
 |-- tools/
 |   |-- bootstrap-preflight.sh                   # Host prerequisite check script (Python 3.11+, venv/uv, Go)
 |   |-- install.sh                               # Cross-platform environment and binary provisioner
-|   |-- bin/                                     # Self-contained tool binary directory (pde, hypex, elo, prox)
+|   |-- bin/                                     # Self-contained tool binary directory (pkde, hypex, elo, prox)
 |   |-- env-manifest.txt                         # Canonical environment manifest hashed into ENV_VERSION
 |   |-- ENV_VERSION                              # SHA-256 environment digest stamped into sidecars
 |   |-- ENV_HISTORY                              # Chronological log of stamped environment digests
 |   |-- ENV_SOURCE                               # Provenance metadata for the active environment stamp
 |   |-- manifests/                               # Historical environment manifest snapshots by SHA-256
 |   |-- requirements.lock                        # Locked Python package versions
-|   |-- pde/
+|   |-- pkde/
 |   |   |-- cli.py                               # Click CLI entrypoint (42 command groups + extension loader)
 |   |   |-- common.py                            # Offline Phase 2 latch and shared CLI options
 |   |   |-- core/                                # Provenance, thresholds, HTTP pacing, and path confinement
@@ -452,7 +452,7 @@ All paths below are relative to the repository root (`./`):
 |       '-- skills/
 |           '-- proprietary-cns-scorer/SKILL.md  # Reference custom skill for a proprietary algorithm
 |-- docs/
-|   |-- pde-plan.md                              # System architecture and design specification
+|   |-- pkde-plan.md                              # System architecture and design specification
 |   |-- tool-design-guidance.md                  # Two-phase contract and provenance engineering standards
 |   |-- skill-design-guidance.md                 # Domain skill authoring specification
 |   |-- orchestration-design-guidance.md         # Multi-agent governance and work-order lifecycle
@@ -463,7 +463,7 @@ All paths below are relative to the repository root (`./`):
 |   |-- pilot-handoff.md                         # Operational calibration notes
 |   |-- hypex-integration.md                     # Hypothesis exploration subsystem integration notes
 |   '-- code-of-conduct.md                       # Contributor code of conduct
-|-- .pde-workspace/                              # Reference pre-clinical campaign workspace (Layer 0-4 artifacts)
+|-- .pkde-workspace/                              # Reference pre-clinical campaign workspace (Layer 0-4 artifacts)
 |-- .agents/
 |   |-- plugins.json                             # Agent harness plugin registry manifest
 |   '-- plugins/
@@ -485,15 +485,15 @@ All paths below are relative to the repository root (`./`):
 
 Organizations and researchers frequently have private experimental datasets (in-house HTS screens, internal ADMET/PK tables, proprietary compound series) and proprietary computational models (in-house QSAR models, custom multiparameter scoring functions, compiled C++/Rust physics binaries, or local containers) that must remain strictly local.
 
-PDE provides three extension mechanisms that preserve full cryptographic provenance (`.meta.json`), offline Phase 2 threshold evaluation (`.analysis.json`), and mechanical finding validation:
+PkDE provides three extension mechanisms that preserve full cryptographic provenance (`.meta.json`), offline Phase 2 threshold evaluation (`.analysis.json`), and mechanical finding validation:
 
 ### 1. Choosing an Algorithm Integration Format
 
 | Integration Pattern | How It Works | When to Use |
 | :--- | :--- | :--- |
-| **A. Standalone Python Script (`.py`)** | Executed via `./bin/pde custom run --cmd "python3 path/to/script.py --input {input} --output {output}"` | Ideal for custom RDKit, scikit-learn, PyTorch, or mathematical scoring models; runs immediately in `.venv` with zero compilation. |
-| **B. Compiled Binary or Container** | Executed via `./bin/pde custom run --cmd "./bin/proprietary_scorer --input {input} --output {output}"` (or `apptainer exec` / `docker run`) | Ideal when distributing pre-compiled C++/Rust/Go/Fortran executables or container images where source code is not present on disk. |
-| **C. Native Click Command Plugin** | Placed in `<project>/.pde/extensions/commands/*.py` or `extensions/commands/*.py` | Automatically discovered by `tools/pde/cli.py` and wrapped by `enforce_phase_two`; ideal for teams adding permanent custom CLI groups. |
+| **A. Standalone Python Script (`.py`)** | Executed via `./bin/pkde custom run --cmd "python3 path/to/script.py --input {input} --output {output}"` | Ideal for custom RDKit, scikit-learn, PyTorch, or mathematical scoring models; runs immediately in `.venv` with zero compilation. |
+| **B. Compiled Binary or Container** | Executed via `./bin/pkde custom run --cmd "./bin/proprietary_scorer --input {input} --output {output}"` (or `apptainer exec` / `docker run`) | Ideal when distributing pre-compiled C++/Rust/Go/Fortran executables or container images where source code is not present on disk. |
+| **C. Native Click Command Plugin** | Placed in `<project>/.pkde/extensions/commands/*.py` or `extensions/commands/*.py` | Automatically discovered by `tools/pkde/cli.py` and wrapped by `enforce_phase_two`; ideal for teams adding permanent custom CLI groups. |
 
 ### 2. Runnable Example Included in `examples/byoa/`
 
@@ -503,21 +503,21 @@ The repository includes a complete, self-contained BYOA reference suite under `e
 - `examples/byoa/proprietary_cns_mpo_scorer.py`: Reference proprietary algorithm computing a composite CNS Blood-Brain Barrier & Efflux score (`cns_bbb_score`, `0.0` to `1.0`).
 - `examples/byoa/skills/proprietary-cns-scorer/SKILL.md`: Reference custom skill teaching agents how to invoke the proprietary scorer and relay its caveats.
 
-#### Workflow A: Ingesting and Analyzing Private CSV or JSON Data (`pde custom ingest` + `pde custom analyze`)
+#### Workflow A: Ingesting and Analyzing Private CSV or JSON Data (`pkde custom ingest` + `pkde custom analyze`)
 
 ```bash
 # Initialize a project workspace if not already created
-./bin/pde init .pde-workspace
+./bin/pkde init .pkde-workspace
 
 # Phase 1A: Ingest a private CSV spreadsheet into Layer 0 (raw/bioactivity/)
-./bin/pde --project .pde-workspace custom ingest \
+./bin/pkde --project .pkde-workspace custom ingest \
   examples/byoa/sample_private_assay.csv \
   --class bioactivity \
   --name internal-cns-assay \
   --id-col compound_id
 
 # Phase 2: Offline thresholded analysis of unbound brain partition (kp_uu_brain)
-./bin/pde --project .pde-workspace custom analyze \
+./bin/pkde --project .pkde-workspace custom analyze \
   raw/bioactivity/internal-cns-assay.custom.json \
   --metric kp_uu_brain \
   --id-field compound_id \
@@ -526,11 +526,11 @@ The repository includes a complete, self-contained BYOA reference suite under `e
   --direction higher
 ```
 
-#### Workflow B: Running a Proprietary Algorithm (`pde custom run` + `pde custom analyze`)
+#### Workflow B: Running a Proprietary Algorithm (`pkde custom run` + `pkde custom analyze`)
 
 ```bash
 # Phase 1B: Execute the proprietary algorithm locally and record input + script SHA-256 hashes
-./bin/pde --project .pde-workspace custom run \
+./bin/pkde --project .pkde-workspace custom run \
   --cmd "python3 examples/byoa/proprietary_cns_mpo_scorer.py --input {input} --output {output}" \
   --input examples/byoa/sample_private_compounds.json \
   --class mpo \
@@ -538,7 +538,7 @@ The repository includes a complete, self-contained BYOA reference suite under `e
   --algorithm-id "proprietary-cns-bbb-mpo@1.2.0"
 
 # Phase 2: Offline evaluation against custom-evaluation@1.0 thresholds
-./bin/pde --project .pde-workspace custom analyze \
+./bin/pkde --project .pkde-workspace custom analyze \
   raw/mpo/cns-lead-series.custom.json \
   --metric cns_bbb_score \
   --id-field compound_id \
@@ -558,18 +558,18 @@ To add private skills and assign them to specialist subagents without modifying 
    admet-dmpk-scientist:
      - proprietary-cns-scorer
    ```
-3. Run `.venv/bin/python -m pde_plugin.build_targets` to compile the private skills and role assignments into `.agents/plugins/pharmakon-discovery-engine/`.
+3. Run `.venv/bin/python -m pkde_plugin.build_targets` to compile the private skills and role assignments into `.agents/plugins/pharmakon-discovery-engine/`.
 
 ---
 
 ## Core Scientific Integrity Rules
 
-Every workflow executed by `pde-agent-plugin` enforces four scientific integrity invariants:
+Every workflow executed by `pkde-agent-plugin` enforces four scientific integrity invariants:
 
 1. **Two-Phase Execution Invariant**: Every domain data acquisition or computation command (Phase 1: `fetch`, `search`, `run`, `compute`, `predict`) must be followed immediately by its corresponding offline interpretation command (Phase 2: `analyze`) before running any other tool.
-2. **Cryptographic Layer 0 Provenance**: Files in `raw/` are never hand-crafted. Every Layer 0 artifact is generated by `./bin/pde` alongside a `.meta.json` SHA-256 provenance sidecar and a `.analysis.json` thresholded interpretation record.
+2. **Cryptographic Layer 0 Provenance**: Files in `raw/` are never hand-crafted. Every Layer 0 artifact is generated by `./bin/pkde` alongside a `.meta.json` SHA-256 provenance sidecar and a `.analysis.json` thresholded interpretation record.
 3. **Mandatory Relays & Inline Source Citations**: Every code in `mandatory_relays` from `.analysis.json` must be surfaced verbatim in Layer 1 Markdown reports (`**Relay: \`<code>\`**`), and every quantitative claim must cite its Layer 0 JSON path (`{source: raw/<category>/<file>#$.path}`).
-4. **Unified Dashboard Synchronization**: After completing a scientific query or Work Order cycle, `./bin/pde dashboard build --standalone` (or `pde_render_dashboard`) updates `dashboard.html` so the multi-agent lineage graph, validation scorecard, and 20 scientific studios reflect the current workspace state.
+4. **Unified Dashboard Synchronization**: After completing a scientific query or Work Order cycle, `./bin/pkde dashboard build --standalone` (or `pkde_render_dashboard`) updates `dashboard.html` so the multi-agent lineage graph, validation scorecard, and 20 scientific studios reflect the current workspace state.
 
 ---
 
@@ -588,7 +588,7 @@ Whether you are running on **Ubuntu Linux** or **macOS**, run the cross-platform
 
 # 3. Activate the environment and verify readiness
 source ./bin/env.sh
-./bin/pde doctor
+./bin/pkde doctor
 ```
 
 > **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux & macOS):**
@@ -599,35 +599,35 @@ source ./bin/env.sh
 
 ```bash
 # Initialize a project workspace
-./bin/pde init .pde-workspace
+./bin/pkde init .pkde-workspace
 
 # Target genetics (gnomAD v4 constraint + Open Targets + ClinVar)
-./bin/pde --project .pde-workspace genetics fetch EGFR
-./bin/pde --project .pde-workspace genetics analyze raw/genetics/EGFR.gnomad-constraint.json
+./bin/pkde --project .pkde-workspace genetics fetch EGFR
+./bin/pkde --project .pkde-workspace genetics analyze raw/genetics/EGFR.gnomad-constraint.json
 
 # Tissue RNA expression specificity (Human Protein Atlas)
-./bin/pde --project .pde-workspace expression fetch EGFR
-./bin/pde --project .pde-workspace expression analyze raw/expression/EGFR.tissue.json
+./bin/pkde --project .pkde-workspace expression fetch EGFR
+./bin/pkde --project .pkde-workspace expression analyze raw/expression/EGFR.tissue.json
 
 # Protein structure confidence & PAE domains (AlphaFold DB)
-./bin/pde --project .pde-workspace alphafold fetch P00533
-./bin/pde --project .pde-workspace alphafold analyze raw/structures/AF-P00533-F1-model_v4.cif
+./bin/pkde --project .pkde-workspace alphafold fetch P00533
+./bin/pkde --project .pkde-workspace alphafold analyze raw/structures/AF-P00533-F1-model_v4.cif
 
 # Binding pocket detection & druggability (auto-selects fpocket or built-in Python geometric detector)
-./bin/pde --project .pde-workspace pocket run raw/structures/AF-P00533-F1-model_v4.cif --backend auto
-./bin/pde --project .pde-workspace pocket analyze raw/structures/AF-P00533-F1-model_v4.pockets.json
+./bin/pkde --project .pkde-workspace pocket run raw/structures/AF-P00533-F1-model_v4.cif --backend auto
+./bin/pkde --project .pkde-workspace pocket analyze raw/structures/AF-P00533-F1-model_v4.pockets.json
 
 # Compound descriptors & structural alerts (RDKit)
-./bin/pde --project .pde-workspace compound profile "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
-./bin/pde --project .pde-workspace compound analyze raw/compounds/erlotinib.descriptors.json
+./bin/pkde --project .pkde-workspace compound profile "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
+./bin/pkde --project .pkde-workspace compound analyze raw/compounds/erlotinib.descriptors.json
 
 # Rule-based ADMET endpoint classification
-./bin/pde --project .pde-workspace admet predict "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
-./bin/pde --project .pde-workspace admet analyze raw/admet/erlotinib.predict.json
+./bin/pkde --project .pkde-workspace admet predict "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
+./bin/pkde --project .pkde-workspace admet analyze raw/admet/erlotinib.predict.json
 
 # Validate a specialist finding against the 10-check gate and rebuild dashboard.html
-./bin/pde --project .pde-workspace validate check WO-001
-./bin/pde --project .pde-workspace dashboard build --standalone
+./bin/pkde --project .pkde-workspace validate check WO-001
+./bin/pkde --project .pkde-workspace dashboard build --standalone
 ```
 
 ### 3. Rebuilding Plugin Targets & Running Tests
@@ -635,6 +635,6 @@ source ./bin/env.sh
 To compile `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip` from source and run the test suite:
 
 ```bash
-.venv/bin/python -m pde_plugin.build_targets
+.venv/bin/python -m pkde_plugin.build_targets
 .venv/bin/pytest tests/ -v
 ```

@@ -1,6 +1,6 @@
 ---
 name: proprietary-cns-scorer
-description: "Run the user-supplied CNS Blood-Brain Barrier and efflux multiparameter optimization algorithm via pde custom run and evaluate candidates offline via pde custom analyze."
+description: "Run the user-supplied CNS Blood-Brain Barrier and efflux multiparameter optimization algorithm via pkde custom run and evaluate candidates offline via pkde custom analyze."
 metadata:
   display_name: "Proprietary CNS BBB & Efflux Scorer (BYOA Example)"
 ---
@@ -15,10 +15,10 @@ Use this skill when evaluating internal CNS candidate series with measured or pr
 
 Every invocation MUST follow the two-phase execution invariant:
 
-### Phase 1: Execute Proprietary Algorithm (`pde custom run`)
+### Phase 1: Execute Proprietary Algorithm (`pkde custom run`)
 
 ```bash
-pde custom run \
+pkde custom run \
   --cmd "python3 examples/byoa/proprietary_cns_mpo_scorer.py --input {input} --output {output}" \
   --input examples/byoa/sample_private_compounds.json \
   --class mpo \
@@ -30,12 +30,12 @@ Produces:
 - `raw/mpo/cns-lead-series.custom.json`
 - `raw/mpo/cns-lead-series.custom.meta.json` (contains `source_sha256` and `algorithm_sha256`)
 
-### Phase 2: Offline Thresholded Evaluation (`pde custom analyze`)
+### Phase 2: Offline Thresholded Evaluation (`pkde custom analyze`)
 
 Immediately run Phase 2 offline analysis before calling any other tool:
 
 ```bash
-pde custom analyze raw/mpo/cns-lead-series.custom.json \
+pkde custom analyze raw/mpo/cns-lead-series.custom.json \
   --metric cns_bbb_score \
   --id-field compound_id \
   --pass-cutoff 0.70 \

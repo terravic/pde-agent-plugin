@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0",
+  "record_type": "provenance",
+  "command": "pkde compound conformer MRTX1133 --json",
+  "cli_version": "0.3.0",
+  "env_version": "sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48",
+  "created_at": "2026-10-14T20:05:59Z",
+  "work_order_id": "WO-003",
+  "outputs": [
+    {
+      "path": "raw/compounds/MRTX1133.3d.sdf",
+      "sha256": "180ce46cdffe628521e03d542977f80a1da46e078e4e1c8c50168c22473beecf",
+      "bytes": 899
+    }
+  ],
+  "mandatory_relays": []
+}

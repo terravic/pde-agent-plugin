@@ -1,12 +1,12 @@
 # Operating Environment — Credential and Access Architecture
 
 This document states the actual credential and access mechanism for each
-external dependency pde's tools call. It exists so that an agent
-reading a `pde doctor` WARN can tell whether the check is describing a
+external dependency pkde's tools call. It exists so that an agent
+reading a `pkde doctor` WARN can tell whether the check is describing a
 real gap or the check's own blind spot, without rediscovering the
 deployment's architecture from first principles.
 
-This is not a troubleshooting guide and does not duplicate `pde
+This is not a troubleshooting guide and does not duplicate `pkde
 doctor`'s job. Doctor does mechanical capability checks; this doc gives
 standing context for interpreting them.
 
@@ -24,10 +24,10 @@ is needed or used in this deployment.
 
 **Used by:**
 
-- `pde alphafold predict` — calls `aiplatform.init(project=...,
+- `pkde alphafold predict` — calls `aiplatform.init(project=...,
   location=...)` with no explicit `credentials=` argument, relying
   entirely on the ADC chain (`alphafold.py`).
-- `pde alphagenome score-variant`, `predict-interval` (dedicated cloud backend)
+- `pkde alphagenome score-variant`, `predict-interval` (dedicated cloud backend)
   — `_access_token()` tries `cloud_auth.default(scopes=[...])` first,
   then falls back to `cloud-auth auth print-access-token` if ADC is
   unavailable. The sidecar records which source was used
@@ -51,12 +51,12 @@ env-var check is the correct and only check.
 
 **Used by:**
 
-- `pde alphagenome ism` — the ISM command is pip-backend-only (the
+- `pkde alphagenome ism` — the ISM command is pip-backend-only (the
   dedicated cloud endpoint rejects `score_ism_variants` as an invalid request
   type). The command calls `_require_api_key()` which reads
   `os.environ.get("ALPHAGENOME_API_KEY")` and raises `CredentialError`
   if unset (`alphagenome.py`).
-- `pde alphagenome score-variant --backend pip` — also calls
+- `pkde alphagenome score-variant --backend pip` — also calls
   `_require_api_key()`, though the pip backend for `score-variant` is
   not yet implemented.
 
@@ -73,7 +73,7 @@ chain.
 
 **Endpoint:** `https://alphafold.ebi.ac.uk/api/prediction`
 
-**Used by:** `pde alphafold fetch` (`alphafold.py`). Fetches mmCIF
+**Used by:** `pkde alphafold fetch` (`alphafold.py`). Fetches mmCIF
 structures, PAE matrices, and API records by UniProt accession via
 `http.get_json()` and `http.get_bytes()` with no authentication
 parameters.
@@ -89,7 +89,7 @@ doctor; a fetch failure surfaces at call time.
 
 **Endpoint:** `https://rest.uniprot.org/uniprotkb`
 
-**Used by:** `pde alphafold fetch` (`alphafold.py`). Used internally
+**Used by:** `pkde alphafold fetch` (`alphafold.py`). Used internally
 for canonical sequence length cross-checks — `_canonical_length()` calls
 `http.get_json()` with no authentication. A failure degrades the
 coverage warning to a weaker form but never blocks the fetch.
@@ -105,7 +105,7 @@ key, no auth header.
 
 **Endpoint:** `https://gnomad.broadinstitute.org/api`
 
-**Used by:** `pde genetics fetch` (`genetics.py`). Sends a GraphQL
+**Used by:** `pkde genetics fetch` (`genetics.py`). Sends a GraphQL
 query via `http.request("POST", ...)` with only a `Content-Type:
 application/json` header — no authentication.
 
@@ -121,7 +121,7 @@ but its availability is not probed.
 
 **Endpoint:** `https://gtexportal.org/api/v2`
 
-**Used by:** `pde gtex fetch` (`gtex.py`). Calls `http.get_json()`
+**Used by:** `pkde gtex fetch` (`gtex.py`). Calls `http.get_json()`
 and `http.request("GET", ...)` with no authentication parameters.
 
 **Doctor check:** None specific.
@@ -135,7 +135,7 @@ and `http.request("GET", ...)` with no authentication parameters.
 **Endpoint:** `https://www.proteinatlas.org` (per-gene JSON and
 `search_download.php`)
 
-**Used by:** `pde expression fetch` and `pde expression
+**Used by:** `pkde expression fetch` and `pkde expression
 fetch-single-cell` (`expression.py`). All requests go through
 `http.request("GET", ...)` and `http.get_json()` with no authentication
 parameters.
@@ -152,13 +152,13 @@ availability itself is not probed.
 
 **Endpoint:** `https://www.ebi.ac.uk/europepmc/webservices/rest/search`
 
-**Used by:** `pde litref resolve` (`litref.py`). Calls `http.request("GET", ...)`
+**Used by:** `pkde litref resolve` (`litref.py`). Calls `http.request("GET", ...)`
 with no authentication parameters.
 
 **Doctor check:** None specific.
 
 Note: The issue's mention of `PUBMED_API_KEY` refers to a BioCompass
-context, not to pde. PDE's own `litref.py` queries Europe PMC (not
+context, not to pkde. PkDE's own `litref.py` queries Europe PMC (not
 PubMed directly) and uses no API key.
 
 ---
@@ -169,7 +169,7 @@ PubMed directly) and uses no API key.
 
 **Endpoint:** `https://clinicaltrials.gov/api/v2/studies`
 
-**Used by:** `pde litref resolve` (`litref.py`). Calls `http.request("GET", ...)`
+**Used by:** `pkde litref resolve` (`litref.py`). Calls `http.request("GET", ...)`
 with no authentication parameters.
 
 **Doctor check:** None specific.
@@ -178,8 +178,8 @@ with no authentication parameters.
 
 ## Dependencies that are NOT in this codebase
 
-**PubChem:** Not called by any pde tool. The issue (#181) mentioned
-PubChem in its enumeration, but no command in the `tools/pde/commands/`
+**PubChem:** Not called by any pkde tool. The issue (#181) mentioned
+PubChem in its enumeration, but no command in the `tools/pkde/commands/`
 tree makes an HTTP call to PubChem.
 
 ---

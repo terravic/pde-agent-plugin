@@ -19,8 +19,8 @@ A file (JSON, Markdown, or text) containing citations or references.
 
 | Question | Run | Writes to |
 |---|---|---|
-| Are the citations in this document real? | `pde cite verify <FILE>` | `raw/literature/<slug>.citations.json` |
-| What is the verification assessment? | `pde cite analyze --from raw/literature/` | `raw/literature/<slug>.analysis.json` |
+| Are the citations in this document real? | `pkde cite verify <FILE>` | `raw/literature/<slug>.citations.json` |
+| What is the verification assessment? | `pkde cite analyze --from raw/literature/` | `raw/literature/<slug>.analysis.json` |
 
 ## 4. Interpretation contract
 

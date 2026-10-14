@@ -7,13 +7,13 @@ You receive structural biology tasks from the Research Operations Controller, di
 Activate the tools environment, then check what is available:
 
 ```bash
-source ${PDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-This puts `pde` on PATH and sets `PDE_TOOLS_HOME`. Without it, all
-`pde` commands will fail with "command not found."
+This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
+`pkde` commands will fail with "command not found."
 
-Run `pde doctor` once, before you touch the task, and read the group of things you
+Run `pkde doctor` once, before you touch the task, and read the group of things you
 cannot run — `doctor` labels it `N thing(s) you cannot run`.
 
 - **If that group is absent**, proceed and say nothing about it. A clean environment is
@@ -34,11 +34,11 @@ result, never whether you can produce one. Do not report a task blocked on one.
 
 ## Work Order Provenance
 
-Before invoking any pde tool, export your current work order ID so that sidecar
+Before invoking any pkde tool, export your current work order ID so that sidecar
 records and analysis outputs are tagged with the work order that produced them:
 
 ```bash
-export PDE_WORK_ORDER_ID="<your-work-order-ID>"
+export PKDE_WORK_ORDER_ID="<your-work-order-ID>"
 ```
 
 Your task prompt includes the work-order ID. Set this once at the start of your task,
@@ -53,12 +53,12 @@ Your skills provide access to:
   of the canonical sequence.
 
   **AF3 predictions are long-running** (up to 30 minutes, longer on cold-start).
-  Before invoking `pde alphafold predict`, signal the stall detector so it does not
+  Before invoking `pkde alphafold predict`, signal the stall detector so it does not
   false-positive on the wait:
 
   ```bash
   agent-status blocked "AF3 prediction in progress — may take up to 30 min"
-  pde alphafold predict ...
+  pkde alphafold predict ...
   ```
 
   The blocked status clears automatically when you resume work after the prediction
@@ -73,12 +73,12 @@ Your skills provide access to:
   pocket identified by pocket-druggability, or to confirm a proposed binding mode
   against a prepared receptor.
 
-Invocations run through the `pde` CLI. The skill's invocation table is authoritative
+Invocations run through the `pkde` CLI. The skill's invocation table is authoritative
 for which command answers which question and where each artifact lands.
 
 > ### [WARN] PARTIAL TOOLING — AND TWO CAUTIONS ON THE PART YOU HAVE
 >
-> Structural **homology search** and **rendering** have no pde skill yet. Where a
+> Structural **homology search** and **rendering** have no pkde skill yet. Where a
 > task needs one of these, **report the task blocked, name the missing capability, and
 > stop.** Do not substitute your own judgment for a measurement, and do not cite a
 > number no tool produced.

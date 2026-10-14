@@ -15,13 +15,13 @@ description: "Research Operations Controller — executes approved work orders, 
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 
-# PDE_PROJECT is resolved by .pde/ walk-up discovery by default.
+# PKDE_PROJECT is resolved by .pkde/ walk-up discovery by default.
 # Set it explicitly only when the agent's workspace is not the program
 # directory:
 #   env:
-#     PDE_PROJECT: .pde-workspace/program-hr-mbc
+#     PKDE_PROJECT: .pkde-workspace/program-hr-mbc
 
 skills:
   - uri: "skills/pharmakon-discovery-engine"
-  - uri: "skills/pde-dashboard"
+  - uri: "skills/pkde-dashboard"
   - uri: "skills/artifact-conventions"
