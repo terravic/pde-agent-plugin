@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "pde-agent-plugin"
+name = "pkde-agent-plugin"
 version = "0.3.0"
 description = "Pharmakon Discovery Engine (PkDE) Agent Plugin, Domain Skills, Interactive Scientific Dashboard, and MCP Server"
 readme = "README.md"

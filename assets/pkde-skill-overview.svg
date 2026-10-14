@@ -19,7 +19,7 @@
   <rect x="16" y="16" width="1468" height="928" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1.5"/>
 
   <!-- Top Header Banner -->
-  <text x="44" y="52" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Pharmakon Discovery Engine (PkDE — pde-agent-plugin) — Skill Workflow &amp; Data Architecture</text>
+  <text x="44" y="52" font-size="20" font-weight="700" fill="#0F172A" letter-spacing="-0.3">Pharmakon Discovery Engine (PkDE — pkde-agent-plugin) — Skill Workflow &amp; Data Architecture</text>
   <text x="44" y="74" font-size="13" fill="#475569">Two-phase execution invariant, 4-layer cryptographic provenance, 10-check validation gate, and interactive scientific dashboard</text>
   <line x1="44" y1="90" x2="1456" y2="90" stroke="#E2E8F0" stroke-width="1"/>
 

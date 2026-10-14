@@ -1,4 +1,4 @@
-# Product Requirements Document: Pharmakon Discovery Engine (`PkDE` — `pde-agent-plugin`)
+# Product Requirements Document: Pharmakon Discovery Engine (`PkDE` — `pkde-agent-plugin`)
 
 **Version**: 0.3.0  
 **Status**: Active  
@@ -8,7 +8,7 @@
 
 ## 1. Product Overview
 
-The Pharmakon Discovery Engine (`PkDE`, `pde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It equips autonomous and interactive agent harnesses with deterministic domain command-line tools (`bin/pkde`), 43 scientific domain and workflow skills (`skills/`), 22 specialist agent role definitions (`templates/`), a 4-layer cryptographic provenance hierarchy, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) containing 20 scientific visualization studios.
+The Pharmakon Discovery Engine (`PkDE`, `pkde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It equips autonomous and interactive agent harnesses with deterministic domain command-line tools (`bin/pkde`), 43 scientific domain and workflow skills (`skills/`), 22 specialist agent role definitions (`templates/`), a 4-layer cryptographic provenance hierarchy, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) containing 20 scientific visualization studios.
 
 The system supports pre-clinical discovery programs across Stages 0 through 4:
 

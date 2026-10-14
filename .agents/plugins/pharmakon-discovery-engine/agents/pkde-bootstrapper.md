@@ -112,7 +112,7 @@ Skip this step and proceed to Step 1.
    **Otherwise:**
 
    ```bash
-   gh repo clone <org>/pde-agent-plugin .pkde/scratchpad/pkde-repo
+   gh repo clone <org>/pkde-agent-plugin .pkde/scratchpad/pkde-repo
    ```
 
    Clone to the scratchpad volume, not into `.pkde-workspace` — this ensures the clone

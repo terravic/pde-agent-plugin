@@ -287,7 +287,7 @@ def _detect_domain_studio(
 
 
 def _repo_root() -> Path:
-    """Locate the pde-agent-plugin repository root."""
+    """Locate the pkde-agent-plugin repository root."""
     here = Path(__file__).resolve()
     for parent in here.parents:
         if (parent / "templates").is_dir() and (parent / "skills").is_dir():

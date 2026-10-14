@@ -2,4 +2,5 @@
 2026-10-08T19:31:19Z	sha256:3f8b202818164605d5469f332eb5071d06b1ee11ef9b47587e9c276a2876d36c	26 added / 0 removed: PubChemPy, biopython, cloudpickle, contourpy, cycler, elo, +19 more	src=da93dbcd25fe+dirty	provisioned via tools/install.sh (update)
 2026-10-08T19:33:38Z	sha256:a912d23b8a30af0ae4f8cc3e69306ab7041db3e3fdbe17fd203456f767289dba	1 added / 1 removed: prox	src=da93dbcd25fe+dirty	provisioned via tools/install.sh (binaries-only)
 2026-10-09T17:03:53Z	sha256:4ae3826d0a9eab88a9e053e5ddecc21bf1c4356907341a8748fab85ea74af333	2 added / 2 removed: elo, hypex	src=fc077abe5074+dirty	provisioned via tools/install.sh (binaries-only)
-2026-10-14T20:05:26Z	sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48	1 added / 1 removed: pkde	src=ec56a7949441+dirty	Rename PDE to PkDE
+2026-10-14T20:05:26Z	sha256:0747d0e266c240bafc1e062005e3dd9b6b060bf3cc8a86d6f0d12b80f98eef48	1 added / 1 removed: pkde	src=ec56a7949441+dirty	Rename PkDE to PkDE
+2026-10-14T20:20:35Z	sha256:5ad761991dee155d518255272a70e13f542a5c359ef7eaf251e9b47a7eba013d	1 added / 1 removed: pkde-agent-plugin, pkde-agent-plugin	src=81e27dbc2845+dirty	Provisioned PkDE environment

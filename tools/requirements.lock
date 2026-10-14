@@ -36,8 +36,8 @@ numpy==2.5.3
 opentelemetry-api==1.42.1
 packaging==26.3
 pandas==3.0.6
-pde-agent-plugin==0.3.0
 pillow==12.3.0
+pkde-agent-plugin==0.3.0
 pluggy==1.6.0
 prox==0.1.0
 PubChemPy==1.0.5
