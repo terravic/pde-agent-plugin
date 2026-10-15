@@ -20,7 +20,7 @@ The **Pharmakon Discovery Engine (`pharmakon-discovery-engine`)** skill provides
    As the **very first action** upon receiving a user prompt:
    ```bash
    ./bin/pkde dashboard start --prompt "<user prompt>" --host 0.0.0.0 --port 8765 --json
-   # Or via the bundled helper script (available atboth ./scripts/ and skills/pharmakon-discovery-engine/scripts/):
+   # Or via the bundled helper script (available at both ./scripts/ and skills/pharmakon-discovery-engine/scripts/):
    ./.venv/bin/python scripts/start_live_session.py --prompt "<user prompt>"
    # Run preflight environment & network readiness check:
    ./bin/pkde doctor --json

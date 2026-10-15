@@ -1563,7 +1563,7 @@ wheels = [
 ]
 
 [[package]]
-name = "pde-agent-plugin"
+name = "pkde-agent-plugin"
 version = "0.3.0"
 source = { editable = "." }
 dependencies = [

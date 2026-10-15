@@ -10,5 +10,5 @@ PY_BIN="$ROOT_DIR/.venv/bin/python"
 if [ ! -x "$PY_BIN" ]; then
   PY_BIN="python3"
 fi
-export PYTHONPATH="$PROX_DIR:${PYTHONPATH:-}"
+export PYTHONPATH="$PROX_DIR${PKDE_EXTRA_PYTHONPATH:+:$PKDE_EXTRA_PYTHONPATH}"
 exec "$PY_BIN" -c "import sys; from prox.cli import main; sys.exit(main())" "$@"

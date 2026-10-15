@@ -85,7 +85,7 @@ def _packages() -> list[str]:
 
 
 def _binaries(bin_dir: Path) -> list[str]:
-    """`name  sha256  size` for every file in bin/, sorted by name.
+    """`name  sha256  size` for every file in bin/ and bin/arch/*/*, sorted by name.
 
     Every file, not every executable: a data file sitting beside a
     binary changes what that binary does, and the bit that says whether
@@ -99,6 +99,18 @@ def _binaries(bin_dir: Path) -> list[str]:
             continue
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         rows.append(f"{path.name}\t{digest}\t{path.stat().st_size}")
+
+    arch_dir = bin_dir / "arch"
+    if arch_dir.is_dir():
+        for arch_sub in sorted(arch_dir.iterdir(), key=lambda p: p.name):
+            if not arch_sub.is_dir():
+                continue
+            for path in sorted(arch_sub.iterdir(), key=lambda p: p.name):
+                if not path.is_file():
+                    continue
+                digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                rel_name = f"arch/{arch_sub.name}/{path.name}"
+                rows.append(f"{rel_name}\t{digest}\t{path.stat().st_size}")
     return rows
 
 

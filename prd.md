@@ -58,6 +58,13 @@ Language model agents operating on biomedical research tasks without determinist
 |   |-- hypex
 |   |-- elo
 |   '-- prox
+|-- scripts/
+|   |-- start_live_session.py
+|   |-- dispatch_workorder.py
+|   '-- pkde_runner.py
+|-- references/
+|   |-- role-skill-matrix.md
+|   '-- stage0-3-playbook.md
 |-- pkde_plugin/
 |   |-- __init__.py
 |   |-- tool_bridge.py
@@ -71,6 +78,9 @@ Language model agents operating on biomedical research tasks without determinist
 |   '-- program-state/
 |-- skills/
 |   |-- pharmakon-discovery-engine/
+|   |   |-- SKILL.md
+|   |   |-- scripts/
+|   |   '-- references/
 |   |-- pkde-dashboard/
 |   |-- artifact-conventions/
 |   |-- program-state-management/
@@ -104,6 +114,15 @@ Language model agents operating on biomedical research tasks without determinist
 |   |-- bootstrap-preflight.sh
 |   |-- install.sh
 |   |-- bin/
+|   |   |-- pkde
+|   |   |-- hypex
+|   |   |-- elo
+|   |   |-- prox
+|   |   '-- arch/
+|   |       |-- darwin-arm64/{hypex,elo}
+|   |       |-- darwin-amd64/{hypex,elo}
+|   |       |-- linux-amd64/{hypex,elo}
+|   |       '-- linux-arm64/{hypex,elo}
 |   |-- env-manifest.txt
 |   |-- ENV_VERSION
 |   |-- ENV_HISTORY
@@ -147,12 +166,14 @@ Language model agents operating on biomedical research tasks without determinist
 | Surface | Entrypoint / Location | Description |
 | :--- | :--- | :--- |
 | Root Skill Discovery | `SKILL.md`, `skills/pharmakon-discovery-engine/SKILL.md` | Primary skill entrypoints loaded by agent harnesses to route domain requests and orchestrate work orders. |
+| Bundled Scripts & Playbooks | `scripts/`, `references/`, `skills/pharmakon-discovery-engine/{scripts,references}/` | Top-level and skill-local helper scripts (`start_live_session.py`, `dispatch_workorder.py`, `pkde_runner.py`) and reference matrices (`role-skill-matrix.md`, `stage0-3-playbook.md`). |
 | Agent Harness Plugin | `.agents/plugins/pharmakon-discovery-engine/` | Compiled plugin directory containing `plugin.json`, `rules/pkde-scientific-integrity.md`, 22 subagent definitions (`agents/*.md`), and 43 skills (`skills/`). |
-| Portable Skill Bundles | `dist/skill-bundles/*.zip` | Standalone zip archives for each skill with bundled reference documentation. |
+| Portable Skill Bundles | `dist/skill-bundles/*.zip` | Standalone zip archives for each skill with bundled scripts and reference documentation. |
 | Python Tool Bridge | `pkde_plugin/tool_bridge.py` | Typed Python functions (`pkde_bootstrap_session`, `pkde_exec`, `pkde_dispatch_workorder`, `pkde_log_agent_message`, `pkde_validate_and_gate`, `pkde_render_dashboard`) wrapping `bin/pkde` CLI commands and control-plane workflows. |
 | MCP Server | `pkde_plugin/mcp_server.py`, `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | JSON-RPC 2.0 Model Context Protocol stdio server (`pkde-engine` / `pkde-mcp`) exposing all 6 `pkde_*` tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`). |
-| CLI Engine | `bin/pkde` (`tools/pkde/cli.py`) | Click-based command-line interface implementing 42 domain and operational command groups plus dynamic extension loading. |
-| Environment Provisioner | `tools/bootstrap-preflight.sh`, `tools/install.sh`, `bin/env.sh` | Cross-platform host prerequisite checker and provisioner for `.venv`, `[science]` dependencies, `bin/hypex`, `bin/elo`, `bin/prox`, and `tools/ENV_VERSION` stamping on Ubuntu Linux and macOS. |
+| CLI Engine | `bin/pkde` (`tools/pkde/cli.py`) | Click-based command-line interface implementing 42 domain and operational command groups (including `pkde workorder dispatch` and `pkde workorder validate-and-gate`) plus dynamic extension loading. |
+| Multi-Architecture Native Binaries | `bin/hypex`, `bin/elo`, `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/` | POSIX runtime OS/CPU dispatchers backed by pre-compiled static binaries (`CGO_ENABLED=0`) for macOS Apple Silicon, macOS Intel, Linux x86_64, and Linux ARM64. |
+| Environment Provisioner | `tools/bootstrap-preflight.sh`, `tools/install.sh`, `bin/env.sh` | Cross-platform host prerequisite checker and hermetic provisioner for `.venv`, `[science]` dependencies, `bin/hypex`, `bin/elo`, `bin/prox`, and `tools/ENV_VERSION` stamping on Ubuntu Linux and macOS. |
 | BYOA & Private Data Extension | `bin/pkde custom` (`tools/pkde/commands/custom.py`), `examples/byoa/` | Two-phase ingestion (`pkde custom ingest`), proprietary algorithm execution (`pkde custom run`), and offline evaluation (`pkde custom analyze`) with SHA-256 data/code provenance. |
 
 ---
@@ -185,7 +206,7 @@ All scientific domain commands in `bin/pkde` follow a mandatory two-phase execut
   - The `geometric` backend parses PDB (`.pdb`, `.ent`) and mmCIF (`.cif`, `.mmcif`) structures, clusters buried and cleft cavities via 26-connected breadth-first search, computes volume, residue hydrophobicity, and calibrated druggability scores, and writes a complete `<stem>_fpocket/` output tree (`<stem>_info.txt` and `pockets/pocket{rank}_atm.{pdb,cif}`) compatible with `pkde pocket analyze`, `pkde docking prepare`, `pkde structure annotate-topology`, and the 3Dmol.js dashboard viewer.
   - Whenever the `geometric` backend executes, `pkde pocket run` emits the mandatory relay `pocket.geometric_fallback_backend` in `.pockets.meta.json` (propagated by `pkde pocket analyze` into `.pocket.analysis.json`), and `pkde doctor` classifies missing `fpocket` as a non-blocking `CAVEAT`.
 
-### 4.3 Mechanical Validation Gate (`bin/pkde validate check`)
+### 4.3 Mechanical Validation Gate (`bin/pkde validate check` & `bin/pkde workorder validate-and-gate`)
 Building on the 4-layer hierarchy, before a specialist work order can transition from `submitted` to `mechanically_validated`, it must pass 10 automated checks:
 1. `deliverables_exist`: Deliverable files exist at the declared `findings/` paths.
 2. `report_headings`: Required YAML frontmatter and structured Markdown sections are present.
@@ -264,9 +285,11 @@ The stdio MCP server (`pkde-engine`, registered via `.agents/plugins/pharmakon-d
 ## 5. Non-Functional Requirements
 
 1. **Offline Re-Analysis**: All Phase 2 `analyze` commands execute with network sockets blocked (`PKDE_PHASE2_OFFLINE=1`) so any historical Layer 0 artifact can be re-analyzed deterministically without external API dependencies.
-2. **Path Confinement & Security**: All file operations are confined to the active project workspace (`tools/pkde/core/paths.py`), rejecting directory traversal (`..`) and symlink escapes, and storing only workspace-relative paths in generated artifacts and dashboard bundles.
-3. **Rate Limiting & Pacing**: Outbound HTTP requests to public scientific APIs (gnomAD, UniProt, ChEMBL, PubChem, NCBI E-utilities, Europe PMC, ClinicalTrials.gov) enforce per-host QPS pacing (`tools/pkde/core/qps.py`).
-4. **Environment Reproducibility**: Every provenance sidecar records the SHA-256 digest of `tools/env-manifest.txt`, capturing the Python interpreter, installed package versions, and compiled binary hashes (`bin/hypex`, `bin/elo`, `bin/prox` built with `-trimpath`).
+2. **Preflight Readiness & Degraded Offline Sandbox Detection**: `bin/pkde doctor` probes local toolchain integrity and external scientific API reachability (`_check_external_scientific_apis`), returning `execution_mode` (`"full"` | `"degraded_offline"` | `"blocked"`). In `"degraded_offline"` environments where outbound network access is restricted, agents run local-compute workflows or halt before creating empty online work orders.
+3. **Hermetic Python & Sandbox-Safe File I/O**: `bin/env.sh`, `bin/pkde`, `bin/prox`, and `pkde_plugin/tool_bridge.py` prefer `$PKDE_ROOT/.venv/bin/python` and isolate `PYTHONPATH` (`$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex`) from host site-packages. Dashboard HTML generation (`_safe_write_html` in `tools/pkde/commands/dashboard.py`) falls back from `os.replace()` to direct writes with guaranteed temporary file cleanup in `finally:` blocks when running inside sandboxes that restrict atomic file replacement.
+4. **Path Confinement & Security**: All file operations are confined to the active project workspace (`tools/pkde/core/paths.py`), rejecting directory traversal (`..`) and symlink escapes, and storing only workspace-relative paths in generated artifacts and dashboard bundles.
+5. **Rate Limiting & Pacing**: Outbound HTTP requests to public scientific APIs (gnomAD, UniProt, ChEMBL, PubChem, NCBI E-utilities, Europe PMC, ClinicalTrials.gov) enforce per-host QPS pacing (`tools/pkde/core/qps.py`).
+6. **Environment Reproducibility & Multi-Architecture Binaries**: Every provenance sidecar records the SHA-256 digest of `tools/env-manifest.txt`, capturing the Python interpreter, installed package versions, wrapper scripts (`bin/pkde`, `bin/hypex`, `bin/elo`, `bin/prox`), and all 8 cross-compiled static native binaries (`tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/{hypex,elo}` built with `CGO_ENABLED=0 -trimpath`).
 
 ---
 
@@ -275,7 +298,7 @@ The stdio MCP server (`pkde-engine`, registered via `.agents/plugins/pharmakon-d
 The build and test suite (`tests/`) verifies:
 - `tests/test_custom_byoa.py`: Validates two-phase private CSV ingestion (`pkde custom ingest`), proprietary Python algorithm execution (`pkde custom run`), offline evaluation (`pkde custom analyze`), relay attribution (`pkde relays`), and dynamic Click extension loading.
 - `tests/test_pocket_geometric.py`: Validates the built-in Python/NumPy geometric pocket detector (`pkde pocket run --backend [geometric|auto]`) and offline `pkde pocket analyze` (global and `--near`) across PDB and mmCIF structures, `pocket.geometric_fallback_backend` relay propagation, and `pkde docking prepare` grid-box compatibility.
-- `tests/test_targets_compile.py`: Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`.
-- `tests/test_tool_bridge.py`: Validates `pkde_exec` CLI execution, `pkde_dispatch_workorder` 4-step intake and single-flight resource lease locking, `pkde_validate_and_gate` 10-check validation gate (mechanical correction loop and `DATA_INTEGRITY` immediate halt), `pkde_render_dashboard` output, and `pkde-engine` MCP server exposure of all 6 tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`).
-- `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pkde-workspace/dashboard.html`, confirming all multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks (`bootstrap_ready`), cross-platform 3D (`canUseWebGL`, `renderSoftware3DMoleculeFallback`) and 2D (`renderPlotWithFallback`, `renderSvgChartFallback`) failover renderers, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios render from real Layer 0-4 artifacts.
+- `tests/test_targets_compile.py`: Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`, verifies parity between root `scripts/` and `references/` and `skills/pharmakon-discovery-engine/{scripts,references}/`, and confirms every `scripts/...` and `references/...` path cited in `SKILL.md` resolves across root, skill-local, and compiled plugin locations.
+- `tests/test_tool_bridge.py`: Validates `pkde_exec` CLI execution, `pkde_dispatch_workorder` and native `./bin/pkde workorder dispatch` 4-step intake and single-flight resource lease locking, `pkde_validate_and_gate` and `./bin/pkde workorder validate-and-gate` 10-check validation gate, hermetic `PYTHONPATH` isolation against incompatible host site-packages, `pkde doctor` `execution_mode` (`full` vs. `degraded_offline`), multi-architecture (`darwin-arm64`, `darwin-amd64`, `linux-amd64`, `linux-arm64`) native binary integrity and runtime wrapper dispatch for `hypex` and `elo`, and `pkde-engine` MCP server exposure of all 6 tools with explicit boolean `ToolAnnotations`.
+- `tests/test_dashboard.py`: Validates end-to-end generation of `dashboard.html` and `.pkde-workspace/dashboard.html`, sandbox-safe HTML fallback writing (`_safe_write_html`) when `os.replace` raises `PermissionError` or `OSError`, multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks (`bootstrap_ready`), cross-platform 3D (`canUseWebGL`, `renderSoftware3DMoleculeFallback`) and 2D (`renderPlotWithFallback`, `renderSvgChartFallback`) failover renderers, Stage 0-4 concept/assessment/decision records, and all 20 scientific visualization studios.
 

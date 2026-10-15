@@ -16,9 +16,10 @@ When you use this repository inside an AI agent harness, you can watch the entir
 
 1. **Step 1 -- Enter Your Prompt in the Agent Harness Chat**:
    Type your scientific question or campaign goal in plain English directly into the chat prompt of your agent harness (for example, evaluating a gene target, profiling a compound SMILES, or running a multi-disciplinary target nomination review). The agent harness automatically activates the root skill (`SKILL.md` / `skills/pharmakon-discovery-engine/SKILL.md`).
-2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`)**:
-   As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `python3 skills/pharmakon-discovery-engine/scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pkde dashboard start --prompt "<your prompt>"`). Within roughly one second, this:
+2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`) & Preflight Check**:
+   As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `./.venv/bin/python scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pkde dashboard start --prompt "<your prompt>"`) followed by `./bin/pkde doctor --json`. Within roughly one second, this:
    - Initializes the active workspace (`.pkde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pkde-workspace/.pkde/program.yaml` and `.pkde-workspace/.pkde/control/events.ndjson`.
+   - Verifies local tool readiness and external scientific API reachability (`execution_mode`: `full`, `degraded_offline`, or `blocked`).
    - Builds the initial `dashboard.html` showing the `User Prompt` root node connected to the `Science Program Lead` orchestrator.
    - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to `http://0.0.0.0:8765` (`http://127.0.0.1:8765` locally) and prints the live URL in the chat response.
 3. **Step 3 -- Open `http://0.0.0.0:8765` in Your Browser and Watch Real-Time Progress**:
@@ -250,6 +251,7 @@ The repository maintains canonical authoring templates in `skills/` and `templat
 | Component | Source Path (Authoring) | Compiled Agent Harness Path (Loaded at Runtime) | Purpose |
 | :--- | :--- | :--- | :--- |
 | **Root Skill Entrypoint** | `SKILL.md` and `skills/pharmakon-discovery-engine/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/pharmakon-discovery-engine/SKILL.md` | Primary entrypoint loaded when a user prompts the skill; orchestrates session bootstrap, Work Orders, and dashboard updates. |
+| **Bundled Scripts & Playbooks** | `scripts/*`, `references/*`, and `skills/pharmakon-discovery-engine/{scripts,references}/` | `.agents/plugins/pharmakon-discovery-engine/skills/pharmakon-discovery-engine/{scripts,references}/` | Helper scripts (`start_live_session.py`, `dispatch_workorder.py`, `pkde_runner.py`) and reference matrices (`role-skill-matrix.md`, `stage0-3-playbook.md`). |
 | **Domain & Governance Skills (43 Skills)** | `skills/<skill-name>/SKILL.md` | `.agents/plugins/pharmakon-discovery-engine/skills/<skill-name>/SKILL.md` (and `dist/skill-bundles/<skill-name>.zip`) | Domain-specific instructions teaching agents exact two-phase `./bin/pkde` CLI commands, thresholds, and mandatory relays. |
 | **Specialist Subagents (22 Roles)** | `templates/<role-name>/` | `.agents/plugins/pharmakon-discovery-engine/agents/pkde-<role-name>.md` | Subagent definitions (`pkde-science-program-lead`, `pkde-computational-biologist`, `pkde-structural-biologist`, `pkde-medicinal-chemist`, `pkde-computational-chemist`, `pkde-admet-dmpk-scientist`, `pkde-experimental-biologist`, `pkde-preclinical-toxicologist`, `pkde-regulatory-scientist`, `pkde-finding-validator`, `pkde-scientific-reviewer`, `pkde-research-operations-controller`, `pkde-head-of-discovery`, `pkde-project-curator`, `pkde-bootstrapper`, and 7 `pkde-hypex-*` roles). |
 | **Scientific Integrity Rules** | `docs/tool-design-guidance.md` | `.agents/plugins/pharmakon-discovery-engine/rules/pkde-scientific-integrity.md` | Always-on governance rules enforcing the Two-Phase Execution Invariant, Layer 0 SHA-256 provenance, mandatory relays, and dashboard synchronization. |
@@ -259,15 +261,15 @@ The repository maintains canonical authoring templates in `skills/` and `templat
 
 When you submit a prompt in the agent harness, execution flows through four layers without bogging down the LLM with manual telemetry calls:
 
-1. **Session Bootstrap (`skills/pharmakon-discovery-engine/scripts/start_live_session.py`)**:
-   The primary skill agent runs `start_live_session.py` (or `pkde_bootstrap_session` via MCP / `./bin/pkde dashboard start`), which initializes `.pkde-workspace/` (or a custom `--project <dir>`), writes `.pkde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`.
-2. **Work-Order Dispatch & Subagent Invocation (`skills/pharmakon-discovery-engine/scripts/dispatch_workorder.py`)**:
-   For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pkde-<role-name>`) in the agent harness.
-3. **Deterministic Two-Phase CLI Execution (`./bin/pkde` -> `.venv` + `tools/pkde/`)**:
-   Each specialist subagent executes `./bin/pkde <domain> <phase1-cmd>` followed immediately by `./bin/pkde <domain> analyze`. The `./bin/pkde` wrapper activates the local Python virtual environment (`.venv`) and dispatches to `tools/pkde/cli.py` and `tools/pkde/commands/<domain>.py` (or `bin/hypex`, `bin/elo`, and `bin/prox` for hypothesis tournaments).
+1. **Session Bootstrap & Preflight Readiness (`scripts/start_live_session.py` & `./bin/pkde doctor --json`)**:
+   The primary skill agent runs `scripts/start_live_session.py` (or `pkde_bootstrap_session` via MCP / `./bin/pkde dashboard start`), which initializes `.pkde-workspace/` (or a custom `--project <dir>`), writes `.pkde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`. It also runs `./bin/pkde doctor --json` to check local toolchain readiness and external scientific API reachability (`execution_mode`: `full`, `degraded_offline`, or `blocked`).
+2. **Work-Order Dispatch & Subagent Invocation (`./bin/pkde workorder dispatch` or `scripts/dispatch_workorder.py`)**:
+   For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pkde-<role-name>`) in the agent harness. After the specialist completes its report, `./bin/pkde workorder validate-and-gate` (or `pkde_validate_and_gate`) runs the 10-check validation gate.
+3. **Deterministic Two-Phase CLI Execution (`./bin/pkde` -> `.venv` + `tools/pkde/` & `tools/bin/arch/`)**:
+   Each specialist subagent executes `./bin/pkde <domain> <phase1-cmd>` followed immediately by `./bin/pkde <domain> analyze`. The `./bin/pkde` and `./bin/env.sh` wrappers prefer `$PKDE_ROOT/.venv/bin/python` with hermetic `PYTHONPATH` isolation (`$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex`) and dispatch to `tools/pkde/cli.py` and `tools/pkde/commands/<domain>.py`. For hypothesis tournaments, `bin/hypex` and `bin/elo` detect the host OS and CPU architecture (`uname -s` / `uname -m`) and execute the corresponding prebuilt static binary in `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/`.
 4. **Zero-Overhead Passive Telemetry Capture (`tools/pkde/common.py` & `tools/pkde/commands/dashboard.py`)**:
    - **CLI Hook**: Every non-exempt domain command is wrapped by `enforce_phase_two()` in `tools/pkde/common.py`, which automatically appends `tool.started` (`TOOL:RUN`), `tool.completed` (`TOOL:DONE`), and `tool.failed` (`TOOL:ERR`) events (with duration and argument previews) into `.pkde-workspace/.pkde/control/events.ndjson`.
-   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pkde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html`.
+   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pkde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html` via a sandbox-safe writer (`_safe_write_html`).
 
 ### 3. Where Output Artifacts, Control State, and Dashboard Files Are Stored (`.pkde-workspace/`)
 
@@ -338,11 +340,18 @@ All paths below are relative to the repository root (`./`):
 |   |-- pkde-skill-overview.png                   # System workflow, data I/O, and UI dashboard diagram (PNG)
 |   '-- pkde-skill-overview.svg                   # Vector source for system workflow diagram (SVG)
 |-- bin/
-|   |-- pkde                                      # Primary PkDE command-line executable
-|   |-- env.sh                                   # Environment activation script (PATH and venv setup)
-|   |-- hypex                                    # Hypothesis exploration datastore binary
-|   |-- elo                                      # Pairwise ELO rating and tournament pairing binary
+|   |-- pkde                                      # Primary PkDE command-line executable (hermetic .venv wrapper)
+|   |-- env.sh                                   # Environment activation script (PATH, .venv, and PYTHONPATH setup)
+|   |-- hypex                                    # Multi-architecture Hypothesis exploration datastore launcher
+|   |-- elo                                      # Multi-architecture Pairwise ELO rating & pairing launcher
 |   '-- prox                                     # Hypothesis semantic clustering and deduplication CLI
+|-- scripts/
+|   |-- start_live_session.py                    # Top-level prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
+|   |-- dispatch_workorder.py                    # Top-level atomic work-order intake and specialist brief generator
+|   '-- pkde_runner.py                           # Top-level portable CLI execution wrapper
+|-- references/
+|   |-- role-skill-matrix.md                     # Top-level mapping of 22 specialist roles to 43 skills
+|   '-- stage0-3-playbook.md                     # Top-level Stage 0-3 decision gates and deliverable checklist
 |-- pkde_plugin/
 |   |-- __init__.py                              # Plugin package exports
 |   |-- tool_bridge.py                           # Python function wrappers for two-phase PkDE CLI execution
@@ -360,7 +369,7 @@ All paths below are relative to the repository root (`./`):
 |   |   |-- scripts/
 |   |   |   |-- start_live_session.py            # Prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
 |   |   |   |-- dispatch_workorder.py            # Atomic work-order intake and specialist brief generator
-|   |   |   '-- pkde_runner.py                    # Portable CLI execution wrapper
+|   |   |   '-- pkde_runner.py                   # Portable CLI execution wrapper
 |   |   '-- references/
 |   |       |-- role-skill-matrix.md             # Mapping of 22 specialist roles to 43 skills
 |   |       '-- stage0-3-playbook.md             # Stage 0-3 decision gates and deliverable checklist
@@ -430,6 +439,15 @@ All paths below are relative to the repository root (`./`):
 |   |-- bootstrap-preflight.sh                   # Host prerequisite check script (Python 3.11+, venv/uv, Go)
 |   |-- install.sh                               # Cross-platform environment and binary provisioner
 |   |-- bin/                                     # Self-contained tool binary directory (pkde, hypex, elo, prox)
+|   |   |-- pkde                                 # Primary CLI launcher
+|   |   |-- hypex                                # POSIX OS/CPU dispatcher for native hypex binary
+|   |   |-- elo                                  # POSIX OS/CPU dispatcher for native elo binary
+|   |   |-- prox                                 # Hermetic Python wrapper for prox CLI
+|   |   '-- arch/                                # Pre-compiled static native binaries (CGO_ENABLED=0)
+|   |       |-- darwin-arm64/{hypex,elo}         # macOS Apple Silicon (M1/M2/M3/M4) Mach-O arm64 binaries
+|   |       |-- darwin-amd64/{hypex,elo}         # macOS Intel Mach-O x86_64 binaries
+|   |       |-- linux-amd64/{hypex,elo}          # Linux x86_64 ELF binaries
+|   |       '-- linux-arm64/{hypex,elo}          # Linux ARM64/aarch64 ELF binaries
 |   |-- env-manifest.txt                         # Canonical environment manifest hashed into ENV_VERSION
 |   |-- ENV_VERSION                              # SHA-256 environment digest stamped into sidecars
 |   |-- ENV_HISTORY                              # Chronological log of stamped environment digests
@@ -440,7 +458,7 @@ All paths below are relative to the repository root (`./`):
 |   |   |-- cli.py                               # Click CLI entrypoint (42 command groups + extension loader)
 |   |   |-- common.py                            # Offline Phase 2 latch and shared CLI options
 |   |   |-- core/                                # Provenance, thresholds, HTTP pacing, and path confinement
-|   |   |-- commands/                            # Domain command implementations (including custom.py and pocket.py)
+|   |   |-- commands/                            # Domain and control-plane commands (workorder.py, doctor.py, custom.py, pocket.py, ...)
 |   |   '-- site_templates/                      # HTML templates for static site and 20 scientific studios
 |   '-- vendor/
 |       '-- hypex/                               # Go and Python source for hypex, elo, and prox tools
@@ -577,7 +595,9 @@ Every workflow executed by `pkde-agent-plugin` enforces four scientific integrit
 
 ### 1. Environment Provisioning & Initialization (Ubuntu Linux & macOS)
 
-Whether you are running on **Ubuntu Linux** or **macOS**, run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI binaries (`bin/hypex`, `bin/elo`, `bin/prox`):
+Whether you are running on **Ubuntu Linux** (`x86_64` or `arm64`) or **macOS** (`Apple Silicon arm64` or `Intel x86_64`), pre-compiled static binaries (`CGO_ENABLED=0`) for `hypex` and `elo` are bundled out of the box under `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/`, so no local Go toolchain is required unless modifying the vendored Go source in `tools/vendor/hypex/`.
+
+Run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI launchers (`bin/hypex`, `bin/elo`, `bin/prox`):
 
 ```bash
 # 1. Check host prerequisites (python3>=3.11, venv/uv, optional go)
@@ -586,9 +606,9 @@ Whether you are running on **Ubuntu Linux** or **macOS**, run the cross-platform
 # 2. Install/update .venv + [science] stack + Hypex binaries and stamp ENV_VERSION
 ./tools/install.sh
 
-# 3. Activate the environment and verify readiness
+# 3. Activate the environment and verify readiness (including execution_mode)
 source ./bin/env.sh
-./bin/pkde doctor
+./bin/pkde doctor --json
 ```
 
 > **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux & macOS):**
@@ -625,8 +645,9 @@ source ./bin/env.sh
 ./bin/pkde --project .pkde-workspace admet predict "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC" --name erlotinib
 ./bin/pkde --project .pkde-workspace admet analyze raw/admet/erlotinib.predict.json
 
-# Validate a specialist finding against the 10-check gate and rebuild dashboard.html
-./bin/pkde --project .pkde-workspace validate check WO-001
+# Atomic Work Order dispatch and 10-check mechanical validation gate
+./bin/pkde --project .pkde-workspace workorder dispatch --spec-file spec.yaml --json
+./bin/pkde --project .pkde-workspace workorder validate-and-gate WO-001 --run RUN-001 --json
 ./bin/pkde --project .pkde-workspace dashboard build --standalone
 ```
 
@@ -635,6 +656,6 @@ source ./bin/env.sh
 To compile `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip` from source and run the test suite:
 
 ```bash
-.venv/bin/python -m pkde_plugin.build_targets
-.venv/bin/pytest tests/ -v
+./.venv/bin/python -m pkde_plugin.build_targets
+./.venv/bin/pytest tests/ -v
 ```

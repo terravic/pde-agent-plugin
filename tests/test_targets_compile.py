@@ -154,3 +154,38 @@ def test_bundled_scripts_and_references_synced() -> None:
         assert skill_file.is_file(), f"Missing skill resource: {skill_file}"
         assert root_file.read_text(encoding="utf-8") == skill_file.read_text(encoding="utf-8")
 
+
+def test_multiarch_hypex_and_elo_binaries_and_dispatch() -> None:
+    """Verify prebuilt Linux and macOS (amd64 & arm64) binaries for hypex and elo and wrapper dispatch."""
+    import subprocess
+
+    arch_root = REPO_ROOT / "tools" / "bin" / "arch"
+    expected_targets = {
+        "linux-amd64": b"\x7fELF",
+        "linux-arm64": b"\x7fELF",
+        "darwin-arm64": b"\xcf\xfa\xed\xfe",
+        "darwin-amd64": b"\xcf\xfa\xed\xfe",
+    }
+
+    for target, magic in expected_targets.items():
+        for tool in ("hypex", "elo"):
+            bin_path = arch_root / target / tool
+            assert bin_path.is_file(), f"Missing prebuilt binary: {bin_path}"
+            assert bin_path.stat().st_size > 1_000_000, f"Binary too small: {bin_path}"
+            with open(bin_path, "rb") as f:
+                header = f.read(4)
+            assert header == magic, f"Invalid binary magic header for {bin_path}: {header!r}"
+
+    # Verify wrapper scripts dispatch to the native binary and output Usage:
+    for tool in ("hypex", "elo"):
+        wrapper = REPO_ROOT / "bin" / tool
+        res = subprocess.run([str(wrapper), "--help"], capture_output=True, text=True, timeout=10)
+        assert res.returncode == 0
+        assert "Usage:" in res.stdout
+
+    # Verify install.sh contains no fake echo shims
+    install_sh = (REPO_ROOT / "tools" / "install.sh").read_text(encoding="utf-8")
+    assert "hypex: executed" not in install_sh
+    assert "elo: executed" not in install_sh
+
+
