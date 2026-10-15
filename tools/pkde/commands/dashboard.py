@@ -442,17 +442,16 @@ def _render_markdown_with_annotations(
         if info:
             status = info.get("status", "ok")
             actual = info.get("actual_value", "")
-            claimed = info.get("claimed_value", "")
             detail = info.get("detail", "")
             cls = "verified" if status == "ok" else ("warn" if status == "warn" else "failed")
-            icon = "[PASS]" if status == "ok" else ("[WARN]" if status == "warn" else "[FAIL]")
+            icon_prefix = "" if status == "ok" else ('<span class="badge-icon">[WARN]</span> ' if status == "warn" else '<span class="badge-icon">[FAIL]</span> ')
             val_info = f" | actual={actual}" if actual != "" else ""
             tooltip = html_mod.escape(
                 f"{raw_tag} — {status.upper()}: {detail}{val_info}"
             )
         else:
             cls = "verified"
-            icon = "[PASS]"
+            icon_prefix = ""
             tooltip = html_mod.escape(raw_tag)
         short_label = Path(path_part).name
         if loc_part:
@@ -460,7 +459,7 @@ def _render_markdown_with_annotations(
         return (
             f'<span class="pkde-source-badge {cls}" title="{tooltip}" '
             f'data-source-path="{html_mod.escape(path_part)}">'
-            f'<span class="badge-icon">{icon}</span> {html_mod.escape(short_label)}</span>'
+            f'{icon_prefix}{html_mod.escape(short_label)}</span>'
         )
 
     rendered_html = re.sub(
