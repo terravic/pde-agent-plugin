@@ -292,8 +292,8 @@ def test_dashboard_safe_write_fallback_and_temp_cleanup(tmp_path: Path) -> None:
     assert list(ws.glob("*.tmp.html")) == []
 
 
-def test_dashboard_strict_design_md_compliance(tmp_path: Path) -> None:
-    """Verify generated dashboard.html strictly adheres to DESIGN.md rules."""
+def test_dashboard_theme_and_palette_compliance(tmp_path: Path) -> None:
+    """Verify generated dashboard.html adheres to theme and color palette specifications."""
     import re
 
     ws = tmp_path / "design-check-ws"
@@ -309,7 +309,7 @@ def test_dashboard_strict_design_md_compliance(tmp_path: Path) -> None:
         flags=re.DOTALL,
     )
 
-    # 1. Exact Light Mode and Dark Mode hex tokens from DESIGN.md Section 3
+    # 1. Exact Light Mode and Dark Mode hex tokens for light and dark themes
     for required_token in (
         "#FAFAF9",  # Light Background
         "#FFFFFF",  # Light Cards & Surfaces
@@ -322,9 +322,9 @@ def test_dashboard_strict_design_md_compliance(tmp_path: Path) -> None:
         "#ECE8E2",  # Dark Text Primary
         "#9A9895",  # Dark Text Secondary
     ):
-        assert required_token in ui_only, f"Missing required DESIGN.md Section 3 color token {required_token}"
+        assert required_token in ui_only, f"Missing required theme color token {required_token}"
 
-    # 2. Exact Dynamic Data Visualization Color Palette tokens from DESIGN.md Section 5
+    # 2. Exact Dynamic Data Visualization Color Palette tokens for data visualization
     for viz_token in (
         "#0D9488",  # Vibrant Teal
         "#D97706",  # Energetic Amber
@@ -332,7 +332,7 @@ def test_dashboard_strict_design_md_compliance(tmp_path: Path) -> None:
         "#059669",  # Functional Emerald
         "#E11D48",  # Deep Rose
     ):
-        assert viz_token in ui_only, f"Missing required DESIGN.md Section 5 visualization color {viz_token}"
+        assert viz_token in ui_only, f"Missing required visualization color {viz_token}"
 
     # 3. Zero AI Slop Ban List: No Inter / Roboto fonts, no purple/lavender gradients, no decorative gridlines
     for banned in (
@@ -348,21 +348,21 @@ def test_dashboard_strict_design_md_compliance(tmp_path: Path) -> None:
         "168, 85, 247",
         "Physics",
     ):
-        assert banned not in ui_only, f"Banned DESIGN.md element found in UI code: {banned}"
+        assert banned not in ui_only, f"Disallowed UI element found in UI code: {banned}"
 
-    # 4. Clean component titles from DESIGN.md Section 4
+    # 4. Clean component titles in dashboard layout
     assert "Interactive Relationship Node Map" in ui_only
     assert "Structural Data Diagram" in ui_only
 
-    # 5. Theme toggle is a minimalist, textless icon-only button
+    # 5. Theme toggle button uses plain text label without decorative icons
     btn_match = re.search(
         r'<button[^>]*id="theme-toggle-btn"[^>]*>(.*?)</button>',
         ui_only,
         flags=re.DOTALL,
     )
     assert btn_match is not None
-    btn_inner_without_svg = re.sub(r"<svg.*?</svg>", "", btn_match.group(1), flags=re.DOTALL).strip()
-    assert btn_inner_without_svg == "", f"Theme toggle button must be textless, found: {btn_inner_without_svg!r}"
+    assert "<svg" not in btn_match.group(1)
+    assert "theme-toggle-label" in btn_match.group(1)
 
 
 

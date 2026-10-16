@@ -40,7 +40,7 @@ program lead can accept, reject, or modify.
 Enumerate the evidence that supports this recommendation. Each entry
 must reference a specific artifact and state what it demonstrates:
 
-- [artifact path] — what it shows and how it supports the recommendation
+- [artifact path] -- what it shows and how it supports the recommendation
 
 ### Assumptions
 
@@ -59,7 +59,7 @@ List every assumption underlying the recommendation. For each:
 ### Strongest Material Counterargument
 
 State the single strongest reason this recommendation could be wrong.
-This is not a hedge or a caveat — it is the best argument against
+This is not a hedge or a caveat -- it is the best argument against
 your own conclusion, stated as strongly as the evidence permits.
 
 If you cannot articulate a material counterargument, state that
@@ -77,7 +77,7 @@ it shows it.
 
 Name the specific evidence or result that would cause you to reverse
 or materially alter this recommendation. This must be concrete and
-testable — not "if things are different" but "if [specific measurement]
+testable -- not "if things are different" but "if [specific measurement]
 shows [specific result], then [specific change to recommendation]."
 
 ## Open Questions

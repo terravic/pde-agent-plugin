@@ -1,13 +1,13 @@
-"""`pkde analog` — analog design/validation workflow.
+"""`pkde analog` -- analog design/validation workflow.
 
 Orchestrates the computational validation pipeline for proposed analog
-compounds: validate → prepare-3d → dock → ADMET predict → rank.
+compounds: validate -> prepare-3d -> dock -> ADMET predict -> rank.
 
 This is a workflow command that chains existing pkde tools rather than
 reimplementing their logic.  Each analog is run through as many pipeline
 steps as available, with graceful fallback when tools are missing.
 
-Phase 1 only — no thresholds are applied, no judgment is made.  The
+Phase 1 only -- no thresholds are applied, no judgment is made.  The
 pipeline records what it computed and what it could not.
 """
 
@@ -145,7 +145,7 @@ def _predict_admet(
     # hERG liability (Aronov 2005)
     herg_flagged = has_basic_n and logp > 3.7 and aromatic_rings >= 2
 
-    # Solubility — ESOL (Delaney 2004)
+    # Solubility -- ESOL (Delaney 2004)
     heavy_atoms = mol.GetNumHeavyAtoms()
     aromatic_atoms = sum(1 for atom in mol.GetAtoms() if atom.GetIsAromatic())
     aromatic_proportion = aromatic_atoms / heavy_atoms if heavy_atoms > 0 else 0.0
@@ -195,35 +195,35 @@ def _compute_mpo_score(
     """
     scores: dict[str, float] = {}
 
-    # Docking score: more negative is better; normalize -12..0 → 1..0
+    # Docking score: more negative is better; normalize -12..0 -> 1..0
     if docking_score is not None and "docking" in weights:
         norm = max(0.0, min(1.0, -docking_score / 12.0))
         scores["docking"] = norm * weights["docking"]
 
-    # Solubility: high > moderate > low > insoluble → 1.0, 0.75, 0.5, 0.0
+    # Solubility: high > moderate > low > insoluble -> 1.0, 0.75, 0.5, 0.0
     sol_map = {"high": 1.0, "moderate": 0.75, "low": 0.5, "insoluble": 0.0}
     if "solubility" in weights:
         sol_val = sol_map.get(admet.get("solubility_class", ""), 0.5)
         scores["solubility"] = sol_val * weights["solubility"]
 
-    # Permeability: high > moderate > low → 1.0, 0.5, 0.0
+    # Permeability: high > moderate > low -> 1.0, 0.5, 0.0
     perm_map = {"high": 1.0, "moderate": 0.5, "low": 0.0}
     if "permeability" in weights:
         perm_val = perm_map.get(admet.get("permeability", ""), 0.5)
         scores["permeability"] = perm_val * weights["permeability"]
 
-    # Metabolic stability: low > moderate > high → 1.0, 0.5, 0.0
+    # Metabolic stability: low > moderate > high -> 1.0, 0.5, 0.0
     metab_map = {"low": 1.0, "moderate": 0.5, "high": 0.0}
     if "metabolic_stability" in weights:
         metab_val = metab_map.get(admet.get("metabolic_stability", ""), 0.5)
         scores["metabolic_stability"] = metab_val * weights["metabolic_stability"]
 
-    # hERG: not flagged → 1.0, flagged → 0.0
+    # hERG: not flagged -> 1.0, flagged -> 0.0
     if "herg" in weights:
         herg_val = 0.0 if admet.get("herg_flagged", False) else 1.0
         scores["herg"] = herg_val * weights["herg"]
 
-    # CYP: no flags → 1.0, some flags → penalise proportionally
+    # CYP: no flags -> 1.0, some flags -> penalise proportionally
     if "cyp" in weights:
         n_cyp = len(admet.get("cyp_inhibition_flags", []))
         cyp_val = max(0.0, 1.0 - n_cyp / 3.0)
@@ -288,7 +288,7 @@ def evaluate_cmd(
     """Evaluate proposed analogs through the computational validation pipeline.
 
     Takes a JSON file of analog SMILES and runs each through:
-    validate → prepare-3d → dock → ADMET predict → rank.
+    validate -> prepare-3d -> dock -> ADMET predict -> rank.
 
     Pipeline failures for individual analogs are recorded and the
     evaluation continues with the next analog.  At minimum, validate +
@@ -297,9 +297,9 @@ def evaluate_cmd(
 
     \b
     Outputs under raw/analogs/:
-      analog-evaluation.json       — comprehensive results with ranking
-      analog-evaluation.meta.json  — provenance sidecar
-      {name}.3d.sdf                — per-analog 3D structures
+      analog-evaluation.json       -- comprehensive results with ranking
+      analog-evaluation.meta.json  -- provenance sidecar
+      {name}.3d.sdf                -- per-analog 3D structures
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -505,7 +505,7 @@ def evaluate_cmd(
                                 "ligand PDBQT conversion failed"
                             )
                 elif receptor_path is not None or pocket_path is not None:
-                    # Partially specified — note the gap
+                    # Partially specified -- note the gap
                     analog_result["pipeline_status"]["dock"] = "skipped"
                     analog_result["pipeline_status"]["dock_detail"] = (
                         "docking requires both --receptor and --pocket, plus "

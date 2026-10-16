@@ -1,11 +1,8 @@
 {
   "mcpServers": {
     "pkde-engine": {
-      "command": ".venv/bin/python",
-      "args": [
-        "-m",
-        "pkde_plugin.mcp_server"
-      ],
+      "command": "./bin/pkde-mcp",
+      "args": [],
       "cwd": ".",
       "env": {
         "PKDE_ROOT": ".",

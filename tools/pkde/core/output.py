@@ -1,7 +1,7 @@
 """Stdout discipline.
 
 Tools write outputs and share paths. They do not stream content into
-context. See docs/tool-design-guidance.md §6.
+context. See docs/tool-design-guidance.md Section 6.
 
 Budget:
   fetch / run  -> the output paths, one per line, nothing else
@@ -20,7 +20,7 @@ from typing import Any
 
 import click
 
-# Hard caps for an `analyze` summary (§6: target 20 lines / ~2 KB).
+# Hard caps for an `analyze` summary (Section 6: target 20 lines / ~2 KB).
 MAX_LINES = 20
 MAX_BYTES = 2048
 MAX_LINE_CHARS = 150
@@ -41,7 +41,7 @@ def clip(text: str, limit: int = MAX_LINE_CHARS) -> str:
     space = head.rfind(" ")
     if space > limit * 0.6:
         head = head[:space]
-    return head.rstrip(" ,;:.") + "…"
+    return head.rstrip(" ,;:.") + "..."
 
 
 class Emitter:
@@ -119,7 +119,7 @@ class Emitter:
             click.echo(line)
         if truncated:
             click.echo(
-                "… summary truncated to the stdout budget; read the analysis "
+                "... summary truncated to the stdout budget; read the analysis "
                 "artifact for the full record."
             )
         for path in self._paths:

@@ -1,14 +1,14 @@
 # PkDE Tool Design Guidance
 
 **Status**: v0.1. Expect revision after the pilot conversion (co-scientist, AlphaFold, AlphaGenome).
-**Purpose**: the standard for the pkde tools environment and the `pkde` CLI — bootstrapping, the two artifact layers, output placement, thresholds, and stdout discipline.
+**Purpose**: the standard for the pkde tools environment and the `pkde` CLI -- bootstrapping, the two artifact layers, output placement, thresholds, and stdout discipline.
 **Companion**: [`skill-design-guidance.md`](skill-design-guidance.md). This document is **normative for the artifact contract**. The skill document references it rather than restating it.
-**Context**: [`pkde-plan.md`](pkde-plan.md) §5 and §7.
+**Context**: [`pkde-plan.md`](pkde-plan.md) Section 5 and Section 7.
 
 The CLI also enforces work-order schemas, legal run-state transitions, mechanical
 artifact intake, and deterministic presentation builds. Those operational commands
-follow the same rule used here — deterministic mechanism in code, judgment in the
-responsible agent skill — while their semantics are normative in
+follow the same rule used here -- deterministic mechanism in code, judgment in the
+responsible agent skill -- while their semantics are normative in
 [`orchestration-design-guidance.md`](orchestration-design-guidance.md).
 
 ---
@@ -22,7 +22,7 @@ responsible agent skill — while their semantics are normative in
 | **3. Skill** | Routing, preconditions, invocation table, interpretation, anti-fabrication guard | Prose only |
 | **4. Template** | The capability grant (`skills:`), the questions a role owns, role-specific next actions and handoffs | `agent.yaml` + `agents.md` |
 
-Tier 4 is easy to forget, and forgetting it is what pushes role-specific content into skills. One capability serves several specialists, so the skill must stay specialist-neutral. See `skill-design-guidance.md` §3.
+Tier 4 is easy to forget, and forgetting it is what pushes role-specific content into skills. One capability serves several specialists, so the skill must stay specialist-neutral. See `skill-design-guidance.md` Section 3.
 
 One rule holds the whole thing together: **the CLI is the execution surface, not the routing surface.** Forty tools behind one `--help` is not navigable, and a CLI has no progressive disclosure. An agent either knows the subcommand or it does not. Routing stays in skill descriptions, which are always in context and cost little. Never assume an agent will read `pkde --help` to find its way.
 
@@ -31,10 +31,10 @@ One rule holds the whole thing together: **the CLI is the execution surface, not
 Before any of the below applies, something has to decide **what a tool should
 wrap**. A standing steer to favour the canonical models needs a tie-breaker for
 the common case where a database and a model both appear to answer the same
-question. These five tests were derived in `EVIDENCE_TOOLS_BRIEF.md` §2.2 and
+question. These five tests were derived in `EVIDENCE_TOOLS_BRIEF.md` Section 2.2 and
 applied to the pilot's candidate list.
 
-**They are adopted as tie-breakers, not as gates** (Preston, 2026-08-18, Group B
+**They are adopted as tie-breakers, not as gates** (Architecture review, 2026-08-18, Group B
 item 5, option B). The reason is a limit on the evidence behind them: the pilot
 exercises a small subset of the program types pkde will run, so a test that
 looks decisive across the pilot's candidates may be decisive only about the
@@ -45,8 +45,8 @@ read for the cases where it was right. Apply the five in order, expect to
 argue with them, and record the argument where the decision is recorded.
 
 **The standing steer decides what a tie-breaker cannot: all other things equal,
-choose the published option** (Preston, same decision). This is the tie-breaker
-of last resort and it fires only where the five tests are **indecisive** —
+choose the published option** (Architecture review, same decision). This is the tie-breaker
+of last resort and it fires only where the five tests are **indecisive** --
 where two candidates answer the same question and no test separates them. It
 does not overrule a test that has separated them. In particular it does not
 overrule Test 1: a canonical model is not preferred over an existing primary
@@ -60,35 +60,35 @@ and the sixth question is expensive precisely because the cost is program-wide
 and indifferent to whose model it is. The steer fires after we have decided a
 tool should exist, and is silent on whether it should.
 
-**Test 1 — Has somebody already measured this?** If a primary source answers
+**Test 1 -- Has somebody already measured this?** If a primary source answers
 the question directly, use it. A model trained to predict a quantity is not a
 better source for that quantity than the measurement. *Sharper, and this is the
 form that does the work:* if the measurement is likely **inside the model's
 training data**, calling the model **launders a database lookup through an
-inference step** — the same information with weaker provenance and no citation.
+inference step** -- the same information with weaker provenance and no citation.
 
-**Test 2 — Is the question counterfactual or prospective?** *What happens if we
+**Test 2 -- Is the question counterfactual or prospective?** *What happens if we
 knock this out. What would this unobserved substitution do. What will this
 compound's pIC50 be.* No measurement can exist. A model is the only instrument;
 use the canonical one.
 
-**Test 3 — Does the primary source cover this entity?** **Coverage, not
+**Test 3 -- Does the primary source cover this entity?** **Coverage, not
 existence, decides.** A database holding nothing for our target does not answer
 the question, and a model is then the honest fallback, labelled as prediction.
 This is the same rule as *an instrument must state its coverage, not only its
-findings* (§3) applied one level up, to the choice of instrument.
+findings* (Section 3) applied one level up, to the choice of instrument.
 
-**Test 4 — Is the output reproducible?** Layer 0 must be re-analysable. A
+**Test 4 -- Is the output reproducible?** Layer 0 must be re-analysable. A
 pinned database release re-reads identically forever; a stochastic generative
 model does not unless seed and version are controlled. Where reproducibility
 cannot be guaranteed, the artifact is weaker and **the sidecar must record
-why** — not as a caveat, but because a later reader otherwise cannot tell an
+why** -- not as a caveat, but because a later reader otherwise cannot tell an
 irreproducible artifact from a reproducible one.
 
-**Test 5 — What is the decision weight?** For a claim that will gate a stage
+**Test 5 -- What is the decision weight?** For a claim that will gate a stage
 decision, prefer the measurement even at a cost in coverage or convenience.
 
-**Two standing rules, independent of the tests — and not softened by adopting
+**Two standing rules, independent of the tests -- and not softened by adopting
 the tests as tie-breakers.** These are not selection criteria. They govern what
 Layer 1 may say once a source has been chosen, whichever source that is, so
 they bind in every case including the ones the five tests decline to settle.
@@ -111,7 +111,7 @@ yields "prefer X" cannot be wrong and therefore teaches nothing. State the
 coverage claim the decision rests on, and go and check it.
 
 **A sixth question sits above all five: should there be a tool at all?** The
-cost of adding one is not the build — it is the partition (§2, Rule 4). A new
+cost of adding one is not the build -- it is the partition (Section 2, Rule 4). A new
 dependency changes the shared environment, an environment change is a
 program-wide event, and every artifact stamped before it is now stamped
 differently from every artifact stamped after. Five tests that all say "build
@@ -125,7 +125,7 @@ The environment lives on a agent-runtime shared volume, not baked into container
 
 ```
 tools/
-|-- .venv/                 # Python environment (RDKit, numpy, requests, click, …)
+|-- .venv/                 # Python environment (RDKit, numpy, requests, click, ...)
 |-- bin/                   # Non-Python binaries: vina, fpocket, obabel wrappers
 |-- data/                  # Reference data too large to fetch per run
 |-- requirements.lock      # Fully pinned, hash-locked
@@ -136,25 +136,25 @@ This removes the image rebuild cycle from the tool inventory. Adding a tool beco
 
 But a mutable environment shared by every agent is shared mutable state. Four rules make it safe.
 
-### Rule 1 — read-only at run time, single writer
+### Rule 1 -- read-only at run time, single writer
 
 Specialists never install. No `pip install`, no `uv add`, no `apt`. Provisioning happens through one path only: a bootstrap agent or a deliberate `make env` target. Never as a side effect of a specialist hitting a missing import.
 
-This matters more than it looks. An agent that can install packages can silently change the scientific behaviour of every other agent mid-program. That is the same class of risk as fabrication — an undetectable change to what a number means.
+This matters more than it looks. An agent that can install packages can silently change the scientific behaviour of every other agent mid-program. That is the same class of risk as fabrication -- an undetectable change to what a number means.
 
-### Rule 2 — pin the interpreter and architecture
+### Rule 2 -- pin the interpreter and architecture
 
 A venv carries compiled extensions built against a specific Python minor version, glibc, and CPU architecture. If agent containers diverge on any of those, the shared venv fails. Sometimes loudly, sometimes not.
 
 Either every pkde template uses one base image, or the venv path is keyed: `tools/py3.12-x86_64/.venv`.
 
-### Rule 3 — know what the venv cannot carry
+### Rule 3 -- know what the venv cannot carry
 
 Pure-Python and self-contained wheels are fine: RDKit, numpy, requests. Static binaries drop into `bin/` fine: Vina.
 
-What does not work is anything needing system shared libraries the container lacks — OpenBabel, some PyMOL builds, anything wanting `libGL`, `libXrender`, or boost. For those, use a self-contained wheel variant, or accept a small documented set of `apt` packages in the base image. Enumerate that set explicitly. Do not discover it as a runtime failure.
+What does not work is anything needing system shared libraries the container lacks -- OpenBabel, some PyMOL builds, anything wanting `libGL`, `libXrender`, or boost. For those, use a self-contained wheel variant, or accept a small documented set of `apt` packages in the base image. Enumerate that set explicitly. Do not discover it as a runtime failure.
 
-### Rule 4 — stamp the environment version into every artifact
+### Rule 4 -- stamp the environment version into every artifact
 
 The environment is mutable, so reproducibility requires knowing which version produced a result. Write `ENV_VERSION` into every `.meta.json` sidecar.
 
@@ -162,8 +162,8 @@ A finding produced before a scoring-function upgrade is then distinguishable fro
 
 **Which makes an environment change a program-wide event, not a tool-level one.** Adding
 one binary to `bin/` bumps `ENV_VERSION`, and every sidecar already written now records a
-version the environment no longer has. That is the mechanism working — the alternative is
-a program that mixes them silently — but it means the cost of adding a tool is not the
+version the environment no longer has. That is the mechanism working -- the alternative is
+a program that mixes them silently -- but it means the cost of adding a tool is not the
 build. It is the partition. Schedule environment changes at program boundaries, do them
 deliberately and once, and do not add a tool mid-program because a specialist wanted it.
 
@@ -177,13 +177,13 @@ Credentials resolve through the CLI only. Never printed, never echoed. Test for 
 
 **A rule an agent cannot check is not a rule.** "Schedule environment changes at program
 boundaries" was unenforceable as written: `ENV_VERSION` was stamped into every sidecar,
-each one individually correct, but nothing ever compared them — so the partition existed
+each one individually correct, but nothing ever compared them -- so the partition existed
 only *across* files nobody read together, and a specialist could not see which side of a
 boundary it was standing on. `doctor` now groups a project's sidecars by `env_version`
 and reports when a project spans more than one. It found a real split on its first run:
 four artifacts written before the shared volume was provisioned, including the ingest
 that everything downstream derives from. `doctor` is where a rule of this kind acquires
-an instrument, and running it at agent start is what makes the answer cheap — the
+an instrument, and running it at agent start is what makes the answer cheap -- the
 alternative is discovering the split when two findings disagree.
 
 Two things that check generalises:
@@ -200,12 +200,12 @@ Two things that check generalises:
 
 **Keep provenance beside the identifier, not inside it.** `ENV_SOURCE` records the commit
 an environment was provisioned from, and `doctor` checks that commit is reachable on
-`origin` — not merely that it matches the local tree, because a commit that exists only
+`origin` -- not merely that it matches the local tree, because a commit that exists only
 locally does not exist to anyone provisioning from the repository (tooling-lead,
 `61cdb25`). The design point is where the commit is *not*: it is not folded into the
 hashed manifest that produces `ENV_VERSION`. Folding it in would bump the version on every
 documentation commit and partition the program's artifacts over a change no artifact
-depends on — the mirror image of the defect the stamp was written to fix.
+depends on -- the mirror image of the defect the stamp was written to fix.
 
 **An identifier that fires on what does not matter is as useless as one that misses what
 does, and worse in practice, because people learn to ignore it.** The practical test:
@@ -213,13 +213,13 @@ re-stamping the live volume to add the provisioning commit left `ENV_VERSION` un
 so adding provenance cost zero partition. Had the commit been inside the manifest,
 improving traceability would have invalidated the comparability of every artifact written
 that day. **When the cost of an improvement is paid by everyone except the person making
-it, the improvement does not get made** — so check where a new field sits before checking
+it, the improvement does not get made** -- so check where a new field sits before checking
 whether it is correct.
 
 Three outcomes again, and the third is the one that would have been missed: reachability
 is unknown, not false, when there is no repository to ask. A specialist running from the
 volume alone cannot observe it. Reporting OK for having examined nothing is the vacuous
-pass in §8; `doctor` reports *reachability not checked* instead, and all four branches
+pass in Section 8; `doctor` reports *reachability not checked* instead, and all four branches
 were negative-tested against synthetic records rather than assumed.
 
 ---
@@ -230,14 +230,14 @@ Every tool that produces interpretable output splits into two subcommands.
 
 ```
 pkde alphafold fetch P00520
-  → raw/structures/AF-P00520-F1.cif
-  → raw/structures/AF-P00520-F1.pae.json
-  → raw/structures/AF-P00520-F1.meta.json      # provenance sidecar
+  -> raw/structures/AF-P00520-F1.cif
+  -> raw/structures/AF-P00520-F1.pae.json
+  -> raw/structures/AF-P00520-F1.meta.json      # provenance sidecar
   stdout: the three paths, nothing else
 
 pkde alphafold analyze P00520
-  → raw/structures/AF-P00520-F1.analysis.json  # structured verdict
-  stdout: bounded summary (see §6)
+  -> raw/structures/AF-P00520-F1.analysis.json  # structured verdict
+  stdout: bounded summary (see Section 6)
 ```
 
 **Phase 1 (`fetch` / `run` / `submit`)** performs the expensive or non-deterministic act: a network call, a model inference, a docking run. It writes the artifact and its sidecar. It makes no judgment.
@@ -247,14 +247,14 @@ pkde alphafold analyze P00520
 ### Why the split is non-negotiable
 
 - **Layer 0 exists and is auditable.** Collapse the phases and the raw payload becomes a side effect nobody validates. That removes the anchor for the whole provenance architecture.
-- **Re-analysis without re-querying.** Critical when a program changes a threshold. Valuable for expensive calls — AF3 at 5–10 minutes cold, co-scientist at about 2 hours.
+- **Re-analysis without re-querying.** Critical when a program changes a threshold. Valuable for expensive calls -- AF3 at 5-10 minutes cold, co-scientist at about 2 hours.
 - **The `scientific-reviewer` role becomes implementable.** A reviewer re-runs `analyze` against the stored Layer 0 artifact and diffs the result against what the specialist claimed in Layer 1. That is a mechanical fabrication check. It exists only if the phases are separable.
 - **The counter-example is in the scratchpad.** The `pharma_skills` CLI has the collapsed shape: one call emitting raw payload and interpreted finding together. That interface is a large part of why its fabrication is invisible. There is no point at which raw data exists independently of the claim made about it. Do not inherit it.
 
 ### Phase 2 is offline, and that is enforced rather than observed
 
-Two of the dividends above — free re-analysis under a changed threshold, and the
-reviewer's mechanical fabrication check — hold only while `analyze` never touches the
+Two of the dividends above -- free re-analysis under a changed threshold, and the
+reviewer's mechanical fabrication check -- hold only while `analyze` never touches the
 network. A convenience lookup added to a phase-2 command would remove both, silently, and
 leave every artifact still looking correct. The rule was true only because every author
 so far had happened to write it that way.
@@ -263,7 +263,7 @@ It is now enforced: the shared HTTP client latches offline for the remainder of 
 phase-2 invocation and raises `PhaseContractError` naming the blocked call.
 
 **Enforce at the root of the command tree, not per command.** A decorator on each
-`analyze` would have to be remembered by exactly the author who forgot the rule — an
+`analyze` would have to be remembered by exactly the author who forgot the rule -- an
 opt-in guard, solicited from the person most likely to opt out. Walking the registered
 tree once at the root means a tool added next month inherits the guarantee without its
 author knowing it exists. Every `analyze` command in the tree is guarded today, including ones the
@@ -272,13 +272,13 @@ each call site is not an instrument, for the same reason that a rule an agent ca
 check is not a rule.**
 
 **Key the guard on the contract, not on a heuristic.** The latch triggers on the command
-name `analyze`, which this section names normatively — so a phase-2 command called
+name `analyze`, which this section names normatively -- so a phase-2 command called
 something else is already outside the contract and should fail review on that basis. Walk
 the registered command tree rather than `argv`, so that an argument value cannot trip it.
 
 The name rule takes the prefix, not the exact string: `analyze-prediction` and
 `analyze-ism` are phase 2 as squarely as `analyze` is, and matching the bare name left
-both unguarded — the guard held for the commands whose names someone had remembered,
+both unguarded -- the guard held for the commands whose names someone had remembered,
 which is the defect it was written to remove. A tool needs more than one analyser as soon
 as it has more than one kind of phase-1 output, so this is the normal case, not an
 exception to it.
@@ -289,9 +289,9 @@ to apply it*. It does not remove the failure where *someone must have anticipate
 shape*. The second is much quieter, because an instrument reports on what it covers and
 says nothing at all about what it misses: the latch passed every test, guarded six
 commands, and was silent about the two it did not recognise. So the root-level guard
-needs one more property — **an instrument must state its coverage, not only its
+needs one more property -- **an instrument must state its coverage, not only its
 findings.** *N of N* commands guarded is a claim that can be checked and can be
-wrong — and it is written here as *N* on purpose, because a literal count copied into
+wrong -- and it is written here as *N* on purpose, because a literal count copied into
 prose goes stale in the one direction nobody guards against: it makes a healthy system
 look broken, so the reader raises a discrepancy against a correct run. Have the
 instrument print the number; do not cache it in a document. "No violations found" is not. `doctor` reporting its scan cap and its unreadable
@@ -300,7 +300,7 @@ rather than *no orphans* is a third instance.
 
 **And the coverage question cannot be answered by the author at the moment of writing.**
 Writing the enforcement is when a property feels most complete, which is exactly when one
-is least curious about what else it needs — the offline latch was read as sufficient for
+is least curious about what else it needs -- the offline latch was read as sufficient for
 the reviewer's check *by the person implementing it*, and keyed on the bare name
 `analyze` by the person who had just argued against per-name guards. Neither was
 carelessness, and neither would have been caught by looking harder at the thing being
@@ -311,7 +311,7 @@ coverage gap is almost never the one aimed at it.** The environment partition su
 while costing an unrelated tool build. A stale claim in the pilot plan surfaced while
 auditing which rules had instruments. A missing guard surfaced by running `doctor`
 instead of re-reading the list it was derived from. So the practice is not *review your
-own coverage* — it is to check a rule with an instrument built for a different rule, and
+own coverage* -- it is to check a rule with an instrument built for a different rule, and
 to treat any audit that confirms what its author expected as not yet having been tested.
 
 ### Phase 2 reads and writes different directories
@@ -326,7 +326,7 @@ sha of the audited artifact changed under a plain re-run, and the `--out` form e
 So the read path and the write path are separate flags:
 
 - Commands that take an **identifier** carry `--from` (where phase 1 wrote) and `--out`
-  (where this verdict goes). Neither is searched and neither falls back — an input
+  (where this verdict goes). Neither is searched and neither falls back -- an input
   directory that does not hold the artifact is an error, not a cue to look elsewhere.
 - Commands that take a **path** need no `--from`; the input is already named. They still
   take `--out`, defaulting to beside the source, because writing the verdict next to the
@@ -352,12 +352,12 @@ instead of inventing a fourth convention.
 
 **Partition that directory by something two opinions cannot share.** A path keyed only on
 the date, holding a filename derived only from the query, gives two reviewers of the same
-artifact on the same day one path — and the second silently overwrites the first. That is
+artifact on the same day one path -- and the second silently overwrites the first. That is
 the defect this whole subsection exists to fix, displaced one level up: a location built
 to hold independent opinions must not be keyed on an attribute independent opinions have
 in common. Add the agent identity or a run identifier to the path, and have the write
 refuse rather than clobber. **A phase-2 command should never overwrite an existing
-analysis without being told to** — the destructive case is always the one nobody
+analysis without being told to** -- the destructive case is always the one nobody
 predicted.
 
 **An artifact under audit is temporarily immutable in a way it is not otherwise.**
@@ -367,7 +367,7 @@ confirming agent to a `confirmed_by` list: an independent confirmation is real e
 and simply not writing discards it. That reasoning is sound about the general case and
 wrong here, because for the duration of a review the file is subject to a
 checksum invariant, and **an integrity sweep cannot distinguish a benign append from
-tampering.** So the append does not merely fail to help — it destroys the guarantee the
+tampering.** So the append does not merely fail to help -- it destroys the guarantee the
 review exists to provide, in exchange for information obtainable by other means.
 Generalise it: during a review, operations that are safe and even desirable in normal
 use become unsafe for the duration, and the test is not "does this corrupt the data" but
@@ -384,7 +384,7 @@ existing `.analysis.json` that says something different, exiting 9 with a remedy
 both `--out` and `--overwrite`; `--overwrite` is injected into every phase-2 command by
 the same root walk that latches the network, so no command author has to remember it.
 Putting the guarantee at the write means it holds whatever the path scheme turns out to
-be — a convention can be mistyped, forgotten, or superseded, and the refusal still fires.
+be -- a convention can be mistyped, forgotten, or superseded, and the refusal still fires.
 The path convention (`raw/reanalysis/<date>-<agent>/`) then serves the reader rather than
 carrying the guarantee.
 
@@ -392,7 +392,7 @@ Two details that make it live with rather than fight the workflow:
 
 - **Agreement is not a conflict.** A re-run producing the same verdict rewrites silently.
   Only `timestamp` and `written_by` are excluded from the comparison, so the question
-  asked is exactly *would this change the verdict on record* — the case where somebody's
+  asked is exactly *would this change the verdict on record* -- the case where somebody's
   citation is about to stop matching the file it cites.
 - **Unreadable counts as conflicting.** A file that cannot be parsed cannot be shown to
   agree, and "could not check" must never resolve to "went ahead".
@@ -404,11 +404,11 @@ from the artifact rather than from the directory it happens to sit in.
 
 This is guidance, not a hard rule. Where multiple phases genuinely exist, split them and never collapse them. Where they do not, do not manufacture them.
 
-`analyze` earns its place when there is real threshold or heuristic judgment to apply. For a pure metadata lookup — retrieving a UniProt record — phase 1 alone is correct, and the interpretation is the agent reading a small JSON. A no-op analyzer costs a subcommand, a doc line, and a place for drift, and buys nothing.
+`analyze` earns its place when there is real threshold or heuristic judgment to apply. For a pure metadata lookup -- retrieving a UniProt record -- phase 1 alone is correct, and the interpretation is the agent reading a small JSON. A no-op analyzer costs a subcommand, a doc line, and a place for drift, and buys nothing.
 
-The test: *would a program ever want to re-derive this conclusion without re-fetching, or with different thresholds?* Yes → phase 2. No → phase 1 only.
+The test: *would a program ever want to re-derive this conclusion without re-fetching, or with different thresholds?* Yes -> phase 2. No -> phase 1 only.
 
-Some tools have more than two phases. A docking campaign is plausibly `prepare` → `run` → `analyze`, where `prepare` produces a protonated, minimized receptor that is itself a citable Layer 0 artifact. The principle generalizes: every phase boundary that produces something worth auditing separately should be a separate invocation.
+Some tools have more than two phases. A docking campaign is plausibly `prepare` -> `run` -> `analyze`, where `prepare` produces a protonated, minimized receptor that is itself a citable Layer 0 artifact. The principle generalizes: every phase boundary that produces something worth auditing separately should be a separate invocation.
 
 ### Everything a tool emits is Layer 0
 
@@ -434,19 +434,19 @@ The CLI discovers the project root the way git does:
 2. walk up from CWD looking for a `.pkde/` marker directory, else
 3. fail with a clear error. Never silently write into CWD.
 
-**Prefer `.pkde/` walk-up discovery over hardcoding `PKDE_PROJECT`.** When each program gets its own agent-runtime project and the agent's workspace *is* the program directory, the `.pkde/` marker in `.pkde-workspace` is found automatically — no `env:` block needed. Templates should omit `PKDE_PROJECT` and let walk-up handle resolution:
+**Prefer `.pkde/` walk-up discovery over hardcoding `PKDE_PROJECT`.** When each program gets its own agent-runtime project and the agent's workspace *is* the program directory, the `.pkde/` marker in `.pkde-workspace` is found automatically -- no `env:` block needed. Templates should omit `PKDE_PROJECT` and let walk-up handle resolution:
 
 ```yaml
 # PKDE_PROJECT is resolved by .pkde/ walk-up discovery by default.
 # Set it explicitly only when the agent's workspace is not the program
-# directory — e.g. when .pkde-workspace is the pkde repo:
+# directory -- e.g. when .pkde-workspace is the pkde repo:
 #   env:
 #     PKDE_PROJECT: program-hr-mbc
 ```
 
 Walk-up also covers: a specialist working in a subdirectory, a reviewer operating on an archived program, or local development.
 
-**When `.pkde-workspace` is the pkde repo itself** — as it is during maintenance or development of pkde — it is not a program directory, and writing `raw/` into it would pollute the repo. The CLI detects this (via the `.pkde-repo` marker) and refuses. In this case, set `PKDE_PROJECT` to the program subdirectory (e.g. `program-hr-mbc`). Add the program directory names to `.gitignore` as a second line of defence.
+**When `.pkde-workspace` is the pkde repo itself** -- as it is during maintenance or development of pkde -- it is not a program directory, and writing `raw/` into it would pollute the repo. The CLI detects this (via the `.pkde-repo` marker) and refuses. In this case, set `PKDE_PROJECT` to the program subdirectory (e.g. `program-hr-mbc`). Add the program directory names to `.gitignore` as a second line of defence.
 
 ### Default directories
 
@@ -475,12 +475,12 @@ Every phase-1 artifact gets `<name>.meta.json` alongside it:
   "tool": "alphafold-db",
   "subcommand": "fetch",
   "cli_version": "0.2.0",
-  "env_version": "sha256:8f3a…",
+  "env_version": "sha256:8f3a...",
   "endpoint": "https://alphafold.ebi.ac.uk/api/prediction/P00520",
   "parameters": {"uniprot": "P00520"},
   "timestamp": "2026-08-18T14:02:11Z",
   "outputs": [
-    {"path": "AF-P00520-F1.cif", "sha256": "…", "bytes": 481203}
+    {"path": "AF-P00520-F1.cif", "sha256": "...", "bytes": 481203}
   ],
   "warnings": ["Fell back to the secondary endpoint after one 503"],
   "mandatory_relays": [
@@ -500,7 +500,7 @@ Phase 2 emits `<name>.analysis.json`, which cites its inputs and the thresholds 
 {
   "source": "AF-P00520-F1.meta.json",
   "cli_version": "0.2.0",
-  "env_version": "sha256:8f3a…",
+  "env_version": "sha256:8f3a...",
   "threshold_set": "default@1.2",
   "thresholds_applied": {"plddt_confident": 0.7, "plddt_moderate": 0.4},
   "metrics": {"mean_plddt": 0.83, "fraction_below_50": 0.11},
@@ -541,7 +541,7 @@ Four rules keep the mechanism honest:
 
 **Rule 4 has a trap that only shows when you sort the registry by trigger** (tooling-lead,
 audit of all seven tools). Relays divide into two kinds, and the division is not
-positive-verdict against negative-verdict — that was the shape of the first tool anyone
+positive-verdict against negative-verdict -- that was the shape of the first tool anyone
 looked at. It is **defect-triggered** against **claim-triggered**. A defect-triggered
 relay fires on a fault in the data: coverage is partial, cells are missing, an isoform was
 substituted. A claim-triggered relay fires on the answer itself, because the answer has a
@@ -553,7 +553,7 @@ affinity` on a druggable pocket.
 the one whose number is most quotable.** A full-coverage high-pLDDT model and a complete
 quantile set are the common case, not the edge. So the artifact goes out barest exactly
 when it is most over-readable, and the tool looks best-behaved in the case it guards
-least. Rule 4 is still right — a relay that fires on everything is ignored — but it was
+least. Rule 4 is still right -- a relay that fires on everything is ignored -- but it was
 being read as *fire only on faults*, which is a different rule and a worse one.
 
 **The test, and it needs no knowledge of the tool's science: is there an input for which
@@ -561,7 +561,7 @@ this tool emits a quotable number and no relays?** If yes, ask what the wrong re
 that number is, and whether it is well-known enough to name. If it is, the guard belongs
 on the claim, conditional on the claim.
 
-Two tools currently answer yes: **`afdb` and `alphagenome`** — and they are a pair rather
+Two tools currently answer yes: **`afdb` and `alphagenome`** -- and they are a pair rather
 than a coincidence, which is the part a count would have hidden. They are the structure
 predictor and the variant-effect predictor: the only two tools whose outputs are model
 predictions presented as numbers, and the two most substitutable quantities in the pilot.
@@ -569,21 +569,21 @@ predictions presented as numbers, and the two most substitutable quantities in t
 variant is pathogenic*. **No arithmetic here on purpose.** The first version of this
 passage said *three of seven* and *four*; re-derivation from the emission conditions gave
 five and two (template-builder), because a relay registered that same day had already
-moved the figure. A count of the repository written by hand into prose is the §7 cached
-value in its most self-defeating position — inside the rule against it. The test above is
+moved the figure. A count of the repository written by hand into prose is the Section 7 cached
+value in its most self-defeating position -- inside the rule against it. The test above is
 the derivation and needs no maintenance.
 
 **Claim-triggered splits again, and the second half is where a claim guard goes to die.**
-A conditional claim relay fires on the verdict that invites the over-read — `fpocket`'s on
-a druggable pocket, `gnomad`'s on an intolerant gene — and is silent otherwise, so its
+A conditional claim relay fires on the verdict that invites the over-read -- `fpocket`'s on
+a druggable pocket, `gnomad`'s on an intolerant gene -- and is silent otherwise, so its
 appearance is information. An unconditional one fires on every run:
 `coscientist.claim_denominator` did, and `expression`'s resolution pair does as an
 if/else where exactly one branch always fires. (`claim_denominator` was moved to a
-sidecar field per this rule — see #2; `expression`'s pair remains open
+sidecar field per this rule -- see #2; `expression`'s pair remains open
 as #5.) By the rule directly above, those are
 quoted and then ignored, and they train the reader past the conditional relays beside
 them. **An unconditional claim guard is a standing property of the source wearing a
-relay's costume**, and it takes the two exits of the always-true rule in §8: rescope it to
+relay's costume**, and it takes the two exits of the always-true rule in Section 8: rescope it to
 the case where the over-read is actually available, or relabel and move it out of the
 relay channel into the artifact's own description, where it keeps its reader and loses its
 claim on everyone else's attention. Which exit applies is the tool owner's call, not a
@@ -591,12 +591,12 @@ matter of wording.
 
 **Why these rules keep taking the same shape: attention lands on the payload, not on the
 annotation.** A reader who came for a number takes the number. Anything attached
-alongside it — a caveat, a banner, a warning that fires every time — is skipped, and it
+alongside it -- a caveat, a banner, a warning that fires every time -- is skipped, and it
 is skipped by competent readers acting reasonably, so it cannot be fixed by asking
 people to read more carefully. Three rules in this corpus are the same rule seen from
 different angles:
 
-- *A relay is an instruction, not a caveat* (`skill-design-guidance.md` §4.5). An
+- *A relay is an instruction, not a caveat* (`skill-design-guidance.md` Section 4.5). An
   instruction changes what the reader must write. A caveat sits beside what they were
   going to write anyway.
 - *A check that fires on everything is ignored.* Confirmed the hard way: standing relays
@@ -614,43 +614,43 @@ different angles:
   report as their own re-analysis (template-builder, `d772596`).
 
 The design consequence is the same in all four: **do not attach the warning to the
-thing — change the thing.** Remove the stale text, make the relay conditional, phrase it
+thing -- change the thing.** Remove the stale text, make the relay conditional, phrase it
 as the obligation it creates.
 
 **Defect-vs-claim is one axis. There is a second: Kind.** Kind answers what the reader
 must *do* when a relay fires:
 
-- **Qualifier** — carry the caveat into the finding. The result is still reported,
+- **Qualifier** -- carry the caveat into the finding. The result is still reported,
   scoped. `afdb.partial_coverage` is a qualifier: the confidence metrics describe the
   modelled region, so any claim about the protein must be scoped to that region or
   withheld.
-- **Stop** — block a substitution. Adding a disclaimer does not satisfy a stop relay; it
+- **Stop** -- block a substitution. Adding a disclaimer does not satisfy a stop relay; it
   makes the substitution look diligent. `fpocket.druggability_is_not_affinity` is a stop:
-  if the question is about binding, the answer is that the question is untooled — not
+  if the question is about binding, the answer is that the question is untooled -- not
   that the pocket scored high.
 
 The two axes are orthogonal. Defect-vs-claim answers *what fires the relay*. Kind
-answers *what the reader must do about it*. A relay can sit in any cell of the 2×2:
+answers *what the reader must do about it*. A relay can sit in any cell of the 2x2:
 
 | | Defect-triggered | Claim-triggered |
 |---|---|---|
 | **Qualifier** | `afdb.partial_coverage` | `expression.absent_is_not_evidence` |
 | **Stop** | `litref.ambiguous_name` | `fpocket.druggability_is_not_affinity` |
 
-`pocket-druggability/SKILL.md` §4 is the first skill to define Kind with worked
-examples — qualifier relays that scope a pocket score versus a stop relay that blocks
+`pocket-druggability/SKILL.md` Section 4 is the first skill to define Kind with worked
+examples -- qualifier relays that scope a pocket score versus a stop relay that blocks
 reading a cavity shape as binding evidence. That section is the reference for how Kind
 governs a relay table in practice; the axis definition here is normative.
 
-The fourth example — stdout as payload — shows what "change the thing" costs when the annotation is a whole
-stream. Moving the warning to stdout does not fix it — it is still an annotation beside
+The fourth example -- stdout as payload -- shows what "change the thing" costs when the annotation is a whole
+stream. Moving the warning to stdout does not fix it -- it is still an annotation beside
 a path, and the path is what the reader came for. **Guard at the point of damage
 instead, and the damage is not the printed line. It is a review report claiming an
 independent re-analysis that never happened.** So require every review report to quote
 the `written_by` and the digest of the record it audits. A report whose cited
 `written_by` is the specialist under review is then self-evidently not independent, on
 the face of the report, with no reader obliged to have seen a stderr line minutes
-earlier — and it is mechanically checkable, which a habit of reading stderr is not.
+earlier -- and it is mechanically checkable, which a habit of reading stderr is not.
 
 Register a code when the warning changes what the numbers *mean*, not when it is merely
 interesting. Partial coverage, isoform substitution, and a count taken from an exception
@@ -685,7 +685,7 @@ Upstream's own `analyze_plddt.py` violates the output-to-file convention by prin
 
 ## 7. Thresholds live in code, not prose
 
-Today the numbers that decide things — pLDDT > 75, LOEUF > 0.35, hERG > 30 µM, LE ≥ 0.30 — live as prose in `agents.md` and the README gate table. Prose thresholds cannot be enforced, versioned, tested, or varied per program.
+Today the numbers that decide things -- pLDDT > 75, LOEUF > 0.35, hERG > 30 uM, LE >= 0.30 -- live as prose in `agents.md` and the README gate table. Prose thresholds cannot be enforced, versioned, tested, or varied per program.
 
 **One of those four numbers is already wrong, which is the argument in miniature.** gnomAD recommends `LOEUF < 0.45`; `0.35` is a v2-era figure. gnomAD states that o/e values are higher in v4 and that "any `LOEUF` thresholds used on v2 will not give an equivalent number of genes when applied to v4". Nobody edited that line into error. It went stale because the database moved underneath it, and prose cannot go stale out loud. A named constant tagged `gnomad_v4` with a citation beside it would have raised the question at the next release.
 
@@ -704,13 +704,13 @@ its own: prose beside a tool should carry the tool's rule, never its current val
 (tooling-lead, stated in review; the fix that established it is `653bd0c`, and the
 reasoning is restated in full here rather than left behind the pointer). A rule holds
 until someone changes the design. A value changes underneath
-the prose, silently, and the two sentences are indistinguishable in review — *"a healthy
+the prose, silently, and the two sentences are indistinguishable in review -- *"a healthy
 install has about fourteen warnings"* against *"warnings are expected on a healthy
 install; judge by the verdict, not by the count"*. Identical in tone, opposite in
 lifespan.
 
 **And a cached value in a title is not a cached value, it is a headline** (tooling-lead).
-A count written into this document — *three of seven tools carry a claim-triggered relay* —
+A count written into this document -- *three of seven tools carry a claim-triggered relay* --
 was wrong, was corrected eleven minutes later, and had already been copied into the title
 of an issue in the meantime. The correction never caught the copy. A body can be corrected
 in place and reads as corrected; **a title is quoted in every reference, appears in every
@@ -727,7 +727,7 @@ defect. Having written the cached-value rule into this document, tooling-lead pu
 into a `doctor` sentence within the hour, and it propagated to eight skills in under a
 minute before being fixed at source (`653bd0c`). Knowing the rule, and having just
 committed it, did not prevent it. What caught it was skills-lead reporting back the text
-they had been given — which is the same finding as everywhere else today: **carefulness is
+they had been given -- which is the same finding as everywhere else today: **carefulness is
 not the faculty that catches this class; a second party reading the output is.**
 
 **A prohibition is only actionable once the replacement source is named.** "Never write
@@ -735,7 +735,7 @@ the value" tells an author what not to do and leaves them nowhere to get the num
 which is why correct-on-the-day values keep reappearing in skill prose. Every
 `.analysis.json` carries `threshold_set`, `thresholds_applied`, `threshold_sources`
 (`default` | `program` | `flag`, per key) and `threshold_provenance`. So the instruction
-is not "omit the number" but **"quote it from the analysis you are citing"** — where the
+is not "omit the number" but **"quote it from the analysis you are citing"** -- where the
 value is stamped with the run that actually used it, and cannot disagree with the run
 it describes.
 
@@ -764,7 +764,7 @@ than in place of it.
 cutoff for a quantity, the tool must not supply one. It reports the value, reports the
 threshold as unresolved, and declines to classify; `pkde doctor` lists what is
 unresolved so the gap stays visible instead of being quietly filled. Two of the first
-five tools now have one — `low_confidence_ntpm` in `expression`, and
+five tools now have one -- `low_confidence_ntpm` in `expression`, and
 `loeuf_unreliable_min_expected_lof` in `genetics`, where gnomAD publishes no
 expected-LoF floor and directs the reader to the CI instead. In a finished artifact, a
 number invented to complete a schema looks exactly like a number with a citation behind
@@ -777,7 +777,7 @@ too small to be confidently categorized". That is a better trigger for
 citable, and it is maintained by the people who maintain the data.
 
 **Name the class: a correct citation supporting a claim narrower than the one it is
-being used for.** The three rules above are all instances of it — a version, a purpose,
+being used for.** The three rules above are all instances of it -- a version, a purpose,
 an interval. It deserves naming on its own because it is the failure this project
 should expect to hit most often, and it is *worse* than a fabricated citation. A
 fabricated citation fails a check we already run. A real one, correctly quoted and
@@ -785,13 +785,13 @@ genuinely load-bearing for a narrower claim, passes every check we have and stil
 licenses a wrong conclusion.
 
 **And the citation is the mechanism, not merely the cover.** The fpocket 0.5 boundary
-came with a real paper and a real fitted model, correctly cited — and that is precisely
+came with a real paper and a real fitted model, correctly cited -- and that is precisely
 what stopped anyone measuring the variance beneath it. A number with a paper behind it
 reads as already-validated, so the validation nobody performs is the one that matters:
 whether the source's boundary transfers to *our* inputs. The citation is load-bearing
 for the model and silent about the transfer, and it gets read as covering both
 (tooling-lead). Treat a citation as licensing exactly the claim it was made for and
-nothing adjacent — and treat the arrival of a well-cited number as the moment to
+nothing adjacent -- and treat the arrival of a well-cited number as the moment to
 calibrate, not as the reason not to.
 
 ### Threshold the quantity, not the coordinates: measure the variance first
@@ -811,7 +811,7 @@ happened to choose.
 **State it at the level of the quantity, not the cutoff, because that changes
 the repair.** Faced with 0.17 / 0.29 / 0.94 for one site, the tempting fixes
 are to move the boundary or widen a borderline band. Neither helps. No cutoff
-classifies that series, because the series is not measuring one thing — the
+classifies that series, because the series is not measuring one thing -- the
 fpocket drug score is a function of the coordinates, not of the site, and the
 coordinates vary for reasons unrelated to druggability. The 0.5 boundary itself
 is sound: Schmidtke and Barril fitted a logistic model and 0.5 is genuinely
@@ -831,7 +831,7 @@ drugs:
 
 One site, three crystals, a spread of 0.77, crossing the 0.5 cutoff twice. Two
 of those three would report *no druggable pocket* for a site that is drugged in
-the clinic. So the tool cannot return a druggable/not verdict at all — and this
+the clinic. So the tool cannot return a druggable/not verdict at all -- and this
 was true before anyone built it, discoverable by four measurements.
 
 Three things follow, and they are the general procedure:
@@ -842,9 +842,9 @@ Three things follow, and they are the general procedure:
    learn that a threshold cannot be applied *before* it is applied.
 2. **Where the spread crosses the line, do not emit the classification.** Not
    as a hedged classification either. Rename the outcome for what it actually
-   describes — `no-druggable-pocket-in-this-conformation`, not
-   `not-druggable` — and attach the calibration numbers as a mandatory relay.
-   Changing the name is the §5.1 rule again: do not attach the warning to the
+   describes -- `no-druggable-pocket-in-this-conformation`, not
+   `not-druggable` -- and attach the calibration numbers as a mandatory relay.
+   Changing the name is the Section 5.1 rule again: do not attach the warning to the
    thing, change the thing.
 3. **Record the calibration next to the threshold**, so the next reader inherits
    the measurement rather than the conclusion.
@@ -852,16 +852,16 @@ Three things follow, and they are the general procedure:
 **The reason this matters more than it looks: a number is harder to challenge
 than prose and no better founded.** The original tournament failed by answering
 a druggability question from prose. The failure now available is answering it
-from a score — with an artifact, a provenance chain and a citation behind it. A
+from a score -- with an artifact, a provenance chain and a citation behind it. A
 specialist reporting *0.2, and that fact is about this conformation* has done
 the right thing; one reporting *not druggable* has repeated the tournament's
 error with better paperwork.
 
-That is the same shape as §1.1's Test 1, where calling a model for a quantity
+That is the same shape as Section 1.1's Test 1, where calling a model for a quantity
 sitting in its training data **launders a database lookup through an inference
 step**. Both are laundering: an operation that improves the *appearance* of
 provenance without improving the evidence. It is worth naming as a class,
-because it is the failure this architecture is least protected against — every
+because it is the failure this architecture is least protected against -- every
 guard here is built to catch a missing citation, and laundering produces one.
 
 ### The pattern generalizes
@@ -870,8 +870,8 @@ Any dimension along which a skill would otherwise have to fork is a candidate to
 
 | Dimension | Moves to |
 |---|---|
-| Program | `.pkde/thresholds.yaml` — solved here |
-| Role | The template — questions owned and next actions |
+| Program | `.pkde/thresholds.yaml` -- solved here |
+| Role | The template -- questions owned and next actions |
 | Stage | The orchestrator's task dispatch |
 
 If you find yourself about to copy a skill and change three lines, find the dimension and move it out instead.
@@ -888,7 +888,7 @@ If you find yourself about to copy a skill and change three lines, find the dime
 **"Loudly" is measured at the reader, not at the tool.** The first bullet is the oldest
 rule in this section and the one most likely to be read as discharged by a non-zero exit
 and a good message. It is not. A failure is loud only if it **reaches someone who will
-report it, at the moment they would otherwise be misled** — and this project's readers
+report it, at the moment they would otherwise be misled** -- and this project's readers
 are mostly agents, which are rewarded for producing an answer and are therefore the
 readers least likely to stop. An agent that cannot reach a tool can still write an
 entirely plausible finding, and no exit code fires when it does. The boundary is stated
@@ -903,7 +903,7 @@ than assuming they inherit it:
 - **The second bullet gains a qualifier.** A rich error body is what lets an agent act
   correctly on `429, retry after 300s, endpoint is single-flight`, and it is equally
   what lets an agent conclude the obstacle is understood and route around it with
-  confidence. Return the body — but do not treat having returned it as having been
+  confidence. Return the body -- but do not treat having returned it as having been
   heard. Richness improves the best case and the worst case both.
 - **The third bullet is the load-bearing one**, and it is the only one of the four whose
   guarantee does not depend on the reader's behaviour. A tool that cannot synthesize
@@ -915,7 +915,7 @@ than assuming they inherit it:
   the rule without the words *the agent should*, you have written an expectation rather
   than a property, and it will need a boundary later. Never-synthesize has needed no
   maintenance in this document; fail-loudly needed a boundary 370 lines below itself.
-  That is not luck — one is a property and the other is a hope. The test does not forbid
+  That is not luck -- one is a property and the other is a hope. The test does not forbid
   expectations, because some defences are irreducibly behavioural and live in a template
   or a skill rather than in a tool. It predicts maintenance: an expectation is a rule
   that will be found to hold only under conditions nobody wrote down, so write the
@@ -939,9 +939,9 @@ real, and the audit trail is clean.
 
 Two instances found on one afternoon, in unrelated sources:
 
-- `ClinicalTrials.gov`, `query.titles=PALOMA-3` returns two real trials — an
+- `ClinicalTrials.gov`, `query.titles=PALOMA-3` returns two real trials -- an
   amivantamab study in NSCLC and a palbociclib study in breast
-  cancer — and ranks the NSCLC one first. The breast-cancer record has a null
+  cancer -- and ranks the NSCLC one first. The breast-cancer record has a null
   `acronym`, so the two cannot be separated by name.
 - HPA `search_download.php?search=WEE1` returns both `WEE1` and `WEE2`, whose
   synonym is `WEE1B`. Row 0 yields a clean 50-tissue profile for the wrong gene.
@@ -949,8 +949,8 @@ Two instances found on one afternoon, in unrelated sources:
 The rule, for any tool that turns a name into a record:
 
 - **Resolve identity as its own step**, before fetching data.
-- **Require an exact, unique match.** Prefer a stable identifier — Ensembl ID,
-  NCT number, PMID, DOI, UniProt accession — and query by it once resolved.
+- **Require an exact, unique match.** Prefer a stable identifier -- Ensembl ID,
+  NCT number, PMID, DOI, UniProt accession -- and query by it once resolved.
 - **More than one match is a hard refusal**, not a ranked answer with a warning
   attached. Return every candidate and let the caller disambiguate.
 - **Record which input resolved to which identifier** in the sidecar.
@@ -964,7 +964,7 @@ Two of the first five endpoints misreport their own failures, and they do it in
 opposite directions.
 
 - **A permanent error wearing a transient status.** AlphaGenome answers a missing
-  `organism`, a bad interval length, or an oversized response with **502** — the same
+  `organism`, a bad interval length, or an oversized response with **502** -- the same
   code as a real outage. The cost is a retry budget spent on a request that could never
   have succeeded.
 - **A transient error wearing a success status.** gnomAD answers everything with
@@ -995,7 +995,7 @@ So:
 ### Name what would have made the check come out the other way
 
 Before trusting a check that passed, state the condition that would have failed it. If
-you cannot name one, you did not run a check — you performed one.
+you cannot name one, you did not run a check -- you performed one.
 
 Six times in one day a tool here reported success for having examined nothing. Five had
 an **empty subject**: a regex that had stopped matching, a lookup returning `{}`, an
@@ -1006,7 +1006,7 @@ The sixth had a full subject and was still vacuous. A loop ran fpocket twice and
 compared the results to show the run was deterministic; the values matched, the numbers
 were real, and the comparison was genuine. But fpocket seeds its Monte Carlo from
 `time(NULL)`, the loop finished inside one second, and so the two runs were *byte*
-identical — as they would have been for any program at all. Nothing about that check
+identical -- as they would have been for any program at all. Nothing about that check
 could have gone red. Emptiness is a property of the subject and you can count it; this
 was a property of the **conditions**, and no coverage guard would ever have touched it.
 The question that catches both is the one above: what would have had to be true for
@@ -1015,7 +1015,7 @@ is the whole fix.)
 
 **The mirror is worth the same attention: a check that could not have come out *green*
 is as vacuous, and costs more.** `pkde doctor` gained a check that the provisioning
-tree had no uncommitted changes. It fired immediately, truthfully, and uselessly — five
+tree had no uncommitted changes. It fired immediately, truthfully, and uselessly -- five
 agents share this working tree, so `git status` is never clean, and the files that
 happened to be dirty were a doc and a checker script, neither of which has any bearing
 on whether the environment can be rebuilt. A permanent red is not a finding, it is a
@@ -1024,7 +1024,7 @@ check now looks only at the files that determine what provisioning produces, whi
 genuinely be clean and genuinely be dirty.
 
 **Notice where these keep landing.** Of the instances collected so far, three
-were not in the work at all — they were in the step where someone verified their
+were not in the work at all -- they were in the step where someone verified their
 own work. The fpocket loop that proved determinism inside one clock second. A
 negative test for exit 2 that passed because `tools/` was already on `sys.path`.
 A two-branch credential message tested only in the ambient shell, where the key
@@ -1039,14 +1039,14 @@ reassure yourself, not about the code it points at.
 
 So there are two questions, not one, and a check earns trust only by answering both:
 
-- What would have made this red? (Nothing → it cannot detect the fault it claims to.)
-- What would have made this green? (Nothing → it will be ignored within a day, along
+- What would have made this red? (Nothing -> it cannot detect the fault it claims to.)
+- What would have made this green? (Nothing -> it will be ignored within a day, along
   with everything beside it.)
 
 **A check can pass both and still be inverted, which is worse than vacuous** (the case is
 tooling-lead's, in `tools/bootstrap-preflight.sh`). A preflight has to know whether a
 virtualenv can be created. `import venv` is the obvious proxy and it can plainly come out
-either way — except on Debian, where the `venv` module is present and `ensurepip` is the
+either way -- except on Debian, where the `venv` module is present and `ensurepip` is the
 part that is missing, so the import **succeeds precisely when the thing being checked is
 broken**, and fails only when something unrelated is wrong. The preflight would have
 reported READY and `install.sh` would have died on its first command. The fix was to stop
@@ -1057,9 +1057,9 @@ weak proxy degrades gracefully and is simply right less often, whereas **a proxy
 true in the failing case is not a weak check, it is an inverted one, and it reads green
 forever.** So there is a third question, and it is the only one of the three that survives
 a check which answers the first two well: *could the thing I am consulting be true for the
-same reason the thing I care about is false?* The two are usually near neighbours — module
+same reason the thing I care about is false?* The two are usually near neighbours -- module
 versus module's bootstrapper, compiler present versus static libraries present, tool
-installed versus tool callable — which is exactly why the proxy looked reasonable. This
+installed versus tool callable -- which is exactly why the proxy looked reasonable. This
 one was found by refusing to test in the ambient container and injecting a shim instead:
 **do not read the healthy case.**
 
@@ -1070,9 +1070,9 @@ Three outcomes that a shell chain must be able to tell apart:
 
 | Outcome | Meaning | Exit | Retrying the same input |
 |---|---|---|---|
-| Answer, including a negative one | `not_found` is a completed analysis | 0 | n/a — you have your answer |
+| Answer, including a negative one | `not_found` is a completed analysis | 0 | n/a -- you have your answer |
 | Refusal | The input is under-specified; the tool will not choose | 9 | Pointless until the caller changes the input |
-| Failure | The tool could not run | 1–8 | May well succeed |
+| Failure | The tool could not run | 1-8 | May well succeed |
 
 `pkde litref analyze` gets this right in substance: `ambiguous` exits non-zero, so
 `pkde litref analyze X && ...` cannot proceed on a citation the tool declined to
@@ -1081,7 +1081,7 @@ we asked for. A refusal still writes its artifact and still prints its path.
 
 **Give refusal its own code, project-wide.** Reusing a failure code collapses the row
 that matters: an agent branching on the exit cannot distinguish "disambiguate and try
-again" from "the endpoint is down, wait and retry unchanged" — opposite remedies. And
+again" from "the endpoint is down, wait and retry unchanged" -- opposite remedies. And
 because refusal is a consequence of *never rank and pick*, every tool that resolves a
 name has one. The code must therefore be assigned once in the shared error hierarchy,
 not per subcommand, or the same outcome will exit differently depending on which tool
@@ -1099,7 +1099,7 @@ positive.** These two look alike and are not. `litref`'s product *is* an existen
 answer, so "this citation does not exist" is written to an artifact, can be cited, and
 exits 0. `expression` and `genetics` produce measurements; a fetch that resolves nothing
 writes no measurement artifact, so exiting 0 would hand a chained caller an empty paths
-line beside a success code — the shape most likely to be read as *measured, nothing
+line beside a success code -- the shape most likely to be read as *measured, nothing
 there*. That is `absent_is_not_evidence` arriving through the exit code instead of
 through the data. Where a negative genuinely is worth recording, the fix is to write the
 `not_found` artifact and then exit 0, never to reclassify the exit on its own.
@@ -1107,13 +1107,13 @@ through the data. Where a negative genuinely is worth recording, the fix is to w
 **When you add a cross-cutting outcome class, sweep for the shape, not for the class.**
 The dedicated code was assigned after two known call sites; grepping for the
 resolve-a-name shape found a third nobody had reported, where an ambiguous AlphaFold
-isoform was raising `ArtifactError` — exit 3, *the artifact is malformed* — a third
+isoform was raising `ArtifactError` -- exit 3, *the artifact is malformed* -- a third
 wrong answer to the same question. Searching by existing error class could not have
 found it, because the existing class was the defect.
 
 **The same three-way split applies to a missing artifact, not only to an exit code.**
-The reviewer's report carries a Records Compared table — path, `written_by`, `sha256`
-for the record under audit and for the reviewer's own re-analysis — and the invariant
+The reviewer's report carries a Records Compared table -- path, `written_by`, `sha256`
+for the record under audit and for the reviewer's own re-analysis -- and the invariant
 that the two `written_by` values must differ (template-builder, `2a47179`). But since
 `dd4d65b`, a reviewer who omits `--out` and *agrees* gets no second record written at
 all, because the tool correctly declines to duplicate an identical one. So an empty
@@ -1121,12 +1121,12 @@ second row has two opposite causes: the review was never done, or the review was
 and confirmed and the tool refused to write it twice.
 
 A binary check reads both as violation, and the honest reviewer's least-bad move is
-then to paste the specialist's record into the row — which is precisely the failure the
+then to paste the specialist's record into the row -- which is precisely the failure the
 table exists to prevent. **A check that cannot tell the honest case from the dishonest
 one teaches the honest party to imitate the dishonest one.** Give the honest case its
 own named outcome, exactly as refusal gets its own exit code: *a confirmation that was
 never recorded* reads neither as accept nor as violation, and carries a one-command
-remedy — re-run with `--out`, which writes because the path differs.
+remedy -- re-run with `--out`, which writes because the path differs.
 
 The general form, and it is the same defect as a single exclusion list holding two
 fields excluded for different reasons: **wherever absence is used as evidence, ask what
@@ -1140,16 +1140,16 @@ their appearance. Both are failures to ask *why*, having asked only *what*.
 and after the review and printed `evidence intact` when the two agreed. With
 `PKDE_PROJECT` unset, or pointing at the wrong place, or `raw/` empty, both snapshots
 are the empty string, they compare equal, and it prints `evidence intact`. Verified in
-all three cases. That is the check the entire review rests on — every other claim a
-reviewer makes is conditional on *and I did not disturb the evidence* — and it reported
+all three cases. That is the check the entire review rests on -- every other claim a
+reviewer makes is conditional on *and I did not disturb the evidence* -- and it reported
 success while aimed at nothing.
 
 The remedy is the same three-way split again: equal and non-empty is intact, unequal is
 void, and **equal and empty is also void**. And note what the second half of the fix is:
 the file count is captured at snapshot time and carried into the report, so
-`evidence intact` is only legible beside the number of files it covered. That is §3's
-coverage rule arriving from the other direction — **an instrument must state its
-coverage, not only its findings** — which makes stating coverage the general prophylactic
+`evidence intact` is only legible beside the number of files it covered. That is Section 3's
+coverage rule arriving from the other direction -- **an instrument must state its
+coverage, not only its findings** -- which makes stating coverage the general prophylactic
 against a vacuous check, not merely good manners. A guard that reports what it examined
 cannot quietly examine nothing.
 
@@ -1164,7 +1164,7 @@ reader can see which case it was shaped by, and therefore which cases it was not
 authorship is, and in a shared working tree it is not: `git commit` captures the whole
 index, so one agent's commit absorbs whatever another has staged. That happened to two of
 template-builder's files on `7771c23`, which carried them under an unrelated subject.
-Nothing of substance was lost, for one reason — the reasoning was inside the artifacts, as
+Nothing of substance was lost, for one reason -- the reasoning was inside the artifacts, as
 a comment above the code it explains and as the template text itself. Only the commit
 message went, and the commit message was the part with no reader. Rationale in the file
 also survives a rebase, a squash, a file move, and a reader who never runs `git log`.
@@ -1172,17 +1172,17 @@ also survives a rebase, a squash, a file move, and a reader who never runs `git 
 of the index. Staging by explicit path protects everyone else from your `add`; committing
 by explicit path is what protects them from your `commit`.)*
 
-**A credit in a file is durable only if it points at an immutable object — and only some
+**A credit in a file is durable only if it points at an immutable object -- and only some
 credits point at all.** The test is whether the credit is doing **pointer work** or
 **attribution work** (template-builder). Pointer work means the reader must chase it to
 understand the passage, so it must resolve: anchor it to a commit id or a named file, and
 check that the thing at the other end actually contains the reasoning, because a pointer
-that resolves and disappoints is worse than a bare name — a bare name at least announces
+that resolves and disappoints is worse than a bare name -- a bare name at least announces
 its own limits. Attribution work means the reasoning is already present in the passage and
 the name only records who to interrogate before changing it; nothing needs to resolve, and
 marking it as unanchored enforces the form where its reason does not hold. Where a credit
 does point, prefer *the fix that established it* over *the reasoning is there*: the id
-names an event, and the reasoning stays in the file where §8 says it belongs.
+names an event, and the reasoning stays in the file where Section 8 says it belongs.
 
 **With one edge that inverts the usual safeguard, so it is worth stating beside the
 flag.** `--only` takes the named paths from the **working tree**, not from the index
@@ -1190,36 +1190,36 @@ flag.** `--only` takes the named paths from the **working tree**, not from the i
 selected subset of hunks is therefore committed whole, unfinished remainder included.
 Partial staging protects you from a bare `git commit` and does **not** protect you from
 `git commit --only`, which is the reverse of what the flag's name suggests. So the review
-step before committing is `git diff -- <paths>` — what is about to go in — and not `git
+step before committing is `git diff -- <paths>` -- what is about to go in -- and not `git
 diff --cached`, which shows what you selected and is no longer the thing being committed.
 The flag is still right: it protects other people from you, which is the failure that
 actually occurred, while partial staging only ever protected you from yourself.
 
 Three defects on 2026-08-18 were found by **turning an existing check around rather than
-adding a new one** — running coverage backwards, asking what else produces an empty row,
+adding a new one** -- running coverage backwards, asking what else produces an empty row,
 asking what else produces an empty diff. None needed new tooling. Before building another
 instrument, invert the ones already built.
 
 **Which is one instance of the only verification move that worked all day: re-derive, do
 not re-read.** Three authors found defects in rules they had written themselves within the
-hour, and every one of the three found it by re-running the thing — exec'ing the function
+hour, and every one of the three found it by re-running the thing -- exec'ing the function
 over the real line rather than reading its target list, reproducing a flag's behaviour on
 a scratch repo rather than trusting the report, applying a freshly written criterion to
 their own link. None of the three was found by reading the work again. **Re-reading your
 own work is done by someone who already believes it, so it confirms; re-deriving puts you
-back in the position of not knowing the answer** (template-builder). This is §7's *a
+back in the position of not knowing the answer** (template-builder). This is Section 7's *a
 second party reading the output* reached from the other side: a second party is valuable
 because they do not yet believe you, and re-deriving is the cheapest way to arrange that
 condition without a second party.
 
 **Check which direction a checker's own errors travel, because they invert.** A checker
 has two populations: the things it flags, and the pool it judges them against. An error
-in the first is visible and self-correcting — someone investigates a false alarm and
+in the first is visible and self-correcting -- someone investigates a false alarm and
 closes it. An error in the *pool* is silent and flips sign: **a false positive in the
 entitlement pool is a false negative in the finding.** `check_threshold_names.py` decided
 which threshold sets a skill may cite from by scanning for `pkde <group>`, over the
 whole document. The sentence *all pkde project artifacts* registered a tool group named
-`project`. Harmless as it stood, because no module provides that group — but any prose
+`project`. Harmless as it stood, because no module provides that group -- but any prose
 sentence containing a *real* group name would have widened a skill's entitlement and
 waved through exactly the misplaced citation the tool exists to catch.
 
@@ -1227,8 +1227,8 @@ The repair produced its own instance, which is the part to remember. Restricting
 to fenced blocks and inline code spans dropped two genuine invocations from a file that
 uses four-space indented blocks: one false positive traded for two false negatives.
 **Tightening a matcher moves error from one direction to the other; it does not remove
-it.** So both directions get a negative test — prose must yield nothing, and each of the
-three code contexts must yield its group — and the tests are written as assertions about
+it.** So both directions get a negative test -- prose must yield nothing, and each of the
+three code contexts must yield its group -- and the tests are written as assertions about
 inputs the author constructs, not as a re-run against the repo, which would only confirm
 that today's corpus happens not to contain the bad case.
 
@@ -1236,7 +1236,7 @@ that today's corpus happens not to contain the bad case.
 reporting success on nothing. The mirror case is a checker reporting *failure* on
 nothing, and it had gone unexamined because it does not look like a defect. With the
 shared venv absent, `check_threshold_names.py` failed at import for want of `click` and
-exited 1 by traceback — the same code it uses for *found a problem*. The two demand
+exited 1 by traceback -- the same code it uses for *found a problem*. The two demand
 opposite responses: fix the repo, or fix the environment. So **"could not run" gets its
 own exit code**, 2, exactly as refusal gets 9 and for the same reason.
 
@@ -1249,7 +1249,7 @@ line; `pkde pocket analyze` made it 9, so an auditor comparing the correct run a
 the page would open a discrepancy against a system that was working.
 
 That is not the milder of the two. **A false clean is discovered when something breaks; a
-false alarm is discovered by being ignored**, and the ignoring generalises — a gate that
+false alarm is discovered by being ignored**, and the ignoring generalises -- a gate that
 cries wolf trains people to wave through the gates beside it. So a checker that cannot
 distinguish *cannot run* from *found a problem* damages the checks that do work.
 
@@ -1257,19 +1257,19 @@ Two remedies, and the second is the durable one. Give cannot-run its own code. T
 a count or a capability is being asserted, **state the invariant instead of the value**:
 not "expect 8", but "the two counts match each other, and the analyzer you are about to
 re-run is in the named list". Writing 9 in place of 8 only re-arms the trap for the next
-tool. Narrow the sentence to what is actually stable — the same rule as below, arriving
+tool. Narrow the sentence to what is actually stable -- the same rule as below, arriving
 from the false-alarm side.
 
 **A condition that is always true is not a check, even when it is true.** `doctor`
 warned when the working tree was dirty. The warning was accurate every time and worth
-nothing, because five agents share this tree and `git status` is never empty — a signal
+nothing, because five agents share this tree and `git status` is never empty -- a signal
 that never varies carries no information, whatever its truth value. Note that this is not
 the false-alarm case: nobody is being told something wrong. They are being told something
 constant, and the cost is the same, because a line that never changes stops being read
 along with the lines beside it.
 
 **It has two exits, and picking the wrong one loses something.** Either the condition is a
-real check asking too broad a question, in which case **rescope** it — dirtiness of
+real check asking too broad a question, in which case **rescope** it -- dirtiness of
 *provisioning inputs* is a genuine question that dirtiness of *the tree* was drowning
 (tooling-lead, `112e2b9`). Or it is a standing property of the system wearing a finding's
 costume, in which case **relabel and move** it: `doctor`'s six permanent advisories are
@@ -1281,14 +1281,14 @@ The same disposal step reached from the review side: a check that has never once
 any other way is not a finding, it is a gap in the briefs, and filing it as a finding lets
 everyone feel it was examined (template-builder, `729df95`).
 
-That rule was found independently in three tools by three people within an hour — a `git`
+That rule was found independently in three tools by three people within an hour -- a `git`
 status line, a set of CLI advisories, and a reviewer's threshold check. Independent
 rediscovery in unrelated objects is better evidence than any one of the three cases, and
-better than the retrodiction in §8.6, because the authors did not share a draft.
+better than the retrodiction in Section 8.6, because the authors did not share a draft.
 
 **Which decides where an instrument is worth building at all: a detector earns its cost
 where the failure is silent** (template-builder). A renamed directory makes `ls skills/`
-fail in the reader's face at the moment of use, and no gate improves on that — a loud
+fail in the reader's face at the moment of use, and no gate improves on that -- a loud
 failure is already reported by the person it happens to. The same rename applied to
 `grep -h uri: templates/*/agent.yaml` prints nothing, and *nothing* reads as **no
 template grants any skill** rather than **this command stopped working**. Same rename,
@@ -1304,42 +1304,42 @@ failure *and its reader*, not of the failure alone** (template-builder). `ls ski
 gets reported because the reader is a human at a prompt, blocked, with every incentive
 to complain. Change the reader and the same error goes quiet: a broken path in a skill
 document errors just as loudly into an agent's context window, and an agent's instinct
-is to route around it — glob for a similar name, try the parent, infer the rename — and
+is to route around it -- glob for a similar name, try the parent, infer the rename -- and
 continue. Loud failure, silent response, and then a finding that looks normal.
 
 So the operative test is not how loud the failure is but **whether it reaches someone
 who will report it, at the moment they would otherwise be misled**. Loudness is a good
 proxy for that only where the reader is human and blocked. It is a poor one for
-everything in this repository that agents read more than people do — CLI output, `pkde
-doctor`'s advisories, skill text, artifact paths in a sidecar — and those are precisely
+everything in this repository that agents read more than people do -- CLI output, `pkde
+doctor`'s advisories, skill text, artifact paths in a sidecar -- and those are precisely
 the surfaces where the rule above would otherwise license skipping a gate.
 
 The specialist templates do instruct an agent to report blocked, name the capability and
 stop, which is literally an instruction not to route around. Keep that in proportion: it
 is a *behavioural* mitigation for something the rule states *structurally*, and it holds
 only as well as instruction-following does under pressure to produce a result. Where a
-tool can make routing-around impossible rather than merely discouraged, prefer that —
+tool can make routing-around impossible rather than merely discouraged, prefer that --
 a refusal exit code the caller cannot mistake for a failure, a phase-2 latch that will
-not fabricate the input it is missing — and spend the gate where neither the failure nor
+not fabricate the input it is missing -- and spend the gate where neither the failure nor
 the reader can be relied on.
 
 **Know the limit of the structural version, because it is not where you would guess**
 (tooling-lead). Refusal codes and latches defeat *fabrication* completely: no tool here
 will produce a number whose computation did not happen. They do nothing about
-*substitution* — the blocked agent that reports a pocket score where an affinity was
+*substitution* -- the blocked agent that reports a pocket score where an affinity was
 asked for, under a real tool's name, with real provenance. **Loud refusal, silent
 substitution, and a finding that looks normal.** No CLI can **detect** this one: the
 substituting command is a legitimate invocation on its face, and nothing in the argument
 list says it was chosen because a different tool was missing. The defence and the
 reasoning live where the missing capability is known, in orchestration-design-guidance
-§8.6. Note that **improving refusal makes that section more load-bearing, not less** — the
+Section 8.6. Note that **improving refusal makes that section more load-bearing, not less** -- the
 better this CLI is at refusing, the more often an agent is a blocked reader, and a blocked
 reader is the one who substitutes.
 
 **But undetectable is not unaddressable, and the first statement of this rule said "no CLI
 can prevent it", which was too strong** (tooling-lead's correction to their own passage,
 `7a5a682`). A tool cannot see the substitution and can still **state, at the moment the
-number is produced, what the number is not** — in a registered relay, under the tool's own
+number is produced, what the number is not** -- in a registered relay, under the tool's own
 name, in the sidecar that travels with the value. That does not stop a determined
 substituter. It puts a sentence beside the number that contradicts the claim the
 substituter needs to make, which is the difference between a misreading that survives
@@ -1347,17 +1347,17 @@ review and one that arrives pre-refuted.
 
 The generalisable part is **which** verdict gets the guard, because the instinct is
 backwards. `pkde pocket` carried a full set of relays and every one of them guarded the
-**negative** verdict — the conformation caveat that fires when a score disappoints. The
+**negative** verdict -- the conformation caveat that fires when a score disappoints. The
 positive verdict went out bare, and the positive verdict is the one a role lacking an
 affinity tool reaches for. **Guard the direction someone would want to over-read, not the
-direction you expect to have to defend** — the same instinct as testing the branch you
+direction you expect to have to defend** -- the same instinct as testing the branch you
 expect to fail. Keep it conditional for the reason `gnomad.constraint_is_not_safety` is
 conditional: below the cutoff there is no over-claim available to make, and a relay that
 fires on every run is quoted and then ignored. Applies to any tool whose output has a
 well-known wrong reading.
 
 **Then keep it short, and put the substitution clause first.** A relay competes for the
-stdout budget, and a clipped message loses exactly its last clause — so a caveat written
+stdout budget, and a clipped message loses exactly its last clause -- so a caveat written
 with the over-claim named at the end is the one whose point disappears under truncation,
 in precisely the runs verbose enough to be near the limit. Write the shortest sentence
 that carries the contradiction and check the rendered length, not the source length.
@@ -1369,12 +1369,12 @@ took candidates from fenced blocks and inline spans only, so indent-style blocks
 invisible: four real invocations were never checked, two of them in
 `skills/artifact-conventions`, the file agents read and copy from. The comparison was
 correct on every invocation it saw. It printed *checked 76 invocations, 0 problems* the
-whole time. 76 was true. It was simply never the denominator anyone read it as — the real
+whole time. 76 was true. It was simply never the denominator anyone read it as -- the real
 figure was 93.
 
 So distinguish two kinds of denominator. *12 of 12 templates yielded a skills block* is
 informative, because the 12 comes from a directory listing and the parser cannot shrink
-it — a format change shows up as 11. *93 invocations checked* is not, because the parser
+it -- a format change shows up as 11. *93 invocations checked* is not, because the parser
 defines the population it then reports on. **An instrument cannot report what it never
 saw**, so completeness is not checkable from inside it, however carefully it states its
 coverage. Prefer denominators the instrument does not compute: file counts, declared
@@ -1385,20 +1385,20 @@ instruments over the same subject with different parsers, and someone comparing 
 counts** (template-builder). That cuts against the instinct to factor two checkers into
 one canonical parser: shared parsing makes the numbers agree by construction, which is
 precisely the agreement that carries no information. The same argument as never letting a
-prediction overwrite a measurement — **two independent derivations that disagree are
+prediction overwrite a measurement -- **two independent derivations that disagree are
 evidence, and one derivation used twice is not.**
 
 The organising consequence is worth stating, because it is the opposite of how a tidy
 person builds a suite: **overlap the checkers deliberately rather than partitioning them
 cleanly by subject.** Two tools scanning the same markdown for the same invocations, with
 different parsers, looks like duplicated effort right up to the hour it is the only thing
-that finds seventeen unchecked invocations. Neither author was careless — both were
-careful, in opposite directions — and carefulness is not the faculty that catches this.
+that finds seventeen unchecked invocations. Neither author was careless -- both were
+careful, in opposite directions -- and carefulness is not the faculty that catches this.
 A clean partition by subject guarantees that every blind spot is covered by exactly nobody.
 
 **And redundancy is only visible as redundancy afterwards** (tooling-lead). Before the
 fact, the second derivation that catches something and the one that wastes an hour are
-indistinguishable — that is what it means for the two paths to be independent. So the
+indistinguishable -- that is what it means for the two paths to be independent. So the
 tidy-minded pass that removes duplicated effort is not making a poor judgement; it is
 making a judgement it has no information to make, and it will remove the useful overlaps
 at whatever rate chance dictates. The choice available is a policy about overlap in
@@ -1410,12 +1410,12 @@ the third.
 **Before guarding a checker's dependency, ask whether it needs one.** The cannot-run code
 above was added because `check_threshold_names.py` could not run without `click`. It
 turned out not to need `click` at all: it imported `RELAY_CODES` from `provenance`,
-`provenance` imports `output`, and `output` imports `click`, while `thresholds` — the
-module it actually uses — is a leaf. The entire dependency was a *constant* read through
+`provenance` imports `output`, and `output` imports `click`, while `thresholds` -- the
+module it actually uses -- is a leaf. The entire dependency was a *constant* read through
 a module whose behaviour the checker never invoked. Reading the literal from source
 instead removed it, and the gate now runs in any container. **A checker that imports a
 module solely to read a constant inherits every dependency that module has, for none of
-the benefit** — so shared vocabulary belongs in a leaf module, not behind the execution
+the benefit** -- so shared vocabulary belongs in a leaf module, not behind the execution
 layer.
 
 **But the inverse must not be applied by analogy, and this is the more important half.**
@@ -1423,8 +1423,8 @@ layer.
 tree that `click` *builds*, so the dependency is its subject rather than an incidental
 import (template-builder; stated in `tools/check_invocations.py`, module docstring, from
 `2b1594a`). Re-deriving that tree from source would turn the checker into a
-second cache of the very thing it exists to check — and a cache in a checking position is
-§8.5 in its worst position. There, exit 2 with the venv absent is the honest permanent
+second cache of the very thing it exists to check -- and a cache in a checking position is
+Section 8.5 in its worst position. There, exit 2 with the venv absent is the honest permanent
 answer, not a gap waiting to be closed. **The test is whether the checker uses the
 module's behaviour or only its data.** Data can be read from source; behaviour cannot be
 re-implemented without becoming a rival implementation of the thing under test.
@@ -1433,13 +1433,13 @@ re-implemented without becoming a rival implementation of the thing under test.
 `check_skill_uris.py` asked whether a declared skill is present on the tracking ref,
 which matters because skill resolution is remote: on disk is not on the ref, and a skill
 that is not on the ref does not exist to provisioning. Correct, and it closed a real
-hole. But template-builder found the limit **by using it** — they ran it before wiring
+hole. But template-builder found the limit **by using it** -- they ran it before wiring
 `tournament-corpus`, got exit 0 and *every declared URI resolves to a pushed skill*, and
 the pushed copy was 35 insertions and 15 deletions behind the author's local commit. An
 agent provisioned in that window would have loaded superseded text with every checker
 green.
 
-Note the shape. This is §7's *correct citation supporting a claim narrower than the one
+Note the shape. This is Section 7's *correct citation supporting a claim narrower than the one
 it is used for*, arriving in an instrument instead of in prose. The output was true. It
 was true of a narrower question than the reader was asking, and the reader had no way to
 see the gap, because the instrument stated its finding and not its scope. **Presence and
@@ -1457,7 +1457,7 @@ current*, *resolvable but superseded locally*, *not on the ref at all*. The midd
 outcome is not an error by default, because the person running the checker often does
 not own the skill and cannot push it; it is an error under `--strict`, which is the mode
 to run before provisioning against the skill. And the fix template-builder actually
-asked for was smaller than the one built — make the output say what it asserts — which
+asked for was smaller than the one built -- make the output say what it asserts -- which
 is worth recording on its own: **when an instrument is read too widely, the first fix is
 to narrow the sentence, not to widen the instrument.** Widening was justified here only
 because the narrower question could be answered locally with `git diff` and one call for
@@ -1471,15 +1471,15 @@ fresh as the last `git fetch`, and it fails towards silence. And the closing lin
 two forms: it claims the pushed copy matches the working tree only when every declared
 skill was actually compared, and otherwise says in as many words what it is **not**
 asserting. tooling-lead's `61cdb25` reports the same limit the same way, for the same
-reason, on a different object — a stale `origin/main` can call a pushed commit
+reason, on a different object -- a stale `origin/main` can call a pushed commit
 unreachable, so the remedy text names `git fetch` first. A known false-alarm direction,
 written down, is a diagnosable annoyance; undocumented, it is a mystery that trains
 people to ignore the instrument.
 
 ### State a rule at the level its object belongs to
 
-§7's cached-value case generalises into an editing rule for this whole document
-(tooling-lead). A rule stated over one named object — a threshold, a citation, a count —
+Section 7's cached-value case generalises into an editing rule for this whole document
+(tooling-lead). A rule stated over one named object -- a threshold, a citation, a count --
 does not merely fail to cover its siblings. **It reads as complete, so a reader who knows
 it feels covered and stops looking.** *Fourteen warnings* is not a threshold, so *cite
 thresholds by name* never fired, and its author had read it that hour. A rule pitched too
@@ -1488,15 +1488,15 @@ narrowly is worse than a missing one: the missing rule leaves you alert.
 So for each rule stated over a named object, ask what the object is an instance of, and
 whether the rule survives the generalisation. Four in this document do:
 
-- **A threshold in prose → any value in prose.** §7.
-- **Database coverage for an entity (§1.1, Test 3) → any lookup: the presence of a source
+- **A threshold in prose -> any value in prose.** Section 7.
+- **Database coverage for an entity (Section 1.1, Test 3) -> any lookup: the presence of a source
   is not the presence of an answer for your entity.** The failure is identical whether the
   source is UniProt, a structure database or a local artifact directory.
-- **A cited threshold carries the use it was cited for (§7.1) → any borrowed artifact
+- **A cited threshold carries the use it was cited for (Section 7.1) -> any borrowed artifact
   carries the scope of its original validation.** Benchmarks, qualified assays and
   validated models all travel outside their scope the same way, and none of them announce
   it.
-- **Provenance beside the identifier, not inside it (§2, Rule 4) → an identifier answers
+- **Provenance beside the identifier, not inside it (Section 2, Rule 4) -> an identifier answers
   *same or different*, never *why*.** Loading the answer to the second question into the
   first is what makes an identifier fire on changes that do not matter.
 
@@ -1510,7 +1510,7 @@ reader will attempt it and should find out where it stops. Two here:
 - **"Overlap the checkers deliberately" does not become "duplicate everything".** Overlap
   buys information only where the two paths could fail *differently*. Two readers sharing
   a parser agree by construction, and that agreement is a cache wearing a cross-check's
-  costume — the same distinction as two independent derivations against one derivation
+  costume -- the same distinction as two independent derivations against one derivation
   used twice.
 
 **Generalising is not free, which is why the rule is *state it at the level of its
@@ -1526,7 +1526,7 @@ rule recognisable at the moment it applies, and a reader who cannot recognise a 
 the same position as one who was never told it. Do not tidy these out; if a case has
 genuinely stopped being the clearest instance, **replace it rather than remove it**
 (tooling-lead). This one has no detector, and it looks like an improvement while it
-happens — shorter, cleaner, more general, and inert.
+happens -- shorter, cleaner, more general, and inert.
 
 ### Cross-check a derived label when the source ships one
 
@@ -1547,8 +1547,8 @@ The AF3 endpoint is max-one-replica and returns 429 under concurrency. File lock
 
 This is the one place a small shared service is the right answer: a lease broker on the shared volume, or as an MCP service, where `pkde alphafold predict` acquires, waits, or fails with a queue position. Without it, parallel specialists will collide, and the failure will look like a flaky tool rather than a design gap.
 
-The command named here was "pkde af3 run" — no backticks, because it is not an
-instruction and never was one — until a checker compared the document with the built
+The command named here was "pkde af3 run" -- no backticks, because it is not an
+instruction and never was one -- until a checker compared the document with the built
 command tree. No such command has ever existed. Worth noting because of where it
 survived: a design document is exactly where a plausible command name lives longest,
 since nobody runs a document.
@@ -1562,7 +1562,7 @@ since nobody runs a document.
 - [ ] Retryability decided on the response body where the source ships one; no path turns an unanswered query into a negative result
 - [ ] Every threshold cites its source, the data version it applies to, and the purpose the source recommended it for; unresolved is preferred to invented
 - [ ] Where the source ships a derived label, it is recomputed and compared as a drift check
-- [ ] Split at every phase boundary worth auditing separately — or documented as single-phase lookup
+- [ ] Split at every phase boundary worth auditing separately -- or documented as single-phase lookup
 - [ ] All emitted files land under `raw/`; nothing a tool writes goes to `findings/`
 - [ ] Writes to the preconfigured directory for its artifact class; project root resolved, not CWD
 - [ ] Deterministic output filename derived from the query

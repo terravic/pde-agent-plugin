@@ -8,8 +8,8 @@ description: "Verify that citations in a document resolve to real records and th
 Use when you need to verify whether citations in a document are real and accurate.
 
 Do NOT use when:
-- You need to resolve a single identifier to its record → use `citation-resolution` skill.
-- You need to search for literature by topic → use `literature-search` skill.
+- You need to resolve a single identifier to its record -> use `citation-resolution` skill.
+- You need to search for literature by topic -> use `literature-search` skill.
 
 ## 2. Preconditions
 
@@ -25,17 +25,17 @@ A file (JSON, Markdown, or text) containing citations or references.
 ## 4. Interpretation contract
 
 ### Statuses
-- **verified** — citation resolved and title matched within tolerance.
-- **suspect-title-match** — citation resolved but title similarity is between suspect floor and match tolerance. Do NOT treat as verified.
-- **phantom** — citation did not resolve to any real record, or title completely mismatched.
-- **unverified** — could not check due to network error or timeout.
+- **verified** -- citation resolved and title matched within tolerance.
+- **suspect-title-match** -- citation resolved but title similarity is between suspect floor and match tolerance. Do NOT treat as verified.
+- **phantom** -- citation did not resolve to any real record, or title completely mismatched.
+- **unverified** -- could not check due to network error or timeout.
 
 ### Verdicts
-- `all-verified` — every citation verified, none suspect or phantom.
-- `suspect-matches-present` — at least one suspect title match.
-- `phantom-citations-present` — at least one phantom citation.
-- `partially-unresolved` — some citations could not be checked.
-- `no-citations-found` — no extractable citations found.
+- `all-verified` -- every citation verified, none suspect or phantom.
+- `suspect-matches-present` -- at least one suspect title match.
+- `phantom-citations-present` -- at least one phantom citation.
+- `partially-unresolved` -- some citations could not be checked.
+- `no-citations-found` -- no extractable citations found.
 
 ### Mandatory relays
 

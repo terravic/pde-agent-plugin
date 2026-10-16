@@ -5,7 +5,7 @@ revision.  Multiple runs can reference the same revision (retries),
 and each run tracks its own state through the run state machine
 defined in ``core/statemachine.py``.
 
-Runs are CRUD + state-machine operations over control records — not
+Runs are CRUD + state-machine operations over control records -- not
 science tools.  They do not follow the two-phase pattern, produce no
 Layer 0 artifacts, and never touch the network.
 """
@@ -167,7 +167,7 @@ def create(
 
     # The design says "committed state or later (but not terminal)".
     # The ordering in the state machine is:
-    #   proposed → committed → queued → in_progress → submitted → ...
+    #   proposed -> committed -> queued -> in_progress -> submitted -> ...
     # "proposed" is before committed, so reject it.
     if wo_state == "proposed":
         raise Refusal(
@@ -176,7 +176,7 @@ def create(
             remedy=f"commit the work order first: pkde workorder commit {work_order_id}",
         )
 
-    # Validate the initial state transition (design §7 acceptance #3).
+    # Validate the initial state transition (design Section 7 acceptance #3).
     validate_transition("run", None, "queued")
 
     # Assign next run ID.

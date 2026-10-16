@@ -4,15 +4,15 @@ Provides a single mechanism that discovers schemas from the codebase:
 each schema is defined once as a ``SchemaDef`` with typed fields,
 required/optional flags, and enum sets.  The registry supports:
 
-  - ``list_schemas()``     — enumerate all known schema IDs
-  - ``get_schema(id)``     — retrieve a schema definition by ID
-  - ``show_table(id)``     — render a human-readable field table
-  - ``make_template(id)``  — generate a skeleton JSON document
-  - ``validate_field_enum()`` — self-documenting enum validation
-  - ``validate_required()``   — self-documenting required-field check
+  - ``list_schemas()``     -- enumerate all known schema IDs
+  - ``get_schema(id)``     -- retrieve a schema definition by ID
+  - ``show_table(id)``     -- render a human-readable field table
+  - ``make_template(id)``  -- generate a skeleton JSON document
+  - ``validate_field_enum()`` -- self-documenting enum validation
+  - ``validate_required()``   -- self-documenting required-field check
 
 All schemas are registered in ``_REGISTRY`` at module load time.
-This is generic infrastructure — it works for all groups, not
+This is generic infrastructure -- it works for all groups, not
 hand-coded per group.
 """
 
@@ -85,7 +85,7 @@ class SchemaDef:
 
 
 # ---------------------------------------------------------------------------
-# Registry — all known schemas
+# Registry -- all known schemas
 # ---------------------------------------------------------------------------
 
 _REGISTRY: dict[str, SchemaDef] = {}
@@ -270,7 +270,7 @@ def validate_required_fields(
     """
     schema = _REGISTRY.get(schema_id)
     if schema is None:
-        return  # Unknown schema — cannot validate
+        return  # Unknown schema -- cannot validate
 
     required = schema.required_fields()
     missing = [f.name for f in required if f.name not in doc or doc[f.name] is None]
@@ -299,7 +299,7 @@ def suggest_match(
 
 
 # ---------------------------------------------------------------------------
-# Schema definitions — all groups
+# Schema definitions -- all groups
 # ---------------------------------------------------------------------------
 
 # -- PK schemas ----------------------------------------------------------
@@ -307,7 +307,7 @@ def suggest_match(
 _register(
     SchemaDef(
         schema_id="pkde.pk-study.v1",
-        description="PK study input for ingest — concentration-time data",
+        description="PK study input for ingest -- concentration-time data",
         fields=(
             FieldDef("schema", "string", required=True, const="pkde.pk-study.v1"),
             FieldDef(
@@ -393,7 +393,7 @@ _register(
 _register(
     SchemaDef(
         schema_id="pkde.pk-ddi-input.v1",
-        description="DDI input — unbound Cmax and CYP inhibition data",
+        description="DDI input -- unbound Cmax and CYP inhibition data",
         fields=(
             FieldDef("schema", "string", required=True, const="pkde.pk-ddi-input.v1"),
             FieldDef(
@@ -510,7 +510,7 @@ _register(
 _register(
     SchemaDef(
         schema_id="pkde.tox-safety-pharm.v1",
-        description="Safety pharmacology input — hERG and core battery",
+        description="Safety pharmacology input -- hERG and core battery",
         fields=(
             FieldDef(
                 "schema", "string", required=True, const="pkde.tox-safety-pharm.v1"
@@ -560,7 +560,7 @@ _register(
 _register(
     SchemaDef(
         schema_id="pkde.tox-genotox.v1",
-        description="Genotoxicity battery input — ICH S2(R1) assay results",
+        description="Genotoxicity battery input -- ICH S2(R1) assay results",
         fields=(
             FieldDef("schema", "string", required=True, const="pkde.tox-genotox.v1"),
             FieldDef(

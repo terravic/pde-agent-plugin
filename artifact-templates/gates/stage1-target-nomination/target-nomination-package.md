@@ -3,8 +3,8 @@
 **Program**: [program name]
 **Date**: [date]
 **Decision**: advance | loop | terminate
-**Policy version**: [GP-NNN@V — the gate policy version in force for this decision]
-**Snapshot ref**: [SNAP-NNN — the policy freeze snapshot recording the full state at decision time]
+**Policy version**: [GP-NNN@V -- the gate policy version in force for this decision]
+**Snapshot ref**: [SNAP-NNN -- the policy freeze snapshot recording the full state at decision time]
 
 ## Nominated Target
 
@@ -47,7 +47,7 @@ risk, deferred to Stage 2, or blocking.]
 
 [This section is mandatory when a pre-mortem review was conducted.
 It is derived from the decision record's conditions and the
-pre-mortem review artifacts — not editorially curated.
+pre-mortem review artifacts -- not editorially curated.
 "Presentation is derived from the decision, not its authority."
 
 An unresolved objection that exists in the underlying decision

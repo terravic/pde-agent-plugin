@@ -11,11 +11,11 @@ literature. Entry points include:
 - Finding publications related to a gene, pathway, compound, or disease
   as part of target validation or literature review.
 - Establishing the volume and recency of research activity for a gene
-  or topic — a gene with hundreds of recent publications has a different
+  or topic -- a gene with hundreds of recent publications has a different
   evidence base than one with three papers from 2008.
 - Identifying the dominant journals and MeSH terms for a research area
   to refine subsequent searches.
-- Checking whether a claimed literature consensus exists — does the
+- Checking whether a claimed literature consensus exists -- does the
   published record support the assertion that "multiple studies have
   shown X"?
 - Retrieving the full text of a PubMed Central article for detailed
@@ -25,9 +25,9 @@ literature. Entry points include:
 **Do not use when:**
 
 - You need to verify that a specific PMID, DOI, or NCT number resolves
-  to a real record → `citation-verification`.
-- You need cancer genomics study data → `pkde cbioportal search`.
-- You need to count how many papers support a specific claim — a keyword
+  to a real record -> `citation-verification`.
+- You need cancer genomics study data -> `pkde cbioportal search`.
+- You need to count how many papers support a specific claim -- a keyword
   search counts matches, not evidence.
 
 ### Question-type routing
@@ -49,7 +49,7 @@ literature. Entry points include:
   keywords, MeSH terms, Boolean operators (AND, OR, NOT), and field
   tags ([Title], [Author], etc.). `pkde pubmed search --help` for
   details.
-- **No authentication** needed — NCBI E-utilities are public.
+- **No authentication** needed -- NCBI E-utilities are public.
 - **Rate limiting**: NCBI allows 3 requests/sec without an API key.
   The CLI paces requests.
 - **Result limit**: `--max-results` controls retrieval (1-100, default
@@ -77,10 +77,10 @@ summary statistics without network access.
 ### When to prefer preprint over pubmed
 
 Use `pkde preprint search --source arxiv` when looking for recent,
-not-yet-peer-reviewed work — preprints appear on arXiv days after
+not-yet-peer-reviewed work -- preprints appear on arXiv days after
 submission, whereas PubMed indexes peer-reviewed publications which
 may lag months behind. Use `pkde preprint search --source biorxiv`
-when looking for recent biology and life-sciences preprints — bioRxiv
+when looking for recent biology and life-sciences preprints -- bioRxiv
 covers wet-lab biology, genomics, neuroscience, and related fields
 that arXiv does not. Use `pkde pubmed search` when looking for
 peer-reviewed literature with MeSH indexing, journal provenance, and
@@ -101,25 +101,25 @@ paths only, `--out` to override the default output directory.
 
 `analyze` produces:
 
-- **results_found** — the query matched one or more PubMed records.
+- **results_found** -- the query matched one or more PubMed records.
   The analysis reports `total_found` (PubMed's count), `n_retrieved`
   (the subset fetched), year distribution, top journals, and top MeSH
   terms.
-- **no_results** — the query matched nothing in PubMed.
+- **no_results** -- the query matched nothing in PubMed.
 
 ### What the analysis reports
 
 The analysis provides summary statistics, not scientific conclusions:
 
 - **Year distribution**: publication counts per year. Useful for
-  assessing research recency and trajectory — a gene with 50
+  assessing research recency and trajectory -- a gene with 50
   publications in 2020-2024 and 2 before 2015 has a different evidence
   landscape than one with steady output since the 1990s.
 - **Top journals**: most frequent journals in the result set. Indicates
   the research field (oncology, neuroscience, etc.) and the level of
   the venues.
 - **Top MeSH terms**: most frequent Medical Subject Headings. These are
-  NLM's controlled vocabulary — useful for refining subsequent searches
+  NLM's controlled vocabulary -- useful for refining subsequent searches
   or identifying the dominant research themes.
 
 ### The retrieval-vs-total gap
@@ -257,7 +257,7 @@ keyword frequency) without network access.
 The same interpretation contract from `pkde pubmed` (section 4) applies:
 results are a keyword-based sample, not a comprehensive survey. The
 `search_not_exhaustive` relay must be satisfied. The retrieval-vs-total
-gap applies here as well — `--max-results` caps the retrieval.
+gap applies here as well -- `--max-results` caps the retrieval.
 
 ---
 

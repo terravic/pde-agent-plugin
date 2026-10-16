@@ -18,9 +18,9 @@ func init() {
 		Long: `Validates one or more JSON artifact files against their matching schemas.
 If no files are given but --run is set, validates all artifacts in the run.
 
-Schema matching is automatic: H-*.json → hypothesis schema,
-H-*.R-*.json → review schema, M-*.json → match schema,
-epoch-*.json → ratings schema, citations/H-*.json or citations.json → citation-manifest schema.
+Schema matching is automatic: H-*.json -> hypothesis schema,
+H-*.R-*.json -> review schema, M-*.json -> match schema,
+epoch-*.json -> ratings schema, citations/H-*.json or citations.json -> citation-manifest schema.
 
 Exit code 0 if all files are valid, 1 if any fail.`,
 		RunE: runValidate,

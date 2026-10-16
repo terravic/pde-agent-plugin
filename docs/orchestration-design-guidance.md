@@ -162,7 +162,7 @@ owns that paragraph*. Both owned it, both placed it, and the same passage landed
 one section twenty minutes apart. The polite hedge is what caused it: it reads as
 deference and functions as an unassigned task, which is the one thing a work order is
 built to prevent. **Name one owner, or do the work yourself.** The same applies to any
-request that leaves the assignee implicit — `report_to` exists precisely so that a
+request that leaves the assignee implicit -- `report_to` exists precisely so that a
 question has one addressee rather than a plausible set of them.
 
 The duplicate was cheap to find only because both copies landed in **one** section of
@@ -408,7 +408,7 @@ skill; authority, prohibitions and ordering constraints go to the body.
 
 **Expect most behaviours to split.** Taking the whole behaviour as the unit
 forces a mixed item to a single verdict, and the looser half then drags the
-binding half into a skill. Evidence synthesis in §8.1 is the worked example:
+binding half into a skill. Evidence synthesis in Section 8.1 is the worked example:
 document mechanics are a skill, while what may enter Layer 2 and on whose
 authority is body.
 
@@ -430,7 +430,7 @@ existing one is already paid. So:
 - Where **nothing is packaged**, splitting means creating a new seam to hold a
   fragment. Do not. Keep the whole behaviour in the body.
 
-This is what happened across §8.1 and §8.2. All ten behaviours had some
+This is what happened across Section 8.1 and Section 8.2. All ten behaviours had some
 look-up-able residue. Nine stayed whole in the body, because packaging their
 residue would have created a seam for a fragment. Evidence synthesis split only
 because `program-state-management` already existed.
@@ -442,7 +442,7 @@ fragment**.
 load fails **silently**: a wrong skill URI provisions an agent that never
 learns it is missing anything. Where the body says only "write to the
 conventional location" and the convention lives in the skill that did not load,
-the agent is left with no location — and falls through to whatever the default
+the agent is left with no location -- and falls through to whatever the default
 is. `scientific-reviewer` is the live case, reported by template-builder
 2026-08-18: `artifact-conventions` carries `raw/reanalysis/<date>-<agent>/`,
 the reviewer template loads that skill, and the template body repeats part of
@@ -483,7 +483,7 @@ specialist-alice  written_by=specialist-alice  sha=a43013535760
 
 `_refuse_conflicting_overwrite` compares records through `_comparable`, which
 drops `_VOLATILE_ANALYSIS_FIELDS = ("timestamp", "written_by")`. So an
-**agreeing** re-run is correctly judged not to be a conflict — and the caller
+**agreeing** re-run is correctly judged not to be a conflict -- and the caller
 then writes anyway, and the second agent's `written_by` replaces the first's.
 A reviewer who omits `--out` and happens to confirm the specialist silently
 takes ownership of the specialist's record. Nothing raises, because the guard
@@ -491,14 +491,14 @@ compares conclusions and provenance is not a conclusion.
 
 Two things follow.
 
-**For §8.0:** `--out` is load-bearing for safety after all, so the directory
+**For Section 8.0:** `--out` is load-bearing for safety after all, so the directory
 instruction joins `--overwrite` in the duplicated set. Two lines, not four. The
 rule survives; the example it was resting on did not.
 
 **For guards generally, and this is the transferable part:** one function was
 answering *is this a conflict?* while its caller read the answer as *may I
 write?* Those two questions agree everywhere except on the fields excluded from
-the comparison — which is to say they diverge, by construction, exactly where
+the comparison -- which is to say they diverge, by construction, exactly where
 nobody is looking. So: **a field excluded from an equality test is a field that
 can change without anyone noticing. Exclude it only if losing it costs
 nothing.** `timestamp` qualifies; it asserts nothing. `written_by` does not; it
@@ -512,7 +512,7 @@ list holding both invites exactly the reading that was given it. Two fields
 belong in one exclusion list only when they are excluded **for the same
 reason**.
 
-Detection existed and prevention did not — the reviewer template's pre/post
+Detection existed and prevention did not -- the reviewer template's pre/post
 checksum over `raw/` goes VOID, because the file did change. That is the right
 way round, and it still costs a discarded review.
 
@@ -524,8 +524,8 @@ exists, treat every duplication justified by "the skill might not load" as a
 stopgap with the repair named next to it, not as a settled placement.
 
 The consequence, adopted 2026-08-18: the orchestration templates carry
-substantial `agents.md` bodies and **few skill grants**. The tables in §8.1 and
-§8.2 name the behaviours that must exist; they no longer assert that each is a
+substantial `agents.md` bodies and **few skill grants**. The tables in Section 8.1 and
+Section 8.2 name the behaviours that must exist; they no longer assert that each is a
 separately packaged skill. The role templates are the authority on which of
 these are template body and which are grants.
 
@@ -535,11 +535,11 @@ Template: `science-program-lead`. Placement as built, 2026-08-18.
 
 | Behaviour | Owns | Placement |
 |---|---|---|
-| Program intake and chartering | Convert an objective into scope, hypotheses, policy needs, and human approval boundaries | Body §3 |
-| Scientific work planning | Select the next decision question, role, evidence context, acceptance criteria, and cohort | Body §4 |
-| Evidence synthesis and program state | Accept or reject findings and update Layer 2 with cited rationale | Body §5–§6, over the `program-state-management` grant |
-| Cohort and critical-signal review | Perform batch synthesis and respond to interrupt-driven scientific alerts | Body §7 |
-| Stage-gate decision | Freeze evidence, obtain review, evaluate criteria, and record advance/loop/pivot/stop decisions | Body §8 |
+| Program intake and chartering | Convert an objective into scope, hypotheses, policy needs, and human approval boundaries | Body Section 3 |
+| Scientific work planning | Select the next decision question, role, evidence context, acceptance criteria, and cohort | Body Section 4 |
+| Evidence synthesis and program state | Accept or reject findings and update Layer 2 with cited rationale | Body Section 5-Section 6, over the `program-state-management` grant |
+| Cohort and critical-signal review | Perform batch synthesis and respond to interrupt-driven scientific alerts | Body Section 7 |
+| Stage-gate decision | Freeze evidence, obtain review, evaluate criteria, and record advance/loop/pivot/stop decisions | Body Section 8 |
 
 All five govern every task the role performs, so all five are body. The split inside
 evidence synthesis is the one worth noting: **document mechanics** are a skill
@@ -557,17 +557,17 @@ Template: `research-operations-controller`. Placement as built, 2026-08-18.
 
 | Behaviour | Owns | Placement |
 |---|---|---|
-| Program bootstrap | Initialize program configuration, control state, artifact directories, and environment checks | Body §3, over `pkde init` and `pkde doctor` |
-| Work-order supervision | Validate, queue, dispatch, monitor, retry, block, and close agent runs | Body §4–§6 |
-| Artifact contract validation | Check deliverables, provenance, checksums, warnings, paths, and layer boundaries | Body §8, over the `artifact-conventions` grant |
-| Resource and long-run management | Manage dependencies, leases, concurrency, external waits, and retry policy | Body §6 |
-| Presentation and publication | Validate, build, deploy, and record presentation-layer revisions | Body §10 — **skill candidate**, see below |
+| Program bootstrap | Initialize program configuration, control state, artifact directories, and environment checks | Body Section 3, over `pkde init` and `pkde doctor` |
+| Work-order supervision | Validate, queue, dispatch, monitor, retry, block, and close agent runs | Body Section 4-Section 6 |
+| Artifact contract validation | Check deliverables, provenance, checksums, warnings, paths, and layer boundaries | Body Section 8, over the `artifact-conventions` grant |
+| Resource and long-run management | Manage dependencies, leases, concurrency, external waits, and retry policy | Body Section 6 |
+| Presentation and publication | Validate, build, deploy, and record presentation-layer revisions | Body Section 10 -- **skill candidate**, see below |
 
 Grants: `artifact-conventions`, plus `artifact-durability` and `agent-state-continuity`.
 
-Publication is the one entry that passes the §8.0 test for a skill: it is occasional,
+Publication is the one entry that passes the Section 8.0 test for a skill: it is occasional,
 and a publish is self-evidently in play or not. It is in the body only because there is
-nothing yet to package — `pkde site build` does not exist, and the sole current
+nothing yet to package -- `pkde site build` does not exist, and the sole current
 instruction is that publication is unavailable and must not be faked by hand or
 delegated to a curator. **Move it to a skill when the CLI lands**, not before; a skill
 whose entire content is "this does not work yet" is worse than a line in the body,
@@ -581,16 +581,16 @@ the body permanently.
 | Behaviour | Belongs to | Placement |
 |---|---|---|
 | Independent scientific review | Scientific Reviewer | **Body** of `scientific-reviewer` |
-| Gate report compilation | Regulatory Scientist or report writer | Skill — not yet written |
-| Stakeholder narrative editing | Optional Project Curator | Skill — not yet written |
+| Gate report compilation | Regulatory Scientist or report writer | Skill -- not yet written |
+| Stakeholder narrative editing | Optional Project Curator | Skill -- not yet written |
 
-Independent review is the clearest case in this document for §8.0's first test. The
+Independent review is the clearest case in this document for Section 8.0's first test. The
 reviewer is spawned per review and performs exactly one kind of task, so its procedure
 governs *every* task it will ever run. Packaging that as optional context would make
 the program's fabrication check contingent on the reviewer choosing to load it.
 
 The other two are genuine skills: both are occasional, both are obviously applicable
-when they apply, and neither is unsafe to omit — a gate report that is not compiled is
+when they apply, and neither is unsafe to omit -- a gate report that is not compiled is
 a missing document, not a wrong one.
 
 ### 8.4 Placement rules
@@ -598,7 +598,7 @@ a missing document, not a wrong one.
 - Scientific knowledge about interpreting a tool result stays in the corresponding
   science capability skill.
 - PkDE-specific orchestration semantics belong in the orchestration behaviours
-  above, placed in a template body or a skill by the §8.0 test — not automatically in
+  above, placed in a template body or a skill by the Section 8.0 test -- not automatically in
   a skill.
 - Generic Agent Runtime command syntax and agent-management behavior come from platform
   skills; do not copy them into PkDE skills.
@@ -611,9 +611,9 @@ a missing document, not a wrong one.
 
 ### 8.5 A capability claim in a template is a cache, and a planning cache is the dangerous kind
 
-Any sentence in a template that describes what the system can currently do — a
+Any sentence in a template that describes what the system can currently do -- a
 capability table, a "no tool exists for this yet" placeholder, a named gap on
-the critical path — is a **cache of the tool and skill inventory**, in the same
+the critical path -- is a **cache of the tool and skill inventory**, in the same
 sense that a document describing code is a cache of that code. It is written at
 a moment, it is never revalidated, and the inventory moves without telling it.
 
@@ -623,7 +623,7 @@ the difference between them is the rule.
 **In a doing position** (`f0714e3`): three specialist templates carried
 placeholders saying no tool existed for tissue expression and no tool could
 verify a citation. Both skills existed. Three agents were told to report blocked
-on work they could do — and `experimental-biologist` was told it could not check
+on work they could do -- and `experimental-biologist` was told it could not check
 a citation directly above its own warning about fabricated PMIDs, which is the
 anti-fabrication guard disarmed by a stale note about the guard.
 
@@ -632,12 +632,12 @@ of which role can produce which evidence, and it named genetic and expression
 evidence as the largest gap on the Stage 1 critical path. The gap had closed.
 
 The second is worse, and not by degree. **A false capability claim in a doing
-position is next to the evidence that refutes it** — the agent is standing
+position is next to the evidence that refutes it** -- the agent is standing
 beside the skill and will eventually trip over it. **A false capability claim in
 a planning position prevents the dispatch that would have refuted it.** The
 capability is never exercised, so nothing fails, so no signal is generated. The
 error suppresses its own evidence. That is the same shape as every other fault
-in this document — something silently self-consistent — but arrived at by
+in this document -- something silently self-consistent -- but arrived at by
 withholding an action rather than by taking one, which is why none of the
 existing checks would find it.
 
@@ -650,7 +650,7 @@ Refreshing resets the clock and changes nothing structurally. Instead **stop
 staleness from being authoritative**, in three parts (template-builder,
 `55f12d9`):
 
-1. **Name the authority the cache is a copy of** — here, each role's own
+1. **Name the authority the cache is a copy of** -- here, each role's own
    `agent.yaml` and the specialist itself.
 2. **Date the cache and say in the text that it decays from that date.** A
    snapshot labelled as a snapshot is honest; the same content unlabelled is a
@@ -661,7 +661,7 @@ staleness from being authoritative**, in three parts (template-builder,
    specialist out of a capability on the strength of a cache.
 
 The tie-break is the cheap general fix. It does not prevent the cache going
-stale. It converts the failure from a silent non-dispatch into a report — which
+stale. It converts the failure from a silent non-dispatch into a report -- which
 is the difference between an error that conceals itself and one that announces
 itself the first time it matters.
 
@@ -670,7 +670,7 @@ itself the first time it matters.
 **While a role has no tool in its domain, the pressure to answer has no outlet.**
 A specialist instructed to report blocked rather than answer from background
 knowledge is under real pressure to produce something, and while it holds
-nothing that pressure is inert — the blocked report is the only move available,
+nothing that pressure is inert -- the blocked report is the only move available,
 so it is easy. The moment the role holds *one* number in its domain, the
 pressure has somewhere to go.
 
@@ -682,11 +682,11 @@ artifact, a real provenance sidecar and a real number behind it. Everything
 about it looks like evidence except its relevance.
 
 **The skill cannot carry this guard.** A skill's do-not-use list is correctly
-scoped to *other skills* — use `protein-structure-confidence` for fold
-confidence, `target-genetic-evidence` for constraint — because a skill cannot
+scoped to *other skills* -- use `protein-structure-confidence` for fold
+confidence, `target-genetic-evidence` for constraint -- because a skill cannot
 see which role loaded it. But the dangerous substitution is not skill-for-skill,
 it is **tool-for-untooled-question**, and which questions are untooled is a
-property of the role, not of the skill. By the §8.0 placement test the content
+property of the role, not of the skill. By the Section 8.0 placement test the content
 is role-specific, so it belongs in the template body.
 
 **Nor can the CLI carry it, and that is worth stating because the CLI carries
@@ -694,7 +694,7 @@ the neighbouring guard so well** (tooling-lead). PkDE's tools are already
 structurally proof against *fabrication*: a refusal exits 9, a phase-2 latch
 will not invent the input it is missing, and no command will produce a number
 whose computation did not happen. None of that touches *substitution*, because
-the substituting invocation is legitimate on its face — the CLI cannot know
+the substituting invocation is legitimate on its face -- the CLI cannot know
 that a druggability score was requested only because an affinity tool was
 missing. **Loud refusal, silent substitution, and a finding that looks normal.**
 The defence has to sit where the missing capability is known, and that is the
@@ -710,14 +710,14 @@ redundant. It is not, for two reasons. A relay **arrives with the artifact**,
 which means it reaches an agent that already ran the wrong tool; the template
 prohibition reaches the agent **deciding which tool to run**, which is the only
 point at which the substitution can be declined rather than annotated. And a
-relay can only contradict the wrong reading of *the number it accompanies* —
+relay can only contradict the wrong reading of *the number it accompanies* --
 it cannot know which question went unanswered, so it cannot say *report this
 task blocked*, which is the actual instruction the role needs.
 
 That second reason is a **category limit, not a gap someone could close**
 (plan-review). The artifact knows what it is; only the role knows what it was
 asked. So these are not weak and strong versions of one defence, and no
-improvement to the relay will ever begin to answer the role's question —
+improvement to the relay will ever begin to answer the role's question --
 which is the inference to head off, because "the tooling is getting better at
 this" is the most natural reason a future editor would have for deleting the
 prohibition. Treat the relay as evidence that will be in the artifact when a
@@ -726,8 +726,8 @@ reviewer looks, not as a guard that fires before the mistake.
 **And do not audit a role's exposure by counting relays, because the guard is
 missing in exactly the place the count looks healthy** (tooling-lead's audit,
 re-derived from the emission conditions). Relays divide into those that fire on
-a *fault in the data* and those that fire on *the answer itself* — the
-distinction and its consequences are in tool-design-guidance §8. The half that
+a *fault in the data* and those that fire on *the answer itself* -- the
+distinction and its consequences are in tool-design-guidance Section 8. The half that
 matters when writing a template is this: a tool whose relays all fire on faults
 **emits nothing at all on a clean run**, and the clean run is the one carrying
 the most quotable number. So the artifact reaches your role barest exactly when
@@ -737,7 +737,7 @@ be *defective*, not that it has any guard against being *quoted*.
 Two tools are in that state now, and they are a pair rather than a coincidence:
 the structure predictor and the variant-effect predictor, the only two whose
 output is a **model prediction rendered as a number**. Everything else in the
-set reports a measurement, a database state or a tournament result — and a
+set reports a measurement, a database state or a tournament result -- and a
 measurement over-read is still a measurement, while a prediction over-read
 becomes a fact. Nobody writes a caveat about a number their tool did not make
 up, which is why the guard is absent in precisely the two tools that did. For
@@ -746,7 +746,7 @@ un-retired by upstream progress; in the common case it is the only guard that
 exists.**
 
 **A relay table is not evidence that a guard fires.** A code can be registered,
-documented in a skill's table, and emitted by nothing — coverage on paper, and
+documented in a skill's table, and emitted by nothing -- coverage on paper, and
 indistinguishable from the real thing at the two places a template author looks.
 So the check is: for each code a skill's relay table lists, confirm something
 emits it. Enumerate from the registry and search for each code by name. Do not
@@ -756,7 +756,7 @@ applied to a line, and the missing rows included a relay registered an hour
 earlier by the person running the audit. The population must come from the
 definitive list, never from the pattern you hoped would match every spelling.
 
-This is the mirror of the reader rule in tool-design-guidance §8 — that a
+This is the mirror of the reader rule in tool-design-guidance Section 8 -- that a
 failure is loud only if it reaches someone who will *report* it. An agent
 holding a refusal is by definition a blocked reader who is not going to report,
 which is precisely the reader the exit code cannot help. The two rules are one
@@ -769,11 +769,11 @@ happens is the semantically adjacent one. A toxicologist will never offer a
 pocket score as a toxicity result; it will offer a tolerated knockout as
 evidence of compound safety, because both live in the vocabulary of harm. So
 name the closest one or two substitutions and stop. A do-not list that tries to
-be complete gets skimmed, and the entries that mattered are skimmed with it —
-false-alarm decay (§8.5's twin, in prose rather than in an instrument).
+be complete gets skimmed, and the entries that mattered are skimmed with it --
+false-alarm decay (Section 8.5's twin, in prose rather than in an instrument).
 
 **Give every prohibition an expiry condition, and make it an observable test.**
-A prohibition is a planning object, so §8.5 applies to it in the other
+A prohibition is a planning object, so Section 8.5 applies to it in the other
 position: *"do not let a pocket score stand in for an affinity"* is true only
 until an affinity tool reaches that role, after which it is a stale rule still
 being obeyed. Write what retires it, in the prohibition.
@@ -782,7 +782,7 @@ Write it as **something a reader can check, not an intention** (tooling-lead,
 `cf8fa75`). *"Retires when the upstream API improves"* names no act of
 observation, so nobody performs one, and the prohibition outlives the fault by
 however long it takes someone to wonder. *"Retires when this role's skill list
-holds a docking or affinity skill — check `agent.yaml`"* can be evaluated
+holds a docking or affinity skill -- check `agent.yaml`"* can be evaluated
 in ten seconds by whoever next reads the page. The same distinction applies to
 the standing caveats an instrument prints: of six upstream advisories in
 `pkde doctor`, all six said how to work around the fault and only one said
@@ -791,8 +791,8 @@ nobody has re-checked in a year are indistinguishable.
 
 **Then say who can run the test, when not everyone can.** An observable test is
 not automatically an available one. Two of those six advisories retire on
-evidence that needs a credential and a live endpoint — score one variant per
-output type, or send a deliberately malformed request — and a test only a
+evidence that needs a credential and a live endpoint -- score one variant per
+output type, or send a deliberately malformed request -- and a test only a
 privileged reader can run will be run by nobody, leaving the advisory to
 outlive its fault exactly as if it had named no test at all. *An unrunnable
 test that names its owner is an assigned check; an unrunnable test that says
@@ -800,14 +800,14 @@ nothing is a dead one that looks alive.*
 
 Where the tool can tell which reader it has, it should say so rather than make
 the reader work it out: `pkde doctor` resolves the credential and prints
-either *"you can run this here"* or *"not runnable here — this test belongs to
+either *"you can run this here"* or *"not runnable here -- this test belongs to
 whoever holds the key"* (`704c4f3`). The general form is the one template-builder
 named in review: a rule states a condition, an instrument states which side of
 it you are standing on, and the second is worth building wherever the tool
 already holds the fact.
 
 Also say **whether the risk decays with the expiry or peaks just before it**
-— plan-review's point, in review of an earlier draft of this section. Those are
+-- plan-review's point, in review of an earlier draft of this section. Those are
 opposite operational instructions drawn from the same sentence, and both
 readings look like compliance. The substitution prohibitions below peak: the
 pressure to offer the wrong number is greatest on exactly the tasks where that
@@ -824,7 +824,7 @@ Two live instances, both in `27ff4cd`: `computational-chemist` holds
 central question is binding affinity; `preclinical-toxicologist` holds two
 target-level skills in a role whose question is compound safety. The second was
 written before this section was, which is some evidence the rule is real rather
-than fitted to its examples — but both templates are the same author's, so the
+than fitted to its examples -- but both templates are the same author's, so the
 confirmation is partial. It is a rule applied before it was named, not one
 another party's work independently produced.
 

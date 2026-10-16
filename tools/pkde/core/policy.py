@@ -1,13 +1,13 @@
-"""Gate policy requirements — versioned, applicability-aware gate criteria.
+"""Gate policy requirements -- versioned, applicability-aware gate criteria.
 
 A gate policy is a versioned collection of requirements that formalizes
 what concepts must demonstrate to pass a stage gate. Each requirement
 carries its own stable identity, type classification, and applicability
 rules that determine which concepts it applies to.
 
-Requirements reference threshold sets by ``name@version`` and key —
+Requirements reference threshold sets by ``name@version`` and key --
 they never inline a threshold value. This follows the existing
-convention in ``science-program-lead/agents.md`` §9: "tool thresholds
+convention in ``science-program-lead/agents.md`` Section 9: "tool thresholds
 are cited by name, never by value."
 
 Three requirement types:
@@ -17,7 +17,7 @@ Three requirement types:
   - ``scientific_cutoff``: tied to a named ThresholdSet; value resolved
     at evaluation time via ``ThresholdSet.get()``
 
-See the design document (tracker73-shared-contracts.md §2.3) for the
+See the design document (tracker73-shared-contracts.md Section 2.3) for the
 full schema specification.
 """
 
@@ -50,7 +50,7 @@ _SNAP_ID_RE = re.compile(r"^SNAP-\d{3,}$")
 POLICY_SCHEMA = "pkde.gate-policy.v1"
 SNAPSHOT_SCHEMA = "pkde.policy-snapshot.v1"
 
-# Applicability fields — null means "applies to all".
+# Applicability fields -- null means "applies to all".
 APPLICABILITY_FIELDS = {
     "modality",
     "stage",
@@ -292,7 +292,7 @@ def requirement_applies(
 
     A requirement applies when all non-null applicability fields match
     the concept's corresponding fields. A null field means "applies
-    regardless of this dimension" (design §2.3.1).
+    regardless of this dimension" (design Section 2.3.1).
 
     Parameters
     ----------
@@ -340,7 +340,7 @@ def requirement_applies(
 
 
 # ---------------------------------------------------------------------------
-# Evidence / assessment matching (design §3.1)
+# Evidence / assessment matching (design Section 3.1)
 # ---------------------------------------------------------------------------
 
 
@@ -351,12 +351,12 @@ def match_assessment_to_requirement(
     """Check whether an assessment evaluates a requirement.
 
     Returns a result dict with:
-      - ``matches``: bool — True if evidence_type matches
-      - ``warnings``: list[str] — compatibility warnings
-      - ``method_excluded``: bool — True if method_required filter
+      - ``matches``: bool -- True if evidence_type matches
+      - ``warnings``: list[str] -- compatibility warnings
+      - ``method_excluded``: bool -- True if method_required filter
         excludes this assessment
 
-    Design §3.1 rules:
+    Design Section 3.1 rules:
       1. evidence_type must match exactly (primary key)
       2. units must be compatible (mismatch is a warning)
       3. method is informational, not gating (unless method_required)
@@ -372,7 +372,7 @@ def match_assessment_to_requirement(
 
     # Rule 1: evidence_type must match exactly.
     # Issue #297: null or empty evidence_type on either side is a
-    # non-match — fail-closed to prevent false-positive gate decisions.
+    # non-match -- fail-closed to prevent false-positive gate decisions.
     req_evidence_type = requirement.get("evidence_type")
     assessment_evidence_type = evidence.get("evidence_type")
     if (
@@ -423,7 +423,7 @@ def match_assessment_to_requirement(
 
 
 # ---------------------------------------------------------------------------
-# Freeze logic (design §2.3.2)
+# Freeze logic (design Section 2.3.2)
 # ---------------------------------------------------------------------------
 
 
@@ -480,7 +480,7 @@ def freeze_policy(
     for ts_name in sorted(referenced_sets):
         ts = threshold_sets.get(ts_name)
         if ts is None:
-            # Threshold set not provided — record absence explicitly.
+            # Threshold set not provided -- record absence explicitly.
             frozen_threshold_sets[ts_name] = {
                 "tag": ts_name,
                 "applied": {},
@@ -516,7 +516,7 @@ def freeze_policy(
 
 
 # ---------------------------------------------------------------------------
-# Program YAML loader (design §4.4.1)
+# Program YAML loader (design Section 4.4.1)
 # ---------------------------------------------------------------------------
 
 
@@ -530,7 +530,7 @@ def load_program_config(project_root: Any) -> dict[str, Any]:
       - ``concept_defaults``: dict of default concept field values
 
     Returns an empty dict if the file does not exist. This supports
-    backward compatibility (design §3.4): a program without a
+    backward compatibility (design Section 3.4): a program without a
     ``program.yaml`` is valid.
     """
     from pathlib import Path

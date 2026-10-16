@@ -131,7 +131,7 @@
         return '<span class="tree-bracket">' + open + close + '</span>' + (isLast ? '' : ',');
       }
 
-      var html = '<span class="tree-toggle" onclick="this.parentElement.classList.toggle(\'tree-collapsed\')">&#9660;</span>';
+      var html = '<span class="tree-toggle" onclick="this.parentElement.classList.toggle(\'tree-collapsed\')">v</span>';
       html += '<span class="tree-bracket">' + open + '</span> ';
       html += '<span class="tree-count">' + count + ' ' + (isArray ? 'items' : 'keys') + '</span>';
       html += '<div class="tree-children">';
@@ -151,7 +151,7 @@
       showError('No file specified. Use ?file=path/to/file');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
-      document.title = filePath.split('/').pop() + ' — JSON Viewer';
+      document.title = filePath.split('/').pop() + ' -- JSON Viewer';
 
       fetch(filePath)
         .then(function(r) {
@@ -192,7 +192,7 @@
             btnTree.disabled = true;
             btnTree.style.opacity = '0.5';
             btnTree.style.cursor = 'default';
-            btnTree.title = 'Tree view unavailable — file is not valid JSON';
+            btnTree.title = 'Tree view unavailable -- file is not valid JSON';
           }
         })
         .catch(function(err) { showError('Failed to load file: ' + err.message); });

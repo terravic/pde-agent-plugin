@@ -3,22 +3,22 @@
 **Status**: v0.1. Expect revision after the pilot conversion (co-scientist, AlphaFold, AlphaGenome).
 **Purpose**: the standard for writing pkde skills, and the reference for converting `upstream-science-skills` one at a time.
 **Companion**: [`tool-design-guidance.md`](tool-design-guidance.md). That document is normative for paths, sidecars, and thresholds.
-**Context**: [`pkde-plan.md`](pkde-plan.md) §5 and §7.
+**Context**: [`pkde-plan.md`](pkde-plan.md) Section 5 and Section 7.
 
 This document's specialist-neutral grouping rule applies to **science capability
 skills**. Procedural orchestration skills may bind to the Science Program Lead or
 Research Operations Controller because those roles have deliberately different
 authority. They retain the same computation/prose boundary, but their inventory and
 placement rules are defined in
-[`orchestration-design-guidance.md`](orchestration-design-guidance.md) §8.
+[`orchestration-design-guidance.md`](orchestration-design-guidance.md) Section 8.
 
 ---
 
 ## 1. What a pkde skill is
 
-A pkde science skill is a routing and interpretation contract for a **capability** — a group of tools that share the rules for reading their results.
+A pkde science skill is a routing and interpretation contract for a **capability** -- a group of tools that share the rules for reading their results.
 
-A skill is not a manual for a tool. A skill is also not the property of one specialist. The same capability serves different roles, asking different questions, at different stages. The role-specific part belongs in the template. See §3.
+A skill is not a manual for a tool. A skill is also not the property of one specialist. The same capability serves different roles, asking different questions, at different stages. The role-specific part belongs in the template. See Section 3.
 
 The split with the CLI is absolute:
 
@@ -57,7 +57,7 @@ Name a skill for what it lets you **find out**. Do not name it for what you **co
 
 The grouping test selects the right cluster. The name is where the error enters. A skill named for a decision encodes one specialist's question into an artifact that four specialists will use. The other three will not find it, or will find an interpretation section written for somebody else.
 
-The tell is grammatical. A judgment word in the name — tractability, triage, viability, suitability — means the name absorbed a question. Capability names describe available evidence. Decision names describe a verdict on that evidence.
+The tell is grammatical. A judgment word in the name -- tractability, triage, viability, suitability -- means the name absorbed a question. Capability names describe available evidence. Decision names describe a verdict on that evidence.
 
 ### Worked grouping
 
@@ -104,7 +104,7 @@ Nine things make up a skill. Six are scoped to the tool and do not vary by role:
 
 Two vary by role: which question is being asked, and what happens next. One varies by program: the threshold.
 
-That last one is the precedent. Thresholds vary by program, so they moved out of the skill into `.pkde/thresholds.yaml`. Nobody forked a skill per program. Question and consequence vary by role, so they move out too — into the template. The `skills:` list in `agent.yaml` is the capability grant. The always-loaded descriptions do the routing.
+That last one is the precedent. Thresholds vary by program, so they moved out of the skill into `.pkde/thresholds.yaml`. Nobody forked a skill per program. Question and consequence vary by role, so they move out too -- into the template. The `skills:` list in `agent.yaml` is the capability grant. The always-loaded descriptions do the routing.
 
 Bake a role into a skill and one cluster becomes four skills. Each restates the same invocation table and the same output paths. Four copies of the artifact contract is four chances for it to drift. A drifted invocation table makes an agent guess a path, then invent what it would have found there.
 
@@ -114,8 +114,8 @@ For any sentence you are about to write in a skill, ask:
 
 > **Would this be wrong for a different specialist?**
 >
-> No → it is a universal consequence. Put it in the skill.
-> Yes → it is a role-specific next action. Put it in the template's `agents.md`.
+> No -> it is a universal consequence. Put it in the skill.
+> Yes -> it is a role-specific next action. Put it in the template's `agents.md`.
 
 "A highly disordered protein should not be docked whole" is true for everyone. It goes in the skill.
 
@@ -129,7 +129,7 @@ Applied honestly, most consequence content is universal, and templates stay shor
 
 Six sections, in this order. A seventh section usually means the skill is carrying something that belongs in the CLI.
 
-### 4.1 Frontmatter description — routing
+### 4.1 Frontmatter description -- routing
 
 This is the only part always in context. It does the most work per token.
 
@@ -140,14 +140,14 @@ Three clauses: what the capability finds out, when to use it, and an explicit ne
 name: protein-structure-confidence
 description: >
   Retrieve protein structures and quantify how far their geometry can be
-  trusted — global and per-residue model confidence, disorder, domain
+  trusted -- global and per-residue model confidence, disorder, domain
   boundaries, and pocket detection. Use when any structural claim depends
   on model reliability: assessing target druggability, deciding whether a
   binding site is well enough resolved to dock into, or checking whether a
   variant falls in an ordered region. Do not use to find structural
   homologs (use structural-homology-search), to interpret a co-crystal you
   already have (use binding-mode-analysis), or when you only have a gene
-  name — resolve it to a UniProt accession first.
+  name -- resolve it to a UniProt accession first.
 ---
 ```
 
@@ -165,7 +165,7 @@ What must be true before invoking: input form, required credential, cost, concur
 
 Cost and concurrency belong here because they change planning, not just execution. An agent needs to know that AF3 is single-flight **before** it designs a 40-compound campaign.
 
-### 4.4 Tool invocations — the routed subset
+### 4.4 Tool invocations -- the routed subset
 
 This section connects the skill to the CLI. Write it as a table: question, command, output location.
 
@@ -193,9 +193,9 @@ The largest section, and the only one that cannot move into code: what the numbe
 
 Include:
 
-- **Mandatory relays.** Warnings that must reach the report unchanged. Isoform substitution is the model case — analyzing an isoform instead of the canonical sequence invalidates everything downstream.
+- **Mandatory relays.** Warnings that must reach the report unchanged. Isoform substitution is the model case -- analyzing an isoform instead of the canonical sequence invalidates everything downstream.
 
-  **Name the code, not the warning text.** Relays carry registered codes such as `afdb.partial_coverage`, emitted top-level in the sidecar and `.analysis.json`. Cite the code and state what it obliges the specialist to do. Do not restate the message: prose is reworded between builds, and a skill that matched on the old wording goes quietly stale. This is the same rule as thresholds, for the same reason — cite the name, let the CLI own the value. Run `pkde relays` for the registry, and see [`tool-design-guidance.md`](tool-design-guidance.md) §5.1.
+  **Name the code, not the warning text.** Relays carry registered codes such as `afdb.partial_coverage`, emitted top-level in the sidecar and `.analysis.json`. Cite the code and state what it obliges the specialist to do. Do not restate the message: prose is reworded between builds, and a skill that matched on the old wording goes quietly stale. This is the same rule as thresholds, for the same reason -- cite the name, let the CLI own the value. Run `pkde relays` for the registry, and see [`tool-design-guidance.md`](tool-design-guidance.md) Section 5.1.
 
   A relay is an instruction, not a caveat. `afdb.partial_coverage` does not mean "mention that coverage is partial"; it means the confidence metrics describe the modelled region, so any claim about the protein must be scoped to that region or withheld.
 - **Synthesis rules.** How to combine outputs across the grouped tools into one judgment.
@@ -204,11 +204,11 @@ Include:
 
 Do not restate threshold values. Cite them by name, such as the configured `plddt_confident` threshold. Values live in CLI config and are stamped into `.analysis.json`. Prose thresholds cannot be enforced, versioned, or varied per program.
 
-**Say where the number comes from instead, or the prohibition will not hold.** A skill author who needs to state a criterion and is told only what not to write will write the value anyway, correct on the day and stale by the next data release. Where a finding must give the number, the rule is **quote `thresholds_applied` from the analysis being cited**, together with `threshold_sources` where it matters whether a default or a program override was in force. This is not a style preference: a value quoted from the artifact cannot disagree with the run it describes, and a value typed into prose eventually will. See `tool-design-guidance.md` §7.
+**Say where the number comes from instead, or the prohibition will not hold.** A skill author who needs to state a criterion and is told only what not to write will write the value anyway, correct on the day and stale by the next data release. Where a finding must give the number, the rule is **quote `thresholds_applied` from the analysis being cited**, together with `threshold_sources` where it matters whether a default or a program override was in force. This is not a style preference: a value quoted from the artifact cannot disagree with the run it describes, and a value typed into prose eventually will. See `tool-design-guidance.md` Section 7.
 
-When a threshold referenced by the skill is UNRESOLVED in the CLI, the skill must state this and carry the "do not invent" instruction — the agent must not supply a value the source declined to publish. See `tool-design-guidance.md` §7 for the full rationale.
+When a threshold referenced by the skill is UNRESOLVED in the CLI, the skill must state this and carry the "do not invent" instruction -- the agent must not supply a value the source declined to publish. See `tool-design-guidance.md` Section 7 for the full rationale.
 
-**What this section produces.** Following the interpretation contract produces the specialist's prose conclusion — a Layer 1 finding in `findings/`. Everything the tools emitted stays in `raw/`. A finding that reformats an `.analysis.json` adds no judgment and defeats the layer separation.
+**What this section produces.** Following the interpretation contract produces the specialist's prose conclusion -- a Layer 1 finding in `findings/`. Everything the tools emitted stays in `raw/`. A finding that reformats an `.analysis.json` adds no judgment and defeats the layer separation.
 
 ### 4.6 Failure modes and the anti-fabrication guard
 
@@ -232,7 +232,7 @@ Two parts.
 | API parameter enumerations | `references/`, loaded on demand, or `--help` | Progressive disclosure keeps the always-loaded surface small. |
 | General domain knowledge | Nowhere. The model has it. | The lean-role principle. |
 | Rate limits, retry logic | CLI | Cross-cutting. Must be enforced, not requested. |
-| Role-specific next actions | The template's `agents.md` | One capability serves several roles. See §3. |
+| Role-specific next actions | The template's `agents.md` | One capability serves several roles. See Section 3. |
 
 ---
 
@@ -269,7 +269,7 @@ Guidance written before a worked example is guesswork. Finding that out at skill
 
 - [ ] Description has a positive clause, a use-when clause, and a negative clause naming an alternative
 - [ ] The use-when clause covers every role that will use the capability
-- [ ] The skill covers one capability — tools that share the rules for reading their results
+- [ ] The skill covers one capability -- tools that share the rules for reading their results
 - [ ] The name describes what you can find out, not what you conclude
 - [ ] No sentence in the skill would be wrong for a different specialist
 - [ ] Every claimed capability has a row in the invocation table

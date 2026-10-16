@@ -6,7 +6,7 @@ who built it. **Status of the materials handed over:** v0.1. The pilot is expect
 change them.
 
 This document answers one question: **what is the first pilot actually able to do, and
-how should a report from it be read?** It does not describe the design — the design is in
+how should a report from it be read?** It does not describe the design -- the design is in
 [`pkde-plan.md`](pkde-plan.md), which is the source of truth, with the README as a
 high-level recap.
 
@@ -34,7 +34,7 @@ renamed, and *nothing* reads as "no template grants any skill" rather than as "t
 command stopped working."
 
 No counts of tools, skills or relay codes appear in this document. That is a rule of the
-house (`tool-design-guidance.md` §7) and it was learned the hard way: a hand-written count
+house (`tool-design-guidance.md` Section 7) and it was learned the hard way: a hand-written count
 of the repository was published in the section that forbids counts, was wrong, was
 corrected in eleven minutes, and had already been copied into the title of a tracker issue
 by then. The correction never caught the copy.
@@ -44,7 +44,7 @@ by then. The correction never caught the copy.
 ## 2. The shape of the limit: the pilot is one stage deep
 
 The plan describes four stages of pre-clinical work. **The tools built so far serve
-Stage 1** — identify and validate the intervention point. Hypothesis ingestion, structure
+Stage 1** -- identify and validate the intervention point. Hypothesis ingestion, structure
 confidence, pocket detection, tissue expression, genetic constraint, regulatory variant
 effect, citation resolution. There is no chemistry, no ADMET, no toxicology and no
 regulatory tooling, because nothing downstream of target validation has been built.
@@ -63,7 +63,7 @@ usually anticipated:
 
 2. **Coverage is uneven by role rather than uniformly early.** The computational
    biologist holds several capability skills; the experimental biologist holds one. A
-   pilot team will read this as favouritism or as an oversight. It is neither — it is
+   pilot team will read this as favouritism or as an oversight. It is neither -- it is
    which tools happen to exist.
 
 3. **A count of granted skills does not measure capability.** `grep -c uri:` counts
@@ -79,7 +79,7 @@ designed output.
 
 - **Refusal has its own exit code.** A tool that refuses is not a tool that failed, and
   neither is a tool that answers "no". The exit codes are defined in the CLI's error
-  module — read them there rather than from any table in prose. A pilot report of "the
+  module -- read them there rather than from any table in prose. A pilot report of "the
   tool errored" should always be resolved to *which* code before it is triaged.
 - **`pkde doctor` ends with a verdict line, not a warning count.** `STOP` means fix
   before running anything; `PROCEED` means work. A healthy install carries warnings.
@@ -127,7 +127,7 @@ effect of an edit. Each is stated in full, with its reasoning, in the guidance d
   bytes remain reachable for a reviewer. Normalisation is lossy, so the original is kept
   beside it.
 - **A relay is an instruction, not a caveat.** Registered relay codes travel with a value
-  and impose an obligation on the finding — scope the claim, name the isoform, report a
+  and impose an obligation on the finding -- scope the claim, name the isoform, report a
   count and not a rate. A finding that omits a mandatory relay is *wrong*, not merely
   incomplete. The registry is `provenance.RELAY_CODES`; a relay that is not registered
   does not exist.
@@ -159,7 +159,7 @@ instrument aimed at the rule its author had in mind confirms what its author exp
 
 Two of them are worth understanding rather than just running. `check_artifact_paths.py`
 exists because `check_invocations.py` passed a file clean while four invented directory
-names sat in its tree diagram — an instrument only finds what it is pointed at.
+names sat in its tree diagram -- an instrument only finds what it is pointed at.
 `check_skill_uris.py` checks the pushed copy as well as the working tree, because a
 template can grant a skill that exists locally and nowhere else.
 
@@ -187,7 +187,7 @@ confirms. The practical instructions that follow:
 - **Wire the second reader into the flow.** A specialist checking their own finding is the
   case we have evidence does not work. "Review carefully" is not a control.
 - **Do not read the healthy case.** The strongest defect found during the build was a
-  preflight check that consulted `import venv` — which succeeds on Debian precisely when
+  preflight check that consulted `import venv` -- which succeeds on Debian precisely when
   the thing being checked is broken. It was found by injecting a shim, not by running the
   test that would pass. **A proxy that is true in the failing case is not a weak check; it
   is an inverted one, and it reads green forever.**
@@ -202,7 +202,7 @@ The tracker is the list; `gh issue list` is authoritative and this paragraph is 
 handoff the open set covers: relay coverage gaps and taxonomy (#1, #2, #3, #5, #15),
 deferred tool capabilities (#14), unresolved thresholds (#12), bootstrap packaging (#13),
 the environment-cost stamp being blind to build-machine cost (#18), stage-gate threshold
-provenance (#16), two design decisions needing Preston (#4, #6), a shared-checkout commit
+provenance (#16), two design decisions needing architecture review (#4, #6), a shared-checkout commit
 hazard (#11), a documentation-reader calibration point (#8), and a agent-runtime messaging bug
 that belongs upstream (#17).
 
@@ -210,9 +210,9 @@ that belongs upstream (#17).
 
 1. **The owner names in the issue bodies point at agents that no longer exist.** We wrote
    them as a convention because the whole team shared one GitHub token and the tracker
-   could not attribute otherwise. They are reliable as *attribution* — who found it — and
+   could not attribute otherwise. They are reliable as *attribution* -- who found it -- and
    are not assignments. Do not route work by them.
-2. **#4 and #6 need Preston, not the crew.** They are design decisions, not defects.
+2. **#4 and #6 need architecture review, not the crew.** They are design decisions, not defects.
 
 ---
 
@@ -246,7 +246,7 @@ documents, the reasoning cadence, and the assumption that the reader of a failur
 is a human who will report it rather than an agent who will route around it (#8).
 
 The parts least likely to be wrong, because they were each established by a defect rather
-than by an opinion, are §4 of this document.
+than by an opinion, are Section 4 of this document.
 
 ---
 
@@ -258,11 +258,11 @@ documentation. They are preserved here as reference for anyone revisiting the
 first pilot's history.
 
 - **Target gene constraint (gnomAD v4)**: SPDYA showed pLI 0.985 and
-  LOEUF 0.496 — a split verdict where pLI indicated intolerance but LOEUF
+  LOEUF 0.496 -- a split verdict where pLI indicated intolerance but LOEUF
   indicated tolerance. This was the motivating example for the split-verdict
   documentation in the `target-genetic-evidence` skill.
 - **Co-Scientist tournament export**: the first pilot's tournament was a
-  partial export — 5 of 72 generated ideas were present. All 16
+  partial export -- 5 of 72 generated ideas were present. All 16
   deep-verification claims in the export carried negative verdicts
   (12 INACCURATE, 4 LEANING_INACCURATE). These numbers motivated the
   denominator caveat and `claim_denominator` relay in the `tournament-corpus`

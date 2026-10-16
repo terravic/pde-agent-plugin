@@ -1,4 +1,4 @@
-"""`pkde ppi` — protein-protein interaction lookup via STRING.
+"""`pkde ppi` -- protein-protein interaction lookup via STRING.
 
 Two phases:
 
@@ -169,9 +169,9 @@ def _extract_interactions(
             # should only return edges involving the query gene, so this
             # branch is unreachable in normal use.  If it fires, the API
             # returned an edge between two proteins neither of which is the
-            # query — log it so unexpected behaviour is visible.
+            # query -- log it so unexpected behaviour is visible.
             logger.warning(
-                "STRING returned an edge (%s — %s) where neither protein "
+                "STRING returned an edge (%s -- %s) where neither protein "
                 "matches the query gene %r; this is unexpected for a "
                 "single-gene query",
                 name_a,

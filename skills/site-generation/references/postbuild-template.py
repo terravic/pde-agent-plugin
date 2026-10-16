@@ -12,7 +12,7 @@ the FIXES list and fix functions to your program's needs.  Run after every
 
 Every fix function must be **idempotent**: safe to re-run without
 accumulating changes.  Each function returns a short status string
-("applied", "skipped — already applied", or "error: ...").
+("applied", "skipped -- already applied", or "error: ...").
 """
 
 from __future__ import annotations
@@ -36,7 +36,7 @@ from pathlib import Path
 
 
 def fix_tables(site_dir: Path) -> str:
-    """Structural HTML — convert pipe-delimited markdown tables to <table>.
+    """Structural HTML -- convert pipe-delimited markdown tables to <table>.
 
     The build tool sometimes emits raw pipe-delimited tables instead of
     proper HTML <table> elements.  This fix scans every .html file for
@@ -67,12 +67,12 @@ def fix_tables(site_dir: Path) -> str:
         changed += 1
 
     if changed == 0:
-        return "skipped — no unconverted tables found"
-    return f"stub — {changed} file(s) need table conversion (not yet implemented)"
+        return "skipped -- no unconverted tables found"
+    return f"stub -- {changed} file(s) need table conversion (not yet implemented)"
 
 
 def fix_duplicate_h1(site_dir: Path) -> str:
-    """Structural HTML — remove duplicate H1 elements.
+    """Structural HTML -- remove duplicate H1 elements.
 
     The page template injects an <h1> from metadata.  When the markdown
     source also starts with ``# Title``, the rendered page contains two
@@ -105,12 +105,12 @@ def fix_duplicate_h1(site_dir: Path) -> str:
         changed += 1
 
     if changed == 0:
-        return "skipped — no duplicate H1s found"
-    return f"stub — {changed} file(s) have duplicate H1 (not yet implemented)"
+        return "skipped -- no duplicate H1s found"
+    return f"stub -- {changed} file(s) have duplicate H1 (not yet implemented)"
 
 
 def fix_md_links(site_dir: Path) -> str:
-    """Link resolution — rewrite .md hrefs to .html.
+    """Link resolution -- rewrite .md hrefs to .html.
 
     Internal links generated from markdown cross-references retain the
     ``.md`` extension.  This fix rewrites ``href="*.md"`` to
@@ -151,25 +151,25 @@ def fix_md_links(site_dir: Path) -> str:
             changed += 1
 
     if changed == 0:
-        return "skipped — no .md links found"
-    return f"applied — rewrote links in {changed} file(s)"
+        return "skipped -- no .md links found"
+    return f"applied -- rewrote links in {changed} file(s)"
 
 
 # ---------------------------------------------------------------------------
-# Fix registry — add or remove entries to match your program's needs.
+# Fix registry -- add or remove entries to match your program's needs.
 # ---------------------------------------------------------------------------
 
 FIXES: list[tuple[str, Callable[[Path], str]]] = [
     # 1. Structural HTML
     ("fix_tables", fix_tables),
     ("fix_duplicate_h1", fix_duplicate_h1),
-    # 2. CSS / styling  — add your fix functions here
+    # 2. CSS / styling  -- add your fix functions here
     # ("fix_scroll_context", fix_scroll_context),
     # 3. Link resolution
     ("fix_md_links", fix_md_links),
-    # 4. Cosmetic passes — add your fix functions here
+    # 4. Cosmetic passes -- add your fix functions here
     # ("fix_whitespace", fix_whitespace),
-    # 5. Scan / report   — add a final scan function here
+    # 5. Scan / report   -- add a final scan function here
     # ("scan_remaining_issues", scan_remaining_issues),
 ]
 
@@ -196,7 +196,7 @@ def run(site_dir: Path) -> None:
     applied = sum(1 for _, s in results if s.startswith("applied"))
     skipped = sum(1 for _, s in results if s.startswith("skipped"))
     errors = sum(1 for _, s in results if s.startswith("error"))
-    print(f"postbuild: done — {applied} applied, {skipped} skipped, {errors} errors")
+    print(f"postbuild: done -- {applied} applied, {skipped} skipped, {errors} errors")
 
     if errors:
         sys.exit(1)

@@ -31,7 +31,7 @@ def build_graph(
 ) -> dict[str, Any]:
     """Compute pairwise cosine similarity and return an adjacency-list graph.
 
-    Only edges whose similarity ≥ *threshold* are included.
+    Only edges whose similarity >= *threshold* are included.
     Self-edges are excluded.
     """
     if matrix.shape[0] == 0:
@@ -56,7 +56,7 @@ def build_graph(
 
 
 def run_graph(run_dir: Path, threshold: float = 0.3) -> None:
-    """End-to-end graph pipeline: load embeddings → build graph → save."""
+    """End-to-end graph pipeline: load embeddings -> build graph -> save."""
     matrix, ids = load_embeddings(run_dir)
     graph = build_graph(matrix, ids, threshold=threshold)
 

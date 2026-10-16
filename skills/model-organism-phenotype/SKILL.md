@@ -9,7 +9,7 @@ Use this skill when you need model organism phenotype data or human
 phenotype ontology associations for a gene. Entry points include:
 
 - Checking what mouse knockout or knockin phenotypes are reported for a
-  gene — the observable consequences of gene disruption in a model
+  gene -- the observable consequences of gene disruption in a model
   organism.
 - Looking up HPO (Human Phenotype Ontology) terms associated with a
   gene through disease-gene mappings.
@@ -17,7 +17,7 @@ phenotype ontology associations for a gene. Entry points include:
   does disrupting this gene produce phenotypes relevant to the
   indication?
 - Identifying safety-relevant phenotypes from mouse knockouts as part
-  of a preclinical safety review — with the standing caveat that mouse
+  of a preclinical safety review -- with the standing caveat that mouse
   phenotypes are informative, not predictive.
 - Comparing phenotype profiles across candidate targets.
 
@@ -38,7 +38,7 @@ phenotype ontology associations for a gene. Entry points include:
 
 - **Gene input**: a gene symbol (e.g. `TP53`, `BRCA1`). MGI resolves
   symbols to mouse orthologs; HPO resolves to NCBI Gene IDs.
-- **No authentication** needed — MGI, the Alliance of Genome Resources,
+- **No authentication** needed -- MGI, the Alliance of Genome Resources,
   and HPO are all public APIs.
 - **MGI resolution path**: the tool resolves gene symbols through MGI's
   marker search, scrapes the MGI accession ID from the marker detail
@@ -78,15 +78,15 @@ paths only, `--out` to override the default output directory.
 
 `phenotype analyze` produces:
 
-- **phenotypes_found** — one or more phenotype annotations exist for
+- **phenotypes_found** -- one or more phenotype annotations exist for
   the gene in the queried source. The analysis reports the count of
   phenotypes, unique terms, and the top phenotype terms.
-- **no_phenotypes** — no phenotype annotations found.
+- **no_phenotypes** -- no phenotype annotations found.
 
 ### MGI phenotype annotations
 
 MGI/Alliance phenotype data describes observable consequences of gene
-disruption in mouse — knockout, knockin, and other allele types. Each
+disruption in mouse -- knockout, knockin, and other allele types. Each
 annotation carries:
 
 - **phenotype_term**: the Mammalian Phenotype (MP) ontology term (e.g.
@@ -96,7 +96,7 @@ annotation carries:
   modification).
 - **references**: PMID references for the annotation.
 
-Multiple phenotype terms for one gene are normal — a knockout may
+Multiple phenotype terms for one gene are normal -- a knockout may
 produce many observable phenotypes. The number and severity of
 phenotypes is informative but does not by itself predict human outcomes.
 
@@ -110,7 +110,7 @@ experimental observations. Each annotation carries:
   disability", "Short stature").
 - **hpo_id**: the HPO identifier.
 
-The artifact summary includes **disease_associations** — the diseases
+The artifact summary includes **disease_associations** -- the diseases
 through which the gene-phenotype link was established. This context
 is essential: an HPO term associated with a gene through a rare
 Mendelian disease may not be relevant to a common-disease drug target.
@@ -119,7 +119,7 @@ Mendelian disease may not be relevant to a common-disease drug target.
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `phenotype.model_organism_not_human` | Qualifier | MGI phenotypes found (conditional — fires for MGI source only) | State that mouse phenotype data may not translate directly to humans. Species differences in gene function, expression patterns, and compensatory mechanisms mean that a knockout phenotype in mouse is informative but not predictive of human clinical outcomes. |
+| `phenotype.model_organism_not_human` | Qualifier | MGI phenotypes found (conditional -- fires for MGI source only) | State that mouse phenotype data may not translate directly to humans. Species differences in gene function, expression patterns, and compensatory mechanisms mean that a knockout phenotype in mouse is informative but not predictive of human clinical outcomes. |
 
 Check `mandatory_relays` in the `.analysis.json`. Every relay code
 present must be satisfied in the finding.
@@ -130,7 +130,7 @@ present must be satisfied in the finding.
   phenotype terms. Carry the `model_organism_not_human` qualifier.
   State the organism (Mus musculus) and the allele types observed.
   Embryonic lethality in mouse knockouts is particularly informative
-  for safety assessment — but the relay applies: lethal in mouse does
+  for safety assessment -- but the relay applies: lethal in mouse does
   not mean toxic in human pharmacological inhibition.
 - **HPO phenotypes found**: report the phenotype terms and the disease
   associations through which they were established. HPO terms linked
@@ -158,10 +158,10 @@ present must be satisfied in the finding.
   with lethal mouse knockouts and strong GWAS associations presents a
   different target profile than one with only GWAS associations.
 - HPO disease associations can identify indication-relevant biology
-  that GWAS alone may miss — particularly for rare diseases where GWAS
+  that GWAS alone may miss -- particularly for rare diseases where GWAS
   power is insufficient.
 - The absence of mouse phenotype data for a gene does not mean the
-  gene can be safely modulated — it means the experiment has not been
+  gene can be safely modulated -- it means the experiment has not been
   done or has not been annotated in MGI.
 
 ### What this section produces

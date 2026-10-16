@@ -13,8 +13,8 @@ dispatches investigation.
 **Affected targets/series**: [which targets or compound series]
 **Receiving role(s)**: [specialist who should investigate or mitigate]
 **Status**: open | under investigation | mitigated | accepted | program-terminating
-**Resolution**: [added when resolved — link to resolution finding]
-**Pre-mortem ref**: [optional — OBJ-NNN if this liability originated from a pre-mortem review]
+**Resolution**: [added when resolved -- link to resolution finding]
+**Pre-mortem ref**: [optional -- OBJ-NNN if this liability originated from a pre-mortem review]
 
 Description of the liability and why it matters.
 

@@ -11,7 +11,7 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Research Operations Controller — executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority"
+description: "Research Operations Controller -- executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 

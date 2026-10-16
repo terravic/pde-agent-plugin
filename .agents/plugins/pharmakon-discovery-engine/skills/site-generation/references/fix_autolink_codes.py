@@ -20,7 +20,7 @@ Or run standalone:
 
     python3 fix_autolink_codes.py _site/
 
-**Idempotent:** uses a detection guard — codes already wrapped in <a> tags
+**Idempotent:** uses a detection guard -- codes already wrapped in <a> tags
 are skipped.  Safe to re-run after every build.
 """
 
@@ -31,7 +31,7 @@ import sys
 from pathlib import Path
 
 # ---------------------------------------------------------------------------
-# Configuration — customize these for your program's identifier schemes
+# Configuration -- customize these for your program's identifier schemes
 # ---------------------------------------------------------------------------
 
 # Regex patterns for structured identifiers.  Each entry maps a human-readable
@@ -97,7 +97,7 @@ def discover_code_urls(site_dir: Path) -> dict[str, str]:
             # Build a root-relative URL from the site directory.
             rel_path = html_file.relative_to(site_dir)
             url = "/" + str(rel_path).replace("\\", "/")
-            # First match wins — earlier revisions sort first, but the
+            # First match wins -- earlier revisions sort first, but the
             # latest revision (highest _rN suffix) sorts last so we
             # keep overwriting to pick up the latest.
             code_urls[code] = url
@@ -162,10 +162,10 @@ def _replace_codes_in_html(
     last_end = 0
 
     for m in _PROTECTED_RE.finditer(html):
-        # Text before this protected region — eligible for replacement.
+        # Text before this protected region -- eligible for replacement.
         if m.start() > last_end:
             result_parts.append(_replace_in_text(html[last_end : m.start()]))
-        # The protected region itself — keep verbatim.
+        # The protected region itself -- keep verbatim.
         result_parts.append(m.group(0))
         last_end = m.end()
 
@@ -194,24 +194,24 @@ def _detect_self_codes(html_file: Path, code_urls: dict[str, str]) -> set[str]:
 
 
 # ---------------------------------------------------------------------------
-# Main fix function — follows the postbuild-template.py contract
+# Main fix function -- follows the postbuild-template.py contract
 # ---------------------------------------------------------------------------
 
 
 def fix_autolink_codes(site_dir: Path) -> str:
-    """Link resolution — auto-link structured identifier codes.
+    """Link resolution -- auto-link structured identifier codes.
 
     Scans built HTML filenames to discover which codes have dedicated pages,
     then replaces bare code references in text content with clickable links.
 
     Detection guard: skips codes already inside <a>, <code>, or <pre> tags
-    and does not modify HTML attributes.  Idempotent — re-running produces
+    and does not modify HTML attributes.  Idempotent -- re-running produces
     no additional changes.
     """
     # Step 1: discover code -> URL mapping from filenames.
     code_urls = discover_code_urls(site_dir)
     if not code_urls:
-        return "skipped — no linkable code pages found in site"
+        return "skipped -- no linkable code pages found in site"
 
     # Step 2: process each HTML file.
     changed = 0
@@ -233,8 +233,8 @@ def fix_autolink_codes(site_dir: Path) -> str:
             changed += 1
 
     if changed == 0:
-        return f"skipped — {len(code_urls)} code(s) registered but no bare references to link"
-    return f"applied — linked codes in {changed} file(s) ({len(code_urls)} code(s) registered)"
+        return f"skipped -- {len(code_urls)} code(s) registered but no bare references to link"
+    return f"applied -- linked codes in {changed} file(s) ({len(code_urls)} code(s) registered)"
 
 
 # ---------------------------------------------------------------------------

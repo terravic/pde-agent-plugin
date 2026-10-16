@@ -1,12 +1,12 @@
-"""`pkde pathway` — pathway membership and gene ontology lookup.
+"""`pkde pathway` -- pathway membership and gene ontology lookup.
 
 Looks up which biological pathways a gene participates in and which GO
 terms annotate it. Two sources are supported:
 
-  **Reactome** — curated pathway database. Returns pathway memberships
+  **Reactome** -- curated pathway database. Returns pathway memberships
   for a gene symbol, queried against human (species 9606).
 
-  **GO (Gene Ontology via QuickGO)** — annotations from the EBI QuickGO
+  **GO (Gene Ontology via QuickGO)** -- annotations from the EBI QuickGO
   service. Returns GO term IDs, names, aspect (MF/BP/CC), and evidence
   codes for a gene product.
 
@@ -190,7 +190,7 @@ def _search_go(gene: str) -> tuple[bytes, list[dict[str, Any]]]:
 
     # QuickGO returns annotations in payload["results"].
     # Deduplicate by GO term ID but preserve all distinct evidence codes
-    # per term — an experimentally validated annotation (IDA) is
+    # per term -- an experimentally validated annotation (IDA) is
     # qualitatively different from an inferred one (IEA).
     entries: list[dict[str, Any]] = []
     term_index: dict[str, int] = {}  # go_id -> index in entries
@@ -360,7 +360,7 @@ def search_cmd(
 
     # Always use the resolved gene symbol for filenames so that
     # analyze can find them.  The --name value is recorded in the
-    # sidecar parameters for display/metadata only — matching the
+    # sidecar parameters for display/metadata only -- matching the
     # genetics.py pattern.
     suffix = f"pathway-{source}"
 
@@ -382,14 +382,14 @@ def search_cmd(
         emit.data("n_pathways", len(entries))
         emit.line(f"{resolved}: {len(entries)} Reactome pathway(s) found")
         for entry in entries[:5]:
-            emit.line(f"  {entry['pathway_id']} — {entry['name']}")
+            emit.line(f"  {entry['pathway_id']} -- {entry['name']}")
         if len(entries) > 5:
             emit.line(f"  ... and {len(entries) - 5} more")
     else:
         emit.data("n_terms", len(entries))
         emit.line(f"{resolved}: {len(entries)} GO annotation(s) found")
         for entry in entries[:5]:
-            emit.line(f"  {entry['term_id']} [{entry['aspect']}] — {entry['name']}")
+            emit.line(f"  {entry['term_id']} [{entry['aspect']}] -- {entry['name']}")
         if len(entries) > 5:
             emit.line(f"  ... and {len(entries) - 5} more")
 

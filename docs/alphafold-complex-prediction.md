@@ -154,7 +154,7 @@ or a specific domain. AF3 predicts what you give it:
   the full-length protein is too large, or when disordered regions would
   degrade the prediction.
 
-The choice affects residue numbering in the output (see §7).
+The choice affects residue numbering in the output (see Section 7).
 
 ---
 
@@ -214,19 +214,19 @@ This applies the `af3` threshold set and writes
 The AF3 dedicated cloud endpoint is a dedicated endpoint that **scales from zero** when
 idle. A prediction on a cold endpoint follows this pattern:
 
-1. **504 gateway timeouts** — the gateway times out while the endpoint's
+1. **504 gateway timeouts** -- the gateway times out while the endpoint's
    infrastructure is provisioning. The CLI retries every `--gateway-timeout-wait`
    seconds (default 60s). In the first pilot, 504 errors persisted for
    approximately 18 minutes.
 
-2. **429 "model is not yet ready"** — the container is up but the model is still
+2. **429 "model is not yet ready"** -- the container is up but the model is still
    loading. The CLI retries every `--cold-start-wait` seconds (default 25s).
 
-3. **Prediction runs** — once warm, the actual prediction executes.
+3. **Prediction runs** -- once warm, the actual prediction executes.
 
 **First-pilot observation:** a cold-start prediction took approximately 28
 minutes end-to-end (roughly 18 minutes of 504 gateway timeouts followed by
-retries until the prediction completed). The original estimate of 5–10 minutes
+retries until the prediction completed). The original estimate of 5-10 minutes
 was inaccurate.
 
 ### Warm-endpoint predictions
@@ -286,7 +286,7 @@ separate containers submit predictions simultaneously, one receives a 429
 backoff.
 
 In practice, the Research Operations Controller schedules AF3 work
-sequentially — only one specialist receives an AF3 work order at a time.
+sequentially -- only one specialist receives an AF3 work order at a time.
 If you receive a work order requiring AF3, the endpoint is available.
 
 ### Practical implications
@@ -306,8 +306,8 @@ If you receive a work order requiring AF3, the endpoint is available.
 AF3 output numbering corresponds to **positions in the submitted sequence**,
 not to UniProt positions or any external numbering scheme.
 
-- If you submit residues 100–250 of a protein (a domain), AF3 numbers them
-  1–151 in the output CIF and per-residue metrics.
+- If you submit residues 100-250 of a protein (a domain), AF3 numbers them
+  1-151 in the output CIF and per-residue metrics.
 - If you submit the full-length sequence, AF3 output position N corresponds
   to the Nth residue of the submitted sequence.
 
@@ -330,7 +330,7 @@ providing the reference needed for this mapping.
 endpoint infrastructure is ready.
 
 **What happens:** The CLI retries every 60 seconds (configurable with
-`--gateway-timeout-wait`). This phase can last 15–20 minutes on a cold start.
+`--gateway-timeout-wait`). This phase can last 15-20 minutes on a cold start.
 
 **Action:** Wait. This is expected behavior. If you anticipate a cold start,
 consider increasing the deadline.

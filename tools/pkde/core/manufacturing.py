@@ -1,11 +1,11 @@
-"""Manufacturing assessment logic — progressive stage-gated evaluation.
+"""Manufacturing assessment logic -- progressive stage-gated evaluation.
 
 Stage 0 (qualitative, no external APIs):
   Assess production-platform fit for a concept record using modality,
   delivery_assumptions, and entity_ref.
 
-The assessment logic lives here in ``core/`` — separate from the CLI
-commands in ``commands/manufacturing.py`` — following the project's
+The assessment logic lives here in ``core/`` -- separate from the CLI
+commands in ``commands/manufacturing.py`` -- following the project's
 existing pattern: core modules hold domain logic; command modules are
 thin CLI wrappers.
 
@@ -36,11 +36,11 @@ from typing import Any
 MANUFACTURING_EVIDENCE_TYPES = {
     "manufacturing_feasibility": "Stage 0 production-platform fit assessment",
     "synthetic_accessibility": (
-        "SA-score (Ertl & Schuffenhauer) — fragment-frequency heuristic, "
+        "SA-score (Ertl & Schuffenhauer) -- fragment-frequency heuristic, "
         "NOT a synthesis route"
     ),
     "complexity_heuristic": (
-        "Stereocenter/step-count complexity flags — scoped heuristics, not vetoes"
+        "Stereocenter/step-count complexity flags -- scoped heuristics, not vetoes"
     ),
     "production_platform_fit": ("Modality-delivery to production-platform mapping"),
     "biologic_developability": (
@@ -76,7 +76,7 @@ STAGE_REQUIREMENTS: dict[int, dict[str, Any]] = {
             "expression_system_feasibility",
             "sequence_liability",
         ],
-        "status": "placeholder — underlying tools not yet available",
+        "status": "placeholder -- underlying tools not yet available",
     },
     3: {
         "name": "formulation_process_developability",
@@ -88,7 +88,7 @@ STAGE_REQUIREMENTS: dict[int, dict[str, Any]] = {
             "formulation_feasibility",
             "developability_assessment",
         ],
-        "status": "placeholder — requires real process data",
+        "status": "placeholder -- requires real process data",
     },
     4: {
         "name": "supply_readiness",
@@ -100,7 +100,7 @@ STAGE_REQUIREMENTS: dict[int, dict[str, Any]] = {
             "manufacturing_scale_assessment",
             "regulatory_manufacturing_readiness",
         ],
-        "status": "placeholder — requires real supply data",
+        "status": "placeholder -- requires real supply data",
     },
 }
 
@@ -219,7 +219,7 @@ def compute_complexity_heuristics(smiles: str) -> dict[str, Any] | None:
     These are **scoped heuristics**, not vetoes.  A molecule with many
     stereocenters is flagged with the specific concern, not automatically
     rejected.  The requirement_type is ``prioritization_heuristic`` or
-    sponsor-specific ``hard_constraint`` — never an unconditional
+    sponsor-specific ``hard_constraint`` -- never an unconditional
     ``scientific_cutoff``.
     """
     try:
@@ -247,7 +247,7 @@ def compute_complexity_heuristics(smiles: str) -> dict[str, Any] | None:
     n_heavy = mol.GetNumHeavyAtoms()
 
     # Rough step estimate based on heavy atom count.
-    # This is NOT a synthesis route — it is a coarse heuristic.
+    # This is NOT a synthesis route -- it is a coarse heuristic.
     if n_heavy <= 15:
         step_range = "1-5 (estimated from molecular size)"
     elif n_heavy <= 25:
@@ -274,7 +274,7 @@ def compute_complexity_heuristics(smiles: str) -> dict[str, Any] | None:
         "scope": (
             "These are scoped heuristics for prioritization, not synthesis "
             "vetoes.  A molecule with many stereocenters is flagged with "
-            "the specific concern — it is not automatically rejected.  "
+            "the specific concern -- it is not automatically rejected.  "
             "Step-count estimates are derived from molecular size, not "
             "from retrosynthetic analysis."
         ),
@@ -376,7 +376,7 @@ def assess_stage0(
             "assumptions": [],
             "limitations": [
                 "Formulation properties (stability, viscosity, "
-                "aggregation) are NOT assessed — they require real data",
+                "aggregation) are NOT assessed -- they require real data",
                 "No yield, cost of goods, or formulation property is "
                 "fabricated in this assessment",
             ],
@@ -395,7 +395,7 @@ def assess_stage0(
 
     # --- 3. Entity-specific assessment ---
     if entity_ref is None:
-        # No physical entity — not_yet_applicable
+        # No physical entity -- not_yet_applicable
         findings.append(
             {
                 "aspect": "entity_manufacturing_assessment",
@@ -407,14 +407,14 @@ def assess_stage0(
                 ),
                 "trigger": (
                     "This assessment becomes applicable when entity_ref "
-                    "is populated — i.e., when a physical entity is "
+                    "is populated -- i.e., when a physical entity is "
                     "identified for this concept."
                 ),
             }
         )
         overall_status = "not_yet_applicable"
     elif platform_info is None:
-        # Entity exists but modality is unrecognized — cannot assess
+        # Entity exists but modality is unrecognized -- cannot assess
         findings.append(
             {
                 "aspect": "entity_manufacturing_assessment",
@@ -426,7 +426,7 @@ def assess_stage0(
                 ),
             }
         )
-        # overall_status stays "not_assessed" — do NOT override
+        # overall_status stays "not_assessed" -- do NOT override
     else:
         if modality in SA_SCORE_MODALITIES:
             # Small-molecule-like: SA-score + complexity heuristics
@@ -482,7 +482,7 @@ def assess_stage0(
                 if stereo_count > 2:
                     flags.append(
                         f"High stereocenter count ({stereo_count}).  "
-                        "This is a prioritization heuristic — a "
+                        "This is a prioritization heuristic -- a "
                         "molecule with many stereocenters requires "
                         "more careful synthetic planning, but is NOT "
                         "automatically rejected."
@@ -514,7 +514,7 @@ def assess_stage0(
                             f"{complexity['estimated_step_range']}.  "
                             "These are scoped heuristics for "
                             "prioritization.  Step/stereocenter counts "
-                            "are NOT universal scientific vetoes — they "
+                            "are NOT universal scientific vetoes -- they "
                             "are flagged with the specific concern."
                         ),
                     }
@@ -543,7 +543,7 @@ def assess_stage0(
                     ],
                     "limitations": [
                         "Sequence-level liability assessment NOT performed "
-                        "— this is a concept-level qualitative assessment "
+                        "-- this is a concept-level qualitative assessment "
                         "only",
                         "No developability data (aggregation, viscosity, "
                         "charge patches) is fabricated",
@@ -615,7 +615,7 @@ def _build_rationale(
     if entity_ref is None:
         parts.append(
             "Entity-level manufacturing assessment is not yet applicable "
-            "— no physical entity exists for this concept."
+            "-- no physical entity exists for this concept."
         )
 
     parts.append(

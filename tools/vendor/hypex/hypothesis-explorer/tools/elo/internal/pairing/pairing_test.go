@@ -246,7 +246,7 @@ func TestStrategyA_EmptyRatings(t *testing.T) {
 	mh := NewMatchHistory(nil)
 
 	pairs := StrategyA(ratings, []string{"H-0001", "H-0002"}, nil, mh, 0, 10, 1)
-	// No rated hypotheses, but 2 unrated — should get placement pairs.
+	// No rated hypotheses, but 2 unrated -- should get placement pairs.
 	if len(pairs) != 1 {
 		t.Errorf("expected 1 pair, got %d", len(pairs))
 	}
@@ -295,7 +295,7 @@ func TestStrategyB_Basic(t *testing.T) {
 	if len(pairs) == 0 {
 		t.Error("expected some Swiss pairs")
 	}
-	// 4 hypotheses → ceil(log2(4)) = 2 rounds, each round has 2 pairs → up to 4 pairs.
+	// 4 hypotheses -> ceil(log2(4)) = 2 rounds, each round has 2 pairs -> up to 4 pairs.
 	if len(pairs) > 4 {
 		t.Errorf("expected at most 4 pairs for 4 hypotheses, got %d", len(pairs))
 	}
@@ -341,7 +341,7 @@ func TestStrategyB_TwoHypotheses(t *testing.T) {
 	mh := NewMatchHistory(nil)
 
 	pairs := StrategyB(ratings, mh, 0, 10, nil, 1)
-	// 2 hypotheses → ceil(log2(2)) = 1 round, 1 pair.
+	// 2 hypotheses -> ceil(log2(2)) = 1 round, 1 pair.
 	if len(pairs) != 1 {
 		t.Errorf("expected 1 pair, got %d", len(pairs))
 	}
@@ -436,7 +436,7 @@ func TestHasPlayedWithin(t *testing.T) {
 		window       int
 		want         bool
 	}{
-		// window=0 means no constraint — always returns false.
+		// window=0 means no constraint -- always returns false.
 		{"window_0_no_constraint", "H-0001", "H-0002", 0, 0, false},
 		{"window_0_played_same_epoch", "H-0001", "H-0002", 0, 0, false},
 
@@ -492,7 +492,7 @@ func TestPlacementPairs_Window2(t *testing.T) {
 	}
 	mh := NewMatchHistory(matches)
 
-	// Epoch 1, window 2: range [0,1]. H-0004 vs H-0001 played epoch 0 → blocked.
+	// Epoch 1, window 2: range [0,1]. H-0004 vs H-0001 played epoch 0 -> blocked.
 	pairs1 := PlacementPairs(ratings, all, mh, 1, 10, 2)
 	for _, p := range pairs1 {
 		if (p.A == "H-0004" && p.B == "H-0001") || (p.A == "H-0001" && p.B == "H-0004") {
@@ -500,7 +500,7 @@ func TestPlacementPairs_Window2(t *testing.T) {
 		}
 	}
 
-	// Epoch 2, window 2: range [1,2]. H-0004 vs H-0001 played epoch 0 → NOT blocked.
+	// Epoch 2, window 2: range [1,2]. H-0004 vs H-0001 played epoch 0 -> NOT blocked.
 	pairs2 := PlacementPairs(ratings, all, mh, 2, 10, 2)
 	found := false
 	for _, p := range pairs2 {

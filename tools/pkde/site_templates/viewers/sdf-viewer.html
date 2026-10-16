@@ -131,7 +131,7 @@
       showError('No file specified. Use ?file=path/to/file.sdf');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
-      document.title = filePath.split('/').pop() + ' — SDF Viewer';
+      document.title = filePath.split('/').pop() + ' -- SDF Viewer';
 
       fetch(filePath)
         .then(function(r) {

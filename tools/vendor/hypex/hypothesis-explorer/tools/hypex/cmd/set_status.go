@@ -123,7 +123,7 @@ func runSetStatus(_ *cobra.Command, args []string) error {
 		if err := os.Remove(srcPath); err != nil {
 			return fmt.Errorf("removing old hypothesis file %s: %w", srcPath, err)
 		}
-		fmt.Printf("Updated hypothesis %s status to %q: moved %s → %s\n", hypothesisID, targetStatus, srcPath, dstPath)
+		fmt.Printf("Updated hypothesis %s status to %q: moved %s -> %s\n", hypothesisID, targetStatus, srcPath, dstPath)
 	} else {
 		fmt.Printf("Updated hypothesis %s status to %q: %s\n", hypothesisID, targetStatus, dstPath)
 	}

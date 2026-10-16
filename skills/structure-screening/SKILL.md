@@ -19,15 +19,15 @@ include:
 **Do not use when:**
 
 - You need detailed structural characterization (that requires accepted
-  prerequisites and a resource budget — this skill produces a fast-fail
+  prerequisites and a resource budget -- this skill produces a fast-fail
   filter, not a thorough characterization).
 - You need to rank different targets against each other by pocket
-  score — the drug score ranks conformations of one target, not
+  score -- the drug score ranks conformations of one target, not
   targets against each other (the pocket-druggability contract forbids
   this, and this skill preserves that constraint).
-- You need to run a new AF3 prediction — retrieval of existing models
+- You need to run a new AF3 prediction -- retrieval of existing models
   only; new predictions require separate justification.
-- The modality is not small-molecule or molecular-glue — pocket
+- The modality is not small-molecule or molecular-glue -- pocket
   geometry is not the relevant tractability test for biologics,
   antibodies, gene therapies, etc. The screening layer will detect
   this and produce a `not_yet_applicable` assessment.
@@ -124,7 +124,7 @@ relevance to the intended intervention site.**
 
 - If `--near` was used, the verdict already answers the site question.
 - If global analysis was used, note that site relevance was not
-  confirmed — a druggable pocket elsewhere in the structure is not
+  confirmed -- a druggable pocket elsewhere in the structure is not
   evidence of tractability at the intended site.
 
 ### Step 5: Produce evidence assessment records
@@ -169,8 +169,8 @@ layer's own verdict.
 The CDK2 calibration data (scores 0.17, 0.29, and 0.94 across three
 crystal structures of the same drugged ATP site) demonstrates that a
 sub-cutoff score on one conformation does not contradict druggability.
-The appropriate evidence status is `insufficient` — the evidence
-exists but is not decisive — with the `fpocket.single_conformation`
+The appropriate evidence status is `insufficient` -- the evidence
+exists but is not decisive -- with the `fpocket.single_conformation`
 relay carrying the calibration numbers.
 
 ## 8. Hard constraints

@@ -1,4 +1,4 @@
-"""`pkde genetics` — gnomAD constraint: is human loss of function tolerated?
+"""`pkde genetics` -- gnomAD constraint: is human loss of function tolerated?
 
 Measured from observed human population data, not predicted. That is the
 whole reason this tool is in the pilot: the tournament's safety arguments
@@ -24,8 +24,8 @@ artifact containing a null gene and reads it later as missing data. The
 is the whole job.** `{"errors":[{"message":"Service overloaded"}]}`
 arrives with an identical status and an identical shape to "Gene not
 found". The first cut of this file treated every `errors` entry as
-permanent and duly reported that TP53 and KRAS do not exist — two genes
-that plainly do — after five back-to-back queries at 1 qps. Hence
+permanent and duly reported that TP53 and KRAS do not exist -- two genes
+that plainly do -- after five back-to-back queries at 1 qps. Hence
 `TRANSIENT_ERRORS`, the retry loop, and `GNOMAD_QPS` well below 1.
 
 The asymmetry is what makes this worth the retry budget. Misreading a
@@ -33,12 +33,12 @@ permanent error as transient wastes retries and then fails loudly.
 Misreading a throttle as a permanent "not found" writes a clean artifact
 saying the gene has no constraint data, and that is a fabricated
 negative finding: a failure to answer is never an answer of no. See
-tool-design-guidance §8, "HTTP status does not classify retryability, in
+tool-design-guidance Section 8, "HTTP status does not classify retryability, in
 either direction".
 
-**Symbol lookup is a lookup here, not a search** — gnomAD resolves one
-symbol to one gene or to nothing — but the resolved `gene_id` is
-recorded in the sidecar regardless, per tool-design-guidance §8.
+**Symbol lookup is a lookup here, not a search** -- gnomAD resolves one
+symbol to one gene or to nothing -- but the resolved `gene_id` is
+recorded in the sidecar regardless, per tool-design-guidance Section 8.
 
 The thresholds are gnomAD's own published recommendations rather than
 convention. That matters more than usual here: the widely-quoted LOEUF
@@ -177,7 +177,7 @@ def _query_gnomad(symbol: str) -> tuple[bytes, dict[str, Any]]:
         f"{MAX_GNOMAD_ATTEMPTS} attempts",
         detail=messages,
         remedy=(
-            "this is throttling, not a missing gene — retry later rather than "
+            "this is throttling, not a missing gene -- retry later rather than "
             "recording the gene as having no constraint data"
         ),
     )
@@ -210,9 +210,9 @@ def genetics() -> None:
     """Human population genetics evidence (gnomAD, free and unauthenticated)."""
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary
@@ -293,7 +293,7 @@ def fetch_cmd(
             "gene_resolution": gene_res.to_dict(),
         },
     )
-    sidecar.note("source", "gnomAD (Broad Institute)")
+    sidecar.note("source", "gnomAD")
     sidecar.note("constraint_flags", constraint.get("flags"))
 
     path = target_dir / f"{resolved}.gnomad-constraint.json"
@@ -493,7 +493,7 @@ def analyze_cmd(
         )
     else:
         emit.line(
-            f"pLI={pli!r} LOEUF={loeuf!r} — constraint not estimable "
+            f"pLI={pli!r} LOEUF={loeuf!r} -- constraint not estimable "
             f"(reason: no_exp_lof or insufficient data)"
         )
     for warning in warnings:

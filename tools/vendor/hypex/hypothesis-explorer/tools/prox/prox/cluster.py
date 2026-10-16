@@ -12,7 +12,7 @@ from prox._io import atomic_write_json
 
 
 def _louvain_partition(G: nx.Graph) -> dict[str, int]:
-    """Try Louvain community detection.  Returns node→community mapping."""
+    """Try Louvain community detection.  Returns node->community mapping."""
     # python-louvain exposes itself as ``community``
     import community as community_louvain  # type: ignore[import-untyped]
 
@@ -60,7 +60,7 @@ def format_cluster_label(index: int) -> str:
 
 
 def run_clusters(run_dir: Path) -> None:
-    """End-to-end clustering: load graph → detect communities → save."""
+    """End-to-end clustering: load graph -> detect communities -> save."""
     prox_dir = run_dir / "proximity"
     graph_path = prox_dir / "graph.json"
 
@@ -70,7 +70,7 @@ def run_clusters(run_dir: Path) -> None:
     G = graph_json_to_nx(graph_data)
     partition, algorithm = detect_communities(G)
 
-    # Build mapping from raw community index → sorted C-NN label
+    # Build mapping from raw community index -> sorted C-NN label
     raw_labels = sorted(set(partition.values()))
     label_map = {raw: format_cluster_label(i) for i, raw in enumerate(raw_labels)}
 

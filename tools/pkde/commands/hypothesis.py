@@ -1,20 +1,20 @@
 """Hypothesis set adoption and analysis.
 
-Two phases (docs/tool-design-guidance.md §3):
+Two phases (docs/tool-design-guidance.md Section 3):
 
-  adopt   — phase 1. Accepts a sponsor-supplied or charter-authored
+  adopt   -- phase 1. Accepts a sponsor-supplied or charter-authored
             hypothesis set and normalises it into a Layer 0 artifact
             plus a provenance sidecar. The input file is the foreign
             material; it has not entered the project yet, so it is
             resolved against the current directory as well as the
             project root. The verbatim-plus-normalised pattern is
             inherited directly from coscientist.py:371.
-  analyze — phase 2. Reads the normalised artifact, applies the
+  analyze -- phase 2. Reads the normalised artifact, applies the
             `hypothesis-set` threshold set, and emits the shared
             `pkde.hypothesis-assessment.v1` core with rank: null and
             score: null throughout.
 
-See §4.3 of the design document for the full specification.
+See Section 4.3 of the design document for the full specification.
 """
 
 from __future__ import annotations
@@ -166,7 +166,7 @@ def select_strategy(
                 "capabilities_lost": capabilities_lost,
             }
 
-    # Nothing available — return the preferred and let the caller fail
+    # Nothing available -- return the preferred and let the caller fail
     # with a clear error rather than silently doing nothing.
     return preferred, None
 
@@ -370,7 +370,7 @@ def adopt(
     # -- Capability snapshot --
     # Stamped at adopt time so the artifact structurally records what
     # capabilities were available.  Old artifacts without this field are
-    # treated as capability_state: unknown (not clean) — see §migration.
+    # treated as capability_state: unknown (not clean) -- see Section migration.
     from .doctor import get_capability_snapshot
 
     sidecar.set_capability_state(get_capability_snapshot())
@@ -378,12 +378,12 @@ def adopt(
     # -- Strategy note --
     # Adoption is a deliberate strategy chosen by sponsor judgment; it
     # is NOT a fallback from a tournament that was never being run.
-    # select_strategy() is NOT called here — hypex availability has no
+    # select_strategy() is NOT called here -- hypex availability has no
     # bearing on a set that entered the project through attestation.
     # capability_state is still recorded above (informational).
 
     # -- Fire the mandatory relay: adopted_not_generated --
-    # This fires on EVERY adoption — it is the one scoped exception to
+    # This fires on EVERY adoption -- it is the one scoped exception to
     # criterion 27. The condition it reports is definitionally true of
     # adoption: the set was attested, not retrieved.
     sidecar.warn(
@@ -424,7 +424,7 @@ def analyze(
 
     ARTIFACT is the `.adopted.json` or `.charter.json` produced by `adopt`.
     Emits the vendor-neutral `pkde.hypothesis-assessment.v1` core with
-    rank: null and score: null throughout — an adopted set has no ranking
+    rank: null and score: null throughout -- an adopted set has no ranking
     and no score.
     """
     project = state.project()
@@ -451,7 +451,7 @@ def analyze(
 
     source_sha256 = record.get("source_sha256", "")
 
-    # Build the assessment candidates — rank and score are null for
+    # Build the assessment candidates -- rank and score are null for
     # adopted sets. Array position is input order, not preference.
     assessed = []
     for c in candidates_in:
@@ -480,12 +480,12 @@ def analyze(
     }
 
     # -- Strategy note --
-    # "adopted" IS the strategy — it is a deliberate choice made by
+    # "adopted" IS the strategy -- it is a deliberate choice made by
     # sponsor judgment, not a fallback from a tournament that was never
     # being run.  select_strategy() is NOT called here: hypex binary
     # availability has no bearing on a set that entered the project
     # through attestation.  capability_state is still stamped below
-    # (informational — recording what tools are available is useful,
+    # (informational -- recording what tools are available is useful,
     # but the analysis must not infer regret from it).
 
     # -- Relays --

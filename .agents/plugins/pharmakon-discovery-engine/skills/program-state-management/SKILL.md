@@ -7,7 +7,7 @@ metadata:
 
 # Program State Management
 
-How the orchestrator maintains Layer 2 program state — the living decision surface for the drug discovery program.
+How the orchestrator maintains Layer 2 program state -- the living decision surface for the drug discovery program.
 
 ## Layer 2 Documents
 
@@ -46,12 +46,12 @@ index:
 
 - **Date and context**: What information was available
 - **Decision**: What was decided
-- **Rationale**: Why — with links to supporting evidence
+- **Rationale**: Why -- with links to supporting evidence
 - **Alternatives considered**: What was rejected and why
 - **Outcome**: Updated after the decision's consequences are observed
 ```
 
-IDs are assigned sequentially (`DEC-001`, `DEC-002`, …). The heading
+IDs are assigned sequentially (`DEC-001`, `DEC-002`, ...). The heading
 makes each entry searchable by ID, enabling the context-efficient
 loading pattern described below.
 
@@ -64,8 +64,8 @@ artifact by mid-program. To avoid re-reading the full file after
 context compaction, the log carries a mandatory index section at
 its **top**, before the first full entry.
 
-The index is a Markdown table with three columns — **ID**, **Date**,
-and **Summary** (one line) — one row per full decision entry below:
+The index is a Markdown table with three columns -- **ID**, **Date**,
+and **Summary** (one line) -- one row per full decision entry below:
 
 ```markdown
 ## Decision Index
@@ -78,7 +78,7 @@ and **Summary** (one line) — one row per full decision entry below:
 ```
 
 When an agent appends a new decision entry, it **must** also append a
-corresponding row to the index table. One action, two writes — the
+corresponding row to the index table. One action, two writes -- the
 index row and the full entry are always added together.
 
 **Context-efficient loading.** An agent resuming after context
@@ -115,10 +115,10 @@ After significant updates to Layer 2 state, update `executive/program-summary.md
 
 The orchestrator's routing decisions are made by reading Layer 2 documents, not by recalling prior conversations. When deciding what to do next:
 
-1. Read `active-series.md` — what is the status of each series?
-2. Read `liability-tracker.md` — are there unresolved critical liabilities?
-3. Read `open-questions.md` — are there blocking uncertainties?
-4. Read `decision-log.md` — what was the last significant decision and its context?
+1. Read `active-series.md` -- what is the status of each series?
+2. Read `liability-tracker.md` -- are there unresolved critical liabilities?
+3. Read `open-questions.md` -- are there blocking uncertainties?
+4. Read `decision-log.md` -- what was the last significant decision and its context?
 
 This artifact-first reasoning ensures the orchestrator can be restarted without losing program continuity.
 
@@ -136,13 +136,13 @@ Before acting on Layer 2 state, the orchestrator verifies:
   current cohort exceeds the blocked cohort by more than 1 has a linked
   `decision-log` entry recording escalation, workaround dispatch, or
   explicit risk acceptance. An entry blocked for >1 cohort without such
-  evidence is **BLOCKED** — the one-cohort deadline requires the entry
+  evidence is **BLOCKED** -- the one-cohort deadline requires the entry
   to be escalated, worked around, or accepted as a risk before routing
   proceeds.
 - Every **decision-log** entry has a non-empty `Rationale` with at
   least one link to supporting evidence.
 - The **decision-log index** row count equals the count of full
-  decision entries. A mismatch is **BLOCKED** — either an entry was
+  decision entries. A mismatch is **BLOCKED** -- either an entry was
   added without its index row, or vice versa.
 
 ### Concept lifecycle rules
@@ -182,7 +182,7 @@ category (`patient_selection`, `target_engagement`, `response`,
 **Concept integrity checks.** The pre-routing integrity check
 additionally verifies:
 - Every concept in `active` state has at least one assessment record
-  (when assessment records exist — this check is skipped when no
+  (when assessment records exist -- this check is skipped when no
   assessment infrastructure has been adopted).
 - Every concept record passes schema validation
   (`validate_concept`).
@@ -191,7 +191,7 @@ additionally verifies:
 **Coverage, not just findings.** The check states what it examined:
 "Checked N liability entries, M open questions, K decision records
 across four documents." A program with zero critical liabilities
-passes the field rules vacuously — the coverage line makes that
+passes the field rules vacuously -- the coverage line makes that
 visible rather than silent. A document that cannot be read (missing
 or unparseable) is **BLOCKED**, not clean: absence of a file and
 absence of defects must not produce the same outcome.
@@ -200,16 +200,16 @@ absence of defects must not produce the same outcome.
 (liabilities are resolved by status change, not deletion; decisions
 are never unmade), so the counts should never fall between two
 routings. The coverage line is written into `decision-log.md` after
-each routing — the same chronological, append-only document it
-already lives beside — so the previous counts are an artifact that
+each routing -- the same chronological, append-only document it
+already lives beside -- so the previous counts are an artifact that
 survives a restart, not a memory that dies with one. A count that
 drops is **BLOCKED** until explained, with two named outcomes:
 
-- **Parse regression** — the file did not shrink; the reader failed
+- **Parse regression** -- the file did not shrink; the reader failed
   to recognise an entry. Fix the parse, not the document.
-- **Recorded consolidation** — duplicate liabilities were merged or a
+- **Recorded consolidation** -- duplicate liabilities were merged or a
   mis-filed entry was moved between documents. The block clears only
-  when the merged entries are logged by name in `decision-log.md` —
+  when the merged entries are logged by name in `decision-log.md` --
   without the names, this branch is an escape hatch that launders any
   drop, including a parse regression.
 
@@ -223,7 +223,7 @@ same repair, and not all fields belong to the reader:
   until they return): `Impact`, `Rationale`, `Source`, `Resolution`.
   These record the author's reasoning. A reader who supplies them is
   inventing the author's reasoning while the `Source` link still
-  points at the specialist — improving the appearance of provenance
+  points at the specialist -- improving the appearance of provenance
   without improving the evidence.
 
 These fields are required, not advisory: an entry missing its severity
@@ -239,13 +239,13 @@ assessment and decision records (`.pkde/control/assessments/`,
 - **Evidence/execution mutual constraint.** Every assessment with
   `execution_outcome != "completed"` must have
   `evidence_status == "not_assessed"`.  Any other combination is a
-  schema violation — a tool crash recorded as "insufficient evidence"
+  schema violation -- a tool crash recorded as "insufficient evidence"
   conflates two distinct failure modes.
 
 - **Decision supporting-assessment references.** Every decision's
   `supporting_assessments` entries reference assessment records
   (`AR-NNN`) that actually exist in `.pkde/control/assessments/`.
-  A dangling reference is a warning — the decision's evidence chain
+  A dangling reference is a warning -- the decision's evidence chain
   is broken.
 
 - **Human-approval enforcement (critical finding).** Every decision
@@ -260,7 +260,7 @@ assessment and decision records (`.pkde/control/assessments/`,
   If the integrity check finds a violation here, it flags it as a
   **critical finding**, not just a warning.  A terminate decision
   that bypassed the write-time validator represents a control
-  failure — the record should not exist in its current state.
+  failure -- the record should not exist in its current state.
 
 - **Assessment coverage.** Every concept in `active` state has at
   least one assessment record referencing it.  A concept with no
@@ -269,7 +269,7 @@ assessment and decision records (`.pkde/control/assessments/`,
 
 **Coverage reporting.** The check states what it examined: "Checked
 N assessment records, M decision records."  A program with no
-assessment or decision records passes vacuously — the coverage line
+assessment or decision records passes vacuously -- the coverage line
 makes that visible.
 
 ### Pre-mortem dissent preservation checks
@@ -283,19 +283,19 @@ verifies:
   rebutted, accepted_risk, or unresolved-with-owner) must have a
   corresponding entry in `liability-tracker.md`.  An unresolved
   objection that exists in a pre-mortem but not in the liability tracker
-  is a **BLOCKED** finding — it represents dissent that has been
+  is a **BLOCKED** finding -- it represents dissent that has been
   silently dropped.
 
 - **Resolution encoding in decision records.** Every objection
   resolution recorded in a pre-mortem's resolutions section should have
   a corresponding `objection_resolution:` condition string in the
   associated decision record's `conditions` field.  A mismatch is a
-  **warning** — the pre-mortem and decision record are out of sync.
+  **warning** -- the pre-mortem and decision record are out of sync.
 
 - **Speculative hypotheses excluded from gating.** Failure hypotheses
   with no `discriminating_check` must not appear in any gate-blocking
   list or critical-severity liability entry.  A speculative hypothesis
-  recorded as a critical liability is a **warning** — it inflates the
+  recorded as a critical liability is a **warning** -- it inflates the
   severity of an untestable concern.
 
 - **Causal-language guard.** Failure hypotheses and liability entries
@@ -303,7 +303,7 @@ verifies:
   are flagged as **warnings**.  Known patterns: "establishes hERG
   inhibition" from expression data alone, "establishes zero
   permeability" from descriptor-based prediction alone.  This check
-  is pattern-based and non-exhaustive — it catches known
+  is pattern-based and non-exhaustive -- it catches known
   problematic phrasings but does not replace scientific judgment.
 
 **Coverage reporting.** Extends the existing coverage line: "Checked

@@ -251,9 +251,9 @@
       cols.forEach(col => {
         let arrow;
         if (sortColumn === col.key) {
-          arrow = '<span class="sort-arrow active">' + (sortAsc ? '&#9650;' : '&#9660;') + '</span>';
+          arrow = '<span class="sort-arrow active">' + (sortAsc ? '^' : 'v') + '</span>';
         } else {
-          arrow = '<span class="sort-arrow">&#9650;</span>';
+          arrow = '<span class="sort-arrow">^</span>';
         }
         html += '<th data-col="' + col.key + '">' + col.label + arrow + '</th>';
       });
@@ -328,9 +328,9 @@
         sharedIndices.forEach(fi => {
           if (presSet.has(fi)) {
             const colorIdx = fi % FRAG_COLORS.length;
-            html += '<td style="background:' + FRAG_COLORS[colorIdx] + '; font-weight:700; color:' + FRAG_BORDER_COLORS[colorIdx] + ';">&#10003;</td>';
+            html += '<td style="background:' + FRAG_COLORS[colorIdx] + '; font-weight:700; color:' + FRAG_BORDER_COLORS[colorIdx] + ';">YES</td>';
           } else {
-            html += '<td style="color:#cbd5e1;">&#8212;</td>';
+            html += '<td style="color:#cbd5e1;">--</td>';
           }
         });
         html += '</tr>';
@@ -407,7 +407,7 @@
       showError('No file specified. Use ?file=path/to/file');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
-      document.title = filePath.split('/').pop() + ' — BRICS Viewer';
+      document.title = filePath.split('/').pop() + ' -- BRICS Viewer';
 
       fetch(filePath)
         .then(r => {

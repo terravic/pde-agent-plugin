@@ -5,9 +5,9 @@ producers (hypothesis.py, coscientist.py, hypex.py) must emit inside
 ``assessment["assessment_core"]``.
 
 Score shape rule (constraint 4 from the brief):
-  - score is ``None`` (null) — valid.  Adopted sets carry no score.
-  - score is ``{"value": <number>, "basis": <string>}`` — valid.
-  - score is a bare number (int or float) — FORBIDDEN.
+  - score is ``None`` (null) -- valid.  Adopted sets carry no score.
+  - score is ``{"value": <number>, "basis": <string>}`` -- valid.
+  - score is a bare number (int or float) -- FORBIDDEN.
 
 This module is importable by the checker and by tests.
 """

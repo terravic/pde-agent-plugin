@@ -14,7 +14,7 @@ neurodegenerative disease donor data. Entry points include:
   brain atlas.
 - Querying the Aging/Dementia/TBI donor cohort for donors with
   Alzheimer's disease, other dementias, or specific Braak stages.
-- Building neuroanatomical context for a target — understanding which
+- Building neuroanatomical context for a target -- understanding which
   brain regions express it.
 
 **Do not use when:**
@@ -31,10 +31,10 @@ neurodegenerative disease donor data. Entry points include:
 
 - **Gene search**: a gene symbol (e.g. `GFRA3`, `APP`). The tool
   resolves symbols through the Allen Gene query endpoint.
-- **Donor search**: optional filters — `--disease` (DSM-IV diagnosis
+- **Donor search**: optional filters -- `--disease` (DSM-IV diagnosis
   substring), `--dementia` (flag for demented donors), `--min-braak`
   (minimum Braak stage).
-- **No authentication** needed — the Allen Brain Map API is public.
+- **No authentication** needed -- the Allen Brain Map API is public.
 - **Brain regions only**: the Allen Brain Atlas covers brain structures.
   Peripheral tissues are not represented. The
   `allen.brain_region_expression_only` relay carries this caveat.
@@ -100,7 +100,7 @@ present must be satisfied in the finding.
 - **Gene not found**: report as "gene not found in Allen Brain Atlas."
   This means the gene has not been profiled in the Allen ISH or
   microarray datasets. It does not mean the gene is not expressed in
-  the brain — the Allen Atlas covers a finite set of genes.
+  the brain -- the Allen Atlas covers a finite set of genes.
 - **Donors found**: report the dementia/control breakdown, diagnosis
   distribution, and Braak stage statistics. These describe the donor
   cohort available for brain transcriptomic analysis, not expression

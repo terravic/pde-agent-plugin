@@ -1,4 +1,4 @@
-"""`pkde allen` — Allen Brain Map API query for gene expression and donor data.
+"""`pkde allen` -- Allen Brain Map API query for gene expression and donor data.
 
 Queries the Allen Brain Map public API for gene expression datasets and
 donor metadata from the Aging/Dementia/TBI study.  The Allen Brain Atlas
@@ -225,7 +225,7 @@ def _fetch_donors(
                     if int(braak) >= min_braak:
                         filtered.append(d)
                 except (ValueError, TypeError):
-                    # Non-numeric Braak values — include them unfiltered.
+                    # Non-numeric Braak values -- include them unfiltered.
                     filtered.append(d)
             # Donors without Braak data are excluded when filtering.
         donors = filtered
@@ -278,9 +278,9 @@ def allen() -> None:
     """Allen Brain Map gene expression and donor data queries."""
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary

@@ -16,10 +16,10 @@ points include:
 - Performing in-silico mutagenesis to discover which positions in a
   regulatory element are functionally important (when available).
 - Assessing whether a variant near a drug target's regulatory region
-  might alter its expression — relevant to target validation, on-target
+  might alter its expression -- relevant to target validation, on-target
   toxicity assessment, and pharmacogenomic risk.
 - Predicting cell-type-specific expression from genomic sequence when
-  measured cell-type data is unavailable — using
+  measured cell-type data is unavailable -- using
   `predict-interval --output-type RNA_SEQ` to access 667 RNA-seq tracks
   (271 positive-strand, 271 negative-strand, 125 unstranded) covering
   diverse cell types and conditions.
@@ -49,13 +49,13 @@ points include:
   window on the variant; you do not supply an interval.
 - **Window**: defaults to 131072 bp. Snapped to the nearest of
   {16384, 131072, 524288, 1048576} because the model rejects any other
-  length. The window size changes the gene set and scores — see §4.
+  length. The window size changes the gene set and scores -- see Section 4.
 - **Interval input** (for `predict-interval`): genomic coordinates in
   `chrN:start-end` format. Length must be exactly one of the valid
   windows.
 - **Scorer**: defaults to `geneMask`. Options: geneMask,
   geneMaskActive, geneMaskSplicing, centerMask, paQtl, spliceJunction,
-  contactMap. Three scorers — paQtl, spliceJunction, contactMap — are
+  contactMap. Three scorers -- paQtl, spliceJunction, contactMap -- are
   fieldless: the endpoint proto declares no output-type field for them,
   so each answers for one fixed modality. If you pass `--output-type`
   with a fieldless scorer, the CLI drops the flag and records a warning
@@ -71,7 +71,7 @@ points include:
   STRAND_UNSPECIFIED is rejected. Its effect on gene-level scores has
   not been characterised; strand handling is driven by gene metadata.
 - **Backend** (`score-variant` only): `cloud` (default, cloud auth) or
-  `pip` (requires `ALPHAGENOME_API_KEY`; raises immediately — the pip
+  `pip` (requires `ALPHAGENOME_API_KEY`; raises immediately -- the pip
   path is not implemented).
 - **Organism**: defaults to `HOMO_SAPIENS`. Also supports
   `MUS_MUSCULUS`.
@@ -145,8 +145,8 @@ not a filter on the returned tracks.
 
 | Question | Run | Writes to |
 |---|---|---|
-| Which positions in this element are functionally important? | `pkde alphagenome ism --interval <I>` | **Not yet implemented** — requires `ALPHAGENOME_API_KEY` (pip backend only). |
-| What motifs does the ISM scan reveal? | `pkde alphagenome analyze-ism <ARTIFACT>` | **Blocked** — the `alphagenome-ism` threshold set has unresolved cutoffs with no cited source. |
+| Which positions in this element are functionally important? | `pkde alphagenome ism --interval <I>` | **Not yet implemented** -- requires `ALPHAGENOME_API_KEY` (pip backend only). |
+| What motifs does the ISM scan reveal? | `pkde alphagenome analyze-ism <ARTIFACT>` | **Blocked** -- the `alphagenome-ism` threshold set has unresolved cutoffs with no cited source. |
 
 ISM is not available for planning.
 
@@ -157,7 +157,7 @@ paths only, `--out` to override the default output directory.
 
 ### Per-block verdicts and the confirmed/unconfirmed split
 
-Results are per block — one block per output type, or one per fieldless
+Results are per block -- one block per output type, or one per fieldless
 scorer. Each block carries its own verdict. Whether a quantile significance test was applied depends on the
 **output type**, not the scorer: RNA_SEQ returns a signed quantile plane,
 while CAGE, ATAC, DNASE, and PROCAP do not.
@@ -167,7 +167,7 @@ not stronger and weaker versions of the same call**:
 
 **When quantile scores are available** (e.g. RNA_SEQ):
 
-- **moderate_magnitude_confirmed** / **strong_magnitude_confirmed** —
+- **moderate_magnitude_confirmed** / **strong_magnitude_confirmed** --
   the magnitude band is supported by the quantile test.
 - The guide's artifact rule (high quantile + low raw) is applied and
   flagged genes are excluded.
@@ -175,15 +175,15 @@ not stronger and weaker versions of the same call**:
 **When quantile scores are not available** (e.g. CAGE, ATAC):
 
 - **moderate_magnitude_unconfirmed** / **strong_magnitude_unconfirmed**
-  — an untested magnitude. This is not weaker evidence of the same
+  -- an untested magnitude. This is not weaker evidence of the same
   kind; it is a magnitude reading from an instrument that provides no
   significance test on this path. Do not describe it as "significant."
 
 **Both paths share:**
 
-- **no_effect_by_magnitude** / **subtle_by_magnitude** — below the
+- **no_effect_by_magnitude** / **subtle_by_magnitude** -- below the
   relevant threshold regardless of quantile availability.
-- **no_scores** — no genes were scored. The cause is uncharacterised;
+- **no_scores** -- no genes were scored. The cause is uncharacterised;
   do not assume a specific reason.
 
 ### Overall verdict
@@ -197,7 +197,7 @@ claim.
 ### The quantile artifact trap
 
 When quantile scores are available, an extreme |quantile| paired with a
-negligible |raw_score| is a **documented statistical artifact** — a
+negligible |raw_score| is a **documented statistical artifact** -- a
 rank against a flat background in a low-expression gene, not a molecular
 effect. The analysis flags these and the `quantile_artifact` relay
 requires **excluding them from the effect list entirely**, not merely
@@ -208,7 +208,7 @@ regulatory effect inverts the finding.
 
 A gene is scored only on tracks of its own strand plus any unstranded
 ones, so much of a `score_variant` tensor is NaN by design. The fraction
-varies by output type and scorer — CAGE masks about half (273 of 546),
+varies by output type and scorer -- CAGE masks about half (273 of 546),
 RNA_SEQ about 40% (396 of 667, because it has 125 unstranded tracks
 scored for every gene), and paQtl masks none. Never infer the fraction;
 quote `n_tracks_scored` per gene from the artifact. A finding that says
@@ -226,12 +226,12 @@ the window size alongside any gene list or score.
 ### Mandatory relays
 
 The following relay codes mark obligations on the finding. Each must be
-satisfied — not merely disclosed — in any Layer 1 finding.
+satisfied -- not merely disclosed -- in any Layer 1 finding.
 
-All four relays are **qualifiers** — they fire on defects or anomalies
+All four relays are **qualifiers** -- they fire on defects or anomalies
 in the data. A clean variant-effect prediction (RNA_SEQ output type,
 quantile scores available, no missing-score anomaly, no artifact flag)
-produces **zero relays**. That is not a clean bill of health — it means
+produces **zero relays**. That is not a clean bill of health -- it means
 no defect was found. Nothing has been said about whether a large
 predicted effect constitutes pathogenicity or causality. A variant
 effect score is a prediction of regulatory impact on gene expression;
@@ -241,7 +241,7 @@ on the impressive result.
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `alphagenome.no_quantile_scores` | Qualifier | Blocks whose output type returns no quantile (conditional — names the specific types) | Do not call any effect significant on raw score alone. The significance rule the interpretation guide defines could not be applied to the named output types. |
+| `alphagenome.no_quantile_scores` | Qualifier | Blocks whose output type returns no quantile (conditional -- names the specific types) | Do not call any effect significant on raw score alone. The significance rule the interpretation guide defines could not be applied to the named output types. |
 | `alphagenome.band_modality_mismatch` | Qualifier | Any call not using `--output-type RNA_SEQ` (standing) | State the assay the score came from alongside any magnitude word. The bands are RNA-seq-derived, so "moderate" on a CAGE or ATAC track is an extrapolation, not a calibrated call. |
 | `alphagenome.unexplained_missing_scores` | Qualifier | Only when NaN pattern violates the strand rule (anomaly) | Report the scored-track count, not the track total, and say that some tracks went unscored for reasons the tool could not explain. Do not aggregate over the full track set. |
 | `alphagenome.quantile_artifact` | Qualifier | Only when |quantile| exceeds the configured `quantile_significance` threshold while |raw| stays below the `artifact_raw_ceiling` | Exclude the flagged genes from the effect list entirely. An extreme quantile on a negligible raw score is a rank against a flat background; reporting it as a top-percentile effect inverts the finding. |
@@ -314,7 +314,7 @@ not measure RNA.
 A prediction that a gene shows signal on sensory neuron RNA-seq tracks
 is evidence of **sequence-level regulatory potential** in that cell
 type, not a measurement of actual expression. This distinction matters
-because: (a) predictions can be wrong — the model may miss
+because: (a) predictions can be wrong -- the model may miss
 post-transcriptional regulation, chromatin state, or environmental
 factors; (b) predictions cannot capture dynamic or condition-dependent
 expression changes that are not encoded in the reference genome
@@ -323,7 +323,7 @@ sequence.
 **Complementary evidence**: use `tissue-expression-profile` for measured
 tissue-level expression (HPA data) and `single-cell-expression` for
 discovering measured single-cell datasets. AlphaGenome predictions add
-value where measured cell-type data does not exist — they extend the
+value where measured cell-type data does not exist -- they extend the
 evidence map, not replace it.
 
 **Wording constraint**: never say a gene "is expressed" based on

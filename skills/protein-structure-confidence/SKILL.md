@@ -27,7 +27,7 @@ include:
 - You need to dock a compound or interpret a binding pose
   -> `binding-mode-analysis`.
 - You need to render, measure, or visualize a structure -> `pymol`.
-- You only have a gene name — resolve it to a UniProt accession first.
+- You only have a gene name -- resolve it to a UniProt accession first.
 
 ## 2. Preconditions
 
@@ -45,7 +45,7 @@ include:
   Cross-container scheduling is managed by the Research Operations
   Controller, which ensures only one AF3 prediction runs at a time
   across all specialists. If you receive a work order requiring AF3,
-  the endpoint is available — proceed without delay.
+  the endpoint is available -- proceed without delay.
 - **Cost**: AFDB fetch is a free public API call. AF3 prediction consumes
   H100 time on the dedicated cloud dedicated endpoint; a cold start adds up to
   several minutes.
@@ -88,41 +88,41 @@ paths only, `--out` to override the default output directory.
 
 `analyze` applies the `alphafold` threshold set and emits one of:
 
-- **confident** — high-confidence fold; structural work is supported.
-- **confident-with-disorder** — mostly confident, but notable disordered
+- **confident** -- high-confidence fold; structural work is supported.
+- **confident-with-disorder** -- mostly confident, but notable disordered
   regions exist. Report the ordered domain boundaries alongside any
   structural conclusion.
-- **moderate** — some regions may be flexible or poorly predicted.
+- **moderate** -- some regions may be flexible or poorly predicted.
   Downstream structural work should be restricted to ordered domains.
-- **mixed** — a mixture of structured domains and significant
+- **mixed** -- a mixture of structured domains and significant
   intrinsically disordered regions. Restrict structural work to the
   listed ordered domains.
-- **highly-disordered** — mostly poorly predicted; likely highly
+- **highly-disordered** -- mostly poorly predicted; likely highly
   intrinsically disordered. Whole-protein structural work (docking,
   structural search) is not supported by this prediction. Restrict
   further analysis to ordered domain boundaries, if any.
-- **low-confidence** — low prediction confidence overall.
+- **low-confidence** -- low prediction confidence overall.
 
 ### PAE domain verdicts
 
 When a PAE matrix is available, `analyze` also emits:
 
-- **single-domain** — a single well-folded, rigid composite domain.
-- **multi-domain** — independently positioned global domains separated
+- **single-domain** -- a single well-folded, rigid composite domain.
+- **multi-domain** -- independently positioned global domains separated
   by flexible joints. Report the domain boundaries.
-- **no-rigid-domain** — no distinct rigidly-folded domain detected;
+- **no-rigid-domain** -- no distinct rigidly-folded domain detected;
   likely disordered.
 
 ### AF3 interface verdicts
 
 `analyze-prediction` applies the `af3` threshold set and emits one of:
 
-- **confident-interface** — interface geometry is trustworthy.
-- **borderline-interface** — treat the complex geometry as a hypothesis,
+- **confident-interface** -- interface geometry is trustworthy.
+- **borderline-interface** -- treat the complex geometry as a hypothesis,
   not a result.
-- **low-confidence-interface** — this complex should not be used for
+- **low-confidence-interface** -- this complex should not be used for
   downstream structural work.
-- **monomer** — single-chain prediction; ipTM is not defined and must
+- **monomer** -- single-chain prediction; ipTM is not defined and must
   not be reported.
 
 ### Coverage and mandatory relays
@@ -132,10 +132,10 @@ an instruction, not a caveat: satisfying it requires scoping or
 withholding the claim, not merely disclosing the condition. A finding
 that omits a mandatory relay is wrong, not merely incomplete.
 
-All four relays are **qualifiers** — they fire on defects in the data
+All four relays are **qualifiers** -- they fire on defects in the data
 (partial coverage, isoform substitution, size limit, unverified
 coverage). A full-coverage, high-pLDDT model with no isoform issues
-produces **zero relays**. That is not a clean bill of health — it
+produces **zero relays**. That is not a clean bill of health -- it
 means no defect was found. Nothing has been said about whether the
 confidence scores support the use the reader has in mind (e.g. docking,
 conformation selection). pLDDT is a per-residue fold confidence, not
@@ -144,7 +144,7 @@ downstream application.
 
 | Relay code | Kind | Obligation |
 |---|---|---|
-| `afdb.partial_coverage` | Qualifier | Scope every confidence claim to the modelled residue range, or withhold it. Do not describe the protein — describe the fragment. |
+| `afdb.partial_coverage` | Qualifier | Scope every confidence claim to the modelled residue range, or withhold it. Do not describe the protein -- describe the fragment. |
 | `afdb.isoform_substituted` | Qualifier | Name the isoform actually analysed wherever the finding names the protein. Do not attribute these numbers to the canonical entry. |
 | `afdb.above_modelling_limit` | Qualifier | State that no full-length prediction exists at any accession. Do not present the available fragments as the protein's structure. |
 | `afdb.coverage_unverified` | Qualifier | Report coverage as unknown. Do not infer completeness from the absence of a truncation warning. |

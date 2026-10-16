@@ -29,7 +29,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 if str(REPO_ROOT) not in sys.path:
@@ -37,7 +40,11 @@ if str(REPO_ROOT) not in sys.path:
 if str(REPO_ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(REPO_ROOT / "tools"))
 
-from pkde.commands.dashboard import _load_roles_catalog  # noqa: E402
+from pkde.commands.dashboard import (  # noqa: E402
+    _load_roles_catalog,
+    _safe_yaml_dump,
+    _safe_yaml_load,
+)
 from pkde_plugin.sync_skills_to_registry import package_all_skills_to_dir  # noqa: E402
 
 MISSING_FRONTMATTER_METADATA: dict[str, dict[str, Any]] = {
@@ -116,7 +123,11 @@ def _format_frontmatter_yaml(fm_data: dict[str, Any]) -> str:
         if k not in ("name", "description") and v is not None
     }
     if extra:
-        extra_yaml = yaml.safe_dump(extra, sort_keys=False, width=10000).strip()
+        extra_yaml = (
+            yaml.safe_dump(extra, sort_keys=False, width=10000).strip()
+            if yaml is not None
+            else _safe_yaml_dump(extra).strip()
+        )
         lines.append(extra_yaml)
     return "\n".join(lines)
 
@@ -150,7 +161,11 @@ def _sanitize_single_skill_md(skill_md: Path, default_skill_name: str) -> bool:
         fm_yaml = _format_frontmatter_yaml(meta)
         text = f"---\n{fm_yaml}\n---\n\n{text.lstrip()}"
     else:
-        fm_data = yaml.safe_load(fm_match.group(1)) or {}
+        fm_data = (
+            yaml.safe_load(fm_match.group(1))
+            if yaml is not None
+            else _safe_yaml_load(fm_match.group(1))
+        ) or {}
         if not fm_data.get("name"):
             fm_data["name"] = default_skill_name
         if not fm_data.get("description"):
@@ -252,11 +267,19 @@ def build_agent_plugin(repo_root: Path) -> dict[str, Any]:
     )
 
     # 3. Write .agents/plugins/pharmakon-discovery-engine/mcp_config.json
+    plugin_bin_dir = plugin_root / "bin"
+    plugin_bin_dir.mkdir(parents=True, exist_ok=True)
+    src_mcp_bin = repo_root / "bin" / "pkde-mcp"
+    if src_mcp_bin.is_file():
+        dst_mcp_bin = plugin_bin_dir / "pkde-mcp"
+        shutil.copy2(src_mcp_bin, dst_mcp_bin)
+        dst_mcp_bin.chmod(0o755)
+
     mcp_config = {
         "mcpServers": {
             "pkde-engine": {
-                "command": ".venv/bin/python",
-                "args": ["-m", "pkde_plugin.mcp_server"],
+                "command": "./bin/pkde-mcp",
+                "args": [],
                 "cwd": ".",
                 "env": {
                     "PKDE_ROOT": ".",
@@ -314,7 +337,10 @@ trigger: always_on
     roles_catalog = _load_roles_catalog()
     ext_grants_path = repo_root / "extensions" / "role-grants.yaml"
     if ext_grants_path.is_file():
-        ext_grants = yaml.safe_load(ext_grants_path.read_text(encoding="utf-8")) or {}
+        raw_grants = ext_grants_path.read_text(encoding="utf-8")
+        ext_grants = (
+            yaml.safe_load(raw_grants) if yaml is not None else _safe_yaml_load(raw_grants)
+        ) or {}
         if isinstance(ext_grants, dict):
             for r_name, extra_skills in ext_grants.items():
                 if r_name in roles_catalog and isinstance(extra_skills, list):
@@ -363,7 +389,11 @@ trigger: always_on
             ],
             "skills": assigned_skills,
         }
-        fm_str = yaml.safe_dump(frontmatter, sort_keys=False, width=10000).strip()
+        fm_str = (
+            yaml.safe_dump(frontmatter, sort_keys=False, width=10000).strip()
+            if yaml is not None
+            else _safe_yaml_dump(frontmatter).strip()
+        )
 
         skills_bullet_list = "\n".join(
             f"- `{sk}` (`skills/{sk}/SKILL.md`)" for sk in assigned_skills

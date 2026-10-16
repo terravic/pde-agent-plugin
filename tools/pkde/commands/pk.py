@@ -8,7 +8,7 @@ Phase A subcommands:
 
   nca       Non-compartmental analysis of ingested PK data: Cmax,
             Tmax, AUC (linear-log trapezoidal), t1/2, CL, Vd.
-            Phase 1 record — computes parameters, judges nothing.
+            Phase 1 record -- computes parameters, judges nothing.
 
 Phase B subcommands:
 
@@ -25,7 +25,7 @@ Phase B subcommands:
 BLQ (below limit of quantitation) handling is an explicit parameter
 on ``pk nca``, never a silent default.  The ``pk ingest`` command
 records the BLQ marker value but does not decide how BLQ points are
-treated — that decision belongs to the analyst at NCA time.
+treated -- that decision belongs to the analyst at NCA time.
 
 Note: PBPK (physiologically based pharmacokinetic) modelling is a
 documented future extension point and is not implemented here.  Only
@@ -60,7 +60,7 @@ from ..core.schema_registry import suggest_match
 
 ARTIFACT_CLASS = "pk"
 
-# Recognised unit strings — anything else is refused as ambiguous.
+# Recognised unit strings -- anything else is refused as ambiguous.
 VALID_TIME_UNITS = {"h", "min", "s"}
 VALID_CONC_UNITS = {"ng/mL", "ug/mL", "mg/mL", "uM", "nM"}
 VALID_ROUTES = {
@@ -120,7 +120,7 @@ def _validate_study(doc: dict[str, Any]) -> None:
                 remedy=f"add {field!r} to the input JSON",
             )
 
-    # Unit validation — with fuzzy matching suggestions
+    # Unit validation -- with fuzzy matching suggestions
     time_units = doc["time_units"]
     if time_units not in VALID_TIME_UNITS:
         hint = suggest_match(time_units, VALID_TIME_UNITS)
@@ -233,9 +233,9 @@ def _apply_blq(
     """Apply BLQ handling, returning (times, concs, n_blq_points).
 
     Methods:
-      exclude   — remove BLQ points entirely
-      zero      — replace BLQ concentrations with 0.0
-      loq_half  — replace BLQ concentrations with blq_value / 2
+      exclude   -- remove BLQ points entirely
+      zero      -- replace BLQ concentrations with 0.0
+      loq_half  -- replace BLQ concentrations with blq_value / 2
     """
     if blq_value is None:
         return time_points, concentrations, 0
@@ -252,7 +252,7 @@ def _apply_blq(
         ]
         if not pairs:
             raise Refusal(
-                "all concentrations are BLQ — no data remains after exclusion",
+                "all concentrations are BLQ -- no data remains after exclusion",
                 remedy="check the input data or choose a different BLQ method",
             )
         times, concs = zip(*pairs, strict=False)
@@ -284,7 +284,7 @@ def _auc_linear_log_trapezoidal(times: list[float], concs: list[float]) -> float
         if dt <= 0:
             continue
         if c1 <= 0 or c2 <= 0:
-            # Cannot take log of zero/negative — use linear
+            # Cannot take log of zero/negative -- use linear
             auc += 0.5 * (c1 + c2) * dt
         elif c2 >= c1:
             # Ascending: linear trapezoidal
@@ -315,7 +315,7 @@ def _find_terminal_phase(
 
     if len(positive_pairs) < 3:
         raise Refusal(
-            "fewer than 3 positive concentration points — cannot "
+            "fewer than 3 positive concentration points -- cannot "
             "determine terminal phase for half-life calculation",
             remedy="provide more time points with measurable concentrations",
         )
@@ -328,7 +328,7 @@ def _find_terminal_phase(
         # next-later point (which is already in terminal) for the segment
         # to remain a decline.
         if c <= terminal[-1][2]:
-            # Not declining — stop collecting
+            # Not declining -- stop collecting
             break
         terminal.append(positive_pairs[j])
 
@@ -336,7 +336,7 @@ def _find_terminal_phase(
 
     if len(terminal) < 3:
         raise Refusal(
-            f"only {len(terminal)} points in the terminal decline phase — "
+            f"only {len(terminal)} points in the terminal decline phase -- "
             "need at least 3 for log-linear regression",
             remedy="provide more time points in the terminal elimination phase",
         )
@@ -619,7 +619,7 @@ def nca_cmd(
     lambda_z = -slope
     if lambda_z <= 0:
         raise Refusal(
-            "terminal phase slope is non-negative — cannot compute "
+            "terminal phase slope is non-negative -- cannot compute "
             "elimination rate constant",
             detail=f"slope = {slope:.6f} (expected negative for elimination)",
             remedy="check the concentration-time profile for anomalies",
@@ -734,7 +734,7 @@ def nca_cmd(
     sidecar.note("n_blq_points", n_blq_points)
 
     # NCA linearity assumption is a standing property of the method, not a
-    # conditional warning — moved to sidecar field per the always-true rule
+    # conditional warning -- moved to sidecar field per the always-true rule
     # (tool-design-guidance section 5.1, exit 2: relabel and move). See #146.
     sidecar.note(
         "method_caveat",
@@ -767,7 +767,7 @@ def nca_cmd(
 
 
 # ---------------------------------------------------------------------------
-# pk scale — allometric scaling
+# pk scale -- allometric scaling
 # ---------------------------------------------------------------------------
 
 # Standard reference body weights (kg) for allometric scaling.
@@ -875,7 +875,7 @@ def _extract_pk_for_scaling(
     if cl <= 0 or vd <= 0:
         raise SchemaError(
             "clearance and vd must be positive for allometric scaling",
-            remedy="check the NCA file — these values should always be positive",
+            remedy="check the NCA file -- these values should always be positive",
         )
 
     return cl, vd, cl_units, vd_units
@@ -1077,7 +1077,7 @@ def scale_cmd(
 
         # Rule of exponents classification (Mahmood & Balian 1996) for CL.
         # The prediction formula is always simple allometry (Y = a x BW^b);
-        # MLP and brain weight corrections are NOT applied — only classified.
+        # MLP and brain weight corrections are NOT applied -- only classified.
         scaling_method = "simple_allometry"
         roe_class: str | None = None
 
@@ -1212,7 +1212,7 @@ def scale_cmd(
             code="pk.single_species_scaling",
         )
 
-    # Allometric-vs-PBPK qualifier is a standing property of the method —
+    # Allometric-vs-PBPK qualifier is a standing property of the method --
     # moved to sidecar field per the always-true rule
     # (tool-design-guidance section 5.1, exit 2: relabel and move). See #146.
     sidecar.note(
@@ -1249,7 +1249,7 @@ def scale_cmd(
 
 
 # ---------------------------------------------------------------------------
-# pk ddi — static DDI prediction
+# pk ddi -- static DDI prediction
 # ---------------------------------------------------------------------------
 
 
@@ -1326,7 +1326,7 @@ def _validate_ddi_input(doc: dict[str, Any]) -> None:
                 f"cyp_inhibition[{i}].units={entry_units!r}",
                 detail=(
                     "the static DDI model requires [I] and Ki in the same "
-                    "units — silent unit conversion is refused"
+                    "units -- silent unit conversion is refused"
                 ),
                 remedy="convert all values to the same concentration units",
             )
@@ -1340,9 +1340,9 @@ def _classify_ddi_risk(
     """Classify DDI risk from an R value using pk-parameters thresholds.
 
     Boundaries (from the ``pk-parameters`` threshold set):
-      R < r_possible → no clinically significant interaction likely
-      r_possible ≤ R < r_clinical → possible interaction
-      R ≥ r_clinical → clinical DDI study recommended
+      R < r_possible -> no clinically significant interaction likely
+      r_possible <= R < r_clinical -> possible interaction
+      R >= r_clinical -> clinical DDI study recommended
     """
     if r_value < r_possible:
         return "no clinically significant interaction likely"
@@ -1367,7 +1367,7 @@ def ddi_cmd(
 
     Implements the FDA/EMA recommended basic static model:
     ``R = 1 + [I]max,u / Ki`` for reversible inhibition.  When the
-    input provides IC₅₀ instead of Ki, Ki is estimated as IC₅₀ / 2
+    input provides IC50 instead of Ki, Ki is estimated as IC50 / 2
     (competitive inhibition assumption).
 
     DDI risk is classified per FDA 2020 guidance thresholds.  The static
@@ -1479,7 +1479,7 @@ def ddi_cmd(
         sidecar.note(f"R_{ir['isoform']}", ir["r_value"])
 
     # Static-model qualifier is a standing property of the method, not a
-    # conditional warning — moved to sidecar field per the always-true rule
+    # conditional warning -- moved to sidecar field per the always-true rule
     # (tool-design-guidance section 5.1, exit 2: relabel and move). See #146.
     sidecar.note(
         "method_caveat",
@@ -1500,16 +1500,16 @@ def ddi_cmd(
     emit.line(f"[I]max,u = {cmax_unbound} {cmax_units}")
     for ir in isoform_results:
         emit.line(
-            f"  {ir['isoform']}: R = {ir['r_value']:.3f} — {ir['risk_classification']}"
+            f"  {ir['isoform']}: R = {ir['r_value']:.3f} -- {ir['risk_classification']}"
         )
     emit.flush()
 
 
 # ---------------------------------------------------------------------------
-# pk analyze — Phase 2 threshold application
+# pk analyze -- Phase 2 threshold application
 # ---------------------------------------------------------------------------
 
-# Map schema tag → (analysis_type, file_suffix, meta_suffix)
+# Map schema tag -> (analysis_type, file_suffix, meta_suffix)
 _SCHEMA_MAP: dict[str, tuple[str, str, str]] = {
     "pkde.pk-nca.v1": ("nca", ".pk-nca.json", ".pk-nca.meta.json"),
     "pkde.pk-scaling.v1": (
@@ -1664,7 +1664,7 @@ def _analyze_nca(
             "status": "flagged",
             "message": (
                 f"AUC extrapolation ({auc_extrap_pct:.1f}%) exceeds "
-                f"{auc_limit}% limit — AUC0-inf estimate may be unreliable"
+                f"{auc_limit}% limit -- AUC0-inf estimate may be unreliable"
             ),
         }
     else:
@@ -1675,7 +1675,7 @@ def _analyze_nca(
             ),
         }
 
-    # Therapeutic exposure adequacy — UNRESOLVED.
+    # Therapeutic exposure adequacy -- UNRESOLVED.
     # Do NOT invent a default.  Calling thresholds.get() would raise
     # ThresholdError; instead we record the gap explicitly so downstream
     # consumers know the assessment is incomplete.
@@ -1683,7 +1683,7 @@ def _analyze_nca(
         assessment["therapeutic_exposure"] = {
             "status": "unresolved",
             "message": (
-                "therapeutic_exposure_adequacy threshold is UNRESOLVED — "
+                "therapeutic_exposure_adequacy threshold is UNRESOLVED -- "
                 "a program-specific value must be set in "
                 ".pkde/thresholds.yaml before this assessment can be made"
             ),
@@ -1730,12 +1730,12 @@ def _analyze_scaling(
         ),
     }
 
-    # Therapeutic exposure adequacy — UNRESOLVED (same as NCA).
+    # Therapeutic exposure adequacy -- UNRESOLVED (same as NCA).
     if "therapeutic_exposure_adequacy" in thresholds.unresolved():
         assessment["therapeutic_exposure"] = {
             "status": "unresolved",
             "message": (
-                "therapeutic_exposure_adequacy threshold is UNRESOLVED — "
+                "therapeutic_exposure_adequacy threshold is UNRESOLVED -- "
                 "a program-specific value must be set in "
                 ".pkde/thresholds.yaml before this assessment can be made"
             ),
@@ -1812,7 +1812,7 @@ def _analyze_ddi(
 
 
 # ---------------------------------------------------------------------------
-# pk dermal-partition — steady-state dermal absorption estimate
+# pk dermal-partition -- steady-state dermal absorption estimate
 # ---------------------------------------------------------------------------
 
 

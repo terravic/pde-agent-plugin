@@ -13,7 +13,7 @@ an intervention concept:
 - **SA-score interpretation for manufacturing**: what does the SA-score
   mean for manufacturing feasibility (as distinct from drug-likeness)?
 - **Pre-entity concepts**: a concept with no physical entity yet should
-  produce `not_yet_applicable`, not a failure — this skill handles
+  produce `not_yet_applicable`, not a failure -- this skill handles
   that correctly.
 - **Biologic manufacturing**: qualitative assessment of expression
   system feasibility for antibodies, biologics, peptides, etc.
@@ -40,14 +40,14 @@ an intervention concept:
   construct ID) and `delivery_assumptions` (route, formulation, vehicle).
 - **SA-score** (optional): if a small-molecule concept has a structure,
   an existing SA-score record from `pkde compound sa-score` can be
-  incorporated.  The SA-score is NOT recomputed by this skill — use
+  incorporated.  The SA-score is NOT recomputed by this skill -- use
   the existing `compound sa-score` command to compute it first.
 - **RDKit** (optional): if installed, complexity heuristics
   (stereocenter count, ring analysis, step estimates) are computed
   from the entity_ref SMILES.  If RDKit is not available, these
   heuristics are skipped (not fabricated).
-- **No authentication** needed — all operations are local.
-- **No network** — all operations are offline.
+- **No authentication** needed -- all operations are local.
+- **No network** -- all operations are offline.
 
 ## 3. Tool invocations
 
@@ -72,10 +72,10 @@ pkde manufacturing assess-stage0 <CONCEPT_PATH> --sa-score-path raw/compounds/<s
 molecule's fragments are in known compounds, on a 1-10 scale (1 = easy,
 10 = hard).
 
-- A **low SA-score** does NOT mean the molecule is synthesizable —
+- A **low SA-score** does NOT mean the molecule is synthesizable --
   it means its substructures are common in known chemistry.
 - A **high SA-score** does NOT mean the molecule cannot be synthesized
-  — it means its substructures are unusual.
+  -- it means its substructures are unusual.
 - **Neither** substitutes for a demonstrated synthetic route or a
   scalable manufacturing process.
 
@@ -91,9 +91,9 @@ Stereocenter counts and estimated step counts are **scoped heuristics
 for prioritization**, not universal scientific vetoes.
 
 - A molecule with many stereocenters is **flagged with the specific
-  concern** — it is not automatically rejected.
+  concern** -- it is not automatically rejected.
 - The requirement type is `prioritization_heuristic` (informs ordering)
-  or sponsor-specific `hard_constraint` (per #11 policy) — never an
+  or sponsor-specific `hard_constraint` (per #11 policy) -- never an
   unconditional `scientific_cutoff` that silently kills a concept.
 - Step-count estimates are derived from molecular size, not from
   retrosynthetic analysis.  They are rough ranges, not predictions.
@@ -106,7 +106,7 @@ is per #75's evidence status semantics:
 
 - `not_yet_applicable` = cannot be assessed at this stage, with a
   later trigger.
-- NOT `not_assessed` (which would mean no assessment was performed —
+- NOT `not_assessed` (which would mean no assessment was performed --
   but we did assess and determined it's not applicable yet).
 - NOT a failure or error.
 - NOT a fabricated result.
@@ -150,7 +150,7 @@ tools do not exist yet.
 ### Reassessment
 
 Manufacturing assessment records use the `supersedes` field from #75's
-assessment schema (§2.2).  An initial manufacturing concern can be
+assessment schema (Section 2.2).  An initial manufacturing concern can be
 superseded by a new assessment when new evidence arrives.  This keeps
 manufacturing obstacles eligible for reviewed reassessment under #78.
 
@@ -188,6 +188,6 @@ estimate, and do not proceed on an assumed result.
   without aggregation is an entity-level question (requires sequence
   analysis).  The skill keeps these distinct.
 - **Treating not_yet_applicable as a failure.**  A pre-entity concept
-  that produces `not_yet_applicable` is correctly assessed — the
+  that produces `not_yet_applicable` is correctly assessed -- the
   assessment is that entity-level manufacturing evaluation cannot
   happen yet, not that it failed.

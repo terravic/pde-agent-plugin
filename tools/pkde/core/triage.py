@@ -1,15 +1,15 @@
-"""Stage 0 bounded portfolio triage — compare intervention concepts
+"""Stage 0 bounded portfolio triage -- compare intervention concepts
 before final target/modality commitment.
 
 This module implements the orchestration logic for Stage 0 as described
-in the science-program-lead template §5a.  It dispatches three parallel
+in the science-program-lead template Section 5a.  It dispatches three parallel
 workstreams (rationale verification, modality tractability, manufacturing
 feasibility) across eligible intervention concepts, manages a triage
 budget, and produces assessment and decision records using the existing
 #74/#75 semantics.
 
 Hard constraints (from the task brief):
-  1. Every workstream dispatch calls the REAL merged commands — not
+  1. Every workstream dispatch calls the REAL merged commands -- not
      hand-rolled mocks of what they return.
   2. Any ``terminate`` action goes through the real ``write_record()``,
      which enforces the human-approval ``Refusal`` gate.
@@ -48,7 +48,7 @@ from pkde.core.evidence import (
 class TriageBudget:
     """Resource bounds for a Stage 0 triage run.
 
-    All limits are optional — ``None`` means unbounded on that axis.
+    All limits are optional -- ``None`` means unbounded on that axis.
     """
 
     max_wall_clock_seconds: float | None = None
@@ -240,7 +240,7 @@ def run_manufacturing_workstream(
     """Run the manufacturing feasibility workstream (Workstream 3).
 
     Calls the REAL ``pkde manufacturing assess-stage0`` command via
-    CliRunner — per Hard Constraint #1.
+    CliRunner -- per Hard Constraint #1.
     """
     import json
     import tempfile
@@ -273,7 +273,7 @@ def run_manufacturing_workstream(
         cli_result = runner.invoke(cli, args)
 
         if cli_result.exit_code == 0:
-            # Parse output — the command writes to stdout in JSON mode.
+            # Parse output -- the command writes to stdout in JSON mode.
             # The CLI emits a lightweight summary via Emitter; the full
             # pkde.evidence-assessment.v1 record is written to the path
             # advertised in outputs.manufacturing-assessment.
@@ -316,9 +316,9 @@ def run_structure_screening_workstream(
     runner: Any = None,
     cli: Any = None,
 ) -> WorkstreamResult:
-    """Run the modality tractability workstream — structure screening (Workstream 2).
+    """Run the modality tractability workstream -- structure screening (Workstream 2).
 
-    Calls the REAL ``pkde structure-screen run`` command via CliRunner —
+    Calls the REAL ``pkde structure-screen run`` command via CliRunner --
     per Hard Constraint #1.
     """
     import json
@@ -329,7 +329,7 @@ def run_structure_screening_workstream(
     )
 
     if not structures:
-        # No structures available — record as not_assessed
+        # No structures available -- record as not_assessed
         result.assessments.append(
             {
                 "schema": "pkde.evidence-assessment.v1",
@@ -417,7 +417,7 @@ def run_differentiation_workstream(
 ) -> WorkstreamResult:
     """Run the competitive differentiation workstream (part of Workstream 2).
 
-    Calls the REAL ``pkde differentiation assess`` command via CliRunner —
+    Calls the REAL ``pkde differentiation assess`` command via CliRunner --
     per Hard Constraint #1.
     """
     import json
@@ -548,7 +548,7 @@ def build_triage_decision(
 
     This builds the record structure. The caller is responsible for
     assigning the real ID (DR-NNN via ``next_id``) and writing it
-    through ``write_record()`` — which enforces the human-approval
+    through ``write_record()`` -- which enforces the human-approval
     gate for ``terminate`` actions on concepts and programs.
     """
     if action not in ACTIONS:
@@ -603,7 +603,7 @@ def evaluate_concept_portfolio(
     if n_concepts == 0:
         return concept_results
 
-    # Annotate — don't decide
+    # Annotate -- don't decide
     for cr in concept_results:
         # Check for contradicted evidence in any workstream
         contradicted_workstreams = []
@@ -614,7 +614,7 @@ def evaluate_concept_portfolio(
         if contradicted_workstreams:
             cr.disposition_reason = (
                 f"Workstream(s) {', '.join(contradicted_workstreams)} "
-                f"produced contradicted evidence — requires lead review."
+                f"produced contradicted evidence -- requires lead review."
             )
             # Note: We do NOT set disposition to "terminated" here.
             # That is the lead's decision after review.
@@ -636,7 +636,7 @@ def cancel_competing_alternatives(
         if cr.concept_ref == accepted_concept_ref:
             continue
         if cr.is_terminal:
-            continue  # Already terminated/withdrawn — don't override
+            continue  # Already terminated/withdrawn -- don't override
 
         # Mark remaining competing concepts as cancelled
         for _ws_name, ws_result in cr.workstream_results.items():
@@ -669,7 +669,7 @@ def build_budget_exhaustion_decision(
         action="investigate",  # Always incomplete, never terminate
         rationale=(
             f"Stage 0 triage incomplete due to budget exhaustion: "
-            f"{budget_reason}. This is not a scientific finding — "
+            f"{budget_reason}. This is not a scientific finding -- "
             f"additional evidence is needed to reach a Stage 0 decision. "
             f"Resume triage when budget is available."
         ),
@@ -784,7 +784,7 @@ def run_triage(
                 action="terminate",
                 rationale=exclusion_reason,
                 policy_ref=policy_ref,
-                # human_approval is NOT set here — write_record will
+                # human_approval is NOT set here -- write_record will
                 # enforce the Refusal gate requiring it.
             )
             outcome.concept_results.append(cr)
@@ -921,7 +921,7 @@ def run_triage(
                 did = next_id(project_root, "decision")
                 write_triage_decision(project_root, cr.decision_record, did)
             except Refusal as exc:
-                # Terminate without human approval — the gate works.
+                # Terminate without human approval -- the gate works.
                 # The decision needs human approval before persistence.
                 outcome.persistence_errors.append(
                     {
@@ -959,7 +959,7 @@ def write_triage_decision(
     """Write a triage decision through the REAL ``write_record()`` path.
 
     Per Hard Constraint #2: any ``terminate`` action goes through the
-    real, unmodified ``write_record()`` — which enforces the
+    real, unmodified ``write_record()`` -- which enforces the
     human-approval ``Refusal`` gate.
 
     Uses copy-then-mutate: the caller's dict is only updated with the
@@ -973,7 +973,7 @@ def write_triage_decision(
     """
     from pkde.core.controlstore import write_record
 
-    # Write a copy — don't mutate the caller's dict until persistence succeeds
+    # Write a copy -- don't mutate the caller's dict until persistence succeeds
     to_write = {**decision, "id": decision_id}
     write_record(
         project_root,
@@ -999,7 +999,7 @@ def write_triage_assessment(
     """
     from pkde.core.controlstore import write_record
 
-    # Write a copy — don't mutate the caller's dict until persistence succeeds
+    # Write a copy -- don't mutate the caller's dict until persistence succeeds
     to_write = {**assessment, "id": assessment_id}
     write_record(project_root, "assessment", assessment_id, to_write)
     # Only update the caller's dict on success

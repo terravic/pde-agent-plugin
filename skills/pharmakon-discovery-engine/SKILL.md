@@ -87,11 +87,11 @@ Use **Mode 2** whenever the scientific task spans multiple disciplines (e.g., ta
    - Consult `references/role-skill-matrix.md` and `references/stage0-3-playbook.md` for role assignments and deliverable conventions.
    - For each specialist discipline needed for the scientific task, dispatch the Work Order using **any** of the three equivalent interfaces (CLI subcommand, bundled script, or MCP tool):
      ```bash
-     # Option A — Native pkde CLI (always available):
+     # Option A -- Native pkde CLI (always available):
      ./bin/pkde workorder dispatch --spec '<inline-json-or-yaml-path>' --json
-     # Option B — Bundled helper script:
+     # Option B -- Bundled helper script:
      ./.venv/bin/python scripts/dispatch_workorder.py --spec '<inline-json-or-yaml-path>'
-     # Option C — MCP tool (when MCP server pkde-engine is active):
+     # Option C -- MCP tool (when MCP server pkde-engine is active):
      # pkde_dispatch_workorder(spec={...})
      ```
    - This atomically:

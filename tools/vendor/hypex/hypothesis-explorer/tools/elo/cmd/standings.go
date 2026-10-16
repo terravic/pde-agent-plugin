@@ -124,7 +124,7 @@ Formats:
 				return err
 			}
 
-			// Weight resolution order (§3.5):
+			// Weight resolution order (Section 3.5):
 			// 1. Built-in balanced (lowest)
 			weights, err := composite.PresetWeights("balanced")
 			if err != nil {

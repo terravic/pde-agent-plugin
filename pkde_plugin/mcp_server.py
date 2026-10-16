@@ -24,14 +24,137 @@ agent harness:
 
 from __future__ import annotations
 
-from typing import Any
-
-from mcp.types import ToolAnnotations
+import inspect
+import json
+import sys
+from typing import Any, Callable
 
 try:
-    from mcp.server.mcpserver import MCPServer
-except ImportError:
-    from mcp.server.fastmcp import FastMCP as MCPServer  # type: ignore[no-redef]
+    from mcp.types import ToolAnnotations
+    try:
+        from mcp.server.mcpserver import MCPServer
+    except ImportError:
+        from mcp.server.fastmcp import FastMCP as MCPServer  # type: ignore[no-redef]
+except ImportError:  # pragma: no cover
+
+    class ToolAnnotations:  # type: ignore[no-redef]
+        def __init__(self, **kwargs: Any) -> None:
+            self.__dict__.update(kwargs)
+
+    class MCPServer:  # type: ignore[no-redef]
+        """Zero-dependency stdlib JSON-RPC 2.0 stdio MCP server fallback."""
+
+        def __init__(self, name: str, instructions: str = "") -> None:
+            self.name = name
+            self.instructions = instructions
+            self._tools: dict[str, tuple[Callable[..., Any], dict[str, Any]]] = {}
+
+        def tool(self, annotations: Any = None) -> Callable[[Callable[..., Any]], Callable[..., Any]]:
+            def _decorator(fn: Callable[..., Any]) -> Callable[..., Any]:
+                sig = inspect.signature(fn)
+                props: dict[str, Any] = {}
+                required: list[str] = []
+                for p_name, param in sig.parameters.items():
+                    ann = str(param.annotation)
+                    if "int" in ann:
+                        p_type = "integer"
+                    elif "bool" in ann:
+                        p_type = "boolean"
+                    elif "dict" in ann:
+                        p_type = "object"
+                    else:
+                        p_type = "string"
+                    props[p_name] = {"type": p_type}
+                    if param.default is inspect.Parameter.empty:
+                        required.append(p_name)
+                schema = {
+                    "name": fn.__name__,
+                    "description": (inspect.getdoc(fn) or "").strip(),
+                    "inputSchema": {
+                        "type": "object",
+                        "properties": props,
+                        "required": required,
+                    },
+                }
+                self._tools[fn.__name__] = (fn, schema)
+                return fn
+
+            return _decorator
+
+        def handle_jsonrpc_message(self, msg: dict[str, Any]) -> dict[str, Any] | None:
+            method = msg.get("method", "")
+            msg_id = msg.get("id")
+            params = msg.get("params") or {}
+            if msg_id is None or method.startswith("notifications/"):
+                return None
+            if method == "initialize":
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {
+                        "protocolVersion": params.get("protocolVersion", "2024-11-05"),
+                        "capabilities": {"tools": {}},
+                        "serverInfo": {"name": self.name, "version": "0.3.0"},
+                        "instructions": self.instructions,
+                    },
+                }
+            if method == "ping":
+                return {"jsonrpc": "2.0", "id": msg_id, "result": {}}
+            if method == "tools/list":
+                return {
+                    "jsonrpc": "2.0",
+                    "id": msg_id,
+                    "result": {"tools": [schema for _, schema in self._tools.values()]},
+                }
+            if method == "tools/call":
+                t_name = params.get("name", "")
+                t_args = params.get("arguments") or {}
+                if t_name not in self._tools:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "error": {"code": -32601, "message": f"Unknown tool: {t_name}"},
+                    }
+                fn, _ = self._tools[t_name]
+                try:
+                    res = fn(**t_args)
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "result": {
+                            "content": [{"type": "text", "text": json.dumps(res)}],
+                            "isError": False,
+                        },
+                    }
+                except Exception as exc:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "result": {
+                            "content": [{"type": "text", "text": json.dumps({"ok": False, "error": str(exc)})}],
+                            "isError": True,
+                        },
+                    }
+            return {
+                "jsonrpc": "2.0",
+                "id": msg_id,
+                "error": {"code": -32601, "message": f"Method not found: {method}"},
+            }
+
+        def run(self) -> None:
+            for raw_line in sys.stdin:
+                line = raw_line.strip()
+                if not line:
+                    continue
+                try:
+                    msg = json.loads(line)
+                except ValueError:
+                    continue
+                resp = self.handle_jsonrpc_message(msg)
+                if resp is not None:
+                    sys.stdout.write(json.dumps(resp) + "\n")
+                    sys.stdout.flush()
+
 
 from .tool_bridge import (
     pkde_bootstrap_session as _bootstrap_session,

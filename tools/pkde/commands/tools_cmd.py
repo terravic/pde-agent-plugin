@@ -1,4 +1,4 @@
-"""`pkde tools` — discover available command groups and their capabilities.
+"""`pkde tools` -- discover available command groups and their capabilities.
 
 Answers the question "what can I run right now?" by introspecting the CLI
 command tree.  Each registered command group is listed with its purpose
@@ -97,7 +97,7 @@ def list_tools(
         cmd = cli_group.get_command(root, name)
         if cmd is None or not isinstance(cmd, click.Group):
             continue
-        # Skip ourselves — ``tools`` is infrastructure, not a science tool.
+        # Skip ourselves -- ``tools`` is infrastructure, not a science tool.
         if name == "tools":
             continue
         info = _tool_info(name, cmd, root)

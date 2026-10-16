@@ -1,4 +1,4 @@
-"""`pkde assay` — T3 assay data ingestion and analysis.
+"""`pkde assay` -- T3 assay data ingestion and analysis.
 
 Phase 1 (no judgment):
   ingest   Parse a canonical assay JSON file (schema ``pkde.assay.v1``),
@@ -11,7 +11,7 @@ Phase 2 (offline, applies thresholds):
            screen quality (Z-factor), and bell-shaped curve detection.
            Produces ``.analysis.json`` with per-compound verdicts.
 
-The ``analyze`` subcommand is genuinely offline — the phase-2 latch
+The ``analyze`` subcommand is genuinely offline -- the phase-2 latch
 enforces this automatically for any command named ``analyze*``.
 """
 
@@ -42,7 +42,7 @@ from ..core.qps import qps_for_host
 TOOL = "assay"
 ARTIFACT_CLASS = "assays"
 
-# Bioactivity fetch — external database endpoints and pacing.
+# Bioactivity fetch -- external database endpoints and pacing.
 CHEMBL_API = "https://www.ebi.ac.uk/chembl/api/data"
 
 PUBCHEM_API = "https://pubchem.ncbi.nlm.nih.gov/rest/pug"
@@ -342,7 +342,7 @@ def _is_bell_shaped(concentrations: list[float], responses: list[float]) -> bool
     # Range-based thresholds: surrounding values must differ from the
     # extremum by at least this fraction of the total data range.
     # Multiplicative thresholds (peak * 0.8) fail for negative and
-    # near-zero values — e.g. percent_inhibition can legitimately be
+    # near-zero values -- e.g. percent_inhibition can legitimately be
     # negative, and trough * 1.2 would produce a wrong-direction
     # comparison.
     data_range = max(sorted_responses) - min(sorted_responses)
@@ -483,7 +483,7 @@ def ingest(
             detail=f"got {type(doc).__name__}",
         )
 
-    # Schema version check — non-canonical input is a refusal.
+    # Schema version check -- non-canonical input is a refusal.
     if doc.get("schema") != "pkde.assay.v1":
         raise Refusal(
             "assay file does not match canonical schema pkde.assay.v1",
@@ -697,7 +697,7 @@ def analyze(
         # Advisories.
         advisories: list[str] = []
 
-        # Activity cutoff check — compare mean readout against the
+        # Activity cutoff check -- compare mean readout against the
         # appropriate threshold.  Thresholds are declared UNRESOLVED and
         # program-specific; if UNRESOLVED, skip with an advisory (same
         # pattern as hill_slope).
@@ -748,7 +748,7 @@ def analyze(
                         f"maximum {hill_max}"
                     )
             except ThresholdError:
-                # Thresholds are UNRESOLVED — skip Hill slope check.
+                # Thresholds are UNRESOLVED -- skip Hill slope check.
                 advisories.append(
                     "Hill slope range check skipped: threshold is UNRESOLVED"
                 )
@@ -841,7 +841,7 @@ def analyze(
 
 
 # ---------------------------------------------------------------------------
-# bioactivity-fetch — retrieve published bioactivity data from ChEMBL/PubChem
+# bioactivity-fetch -- retrieve published bioactivity data from ChEMBL/PubChem
 # ---------------------------------------------------------------------------
 
 

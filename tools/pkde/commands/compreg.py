@@ -1,4 +1,4 @@
-"""`pkde compreg` — does the compound exist?
+"""`pkde compreg` -- does the compound exist?
 
 Confirms that a PubChem CID, ChEMBL ID, or compound name resolves to a
 real compound record and surfaces the canonical name and SMILES for
@@ -13,11 +13,11 @@ Two phases:
            not_found.  No network.
 
 **The tool never ranks and picks.**  More than one match on a name
-query is ambiguous — a first-class outcome and a hard stop, not a
+query is ambiguous -- a primary outcome and a hard stop, not a
 `resolved` with a warning stapled to a chosen record.  A silent wrong
 answer is worse than a loud missing one.
 
-Resolution by unique identifier — PubChem CID or ChEMBL ID — may
+Resolution by unique identifier -- PubChem CID or ChEMBL ID -- may
 return `resolved`.  Resolution by name returns every match, and a
 single match by name is still flagged with
 `compreg.name_match_not_unique_identifier`, because a name search may
@@ -213,7 +213,7 @@ def _chembl_by_name(name: str) -> tuple[str, bytes]:
 
 
 # ---------------------------------------------------------------------------
-# Match extraction (phase 2 — pure, reads bytes already on disk)
+# Match extraction (phase 2 -- pure, reads bytes already on disk)
 # ---------------------------------------------------------------------------
 
 
@@ -375,7 +375,7 @@ def resolve_cmd(
         url, body = _chembl_by_id(value)
         save("chembl", url, body)
 
-    else:  # name — query every registry the caller allowed, keep every match
+    else:  # name -- query every registry the caller allowed, keep every match
         if source in {"auto", "pubchem"}:
             url, body = _pubchem_by_name(value)
             save("pubchem", url, body)
@@ -411,7 +411,7 @@ def analyze_cmd(
     """Report resolved / ambiguous / not_found for a resolved IDENTIFIER.
 
     Reads only what ``resolve`` wrote.  This command never reads a
-    compound's content to judge whether it has the claimed activity —
+    compound's content to judge whether it has the claimed activity --
     that is the specialist's job, and a tool that guessed would recreate
     the failure it exists to catch.
     """
@@ -449,7 +449,7 @@ def analyze_cmd(
 
     # Validate that at least one registry was actually queried.
     # If ALL response files are missing, we have no data to base a
-    # conclusion on — reporting "not_found" would certify absence
+    # conclusion on -- reporting "not_found" would certify absence
     # when no database was actually consulted.
     if not sources_queried:
         raise ArtifactError(
@@ -477,7 +477,7 @@ def analyze_cmd(
                 f"a compound record exists for {value!r} "
                 f"({match.get('source')}: {resolved_id}), but this tool "
                 "confirmed only that the identifier maps to a real record "
-                "— it did not verify biological activity, mechanism, or "
+                "-- it did not verify biological activity, mechanism, or "
                 "therapeutic indication",
             )
         )
@@ -488,7 +488,7 @@ def analyze_cmd(
                     f"{value!r} matched exactly one record, but it was "
                     "matched by name, not by a unique registry identifier; "
                     "a name search may miss synonyms and cannot prove "
-                    "uniqueness — obtain the CID or ChEMBL ID and re-resolve",
+                    "uniqueness -- obtain the CID or ChEMBL ID and re-resolve",
                 )
             )
 
@@ -548,7 +548,7 @@ def analyze_cmd(
             label = m.get("cid") or m.get("chembl_id") or "?"
             emit.line(f"  {m.get('source')} {label}: {m.get('canonical_name')}")
         if len(matches) > 5:
-            emit.line(f"  … {len(matches) - 5} more in the analysis artifact")
+            emit.line(f"  ... {len(matches) - 5} more in the analysis artifact")
     for record in relays:
         emit.line(f"relay {record['code']}: {record['message']}")
     emit.path(analysis_path, role="analysis")
@@ -557,8 +557,8 @@ def analyze_cmd(
     # `ambiguous` is a refusal, not a failure: the analysis artifact was
     # written and its path has already been printed above.  It exits
     # non-zero so that a specialist chaining `pkde compreg analyze X &&
-    # …` cannot proceed on a compound the tool declined to resolve.
-    # `not_found` exits 0 by contrast — "this record does not exist" is
+    # ...` cannot proceed on a compound the tool declined to resolve.
+    # `not_found` exits 0 by contrast -- "this record does not exist" is
     # a completed analysis and is itself the finding, whereas "which of
     # these did you mean" is an unanswered question.
     if outcome == "ambiguous":
@@ -571,9 +571,9 @@ def analyze_cmd(
                 f"{m.get('canonical_name')}"
                 for m in matches[:8]
             )
-            + (" …" if len(matches) > 8 else ""),
+            + (" ..." if len(matches) > 8 else ""),
             remedy=(
-                "supply a unique identifier — PubChem CID or ChEMBL ID. "
+                "supply a unique identifier -- PubChem CID or ChEMBL ID. "
                 "Do not pick a candidate from the list: they are listed "
                 "because choosing among them is what produces a clean "
                 "audit trail for the wrong compound"

@@ -16,18 +16,18 @@ publishes with `pkde hypex analyze`; workers do not publish a separate result.
 ## Purpose
 
 Every hypothesis you generate must survive a simulated scientific debate before
-submission. This is not optional — it is a quality gate. The debate:
+submission. This is not optional -- it is a quality gate. The debate:
 
-1. **Exposes weak evidence** — claims that sound plausible but lack support.
-2. **Identifies untested assumptions** — hidden premises the hypothesis relies on.
-3. **Sharpens predictions** — vague predictions become specific and testable.
-4. **Improves experimental design** — impractical experiments get revised.
-5. **Surfaces contradicting literature** — forces you to search for
+1. **Exposes weak evidence** -- claims that sound plausible but lack support.
+2. **Identifies untested assumptions** -- hidden premises the hypothesis relies on.
+3. **Sharpens predictions** -- vague predictions become specific and testable.
+4. **Improves experimental design** -- impractical experiments get revised.
+5. **Surfaces contradicting literature** -- forces you to search for
    counter-evidence.
 
 ## Self-Play Format (v1)
 
-You play both roles — **Advocate** and **Critic** — alternating across 3–5
+You play both roles -- **Advocate** and **Critic** -- alternating across 3-5
 turns. This is an internal deliberation, not a multi-agent protocol.
 
 ### Roles
@@ -39,8 +39,8 @@ turns. This is an internal deliberation, not a multi-agent protocol.
 
 ### Turn Structure
 
-The debate follows a fixed cycle: **Propose → Attack → Defend → Refine**.
-Run 3–5 turns total, depending on complexity.
+The debate follows a fixed cycle: **Propose -> Attack -> Defend -> Refine**.
+Run 3-5 turns total, depending on complexity.
 
 #### Turn 1: Propose (Advocate)
 
@@ -178,13 +178,13 @@ Before submitting a hypothesis that passed the debate, verify:
 
 - [ ] At least one criticism was addressed by adding new evidence or narrowing
       the claim (the debate actually changed the hypothesis)
-- [ ] Contradicting or constraining evidence was searched for — even if none
+- [ ] Contradicting or constraining evidence was searched for -- even if none
       was found, the search was performed
-- [ ] Each prediction was challenged for specificity — vague predictions like
+- [ ] Each prediction was challenged for specificity -- vague predictions like
       "X will increase" were replaced with measurable outcomes
-- [ ] The mechanism was challenged for necessity — the debate considered
+- [ ] The mechanism was challenged for necessity -- the debate considered
       alternative explanations
-- [ ] Experiments were challenged for feasibility — impractical designs were
+- [ ] Experiments were challenged for feasibility -- impractical designs were
       revised or flagged as high-difficulty
 
 ---
@@ -196,8 +196,8 @@ Before submitting a hypothesis that passed the debate, verify:
 > I propose that gut Lactobacillus depletion accelerates hippocampal tau
 > aggregation via vagus nerve signaling. PMID:38012345 shows altered microbiome
 > in AD patients. The mechanism: Lactobacillus metabolites (SCFAs) suppress
-> gut epithelial cytokines; depletion → ↑ TNF-α, IL-6 → vagal afferents →
-> hippocampal microglial activation → tau hyperphosphorylation.
+> gut epithelial cytokines; depletion -> up TNF-alpha, IL-6 -> vagal afferents ->
+> hippocampal microglial activation -> tau hyperphosphorylation.
 
 ### Turn 2: Attack (Critic)
 
@@ -208,24 +208,24 @@ Before submitting a hypothesis that passed the debate, verify:
 >    would cytokines selectively activate tau phosphorylation pathways?
 > 3. **Missing link**: No evidence cited showing vagal cytokine transport
 >    specifically to hippocampus.
-> 4. **Prior art**: Multiple groups have proposed gut-brain axis in AD — is
+> 4. **Prior art**: Multiple groups have proposed gut-brain axis in AD -- is
 >    the vagal mechanism novel?
 
 ### Turn 3: Defend (Advocate)
 
-> 1. Valid — I'll add a prediction requiring a causal experiment (germ-free
+> 1. Valid -- I'll add a prediction requiring a causal experiment (germ-free
 >    mice) and note this as a `constrains` evidence item.
 > 2. I found PMID:37891234 showing vagal afferents express TNF receptors that
->    activate NF-κB in downstream neurons — adding as supporting evidence.
-> 3. Acknowledged gap — proposing a vagotomy experiment to test necessity.
-> 4. The novelty is the *specific* Lactobacillus → SCFA → cytokine → vagal
+>    activate NF-kappaB in downstream neurons -- adding as supporting evidence.
+> 3. Acknowledged gap -- proposing a vagotomy experiment to test necessity.
+> 4. The novelty is the *specific* Lactobacillus -> SCFA -> cytokine -> vagal
 >    pathway. Prior work proposes general "gut-brain axis" without this
 >    mechanism.
 
 ### Turn 4: Refine
 
 > **Revised claim**: Narrowed to "Lactobacillus-derived SCFAs modulate
-> hippocampal tau phosphorylation via vagal TNF-α/NF-κB signaling" —
+> hippocampal tau phosphorylation via vagal TNF-alpha/NF-kappaB signaling" --
 > more specific mechanism. Added constraining evidence about correlation vs.
 > causation. Added vagotomy experiment. Decision: **SUBMIT**.
 
@@ -238,10 +238,10 @@ matches between two hypotheses. Unlike the self-play format above (which
 stress-tests a single hypothesis during generation), the adversarial format
 compares two hypotheses head-to-head to determine which is stronger.
 
-The ranking agent plays all roles — advocate, critic, and judge — to ensure
+The ranking agent plays all roles -- advocate, critic, and judge -- to ensure
 consistency and eliminate coordination overhead.
 
-### Tier 1 — Single-Turn Comparison
+### Tier 1 -- Single-Turn Comparison
 
 A fast, structured comparison for placement matches or when the rating gap
 between contestants is large (> 50 points).
@@ -250,28 +250,28 @@ between contestants is large (> 50 points).
 
 1. **Read both hypotheses** from `hypotheses/` and their latest reviews from
    `reviews/` (if available).
-2. **Score each hypothesis** on three criteria (1–5 scale):
-   - **Novelty** — Does it propose something genuinely new beyond existing
+2. **Score each hypothesis** on three criteria (1-5 scale):
+   - **Novelty** -- Does it propose something genuinely new beyond existing
      literature?
-   - **Plausibility** — Is the causal mechanism well-supported by evidence?
-   - **Testability** — Are predictions specific and experiments feasible?
+   - **Plausibility** -- Is the causal mechanism well-supported by evidence?
+   - **Testability** -- Are predictions specific and experiments feasible?
 3. **Declare a winner** with:
-   - **Margin**: `decisive` (score gap ≥ 3 total) or `narrow` (score gap ≤ 2).
-   - **Rationale**: 2–4 sentences explaining the verdict with specific
+   - **Margin**: `decisive` (score gap >= 3 total) or `narrow` (score gap <= 2).
+   - **Rationale**: 2-4 sentences explaining the verdict with specific
      references to the hypotheses' strengths and weaknesses.
 4. **Write the match record** to `matches/M-NNNN.json`.
 
 No transcript file is produced. The rationale in the match record is sufficient.
 
-### Tier 2 — Multi-Turn Adversarial Debate
+### Tier 2 -- Multi-Turn Adversarial Debate
 
 An in-depth debate for top-quartile matches or when the rating difference is
-≤ 50 points. This format produces the most thorough evaluation and a full
+<= 50 points. This format produces the most thorough evaluation and a full
 transcript.
 
 **Turn structure (7 turns):**
 
-#### Turn 1: Advocate-A Presents (2–3 paragraphs)
+#### Turn 1: Advocate-A Presents (2-3 paragraphs)
 
 Present hypothesis A's strengths:
 
@@ -280,7 +280,7 @@ Present hypothesis A's strengths:
 - Why the predictions are testable and experiments are feasible.
 - What makes this hypothesis novel compared to the existing literature.
 
-#### Turn 2: Advocate-B Presents (2–3 paragraphs)
+#### Turn 2: Advocate-B Presents (2-3 paragraphs)
 
 Present hypothesis B's strengths using the same structure as Turn 1.
 
@@ -288,15 +288,15 @@ Present hypothesis B's strengths using the same structure as Turn 1.
 
 Identify weaknesses in both hypotheses:
 
-- **Evidence gaps** — Are cited papers actually showing what is claimed?
+- **Evidence gaps** -- Are cited papers actually showing what is claimed?
   Are there confounders or small sample sizes?
-- **Mechanistic holes** — Are there missing steps in the causal chain?
+- **Mechanistic holes** -- Are there missing steps in the causal chain?
   What alternative mechanisms could explain the same observations?
-- **Prediction vagueness** — Are predictions truly falsifiable? What result
+- **Prediction vagueness** -- Are predictions truly falsifiable? What result
   would force abandonment of the hypothesis?
-- **Experimental barriers** — Are proposed experiments feasible with current
+- **Experimental barriers** -- Are proposed experiments feasible with current
   technology and reasonable resources?
-- **Novelty questions** — Has this been proposed before? Is the mechanism
+- **Novelty questions** -- Has this been proposed before? Is the mechanism
   necessary, or could the predictions hold without it?
 
 #### Turn 4: Advocate-A Rebuts + Attacks B
@@ -324,11 +324,11 @@ Synthesize the debate:
 
 Render the final decision:
 
-- **Criterion scores** — Score each hypothesis on novelty, plausibility, and
-  testability (1–5 each).
-- **Winner** — Declare which hypothesis prevails.
-- **Margin** — `decisive` or `narrow`.
-- **Rationale** — 3–5 sentences summarizing the reasoning, referencing specific
+- **Criterion scores** -- Score each hypothesis on novelty, plausibility, and
+  testability (1-5 each).
+- **Winner** -- Declare which hypothesis prevails.
+- **Margin** -- `decisive` or `narrow`.
+- **Rationale** -- 3-5 sentences summarizing the reasoning, referencing specific
   moments from the debate.
 
 **After the verdict:**
@@ -344,8 +344,8 @@ Save the transcript alongside the match record using this structure:
 ```markdown
 # Match Transcript: M-NNNN
 
-**Hypothesis A:** H-XXXX — [title]
-**Hypothesis B:** H-YYYY — [title]
+**Hypothesis A:** H-XXXX -- [title]
+**Hypothesis B:** H-YYYY -- [title]
 **Format:** multi-turn-debate
 **Date:** [ISO 8601 timestamp]
 
@@ -389,5 +389,5 @@ Save the transcript alongside the match record using this structure:
 [Judge's reasoning]
 ```
 
-Save this file as `matches/M-NNNN.transcript.md` — the same directory as
+Save this file as `matches/M-NNNN.transcript.md` -- the same directory as
 the match JSON record, using the same match ID.

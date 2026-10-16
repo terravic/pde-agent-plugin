@@ -1,4 +1,4 @@
-"""`pkde structure-screen` — bounded structure screening for Stage 0.
+"""`pkde structure-screen` -- bounded structure screening for Stage 0.
 
 Retrieves existing structures/models within a declared screen budget,
 runs pocket druggability analysis via the existing ``pkde pocket``
@@ -6,7 +6,7 @@ contract, and produces ``pkde.evidence-assessment.v1`` records with
 relay codes and scoping preserved.
 
 This is the structural screening component of Stage 0 (#22). It is NOT
-a standalone Stage 0 implementation — it produces the structure-screening
+a standalone Stage 0 implementation -- it produces the structure-screening
 piece that #22's dispatcher will later consume.
 
 Design principles:
@@ -64,7 +64,7 @@ POCKET_RELEVANT_MODALITIES = frozenset(
 )
 
 #: Modalities for which pocket geometry is NOT the relevant test.
-#: This is not exhaustive — any modality not in POCKET_RELEVANT_MODALITIES
+#: This is not exhaustive -- any modality not in POCKET_RELEVANT_MODALITIES
 #: gets a ``not_yet_applicable`` assessment, not a forced pocket score.
 POCKET_IRRELEVANT_MODALITIES_EXAMPLES = frozenset(
     {
@@ -206,14 +206,14 @@ def check_site_relevance(
     intended_site_residues:
         Residues defining the intended intervention site (CHAIN:RESNUM).
         If None, the pocket was assessed globally and we cannot confirm
-        site relevance — the assessment must note this limitation.
+        site relevance -- the assessment must note this limitation.
 
     Returns
     -------
     (relevant, reason)
     """
     if intended_site_residues is None:
-        # Global analysis — we have the best pocket anywhere, but cannot
+        # Global analysis -- we have the best pocket anywhere, but cannot
         # confirm it's at the intended site.
         return False, (
             "pocket was assessed globally (no --near site specified); "
@@ -421,8 +421,8 @@ def _pocket_verdict_to_evidence_status(
     Why "insufficient" rather than "contradicted" for low scores:
     The CDK2 calibration data (0.17-0.94 across three crystals of one
     site) shows that a sub-cutoff score on one conformation does not
-    contradict druggability. The appropriate status is "insufficient" —
-    the evidence exists but is not decisive — combined with the
+    contradict druggability. The appropriate status is "insufficient" --
+    the evidence exists but is not decisive -- combined with the
     single_conformation relay that names the calibration numbers.
     """
     verdict = pocket_result.verdict
@@ -443,7 +443,7 @@ def _pocket_verdict_to_evidence_status(
         if intended_site_residues is not None:
             # We had site info but didn't use --near; can't confirm relevance
             return "insufficient"
-        # No site specified — report as supported with the caveat that
+        # No site specified -- report as supported with the caveat that
         # site relevance was not assessed
         return "supported"
 
@@ -454,7 +454,7 @@ def _pocket_verdict_to_evidence_status(
     ):
         return "insufficient"
 
-    # Unknown verdict — do not fabricate a status
+    # Unknown verdict -- do not fabricate a status
     return "insufficient"
 
 
@@ -608,7 +608,7 @@ def screen_structures(
     -------
     List of ``pkde.evidence-assessment.v1`` records.
     """
-    # Modality check first — if pocket geometry is irrelevant, produce
+    # Modality check first -- if pocket geometry is irrelevant, produce
     # one not_yet_applicable record and stop.
     applicable, _modality_reason = check_modality_applicability(modality)
     if not applicable:
@@ -664,7 +664,7 @@ def screen_structures(
             )
             break
 
-        # Source classification — reject new predictions
+        # Source classification -- reject new predictions
         in_scope, source_reason = classify_structure_source(candidate.source, budget)
         if not in_scope:
             assessments.append(
@@ -702,7 +702,7 @@ def screen_structures(
                 evaluated += 1
                 continue
         else:
-            # No pocket runner provided — record as data_unavailable
+            # No pocket runner provided -- record as data_unavailable
             assessments.append(
                 build_assessment_record(
                     assessment_id=f"AR-{len(assessments) + 1:03d}",
@@ -737,7 +737,7 @@ def screen_structures(
 
 
 # ---------------------------------------------------------------------------
-# Real pocket_runner — bridges to ``pkde pocket run`` + ``pkde pocket analyze``
+# Real pocket_runner -- bridges to ``pkde pocket run`` + ``pkde pocket analyze``
 # ---------------------------------------------------------------------------
 
 
@@ -905,7 +905,7 @@ def make_pocket_runner(
 
 
 # ---------------------------------------------------------------------------
-# CLI commands — require click
+# CLI commands -- require click
 # ---------------------------------------------------------------------------
 
 if _HAS_CLICK:

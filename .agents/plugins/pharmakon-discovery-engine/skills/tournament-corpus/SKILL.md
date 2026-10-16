@@ -20,25 +20,25 @@ tournament. Entry points include:
 **Do not use when:**
 
 - You need to evaluate the scientific evidence for or against a
-  target identified by the tournament — use the capability skills
+  target identified by the tournament -- use the capability skills
   for that evidence type (structure, expression, constraint,
   regulatory variants, citations).
 - You need to search for literature supporting or contradicting an
-  idea — use literature search tools and `citation-resolution`.
+  idea -- use literature search tools and `citation-resolution`.
 
 ## 2. Preconditions
 
 - **Export file** (for `ingest`): the raw Co-Scientist tournament
   export as a JSON file. The export is a serialised JavaScript object
-  whose keys are minifier output — the idea list may be `Ur` or `gs`,
+  whose keys are minifier output -- the idea list may be `Ur` or `gs`,
   not a stable name. The CLI locates each section by its shape
   (presence of `eloRating` and `ranking` fields) and fails loudly
   when a required section is absent or ambiguous.
 - **Normalised artifact** (for `analyze` and `show`): the
   `.tournament.json` produced by `ingest`. This is the stable Layer 0
-  record — do not pass the raw export to `analyze` or `show`.
-- **No authentication** needed — the tool reads local files only.
-- **No network** — `ingest`, `analyze`, and `show` are all offline.
+  record -- do not pass the raw export to `analyze` or `show`.
+- **No authentication** needed -- the tool reads local files only.
+- **No network** -- `ingest`, `analyze`, and `show` are all offline.
 - Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
@@ -63,7 +63,7 @@ different thresholds (`--elo-decisive-gap`, `--min-win-rate`,
 the normalised record (`.tournament.json`). The normalisation is lossy
 and a reviewer must be able to reach the original bytes.
 
-`show` writes one idea's prose to a file and prints the path — it does
+`show` writes one idea's prose to a file and prints the path -- it does
 not stream content into context. Select an idea by `--rank` or
 `--gene`. A gene name is matched against each member of a multi-gene
 idea (e.g. "CCNE1, CCNE2"), so a match on `CCNE1` selects the idea
@@ -79,32 +79,32 @@ paths only, `--out` to override the default output directory.
 
 `analyze` applies the `coscientist` threshold set and emits one of:
 
-- **clear-leader** — the top-ranked idea leads by at least the
+- **clear-leader** -- the top-ranked idea leads by at least the
   configured `elo_decisive_gap` and carries no advisories.
-- **leader-with-advisories** — the ELO gap is decisive but the leader
+- **leader-with-advisories** -- the ELO gap is decisive but the leader
   carries advisories (contradicted claims, low win rate, or too few
   matches).
-- **no-clear-leader** — the ELO gap between #1 and #2 is below the
+- **no-clear-leader** -- the ELO gap between #1 and #2 is below the
   configured `elo_decisive_gap`. The ranking does not support a
   confident selection.
-- **single-candidate** — only one idea was ranked. No comparative
+- **single-candidate** -- only one idea was ranked. No comparative
   judgment is possible.
-- **unrankable** — no ideas had ELO ratings. The tournament produced
+- **unrankable** -- no ideas had ELO ratings. The tournament produced
   no usable ranking.
 
 ### Per-idea advisories
 
 Each ranked idea is checked against four conditions. An advisory is not
-a veto — it is a fact that must travel with any claim based on the
+a veto -- it is a fact that must travel with any claim based on the
 idea's ranking:
 
-- **Contradicted claims** — the idea has more deep-verification claims
+- **Contradicted claims** -- the idea has more deep-verification claims
   contradicted than the configured `max_contradicted_claims` threshold.
-- **Low win rate** — the idea's win rate is below the configured
+- **Low win rate** -- the idea's win rate is below the configured
   `min_win_rate` threshold.
-- **Too few matches** — fewer than the configured `min_matches`
+- **Too few matches** -- fewer than the configured `min_matches`
   threshold were played. The ranking is not well supported.
-- **No claims present** — the idea has no deep-verification claims at
+- **No claims present** -- the idea has no deep-verification claims at
   all. Absence of flagged claims is not evidence the idea was verified.
 
 ### The denominator caveat
@@ -118,10 +118,10 @@ That is not a high error rate; it is the definition of the list.
 
 The analysis carries two fields that look like a denominator but are not:
 
-- `n_claims_reported_total` — the length of the exception list. It is
+- `n_claims_reported_total` -- the length of the exception list. It is
   the number of claims the verifier flagged, not the
   number of claims the idea made.
-- `claim_verdicts` — the same list broken down by verdict category
+- `claim_verdicts` -- the same list broken down by verdict category
   (e.g. `{INACCURATE: 12, LEANING_INACCURATE: 4}`). Every entry is a
   disputed claim, because undisputed claims do not appear.
 
@@ -133,14 +133,14 @@ count of flagged claims** (checked against the configured
 
 ### Mandatory relays
 
-`partial_export` is the sole mandatory relay — a **qualifier** that
+`partial_export` is the sole mandatory relay -- a **qualifier** that
 scopes a result rather than blocking a substitution. It is conditional:
 it fires when `n_ideas` < `n_ideas_generated`, confining conclusions
 to the ideas present in the export. The denominator caveat, previously
 carried as an always-true relay (`coscientist.claim_denominator`), is
-now a `metrics.claim_denominator` field on every `.analysis.json` — it
+now a `metrics.claim_denominator` field on every `.analysis.json` -- it
 no longer competes for attention in the relay channel. The skill's own
-§4 ("ELO is relative ranking, not absolute quality") and the
+Section 4 ("ELO is relative ranking, not absolute quality") and the
 `leader_gap_is_decisive` documentation are load-bearing rather than
 supplementary: they carry the constraint that a single conditional
 relay cannot, because a decisive ranking is not evidence that the idea
@@ -158,23 +158,23 @@ Check `mandatory_relays` in both the `.analysis.json` and the
 The ELO gap measures how consistently idea #1 beat idea #2 in pairwise
 comparisons. A decisive gap means the ranking is stable, not that the
 idea is correct. A "clear-leader" verdict says the tournament converged
-on this idea — it does not say the idea is scientifically sound. A
+on this idea -- it does not say the idea is scientifically sound. A
 finding must not conflate ranking confidence with hypothesis confidence.
 
-The assessment carries `leader_gap_is_decisive` — a tri-state:
+The assessment carries `leader_gap_is_decisive` -- a tri-state:
 
-- **true** — the ELO gap meets `elo_decisive_gap`. The verdict is
+- **true** -- the ELO gap meets `elo_decisive_gap`. The verdict is
   either `clear-leader` or `leader-with-advisories` depending on
   whether the leader carries advisories.
-- **false** — the gap is below the threshold. The verdict is
+- **false** -- the gap is below the threshold. The verdict is
   `no-clear-leader`.
-- **null** — there was only one idea (`single-candidate`) or none
+- **null** -- there was only one idea (`single-candidate`) or none
   (`unrankable`). No gap exists. Do not read null as false.
 
 ### Consequence rules
 
 - **Clear leader**: state the gene, the ELO gap, and the win rate.
-  Proceed to downstream assessment — but the ranking does not
+  Proceed to downstream assessment -- but the ranking does not
   substitute for evidence from the tools that evaluate the idea.
 - **Leader with advisories**: state the advisories alongside the
   ranking. Contradicted claims or low win rate may indicate the idea
@@ -182,10 +182,10 @@ The assessment carries `leader_gap_is_decisive` — a tri-state:
 - **No clear leader**: the tournament did not converge. Do not select
   an idea on the basis of this ranking.
 - **Single candidate**: no comparative judgment was possible. The idea
-  is not "the winner" — it is the only entry.
+  is not "the winner" -- it is the only entry.
 - **Partial export**: when `partial_export` fires, the ranking covers
   only `n_ideas` of `n_ideas_generated`. An
-  idea absent from the export was not evaluated by this tool — it was
+  idea absent from the export was not evaluated by this tool -- it was
   not eliminated by the tournament.
 
 ### Cross-disciplinary consequences
@@ -194,7 +194,7 @@ The assessment carries `leader_gap_is_decisive` — a tri-state:
   evidence gathering (structure, expression, constraint, regulatory
   variants). The ranking is the entry point, not the conclusion.
 - Contradicted deep-verification claims in the leader should be
-  checked against the evidence tools — a fabricated claim about a
+  checked against the evidence tools -- a fabricated claim about a
   real gene does not make the gene a bad target, but it does make
   the tournament's reasoning unreliable at that point.
 
@@ -223,13 +223,13 @@ proceed on an assumed result.
 ### Named pathologies
 
 - **Computing a contradicted-claim rate.** The denominator does not
-  exist. `deepVerification` lists only claims the verifier disputed —
+  exist. `deepVerification` lists only claims the verifier disputed --
   in all exports observed, every listed claim carried an inaccurate
   verdict. Dividing by the number of listed claims gives ~1.0 and is
   meaningless. The `metrics.claim_denominator` field requires reporting
   the count.
 - **Treating "no claims" as "no problems."** An idea with zero
-  deep-verification claims has not been verified — it has been
+  deep-verification claims has not been verified -- it has been
   unexamined. The advisory exists because this silence looks like a
   clean bill of health.
 - **Conflating ELO ranking with scientific merit.** A decisive ELO
@@ -238,7 +238,7 @@ proceed on an assumed result.
   is an input to investigation, not a conclusion.
 - **Selecting an idea from a no-clear-leader tournament.** The
   tournament did not converge. Picking the top-ranked idea anyway
-  imports a false precision — the gap is below the threshold that
+  imports a false precision -- the gap is below the threshold that
   makes the ranking meaningful.
 - **Ignoring advisories on a clear leader.** "Clear leader" means the
   gap is decisive **and** the leader has no advisories. "Leader with
@@ -246,7 +246,7 @@ proceed on an assumed result.
   Dropping the advisories turns the second verdict into the first.
 - **Treating a partial export as a complete census.** When
   `partial_export` fires, the ranking covers only the carried ideas.
-  An idea absent from the export was not evaluated — it was not
+  An idea absent from the export was not evaluated -- it was not
   eliminated.
 - **Reporting minified keys as meaningful identifiers.** The export's
   JavaScript keys (`Ur`, `gs`, `BVa`) are minifier output and change

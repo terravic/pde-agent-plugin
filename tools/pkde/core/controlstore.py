@@ -1,14 +1,14 @@
 """Record I/O for the control plane state store under ``.pkde/control/``.
 
-The state store holds one JSON file per record — work orders, context
-snapshots, runs, and validation records — plus an append-only event log.
+The state store holds one JSON file per record -- work orders, context
+snapshots, runs, and validation records -- plus an append-only event log.
 This module provides the CRUD layer with schema validation on every
 write.  It never touches the network, never applies thresholds, and
 never produces Layer 0 artifacts.
 
 Record files are the source of truth for current state; the event log
 (``events.ndjson``) is the supplementary audit trail.  See the design
-document (issue-22-design.md §3.1) for the rationale.
+document (issue-22-design.md Section 3.1) for the rationale.
 """
 
 from __future__ import annotations
@@ -132,12 +132,12 @@ def normalize_deliverables(deliverables: dict[str, Any]) -> dict[str, Any]:
     Handles the ``required_classes`` / ``authorized_classes`` split
     (#103) with full backward compatibility:
 
-    1. If ``required_classes`` is present → use it as the canonical source.
-    2. If ``layer_0_classes`` is present (and no ``required_classes``) →
+    1. If ``required_classes`` is present -> use it as the canonical source.
+    2. If ``layer_0_classes`` is present (and no ``required_classes``) ->
        map to ``required_classes``.
-    3. If ``layer_0`` is present (and neither of the above) → map to
+    3. If ``layer_0`` is present (and neither of the above) -> map to
        ``required_classes``.
-    4. ``authorized_classes`` is a separate optional field — preserved
+    4. ``authorized_classes`` is a separate optional field -- preserved
        as-is.
 
     For backward compatibility, ``layer_0_classes`` is always populated
@@ -156,16 +156,16 @@ def normalize_deliverables(deliverables: dict[str, Any]) -> dict[str, Any]:
 
     # --- Resolve the canonical required_classes source ---
     if "required_classes" in normalized:
-        # New canonical field present — use it.
+        # New canonical field present -- use it.
         # Drop legacy aliases to prevent orphan-key confusion.
         normalized.pop("layer_0_classes", None)
         normalized.pop("layer_0", None)
     elif "layer_0_classes" in normalized:
-        # Legacy canonical name → map to required_classes.
+        # Legacy canonical name -> map to required_classes.
         normalized["required_classes"] = normalized.pop("layer_0_classes")
         normalized.pop("layer_0", None)
     elif "layer_0" in normalized:
-        # Shortest alias → map to required_classes.
+        # Shortest alias -> map to required_classes.
         normalized["required_classes"] = normalized.pop("layer_0")
 
     # --- Normalize required_classes entries ---
@@ -191,7 +191,7 @@ def normalize_deliverables(deliverables: dict[str, Any]) -> dict[str, Any]:
         normalized["required_classes"] = req_normalized
         normalized["layer_0_classes"] = flattened
     elif "required_classes" in normalized:
-        # Non-list required_classes — pass through for downstream error
+        # Non-list required_classes -- pass through for downstream error
         # handling; set layer_0_classes to empty.
         normalized["layer_0_classes"] = []
     else:
@@ -213,7 +213,7 @@ def normalize_deliverables(deliverables: dict[str, Any]) -> dict[str, Any]:
         ]
 
     # Pass through `consumes` without modification (#87).  The field is
-    # new and optional — don't strip it, don't transform it.
+    # new and optional -- don't strip it, don't transform it.
     # (Validation of its structure is deferred to the command layer.)
 
     # Normalize `layer_0_classes_optional` entries (#132).
@@ -269,7 +269,7 @@ def _validate_work_order(data: dict[str, Any]) -> list[str]:
             f"legal states: {', '.join(sorted(WORK_ORDER_STATES))}"
         )
 
-    # Top-level type checks for structured fields (design §3.1: "validates
+    # Top-level type checks for structured fields (design Section 3.1: "validates
     # field types").  Deep validation of nested structure is deferred to
     # the command layer (e.g. commit checksums artifact links).
     _FIELD_TYPES: dict[str, type] = {
@@ -473,7 +473,7 @@ def _default_concept_loader(project_root: Path):
     Returns a callable ``(concept_id: str) -> dict | None`` that reads
     concept records from ``.pkde/control/concepts/``.  If the concept
     record type is not registered (the #74 sibling branch has not yet
-    been merged), or the record does not exist, returns ``None`` —
+    been merged), or the record does not exist, returns ``None`` --
     the validator treats unknown authority as ``"human"`` (safe default).
     """
 
@@ -509,7 +509,7 @@ def _default_concept_loader(project_root: Path):
             except (json.JSONDecodeError, OSError):
                 return None  # fail-closed: gate treats None as requiring human approval
 
-        # Fallback: unversioned file (IC-NNN.json) — only when no
+        # Fallback: unversioned file (IC-NNN.json) -- only when no
         # versioned records exist.
         direct = concepts_dir / f"{concept_id}.json"
         if direct.is_file():
@@ -575,7 +575,7 @@ def write_record(
 
     # For decision records, supply the concept_loader so the
     # human-approval gate can look up termination_authority from
-    # real concept records — not from a fictional field on the
+    # real concept records -- not from a fictional field on the
     # decision record itself.
     if record_type == "decision":
         loader = concept_loader or _default_concept_loader(root)

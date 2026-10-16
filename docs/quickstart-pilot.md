@@ -27,7 +27,7 @@ Before starting, confirm:
 | `ALPHAGENOME_API_KEY` | AlphaGenome access | Required for AlphaGenome skills |
 
 > **Note:** The volume path `tools/` is an environment
-> default. Your deployment may use a different path — set `PKDE_TOOLS_HOME`
+> default. Your deployment may use a different path -- set `PKDE_TOOLS_HOME`
 > to override. See [environment-specific notes](#7-environment-specific-notes).
 
 ---
@@ -63,8 +63,8 @@ starting the Science Program Lead.
 
 ## 3. What the controller does (automated)
 
-You do not need to run these steps — the controller executes them automatically
-(ROC template §0). Understanding the sequence helps with troubleshooting.
+You do not need to run these steps -- the controller executes them automatically
+(ROC template Section 0). Understanding the sequence helps with troubleshooting.
 
 ### 3a. Environment setup
 
@@ -80,7 +80,7 @@ fpocket). Then activates via:
 source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-> `env.sh` — not the venv's `activate` directly. `env.sh` also adds provisioned
+> `env.sh` -- not the venv's `activate` directly. `env.sh` also adds provisioned
 > binaries to `PATH` and sets `PKDE_TOOLS_HOME`.
 
 ### 3b. Doctor verification
@@ -147,7 +147,7 @@ source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 pkde doctor
 ```
 
-- **`STOP`** verdict: a prerequisite is broken — fix before proceeding.
+- **`STOP`** verdict: a prerequisite is broken -- fix before proceeding.
 - **`PROCEED`** verdict: environment is healthy. Warnings are expected and are
   not failures.
 
@@ -180,7 +180,7 @@ The `.pkde/` directory should contain:
 ### Continuing from a prior phase
 
 If continuing from a prior phase, the existing program directory is the source of
-truth. Point the controller at it — do not re-run `pkde init`. The controller
+truth. Point the controller at it -- do not re-run `pkde init`. The controller
 detects the existing `.pkde/` marker and preserves the control state.
 
 ### External data (e.g., co-scientist results)
@@ -204,7 +204,7 @@ For co-scientist tournament exports specifically:
    program directive.
 2. Include this path in the controller's program directive so the science lead
    knows the data exists.
-3. Note the export scope — partial exports (e.g., 5 of 72 ideas) must be
+3. Note the export scope -- partial exports (e.g., 5 of 72 ideas) must be
    flagged so downstream analysis accounts for the denominator.
 
 ---
@@ -219,7 +219,7 @@ agent output controller       # check last output for which step failed
 ```
 
 The controller stops at the first failing step and reports the failure and remedy.
-Check the output against the bootstrap sequence (§3 above) to identify which step
+Check the output against the bootstrap sequence (Section 3 above) to identify which step
 failed.
 
 ### install.sh failure
@@ -306,8 +306,8 @@ Agents run in containers managed by agent-runtime. Ensure:
 
 ## Reference
 
-- ROC template (full bootstrap sequence): `templates/research-operations-controller/agents.md` §0
+- ROC template (full bootstrap sequence): `templates/research-operations-controller/agents.md` Section 0
 - Science Program Lead template: `templates/science-program-lead/agents.md`
-- Orchestration design: `docs/orchestration-design-guidance.md` §2–§5
+- Orchestration design: `docs/orchestration-design-guidance.md` Section 2-Section 5
 - Install script flags: `tools/install.sh --help`
 - Pilot handoff notes: `docs/pilot-handoff.md`

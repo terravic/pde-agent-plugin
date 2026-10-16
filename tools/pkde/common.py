@@ -93,8 +93,8 @@ class PkDEGroup(click.Group):
 
 
 #: The phase-2 subcommand name. The two-phase contract names this
-#: command specifically (tool-design-guidance §3), so keying the guard on
-#: the name is not a heuristic — it is the contract, and a phase-2
+#: command specifically (tool-design-guidance Section 3), so keying the guard on
+#: the name is not a heuristic -- it is the contract, and a phase-2
 #: command called something else is already outside it.
 ANALYZE = "analyze"
 
@@ -102,7 +102,7 @@ ANALYZE = "analyze"
 def is_phase_two(name: str) -> bool:
     """Is this subcommand name a phase-2 command?
 
-    `analyze`, and also `analyze-<something>` — a tool with two kinds of
+    `analyze`, and also `analyze-<something>` -- a tool with two kinds of
     phase-1 output needs two analysers, and `analyze-prediction` and
     `analyze-ism` are both squarely phase 2. Matching only the exact name
     left them unguarded, which is the same defect the guard was written
@@ -304,7 +304,7 @@ def enforce_phase_two(group: click.Group) -> None:
 
 
 def output_options(func: Callable) -> Callable:
-    """--json and --quiet, present on every subcommand (§6)."""
+    """--json and --quiet, present on every subcommand (Section 6)."""
     func = click.option(
         "--json", "as_json", is_flag=True, help="Emit a machine-readable JSON record."
     )(func)
@@ -313,7 +313,7 @@ def output_options(func: Callable) -> Callable:
 
 
 def out_option(func: Callable) -> Callable:
-    """--out override for the artifact-class default directory (§4)."""
+    """--out override for the artifact-class default directory (Section 4)."""
     return click.option(
         "--out",
         default=None,
@@ -351,7 +351,7 @@ def from_option(func: Callable) -> Callable:
         pkde genetics analyze TP53 --out review/2026-08-18
 
     Defaults to the artifact-class directory, which is where phase 1
-    writes. Nothing is searched for and nothing falls back — an input
+    writes. Nothing is searched for and nothing falls back -- an input
     directory that does not hold the artifact is an error, not a cue to
     look somewhere else.
     """
@@ -375,8 +375,8 @@ def beside_or_out(
     overwrites the first one, and the reviewer then compares their own
     output with itself.
 
-    So the default stays beside the source — that is where phase 1 put
-    it and where every existing skill looks — and `--out` moves only the
+    So the default stays beside the source -- that is where phase 1 put
+    it and where every existing skill looks -- and `--out` moves only the
     verdict, never the lookup. The input is a path either way, so the
     two cannot be confused as they were on the identifier-based
     commands.
@@ -396,9 +396,9 @@ def emitter(as_json: bool, quiet: bool) -> Emitter:
 def resolve_artifact(state: AppState, path: str, what: str = "artifact") -> Path:
     """Resolve an input artifact path against the project root, not CWD.
 
-    Agents are unreliable about working directory (§4), so a relative
+    Agents are unreliable about working directory (Section 4), so a relative
     path means "relative to the program directory". A bare path that
-    exists in CWD but not under the project root is still an error —
+    exists in CWD but not under the project root is still an error --
     silently reading the wrong file is worse than failing.
     """
     candidate = Path(path)

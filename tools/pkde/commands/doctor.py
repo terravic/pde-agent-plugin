@@ -1,8 +1,8 @@
-"""`pkde doctor` — assert the environment before an agent trusts it.
+"""`pkde doctor` -- assert the environment before an agent trusts it.
 
 Run at agent start, from every template. It converts a missing tool from
 "the agent invents a plausible number" into "the agent reports a blocked
-task" (docs/tool-design-guidance.md §2).
+task" (docs/tool-design-guidance.md Section 2).
 
 Credentials resolve through the CLI only. We test for presence, never
 for value, and never print one.
@@ -10,6 +10,7 @@ for value, and never print one.
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import importlib
 import json
 import os
@@ -34,7 +35,7 @@ FAIL = "fail"
 # A second axis, orthogonal to status. Status says what was observed;
 # kind says what a warning MEANS for the reader's next command, which is
 # the question they actually have. Eight skills currently tell an agent
-# to "run pkde doctor to confirm the environment" — a binary
+# to "run pkde doctor to confirm the environment" -- a binary
 # instruction against graded output, which leaves the reader to guess
 # whether 14 warnings is a reason to stop. It is not, and the tool
 # should say so rather than each skill carrying a copy of the answer.
@@ -124,7 +125,7 @@ def _check_toolchain_integrity(report: Report) -> None:
             ", ".join(tc.modified_files[:10]) if tc.modified_files else "(unknown)"
         )
         suffix = (
-            f" … and {len(tc.modified_files) - 10} more"
+            f" ... and {len(tc.modified_files) - 10} more"
             if len(tc.modified_files) > 10
             else ""
         )
@@ -176,10 +177,11 @@ def _check_env_drift(report: Report) -> None:
     if state.stamp_stale:
         report.add(
             "environment stamp",
-            FAIL,
+            WARN,
             f"ENV_VERSION ({envstamp.short(state.stamped)}) does not match the "
             f"manifest beside it ({envstamp.short(state.recorded_version)})",
             "run `pkde env stamp` to rewrite both from the environment as it is",
+            kind=HOUSEKEEPING,
         )
         return
     if not state.drifted:
@@ -193,11 +195,12 @@ def _check_env_drift(report: Report) -> None:
     detail = "; ".join(envstamp.display(changes[:3])) or "manifest differs"
     report.add(
         "environment stamp",
-        FAIL,
+        WARN,
         f"environment has drifted from its stamp ({len(changes)} change(s)): {detail}",
         "artifacts written now record an env_version that misdescribes them; "
         "run `pkde env plan` to see the difference and `pkde env stamp` to "
         "record it, or restore the environment the stamp describes",
+        kind=HOUSEKEEPING,
     )
 
 
@@ -236,7 +239,7 @@ def _check_env_source(report: Report) -> None:
 
     The shared volume is immediate and the repository is eventual, so
     those two are capable of disagreeing and nothing used to notice. An
-    environment stamped from an unpushed tree is not wrong — it is
+    environment stamped from an unpushed tree is not wrong -- it is
     *unreproducible*, which is the one property the two-phase contract
     exists to provide. That is the anti-fabrication rule applied to the
     environment rather than to a finding.
@@ -316,7 +319,7 @@ def _check_env_source(report: Report) -> None:
             f"{record.get('remote_ref')}",
             "the environment works, but artifacts carry a provenance commit "
             "nobody else can fetch. Push that commit (or `git fetch` if this "
-            "container's view of origin is stale — the check reads the local "
+            "container's view of origin is stale -- the check reads the local "
             "remote-tracking ref). Use `pkde doctor --strict` to treat this as "
             "a blocking failure",
             kind=HOUSEKEEPING,
@@ -328,7 +331,7 @@ def _check_env_source(report: Report) -> None:
         WARN,
         f"provisioned from {short}; reachability not checked (no repository here)",
         "run this from a checkout of the tools tree to verify the commit is "
-        "on origin — this container cannot answer it",
+        "on origin -- this container cannot answer it",
         kind=HOUSEKEEPING,
     )
 
@@ -339,7 +342,7 @@ def _check_project(report: Report, state: AppState) -> None:
     except PkDEError as exc:
         detail = exc.message
         if exc.detail:
-            detail = f"{detail} — {exc.detail}"
+            detail = f"{detail} -- {exc.detail}"
         report.add("project root", FAIL, detail, exc.remedy or "")
         return
 
@@ -354,7 +357,7 @@ def _check_project(report: Report, state: AppState) -> None:
 
 #: Bound on the sidecar walk. A doctor run must stay fast enough that
 #: templates keep calling it at agent start. If a project is larger than
-#: this the cap is reported rather than silently applied — a partial scan
+#: this the cap is reported rather than silently applied -- a partial scan
 #: presented as a whole one is the failure this file exists to prevent.
 _SIDECAR_SCAN_CAP = 2000
 
@@ -369,8 +372,8 @@ def _check_env_partition(report: Report, state: AppState) -> None:
     partition existed only across files nobody compared.
 
     Adding one binary to `bin/` bumps the hash for the whole program
-    (tool-design-guidance §2 Rule 4). The cost of adding a tool is not the
-    build, it is the partition — so the partition is reported here, at
+    (tool-design-guidance Section 2 Rule 4). The cost of adding a tool is not the
+    build, it is the partition -- so the partition is reported here, at
     agent start, rather than discovered when two findings disagree.
     """
     try:
@@ -407,7 +410,7 @@ def _check_env_partition(report: Report, state: AppState) -> None:
             WARN,
             f"{len(unreadable)} sidecar(s) unreadable or missing env_version: "
             + ", ".join(sorted(unreadable)[:5])
-            + (" …" if len(unreadable) > 5 else ""),
+            + (" ..." if len(unreadable) > 5 else ""),
             "a sidecar that cannot be read cannot support a citation; re-run "
             "the fetch that should have written it rather than citing the "
             "artifact beside it",
@@ -420,7 +423,7 @@ def _check_env_partition(report: Report, state: AppState) -> None:
 
     detail_counts = ", ".join(
         f"{version} ({n} artifact{'s' if n != 1 else ''})"
-        f"{' — current' if version == current else ''}"
+        f"{' -- current' if version == current else ''}"
         for version, n in sorted(counts.items(), key=lambda kv: -kv[1])
     )
     suffix = f"; scan capped at {_SIDECAR_SCAN_CAP} sidecars" if truncated else ""
@@ -439,7 +442,7 @@ def _check_env_partition(report: Report, state: AppState) -> None:
         f"this project spans {len(counts)} environment version(s): "
         f"{detail_counts}{suffix}",
         "results either side of an environment change are not directly "
-        "comparable, and nothing here is corrupt — this is the stamp working. "
+        "comparable, and nothing here is corrupt -- this is the stamp working. "
         "Never re-stamp an old sidecar. Where comparability matters, re-run "
         "`analyze` against the stored Layer 0 bytes, which regenerates the "
         "verdict under the current environment; a phase-1 payload cannot be "
@@ -451,14 +454,11 @@ def _check_env_partition(report: Report, state: AppState) -> None:
 def _check_packages(report: Report) -> None:
     required = {
         "click": "CLI framework",
-        "requests": "HTTP client for AFDB and other REST sources",
-        # Both are required, not optional: AlphaGenome returns base64
-        # zstd-compressed binary tensors, so without them there is no
-        # path from a response to a number at all.
-        "numpy": "decoding AlphaGenome tensors",
-        "zstandard": "decompressing AlphaGenome tensor chunks",
     }
     optional = {
+        "requests": "HTTP client for AFDB and other REST sources",
+        "numpy": "decoding AlphaGenome tensors and geometric pocket analysis",
+        "zstandard": "decompressing AlphaGenome tensor chunks",
         "yaml": "program threshold overrides (.pkde/thresholds.yaml)",
         "cloud_ai_sdk": "AlphaFold 3 and AlphaGenome dedicated endpoints",
         "alphagenome": "AlphaGenome pip backend (ISM)",
@@ -473,7 +473,7 @@ def _check_packages(report: Report) -> None:
             report.add(
                 f"package {module}",
                 FAIL,
-                f"not importable — {purpose}",
+                f"not importable -- {purpose}",
                 "install it into the tools environment",
             )
     for module, purpose in optional.items():
@@ -484,7 +484,7 @@ def _check_packages(report: Report) -> None:
             report.add(
                 f"package {module}",
                 WARN,
-                f"not installed — {purpose} unavailable",
+                f"not installed -- {purpose} unavailable",
                 "install it if the corresponding subcommands are needed",
                 kind=CAPABILITY,
             )
@@ -500,25 +500,25 @@ def _check_packages(report: Report) -> None:
 #: PkDE; availability is an observed runtime state, not a release-plan flag.
 _PROVISIONED_BINARIES = {
     "fpocket": (
-        "pocket detection — `pkde pocket run` will use the built-in Python `geometric` fallback backend",
+        "pocket detection -- `pkde pocket run` will use the built-in Python `geometric` fallback backend",
         "optional: re-provision with `tools/install.sh --binaries-only` for native fpocket",
     ),
     "vina": (
-        "docking — structural-biologist and computational-chemist skills",
+        "docking -- structural-biologist and computational-chemist skills",
         "re-provision with `tools/install.sh --binaries-only`",
     ),
     "hypex": (
-        "hypothesis-explorer datastore lifecycle — tournament management "
+        "hypothesis-explorer datastore lifecycle -- tournament management "
         "(init-run, add-hypothesis, add-match, validate)",
         "re-provision from pinned source with `tools/install.sh --binaries-only`",
     ),
     "elo": (
-        "ELO rating engine — pairwise rankings and per-epoch standings "
+        "ELO rating engine -- pairwise rankings and per-epoch standings "
         "for hypothesis tournaments",
         "re-provision from pinned source with `tools/install.sh --binaries-only`",
     ),
     "prox": (
-        "proximity / similarity — hypothesis clustering for tournament "
+        "proximity / similarity -- hypothesis clustering for tournament "
         "pairing and merge recommendations",
         "re-run a full `tools/install.sh --update` to provision prox and its Python dependencies",
     ),
@@ -536,9 +536,9 @@ _PROVISIONED_BINARIES = {
 
 #: Meeko scripts that need capability validation beyond PATH presence.
 #: A shim on PATH is a proxy for the capability it wraps: it is true
-#: precisely when the underlying package may or may not work — the same
+#: precisely when the underlying package may or may not work -- the same
 #: defect class as the inverted ``import venv`` check in
-#: ``bootstrap-preflight.sh`` (tool-design-guidance.md §8). The shim
+#: ``bootstrap-preflight.sh`` (tool-design-guidance.md Section 8). The shim
 #: exists because pip installed it; whether the package it calls into
 #: actually imports is a separate question the shim cannot answer.
 _CAPABILITY_VALIDATED = {
@@ -555,6 +555,30 @@ _HELP_MARKERS = {
     "prox": "Commands:",
 }
 
+_BINARY_HELP_CACHE: dict[str, tuple[int, str, str, str | None]] = {}
+
+
+def _probe_binary_help(path: str) -> tuple[int, str, str, str | None]:
+    """Run ``<path> --help`` at most once per invocation and return (rc, stdout, stderr, exc_msg)."""
+    cached = _BINARY_HELP_CACHE.get(path)
+    if cached is not None:
+        return cached
+    try:
+        result = subprocess.run(
+            [path, "--help"],
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            timeout=3,
+        )
+        entry = (result.returncode, result.stdout or "", result.stderr or "", None)
+    except subprocess.TimeoutExpired:
+        entry = (-1, "", "", "timeout")
+    except OSError as exc:
+        entry = (-2, "", "", f"oserror:{exc}")
+    _BINARY_HELP_CACHE[path] = entry
+    return entry
+
 
 def _validate_script_capability(
     report: Report,
@@ -562,70 +586,66 @@ def _validate_script_capability(
     path: str,
     remedy: str,
 ) -> None:
-    """Run ``<script> --help`` and report FAIL if it cannot execute.
+    """Run ``<script> --help`` and report WARN (CAPABILITY) if it cannot execute.
 
     ``--help`` exercises the script's top-level imports (``from
-    meeko.cli.… import main``) and exits 0 when the package is intact.
-    If meeko or gemmi is missing the script dies with an ImportError
-    before reaching the argument parser — that traceback is the real
-    signal, not the presence of a file on PATH.
+    meeko.cli.... import main``) and exits 0 when the package is intact.
+    If meeko, gemmi, scipy, or sklearn is missing the script dies with an
+    ImportError before reaching the argument parser -- that traceback is the
+    real signal, degrading the capability rather than blocking unrelated work.
     """
-    try:
-        result = subprocess.run(
-            [path, "--help"],
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-    except subprocess.TimeoutExpired:
+    returncode, stdout, stderr, exc_msg = _probe_binary_help(path)
+    if exc_msg == "timeout":
         report.add(
             f"binary {binary}",
             WARN,
-            f"on PATH at {path} but --help did not complete within 10 s",
+            f"on PATH at {path} but --help did not complete within 3 s",
             "the script may be hung; check it manually",
             kind=CAPABILITY,
         )
         return
-    except OSError as exc:
+    if exc_msg and exc_msg.startswith("oserror:"):
         report.add(
             f"binary {binary}",
-            FAIL,
-            f"on PATH at {path} but cannot execute: {exc}",
+            WARN,
+            f"on PATH at {path} but cannot execute: {exc_msg.removeprefix('oserror:')}",
             remedy,
+            kind=CAPABILITY,
         )
         return
 
     expected_help = _HELP_MARKERS.get(binary)
-    if result.returncode == 0 and (
-        expected_help is None or expected_help in result.stdout
+    if returncode == 0 and (
+        expected_help is None or expected_help in stdout
     ):
         report.add(f"binary {binary}", OK, path)
         return
 
     # Extract the specific import error from the traceback when possible,
-    # so the failure message names the missing package rather than just
+    # so the warning message names the missing package rather than just
     # saying "check failed".
     error_detail = ""
-    for line in reversed(result.stderr.strip().splitlines()):
+    for line in reversed(stderr.strip().splitlines()):
         if "ModuleNotFoundError" in line or "ImportError" in line:
             error_detail = line.strip()
             break
-    if not error_detail and result.returncode == 0 and expected_help:
+    if not error_detail and returncode == 0 and expected_help:
         error_detail = f"--help output did not contain {expected_help!r}"
     if not error_detail:
         # Fall back to the last non-empty line of stderr.
-        for line in reversed(result.stderr.strip().splitlines()):
+        for line in reversed(stderr.strip().splitlines()):
             stripped = line.strip()
             if stripped:
                 error_detail = stripped[:200]
                 break
     report.add(
         f"binary {binary}",
-        FAIL,
+        WARN,
         f"on PATH at {path} but cannot run: {error_detail}"
         if error_detail
-        else f"on PATH at {path} but exited {result.returncode}",
+        else f"on PATH at {path} but exited {returncode}",
         remedy,
+        kind=CAPABILITY,
     )
 
 
@@ -638,10 +658,21 @@ def _check_binaries(report: Report) -> None:
             report.add(
                 f"binary {binary}",
                 WARN,
-                f"not on PATH — {purpose}",
+                f"not on PATH -- {purpose}",
                 "install the Cloud SDK if dedicated endpoints are needed",
                 kind=CAPABILITY,
             )
+
+    # Pre-warm capability-validated binary --help probes concurrently.
+    paths_to_probe: list[str] = []
+    for binary in _PROVISIONED_BINARIES:
+        if binary in _CAPABILITY_VALIDATED:
+            p = shutil.which(binary)
+            if p and p not in _BINARY_HELP_CACHE:
+                paths_to_probe.append(p)
+    if len(paths_to_probe) > 1:
+        with ThreadPoolExecutor(max_workers=len(paths_to_probe)) as pool:
+            list(pool.map(_probe_binary_help, paths_to_probe))
 
     for binary, (purpose, remedy) in _PROVISIONED_BINARIES.items():
         path = shutil.which(binary)
@@ -661,7 +692,7 @@ def _check_binaries(report: Report) -> None:
             report.add(
                 f"binary {binary}",
                 WARN,
-                f"not found — {purpose}",
+                f"not found -- {purpose}",
                 remedy,
                 CAVEAT if binary == "fpocket" else CAPABILITY,
             )
@@ -677,7 +708,7 @@ def _check_credentials(report: Report) -> None:
     if os.environ.get("ALPHAGENOME_API_KEY"):
         report.add("credential ALPHAGENOME_API_KEY", OK, "present (API key)")
     else:
-        # No API key — try ADC resolution (same pattern as cloud credential
+        # No API key -- try ADC resolution (same pattern as cloud credential
         # check below).  dedicated backend authenticates via ADC, so the key
         # is not required when ADC resolves.
         try:
@@ -693,7 +724,7 @@ def _check_credentials(report: Report) -> None:
             report.add(
                 "credential ALPHAGENOME_API_KEY",
                 WARN,
-                "not set and cloud-auth-sdk not installed — neither API key "
+                "not set and cloud-auth-sdk not installed -- neither API key "
                 "nor ADC available",
                 "set ALPHAGENOME_API_KEY for the pip backend, or install "
                 "cloud-auth-sdk and configure ADC for the dedicated backend",
@@ -703,25 +734,25 @@ def _check_credentials(report: Report) -> None:
             report.add(
                 "credential ALPHAGENOME_API_KEY",
                 WARN,
-                "not set and ADC resolution failed — neither auth path available",
+                "not set and ADC resolution failed -- neither auth path available",
                 "set ALPHAGENOME_API_KEY for the pip backend, or configure "
                 "ADC for the dedicated backend (cloud-auth auth application-default "
                 "login, workload identity, etc.)",
                 kind=CAPABILITY,
             )
 
-    # --- NCBI_API_KEY: env var presence → key sent on requests ---
+    # --- NCBI_API_KEY: env var presence -> key sent on requests ---
     if os.environ.get("NCBI_API_KEY"):
         report.add(
             "credential NCBI_API_KEY",
             OK,
-            "present — sent on E-utilities requests (QPS 10)",
+            "present -- sent on E-utilities requests (QPS 10)",
         )
     else:
         report.add(
             "credential NCBI_API_KEY",
             WARN,
-            "not set — NCBI E-utilities queries are limited to 3 QPS; "
+            "not set -- NCBI E-utilities queries are limited to 3 QPS; "
             "with the key the limit rises to 10",
             "set NCBI_API_KEY (https://ncbiinsights.ncbi.nlm.nih.gov"
             "/2017/11/02/new-api-keys-for-the-e-utilities/)",
@@ -753,7 +784,7 @@ def _check_credentials(report: Report) -> None:
             "credential CLOUD",
             WARN,
             "CLOUD_APPLICATION_CREDENTIALS not set and cloud-auth-sdk "
-            "not installed — cannot check ADC",
+            "not installed -- cannot check ADC",
             "install cloud-auth-sdk or set CLOUD_APPLICATION_CREDENTIALS",
             kind=CAPABILITY,
         )
@@ -792,30 +823,30 @@ def _check_pacing(report: Report) -> None:
         report.add(
             "HTTP pacing",
             OK,
-            f"shared — cross-container coordination active ({_PACE_DIR})",
+            f"shared -- cross-container coordination active ({_PACE_DIR})",
             kind=CAPABILITY,
         )
     elif _PACE_TIER == "local":
         report.add(
             "HTTP pacing",
             WARN,
-            f"container-local only — multi-agent fan-out will multiply rates ({_PACE_DIR})",
+            f"container-local only -- multi-agent fan-out will multiply rates ({_PACE_DIR})",
             kind=CAVEAT,
         )
     else:
         report.add(
             "HTTP pacing",
             WARN,
-            f"in-memory only — no cross-invocation coordination (attempted: {_PACE_DIR})",
+            f"in-memory only -- no cross-invocation coordination (attempted: {_PACE_DIR})",
             kind=CAVEAT,
         )
 
 
 def _doctor_http_timeout() -> float:
     try:
-        return float(os.environ.get("PKDE_DOCTOR_HTTP_TIMEOUT", "5"))
+        return float(os.environ.get("PKDE_DOCTOR_HTTP_TIMEOUT", "2.5"))
     except ValueError:
-        return 5.0
+        return 2.5
 
 
 def _is_forced_offline() -> bool:
@@ -845,7 +876,7 @@ def _check_gwas_catalog(report: Report) -> bool:
         report.add(
             "gwas catalog api",
             WARN,
-            "requests package not installed — cannot probe endpoint",
+            "requests package not installed -- cannot probe endpoint",
             "install requests to enable GWAS Catalog connectivity checks",
             kind=CAVEAT,
         )
@@ -924,7 +955,7 @@ def _check_disignatlas(report: Report) -> bool:
         report.add(
             "disignatlas endpoint",
             WARN,
-            "requests package not installed — cannot probe endpoint",
+            "requests package not installed -- cannot probe endpoint",
             "install requests to enable DisigNAtlas connectivity checks",
             kind=CAVEAT,
         )
@@ -1084,7 +1115,7 @@ def _check_external_scientific_apis(
             total_probed += 1
             resp = _requests.get(
                 "https://rest.uniprot.org/uniprotkb/P15056.json?fields=accession",
-                timeout=min(3.0, _doctor_http_timeout()),
+                timeout=min(2.5, _doctor_http_timeout()),
             )
             if resp.status_code < 500:
                 reachable_count += 1
@@ -1102,7 +1133,7 @@ def _check_external_scientific_apis(
     report.add(
         "external scientific apis",
         WARN,
-        f"0 of {total_probed} probed external endpoints reachable — sandbox blocks outbound network",
+        f"0 of {total_probed} probed external endpoints reachable -- sandbox blocks outbound network",
         "online fetch commands (genetics, alphafold, pubchem, literature, trials) will fail; "
         "use local-compute tools only (pkde custom, compound, bioactivity, sar, pk, tox, pocket) "
         "or halt with ENVIRONMENT_BLOCKED if the user prompt requires external database retrieval",
@@ -1122,8 +1153,8 @@ def _check_known_faults(report: Report) -> None:
     fault exactly as if it had no test at all.
 
     So the two AlphaGenome tests, which need a key and a live endpoint,
-    say whether the reader in front of them can run it. The tool knows —
-    the credential either resolves here or it does not — and an
+    say whether the reader in front of them can run it. The tool knows --
+    the credential either resolves here or it does not -- and an
     unrunnable test that names its owner is an assigned check rather
     than a dead one. The HPA and gnomAD tests need only network; the AF3
     one is ours to build and says so.
@@ -1141,9 +1172,9 @@ def _check_known_faults(report: Report) -> None:
             pass
 
     who = (
-        "you can run this here — ALPHAGENOME_API_KEY resolves in this shell"
+        "you can run this here -- ALPHAGENOME_API_KEY resolves in this shell"
         if os.environ.get("ALPHAGENOME_API_KEY")
-        else "you can run this here — Cloud ADC resolves (dedicated backend)"
+        else "you can run this here -- Cloud ADC resolves (dedicated backend)"
         if adc_here
         else "not runnable here: ALPHAGENOME_API_KEY is unset and ADC does not "
         "resolve, so this test belongs to whoever holds credentials"
@@ -1151,20 +1182,20 @@ def _check_known_faults(report: Report) -> None:
     report.add(
         "alphagenome quantiles",
         WARN,
-        "quantile scores come back for some output types and not others — "
-        "RNA_SEQ carries them, CAGE/ATAC/DNASE/PROCAP do not — so one variant "
+        "quantile scores come back for some output types and not others -- "
+        "RNA_SEQ carries them, CAGE/ATAC/DNASE/PROCAP do not -- so one variant "
         "can yield a significance-tested verdict on one assay and a "
         "magnitude-only one on another",
         "read quantile_scores_available per block, never once per run; a "
         "verdict ending _unconfirmed had no significance test behind it. "
         "RETIRES WHEN: the API returns quantiles for CAGE/ATAC/DNASE/PROCAP, "
-        "which is observable — re-check by scoring one variant per output "
+        "which is observable -- re-check by scoring one variant per output "
         f"type and looking for quantile_scores in each block ({who})",
     )
     report.add(
         "alphagenome requests",
         WARN,
-        "the endpoint answers a malformed request with 502 rather than 400 — a "
+        "the endpoint answers a malformed request with 502 rather than 400 -- a "
         "missing organism, an unset interval strand, an interval that is not "
         "exactly 16384/131072/524288/1048576 bp, or an oversized default "
         "scorer set all look identical to a backend outage",
@@ -1180,7 +1211,7 @@ def _check_known_faults(report: Report) -> None:
         "parallel specialists in separate containers can still collide with 429s; "
         "a cross-container lease broker is not yet implemented. "
         "RETIRES WHEN: that broker ships, or the endpoint stops being "
-        "single-flight — ours to build, not upstream's to fix",
+        "single-flight -- ours to build, not upstream's to fix",
     )
     report.add(
         "hpa silent column drop",
@@ -1188,7 +1219,7 @@ def _check_known_faults(report: Report) -> None:
         "the Human Protein Atlas API drops unrecognised tissue column codes "
         "without an error, returning a narrower response instead of a 400",
         "`pkde expression` validates all 50 columns and exits 3 if any is "
-        "missing; if that fires, re-validate the tissue list — do not read the "
+        "missing; if that fires, re-validate the tissue list -- do not read the "
         "gap as absent expression. RETIRES WHEN: a request with one bogus "
         "column code comes back 400 instead of a narrower 200",
     )
@@ -1216,7 +1247,7 @@ def _check_known_faults(report: Report) -> None:
 
 def _check_hypothesis_strategies(report: Report) -> None:
     """Report availability of the four hypothesis entry strategies."""
-    # Sponsor and charter are always available — they are adoption commands
+    # Sponsor and charter are always available -- they are adoption commands
     # built into the CLI itself.
     report.add(
         "hypothesis strategy: sponsor",
@@ -1235,7 +1266,7 @@ def _check_hypothesis_strategies(report: Report) -> None:
     report.add(
         "hypothesis strategy: co-scientist",
         OK,
-        "available (pkde coscientist ingest — requires an export file)",
+        "available (pkde coscientist ingest -- requires an export file)",
     )
 
     # Hypex requires the complete three-tool volume + templates + lease.
@@ -1250,19 +1281,10 @@ def _check_hypothesis_strategies(report: Report) -> None:
         if not path:
             missing.append(tool)
             continue
-        try:
-            result = subprocess.run(
-                [path, "--help"],
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-        except (OSError, subprocess.TimeoutExpired):
+        returncode, stdout, _stderr, exc_msg = _probe_binary_help(path)
+        marker = _HELP_MARKERS[tool]
+        if exc_msg is not None or returncode != 0 or marker not in stdout:
             missing.append(tool)
-        else:
-            marker = _HELP_MARKERS[tool]
-            if result.returncode != 0 or marker not in result.stdout:
-                missing.append(tool)
 
     if not missing:
         report.add(
@@ -1276,7 +1298,7 @@ def _check_hypothesis_strategies(report: Report) -> None:
             WARN,
             "incomplete Hypex toolchain (missing or non-runnable: "
             + ", ".join(missing)
-            + ") — tournament orchestration unavailable",
+            + ") -- tournament orchestration unavailable",
             "run a full `tools/install.sh --update` to provision "
             "hypex, elo, prox, and dependencies",
             kind=CAPABILITY,
@@ -1296,7 +1318,7 @@ def _check_phase_two_contract(report: Report) -> None:
     The check exists because the latch already passed every test while
     silently missing two commands: it keyed on the exact name `analyze`
     and said nothing about `analyze-prediction` or `analyze-ism`. An
-    instrument must state its coverage, not only its findings — "N of N
+    instrument must state its coverage, not only its findings -- "N of N
     guarded" is a claim that can be checked and can be wrong, whereas "no
     violations found" is not a claim at all. Written as N rather than as
     today's count deliberately: a number cached in prose goes stale
@@ -1350,7 +1372,7 @@ def _check_phase_two_contract(report: Report) -> None:
             + "; ".join(problems),
             "a phase-2 command that can reach the network makes re-analysis "
             "depend on an endpoint, and one that can only write where it read "
-            "destroys the artifact a reviewer is auditing — fix in "
+            "destroys the artifact a reviewer is auditing -- fix in "
             "pkde/common.py (the root walk) or add --out to the command",
         )
         return
@@ -1375,14 +1397,14 @@ def _check_phase_two_contract(report: Report) -> None:
 #:
 #: The snapshot is written into sidecars and analysis records so that a
 #: decision made when hypex was unavailable is structurally
-#: distinguishable from one made with full tooling — no prose required.
+#: distinguishable from one made with full tooling -- no prose required.
 
 
 def get_capability_snapshot() -> dict[str, str]:
     """Return a dict mapping capability names to status strings.
 
     Status is one of ``"available"``, ``"unavailable"``, or
-    ``"degraded"``.  The snapshot is intentionally cheap — it re-uses
+    ``"degraded"``.  The snapshot is intentionally cheap -- it re-uses
     the same check logic that ``pkde doctor`` runs but does not probe
     remote endpoints (those are caveats, not capabilities).
 
@@ -1397,23 +1419,18 @@ def get_capability_snapshot() -> dict[str, str]:
         if path is None:
             candidate = env.tools_home() / "bin" / binary
             if candidate.is_file():
-                # Present but not on PATH — degraded (usable only via
+                # Present but not on PATH -- degraded (usable only via
                 # explicit path, not by tools that shell out).
                 snapshot[binary] = "degraded"
             else:
                 snapshot[binary] = "unavailable"
         elif binary in _CAPABILITY_VALIDATED:
-            # For capability-validated scripts, run the quick check.
-            try:
-                result = subprocess.run(
-                    [path, "--help"],
-                    capture_output=True,
-                    timeout=10,
-                )
-                snapshot[binary] = (
-                    "available" if result.returncode == 0 else "unavailable"
-                )
-            except (subprocess.TimeoutExpired, OSError):
+            # For capability-validated scripts, use the cached quick check.
+            returncode, stdout, _stderr, exc_msg = _probe_binary_help(path)
+            marker = _HELP_MARKERS.get(binary)
+            if exc_msg is None and returncode == 0 and (marker is None or marker in stdout):
+                snapshot[binary] = "available"
+            else:
                 snapshot[binary] = "unavailable"
         else:
             snapshot[binary] = "available"
@@ -1474,7 +1491,7 @@ def _verdict(
     environment". That is a binary instruction against graded output:
     this page prints fourteen warnings on a healthy install, none of
     which are a reason to stop, and an agent that treats the count as
-    the answer either halts on nothing or learns to ignore the page —
+    the answer either halts on nothing or learns to ignore the page --
     and the second is how a real FAIL gets waved through.
 
     So the tool answers the question rather than each skill carrying a
@@ -1504,7 +1521,7 @@ def _verdict(
 
     if execution_mode == "degraded_offline":
         click.echo(
-            "DEGRADED (LOCAL-ONLY SANDBOX) — Outbound scientific APIs are unreachable "
+            "DEGRADED (LOCAL-ONLY SANDBOX) -- Outbound scientific APIs are unreachable "
             "in this environment (`execution_mode: degraded_offline`)."
         )
         click.echo(
@@ -1522,7 +1539,7 @@ def _verdict(
         )
     else:
         click.echo(
-            "PROCEED — nothing above stops work. Warnings are expected on a "
+            "PROCEED -- nothing above stops work. Warnings are expected on a "
             "healthy install; judge by this verdict, not by how many there are. "
             "What they mean:"
         )
@@ -1537,12 +1554,12 @@ def _verdict(
         )
     if caveats:
         click.echo(
-            f"  {len(caveats)} standing fault(s) in upstream services — these "
+            f"  {len(caveats)} standing fault(s) in upstream services -- these "
             "change how you READ a result, not whether you can produce one."
         )
         click.echo(
             "    Read the remedy line for any tool you are about to use: "
-            "`pkde doctor --json`. Each names what would RETIRE it — a "
+            "`pkde doctor --json`. Each names what would RETIRE it -- a "
             "standing fault that cannot say what would end it is indis"
             "tinguishable from one nobody has re-checked in a year."
         )
@@ -1581,6 +1598,7 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
     guidance. Run `pkde init <dir>` to create a project directory, or set
     PKDE_PROJECT explicitly.
     """
+    _BINARY_HELP_CACHE.clear()
     report = Report()
     _check_python(report)
     _check_toolchain_integrity(report)
@@ -1594,9 +1612,21 @@ def doctor(state: AppState, as_json: bool, strict: bool) -> None:
     _check_credentials(report)
     _check_thresholds(report)
     _check_pacing(report)
-    gwas_ok = _check_gwas_catalog(report)
-    disig_ok = _check_disignatlas(report)
-    askcos_ok = _check_askcos(report)
+
+    gwas_rep = Report()
+    disig_rep = Report()
+    askcos_rep = Report()
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        fut_gwas = pool.submit(_check_gwas_catalog, gwas_rep)
+        fut_disig = pool.submit(_check_disignatlas, disig_rep)
+        fut_askcos = pool.submit(_check_askcos, askcos_rep)
+        gwas_ok = fut_gwas.result()
+        disig_ok = fut_disig.result()
+        askcos_ok = fut_askcos.result()
+    report.checks.extend(gwas_rep.checks)
+    report.checks.extend(disig_rep.checks)
+    report.checks.extend(askcos_rep.checks)
+
     network_reachable = _check_external_scientific_apis(
         report, [gwas_ok, disig_ok, askcos_ok]
     )

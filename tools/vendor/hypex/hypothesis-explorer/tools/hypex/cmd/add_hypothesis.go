@@ -106,7 +106,7 @@ func runAddHypothesis(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("writing hypothesis file: %w", err)
 	}
 
-	fmt.Printf("Added hypothesis: %s → %s\n", id, outPath)
+	fmt.Printf("Added hypothesis: %s -> %s\n", id, outPath)
 	return nil
 }
 

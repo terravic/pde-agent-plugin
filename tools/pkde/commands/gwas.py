@@ -1,4 +1,4 @@
-"""`pkde gwas` — GWAS, disease association, and clinical variant lookup.
+"""`pkde gwas` -- GWAS, disease association, and clinical variant lookup.
 
 Three public databases, three phases:
 
@@ -24,8 +24,8 @@ germline classification, review status, and associated conditions. The
 clinical significance field is `germline_classification.description`
 (not the older `clinical_significance` field, which returns null/empty).
 
-All three APIs return clean HTTP status codes for errors — unlike gnomAD,
-none hides refusals inside 200 bodies — so the shared HTTP client's
+All three APIs return clean HTTP status codes for errors -- unlike gnomAD,
+none hides refusals inside 200 bodies -- so the shared HTTP client's
 retry logic handles transient failures.
 """
 
@@ -85,7 +85,7 @@ _PATHOGENIC_CLASSIFICATIONS = frozenset(
 )
 
 # Review-status tiers. A classification's weight depends on its review
-# status — a "Pathogenic" call with "no assertion criteria provided" is
+# status -- a "Pathogenic" call with "no assertion criteria provided" is
 # materially weaker than one "reviewed by expert panel".
 _STRONG_REVIEW = frozenset(
     {
@@ -104,7 +104,7 @@ _MODERATE_REVIEW = frozenset(
 # ClinVar obj_type values (case-insensitive) that indicate locus-overlapping
 # structural variants rather than gene-specific coding variants. A large CNV
 # that happens to overlap a gene locus inflates the pathogenic count without
-# being gene-specific evidence — issue #97.
+# being gene-specific evidence -- issue #97.
 _LOCUS_OVERLAPPING_OBJ_TYPES = re.compile(
     r"deletion|duplication|copy\s*number|structural\s*variant",
     re.IGNORECASE,
@@ -128,7 +128,7 @@ _LOCUS_OVERLAPPING_TITLE = re.compile(
 def _classify_variant_type(assoc: dict[str, Any]) -> str:
     """Classify a ClinVar variant as gene_specific or locus_overlapping.
 
-    Uses ``obj_type`` when available (preferred — directly from ClinVar
+    Uses ``obj_type`` when available (preferred -- directly from ClinVar
     esummary), falling back to heuristic parsing of ``variant_title``
     for artifacts created before obj_type was stored.
 
@@ -240,7 +240,7 @@ def _resolve_ensembl_id(symbol: str) -> tuple[str, str]:
             f"Open Targets has no target record for {symbol!r}",
             remedy="check the gene symbol at platform.opentargets.org",
         )
-    # Take the first hit — the search is by exact gene symbol.
+    # Take the first hit -- the search is by exact gene symbol.
     return hits[0]["id"], hits[0].get("name", symbol.upper())
 
 
@@ -340,7 +340,7 @@ def _fetch_opentargets(symbol: str) -> tuple[bytes, dict[str, Any]]:
 
     target_data = (payload.get("data") or {}).get("target")
     if not target_data or not target_data.get("associatedDiseases"):
-        # Valid response but no associations — not an error.
+        # Valid response but no associations -- not an error.
         return raw, _build_artifact(symbol, "opentargets", ensembl_id, [])
 
     rows = target_data["associatedDiseases"].get("rows", [])
@@ -488,7 +488,7 @@ def _fetch_clinvar(symbol: str) -> tuple[bytes, dict[str, Any]]:
     Uses `germline_classification.description` for clinical significance
     and `germline_classification.review_status` for evidence quality.
     The older `clinical_significance` field is present but returns
-    null/empty — the API has migrated to `germline_classification`.
+    null/empty -- the API has migrated to `germline_classification`.
 
     Returns (verbatim response bytes, structured artifact dict).
     """
@@ -516,7 +516,7 @@ def _fetch_clinvar(symbol: str) -> tuple[bytes, dict[str, Any]]:
     esearch_result = search_data.get("esearchresult") or {}
     id_list = esearch_result.get("idlist", [])
     if not id_list:
-        # No ClinVar entries for this gene — not an error.
+        # No ClinVar entries for this gene -- not an error.
         raw = json.dumps(search_data, indent=2).encode("utf-8")
         return raw, _build_artifact(gene, "clinvar", None, [])
 
@@ -524,7 +524,7 @@ def _fetch_clinvar(symbol: str) -> tuple[bytes, dict[str, Any]]:
     total_count = int(esearch_result.get("count", len(id_list)))
     truncated = len(id_list) < total_count
 
-    # Step 2: Batch fetch summaries — one HTTP call for all UIDs.
+    # Step 2: Batch fetch summaries -- one HTTP call for all UIDs.
     ids_param = ",".join(id_list)
     summary_url = (
         f"{CLINVAR_ESUMMARY}?db=clinvar&id={ids_param}&retmode=json" + api_key_suffix()
@@ -898,7 +898,7 @@ def search_disease_cmd(
         "Override the minimum significance threshold. For Open Targets "
         "this is a composite score (0-1, higher = stronger association) "
         "that blends genetic_association, literature, expression, and "
-        "other data types — it is NOT a p-value. For GWAS Catalog it is "
+        "other data types -- it is NOT a p-value. For GWAS Catalog it is "
         "a p-value (lower = more significant). Default: 0.1 for Open "
         "Targets, 5e-8 for GWAS Catalog."
     ),
@@ -956,7 +956,7 @@ def analyze_cmd(
         if not any(r["code"] == code for r in relays):
             relays.append(provenance.relay(code, message))
 
-    # Apply significance filtering — branched by source.
+    # Apply significance filtering -- branched by source.
     if source == "clinvar":
         if score_threshold is not None:
             emit.line(
@@ -1191,7 +1191,7 @@ def _analyze_clinvar(
 
     Classifies by clinical significance tier rather than by numeric
     threshold. Pathogenic and Likely pathogenic are the "significant"
-    findings. Review status is surfaced prominently — a classification
+    findings. Review status is surfaced prominently -- a classification
     without its review status is incomplete.
 
     Pathogenic variants are stratified into gene-specific (SNV, indel,
@@ -1258,7 +1258,7 @@ def _analyze_clinvar(
     )
 
     # Relay: curated-assertion epistemic status. Fires only when
-    # pathogenic/likely pathogenic variants exist — on a gene with only
+    # pathogenic/likely pathogenic variants exist -- on a gene with only
     # benign/VUS variants there is no pathogenicity claim to guard.
     if significant:
         add_relay(
@@ -1266,7 +1266,7 @@ def _analyze_clinvar(
             f"{gene.upper()} has {len(significant)} ClinVar variant(s) "
             f"classified as pathogenic or likely pathogenic; these are "
             "curated clinical assertions that the variant causes the named "
-            "condition, not statistical correlations — but variant-level "
+            "condition, not statistical correlations -- but variant-level "
             "pathogenicity does not imply the gene is a therapeutic target",
         )
 

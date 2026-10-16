@@ -1,4 +1,4 @@
-"""`pkde conservation` — evolutionary conservation scoring (ConSurf-style).
+"""`pkde conservation` -- evolutionary conservation scoring (ConSurf-style).
 
 Two phases:
 
@@ -193,7 +193,7 @@ def conservation() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — compute
+# Phase 1 -- compute
 # ---------------------------------------------------------------------------
 
 
@@ -242,8 +242,8 @@ def compute_cmd(
     Outputs under ``raw/genomics/``:
 
     \b
-      {name}.conservation.json       — per-residue scores and grades
-      {name}.conservation.meta.json  — provenance sidecar
+      {name}.conservation.json       -- per-residue scores and grades
+      {name}.conservation.meta.json  -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -579,7 +579,7 @@ def align_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — analyze
+# Phase 2 -- analyze
 # ---------------------------------------------------------------------------
 
 
@@ -658,7 +658,7 @@ def analyze_cmd(
     #
     # When canonical_length is present in the record (compute_cmd now writes
     # it), use it directly.  For older records that lack it, derive it from
-    # the max position index in residues — NOT from len(residues), which
+    # the max position index in residues -- NOT from len(residues), which
     # would make coverage always 1.0 and suppress the low_coverage relay.
     if "canonical_length" in record:
         canonical_length = record["canonical_length"]
@@ -687,7 +687,7 @@ def analyze_cmd(
 
     # --- determine verdict ---
     # Verdict thresholds are hardcoded presentation logic, not in the
-    # threshold set — follows the compreg precedent.
+    # threshold set -- follows the compreg precedent.
     if fraction_conserved >= 0.20:
         verdict = "conserved-core-present"
         statement = (

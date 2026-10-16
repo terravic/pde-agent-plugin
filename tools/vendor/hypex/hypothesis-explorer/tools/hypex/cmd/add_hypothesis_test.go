@@ -45,7 +45,7 @@ func addParentHypothesis(t *testing.T, binPath, runsDir, runID, schemaDir string
 		t.Fatalf("adding parent hypothesis: %v\n%s", err, out)
 	}
 
-	// Parse the allocated ID from output like "Added hypothesis: H-0001 → ..."
+	// Parse the allocated ID from output like "Added hypothesis: H-0001 -> ..."
 	outStr := string(out)
 	parts := strings.Fields(outStr)
 	for i, p := range parts {
@@ -64,7 +64,7 @@ func TestAddHypothesis_NullOperator_NoCitationDelta(t *testing.T) {
 	runID := "test-add-hyp-null"
 	initTestRun(t, binPath, runsDir, runID)
 
-	// First-generation hypothesis with null operator — no citation_delta.
+	// First-generation hypothesis with null operator -- no citation_delta.
 	h := sampleHypothesisData("", "proposed")
 	payload := mustMarshalIndent(t, h)
 
@@ -110,7 +110,7 @@ func TestAddHypothesis_Combine_Compliant(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// Child inherits all parent citations plus adds a new one — compliant.
+	// Child inherits all parent citations plus adds a new one -- compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "inherited1"},
 		{"lit_id": "PMID:1002", "role": "supports", "note": "inherited2"},
@@ -172,7 +172,7 @@ func TestAddHypothesis_Combine_NonCompliant_Warning(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// Child drops PMID:1002 — non-compliant.
+	// Child drops PMID:1002 -- non-compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "inherited"},
 	}
@@ -274,7 +274,7 @@ func TestAddHypothesis_Ground_Compliant(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// Ground child keeps parent citation and adds new evidence — compliant.
+	// Ground child keeps parent citation and adds new evidence -- compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "inherited"},
 		{"lit_id": "PMID:2001", "role": "supports", "note": "new grounding evidence"},
@@ -326,7 +326,7 @@ func TestAddHypothesis_Simplify_Compliant(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// Simplify child uses subset of parent citations — compliant.
+	// Simplify child uses subset of parent citations -- compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "kept"},
 		{"lit_id": "PMID:1003", "role": "supports", "note": "kept"},
@@ -380,10 +380,10 @@ func TestAddHypothesis_Simplify_NonCompliant(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// Simplify child adds new citation — non-compliant.
+	// Simplify child adds new citation -- non-compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "kept"},
-		{"lit_id": "PMID:3001", "role": "supports", "note": "new — not allowed"},
+		{"lit_id": "PMID:3001", "role": "supports", "note": "new -- not allowed"},
 	}
 	child := sampleEvolvedHypothesisData("simplify", []string{parentID}, childEvidence)
 	payload := mustMarshalIndent(t, child)
@@ -427,7 +427,7 @@ func TestAddHypothesis_OOB_AlwaysCompliant(t *testing.T) {
 	}
 	parentID := addParentHypothesis(t, binPath, runsDir, runID, schemaDir, parentEvidence)
 
-	// OOB child with completely different citations — always compliant.
+	// OOB child with completely different citations -- always compliant.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:9999", "role": "supports", "note": "totally new"},
 	}
@@ -471,7 +471,7 @@ func TestAddHypothesis_MissingParent_Warning(t *testing.T) {
 	runID := "test-add-hyp-missing-parent"
 	initTestRun(t, binPath, runsDir, runID)
 
-	// No parent file written — should warn but still write.
+	// No parent file written -- should warn but still write.
 	childEvidence := []map[string]any{
 		{"lit_id": "PMID:1001", "role": "supports", "note": "note"},
 	}
@@ -517,7 +517,7 @@ func TestAddHypothesis_EmptyParents_NoCitationDelta(t *testing.T) {
 	runID := "test-add-hyp-empty-parents"
 	initTestRun(t, binPath, runsDir, runID)
 
-	// Hypothesis with operator but empty parents array — no delta.
+	// Hypothesis with operator but empty parents array -- no delta.
 	h := sampleHypothesisData("", "proposed")
 	h["lineage"] = map[string]any{
 		"parents":  []string{},

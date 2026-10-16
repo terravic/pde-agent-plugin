@@ -220,7 +220,7 @@ def _fetch_disignatlas(
         _log.warning(
             "DisigNAtlas returned a non-empty HTML response (%d bytes) "
             "but zero result rows were parsed; the page structure may "
-            "have changed — inspect the verbatim HTML artifact",
+            "have changed -- inspect the verbatim HTML artifact",
             len(html),
         )
 
@@ -486,7 +486,7 @@ def analyze_cmd(
                     "p-value) from published studies. The signatures are pre-computed from "
                     "public data (GEO, ArrayExpress, TCGA) using standardized pipelines. "
                     "Individual study quality, sample sizes, and normalization methods "
-                    "vary — treat as a discovery resource, not as primary evidence.",
+                    "vary -- treat as a discovery resource, not as primary evidence.",
                 )
             )
 
@@ -546,7 +546,7 @@ def analyze_cmd(
                     "p-value) from published studies. The signatures are pre-computed from "
                     "public data (GEO, ArrayExpress, TCGA) using standardized pipelines. "
                     "Individual study quality, sample sizes, and normalization methods "
-                    "vary — treat as a discovery resource, not as primary evidence.",
+                    "vary -- treat as a discovery resource, not as primary evidence.",
                 )
             )
 

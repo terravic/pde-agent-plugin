@@ -4,14 +4,14 @@ Two state machines govern the control plane:
 
 **Work-order state machine** tracks a work order from initial proposal
 through specialist execution, mechanical validation, and scientific
-review to a terminal state.  The ``validation_failed → in_progress``
-transition is the recovery path for contract failures (§9 of
-orchestration-design-guidance.md: "contract failure → return for
-correction").  Without it, every validation failure — a missing sidecar,
-a wrong path — would require creating an entirely new work-order
+review to a terminal state.  The ``validation_failed -> in_progress``
+transition is the recovery path for contract failures (Section 9 of
+orchestration-design-guidance.md: "contract failure -> return for
+correction").  Without it, every validation failure -- a missing sidecar,
+a wrong path -- would require creating an entirely new work-order
 revision, which is too heavyweight for mechanical issues.
 
-The ``validation_failed → mechanically_validated`` transition is the
+The ``validation_failed -> mechanically_validated`` transition is the
 override path for hand-verified work orders (#178).  When specific
 checks fail but the underlying property has been verified by alternative
 means, an operator can override named checks (from a hardcoded
@@ -29,7 +29,7 @@ permits queuing, and run completion may trigger work-order transitions.
 Splitting definitions across command modules would create cross-module
 imports for the common case.
 
-Illegal transitions raise ``Refusal`` (exit 9) — the same code used
+Illegal transitions raise ``Refusal`` (exit 9) -- the same code used
 elsewhere in the CLI for "change the input; retrying cannot help."
 """
 
@@ -61,7 +61,7 @@ WORK_ORDER_TRANSITIONS: dict[str | None, set[str]] = {
         "revision_requested",
         "scientifically_rejected",
     },
-    # Terminal states — no outgoing transitions.
+    # Terminal states -- no outgoing transitions.
     "scientifically_accepted": set(),
     "revision_requested": set(),
     "scientifically_rejected": set(),
@@ -125,7 +125,7 @@ _MACHINES: dict[str, dict[str | None, set[str]]] = {
 
 
 def validate_transition(machine: str, current: str | None, target: str) -> None:
-    """Validate that *current* → *target* is legal in *machine*.
+    """Validate that *current* -> *target* is legal in *machine*.
 
     Parameters
     ----------

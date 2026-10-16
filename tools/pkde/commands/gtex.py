@@ -1,12 +1,12 @@
-"""`pkde gtex` — GTEx whole-blood median gene expression (RNA-seq, TPM).
+"""`pkde gtex` -- GTEx whole-blood median gene expression (RNA-seq, TPM).
 
 This tool answers: *what is the median RNA expression level of this gene
 in whole blood, as measured by the GTEx consortium?*  It does not predict,
-rank, or classify — GTEx publishes no expression-level cutoff analogous
+rank, or classify -- GTEx publishes no expression-level cutoff analogous
 to HPA's nTPM >= 1, so the raw median TPM is reported without a
 threshold verdict.
 
-Two phases (docs/tool-design-guidance.md §3):
+Two phases (docs/tool-design-guidance.md Section 3):
 
   fetch    one gene -> the GTEx whole-blood median expression record,
            written verbatim to Layer 0 with a provenance sidecar. No
@@ -24,21 +24,21 @@ tissue definitions are different, and blending them into a single
 "expression level" would manufacture a composite that neither source
 published. Issue #30 decided: build GTEx as its own tool.
 
-Design decision — whole-blood-vs-peripheral-blood disposition:
+Design decision -- whole-blood-vs-peripheral-blood disposition:
 
     GTEx "whole blood" is drawn from femoral/subclavian veins and measured
     by bulk RNA-seq. It is a partial proxy for peripheral blood protein
     expression, not an equivalent measurement. This is true of every GTEx
-    whole-blood query without exception — it is a standing property of the
+    whole-blood query without exception -- it is a standing property of the
     data source, not a per-query finding.
 
-    Per tool-design-guidance.md §5.1, an unconditional relay is usually a
+    Per tool-design-guidance.md Section 5.1, an unconditional relay is usually a
     smell: a warning that fires on every invocation is a property wearing
     a relay costume. However, the alternative (a sidecar field) is not
     mechanically enumerable by `pkde relays`, which means a reviewer
     has to know to look for it. The relay is chosen here because:
 
-    1. `pkde relays` enumerates it mechanically — a reviewer running
+    1. `pkde relays` enumerates it mechanically -- a reviewer running
        the enumeration will see it, and a skill author writing an
        interpretation contract can name the code.
     2. The obligation on the finding is specific and actionable: "report
@@ -105,7 +105,7 @@ def _resolve_gene(query: str) -> tuple[str, str, str]:
 
     Identity resolution discipline: if the lookup returns 0 matches,
     refuse (exit 9). If it returns >1 match, refuse (exit 9). Never
-    rank and pick — the same principle as expression.py's _resolve_gene.
+    rank and pick -- the same principle as expression.py's _resolve_gene.
 
     Returns the versioned gencodeId (e.g. ENSG00000141510.16), the gene
     symbol, and how the resolution was performed.
@@ -394,7 +394,7 @@ def analyze_cmd(
         # Apply classification if program overrides have resolved the
         # thresholds; otherwise report the raw value with an explanation.
         if not unresolved:
-            # All thresholds resolved (via program overrides) — classify.
+            # All thresholds resolved (via program overrides) -- classify.
             expressed_tpm = thresholds.get("expressed_tpm")
             high_tpm = thresholds.get("high_expression_tpm")
             low_tpm = thresholds.get("low_expression_tpm")
@@ -409,7 +409,7 @@ def analyze_cmd(
                     classification = "high"
                 assessment["classification"] = classification
         else:
-            # Thresholds are UNRESOLVED — no classification is possible.
+            # Thresholds are UNRESOLVED -- no classification is possible.
             # GTEx publishes no expression-level cutoffs analogous to HPA's
             # "detected at nTPM >= 1", and GTEx TPM is not comparable to
             # HPA nTPM (different normalization, different tissue sets).
@@ -453,12 +453,12 @@ def analyze_cmd(
     if data_records:
         record = data_records[0]
         emit.line(
-            f"{record.get('geneSymbol', gencode_id)} ({gencode_id}) — "
+            f"{record.get('geneSymbol', gencode_id)} ({gencode_id}) -- "
             f"GTEx whole-blood median"
         )
         emit.line(f"median: {record.get('median')} {record.get('unit', 'TPM')}")
     else:
-        emit.line(f"{gencode_id} — no GTEx whole-blood data")
+        emit.line(f"{gencode_id} -- no GTEx whole-blood data")
     for r in relays:
         emit.line(f"relay {r['code']}: {r['message']}")
     emit.path(analysis_path, role="analysis")
@@ -471,7 +471,7 @@ def _locate(state: AppState, gene: str, target_dir: Path) -> tuple[Path, str]:
     Returns (expression_path, gencode_id). Handles gene symbols by
     searching sidecars, same pattern as expression.py's _locate.
     """
-    # Versioned gencodeId first — its dot would trick Path.suffix.
+    # Versioned gencodeId first -- its dot would trick Path.suffix.
     if VERSIONED_ENSG_RE.match(gene.upper()):
         gencode_id = gene
         expression_path = target_dir / f"{gencode_id}.gtex.json"

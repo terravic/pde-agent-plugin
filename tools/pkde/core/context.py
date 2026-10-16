@@ -13,12 +13,12 @@
 """Project root resolution and artifact directory layout.
 
 Agents are unreliable about working directory, so the CLI never trusts
-CWD for output placement. See docs/tool-design-guidance.md §4.
+CWD for output placement. See docs/tool-design-guidance.md Section 4.
 
 Resolution order:
   1. $PKDE_PROJECT
   2. walk up from CWD looking for a `.pkde/` marker directory
-  3. fail loudly — never silently write into CWD
+  3. fail loudly -- never silently write into CWD
 
 Additionally, the pkde repo itself is refused as a project root. In
 development the working directory may be the pkde repo, and writing raw/ into it
@@ -41,7 +41,7 @@ REPO_MARKER = ".pkde-repo"
 # Marker directory identifying a pkde *program* directory.
 PROJECT_MARKER = ".pkde"
 
-# One directory per artifact class (§4). Keys are artifact classes used
+# One directory per artifact class (Section 4). Keys are artifact classes used
 # by subcommands; values are paths relative to the project root.
 ARTIFACT_DIRS: dict[str, str] = {
     "admet": "raw/admet",
@@ -83,7 +83,7 @@ def normalize_artifact_class(artifact_class: str) -> str:
 
     Work orders use prefixed names (e.g. ``pkde.genetics``); ARTIFACT_DIRS
     uses unprefixed names (``genetics``).  This normalizer is the single
-    place that mapping lives — every lookup site must call it first.
+    place that mapping lives -- every lookup site must call it first.
     """
     if artifact_class.startswith("pkde."):
         return artifact_class.removeprefix("pkde.")
@@ -94,7 +94,7 @@ def resolve_artifact_subdir(artifact_class: str) -> str:
     """Look up the relative directory for *artifact_class* in ARTIFACT_DIRS.
 
     Applies ``pkde.*`` prefix normalization before lookup.  Raises
-    :class:`SchemaError` if the (normalized) class is not registered —
+    :class:`SchemaError` if the (normalized) class is not registered --
     an unknown class must never silently return ``None``.
     """
     normalized = normalize_artifact_class(artifact_class)
@@ -103,7 +103,7 @@ def resolve_artifact_subdir(artifact_class: str) -> str:
         raise SchemaError(
             f"unknown artifact class: {artifact_class!r}",
             detail=f"known classes: {', '.join(sorted(ARTIFACT_DIRS))}",
-            remedy="this is an internal registration bug — add the class to ARTIFACT_DIRS in context.py",
+            remedy="this is an internal registration bug -- add the class to ARTIFACT_DIRS in context.py",
         )
     return subdir
 
@@ -120,7 +120,7 @@ class ProjectContext:
     ) -> Path:
         """Return (and create) the output directory for an artifact class.
 
-        ``pkde.*`` prefix is normalized before lookup — work orders use
+        ``pkde.*`` prefix is normalized before lookup -- work orders use
         prefixed names, ARTIFACT_DIRS uses unprefixed names.
 
         `override` corresponds to a subcommand's --out flag. A relative
@@ -199,7 +199,7 @@ def _validate(root: Path, source: str) -> ProjectContext:
             f"refusing to use the pkde source repo as a project root: {root}",
             detail=(
                 "writing raw/ here would pollute the repository. This is the "
-                "development case called out in tool-design-guidance.md §4."
+                "development case called out in tool-design-guidance.md Section 4."
             ),
             remedy=(
                 "set PKDE_PROJECT to the program directory, e.g.\n"
@@ -230,7 +230,7 @@ def _write_if_missing(path: Path, content: str) -> None:
         path.write_text(content, encoding="utf-8")
 
 
-# Findings sub-disciplines mirroring the canonical layout (pkde-plan.md §findings).
+# Findings sub-disciplines mirroring the canonical layout (pkde-plan.md Section findings).
 FINDINGS_SUBDIRS: list[str] = [
     "structural-biology",
     "computational-biology",
@@ -250,7 +250,7 @@ PROGRAM_STATE_FILES: dict[str, str] = {
     "open-questions.md": "# Open Questions\n\nOutstanding questions requiring resolution.\n",
 }
 
-# Gate stage directories created under gates/ (pkde-plan.md §gates).
+# Gate stage directories created under gates/ (pkde-plan.md Section gates).
 GATE_STAGES: list[str] = [
     "stage1-intervention-validation",
     "stage2-starting-matter-declaration",

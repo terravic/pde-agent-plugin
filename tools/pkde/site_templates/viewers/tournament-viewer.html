@@ -142,7 +142,7 @@
         if (isSorted) cls += sortDir === 'asc' ? ' sorted-asc' : ' sorted-desc';
         const sortAttr = col.sortable ? ' data-col="' + col.key + '"' : '';
         const arrow = col.sortable
-          ? '<span class="sort-arrow">' + (isSorted ? (sortDir === 'asc' ? '&#9650;' : '&#9660;') : '&#9650;') + '</span>'
+          ? '<span class="sort-arrow">' + (isSorted ? (sortDir === 'asc' ? '^' : 'v') : '^') + '</span>'
           : '';
         html += '<th class="' + cls + '"' + sortAttr + '>' + col.label + arrow + '</th>';
       });
@@ -165,7 +165,7 @@
 
         html += '<tr class="data-row' + (isTop ? ' top-idea' : '') + '" data-idea-id="' + escapeHtml(String(idea.id || '')) + '">';
         html += '<td class="' + rankCls + '">' + escapeHtml(String(ranking)) + '</td>';
-        html += '<td class="idea-title"><span class="expand-icon">&#9654;</span>' + escapeHtml(idea.title || '') + '</td>';
+        html += '<td class="idea-title"><span class="expand-icon">+</span>' + escapeHtml(idea.title || '') + '</td>';
         html += '<td><span class="elo-badge ' + eloClass(elo, highestElo) + '">' + escapeHtml(String(Math.round(elo))) + '</span></td>';
         html += '<td>' + escapeHtml(String(won)) + '-' + escapeHtml(String(lost)) + '</td>';
         html += '<td><span class="win-rate ' + winRateClass(winRate) + '">' + escapeHtml(String((winRate * 100).toFixed(1))) + '%</span></td>';
@@ -263,7 +263,7 @@
       showError('No file specified. Use ?file=path/to/file');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
-      document.title = filePath.split('/').pop() + ' — Tournament Viewer';
+      document.title = filePath.split('/').pop() + ' -- Tournament Viewer';
 
       fetch(filePath)
         .then(r => {
@@ -295,7 +295,7 @@
               const summaryDiv = document.getElementById('tournament-summary');
               summaryDiv.style.display = 'block';
               document.getElementById('tournament-title').textContent = t.title || 'Tournament';
-              document.title = (t.title || filePath.split('/').pop()) + ' — Tournament Viewer';
+              document.title = (t.title || filePath.split('/').pop()) + ' -- Tournament Viewer';
 
               const metaItems = [];
               if (t.stage) metaItems.push('<span class="meta-item"><strong>Stage:</strong> ' + escapeHtml(String(t.stage)) + '</span>');

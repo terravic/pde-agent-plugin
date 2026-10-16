@@ -72,7 +72,7 @@
       "result": "skip",
       "status": "skip",
       "kind": null,
-      "detail": "program.yaml not present \u2014 check deferred to a future program.yaml configuration issue"
+      "detail": "program.yaml not present -- check deferred to a future program.yaml configuration issue"
     },
     {
       "name": "findings_integrity",

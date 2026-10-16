@@ -1,4 +1,4 @@
-"""Toolchain integrity detection — is the CLI running from modified source?
+"""Toolchain integrity detection -- is the CLI running from modified source?
 
 Answers a single question: does the installed `pkde` package match its
 declared `cli_version`?  When running from a git checkout, `git describe
@@ -6,8 +6,8 @@ declared `cli_version`?  When running from a git checkout, `git describe
 package (no `.git` directory), the best we can say is "installed".
 
 The result is cached for the session so the subprocess runs at most once
-per process.  Every call site — sidecar writing, doctor, the CLI startup
-warning — reads the same cached value.
+per process.  Every call site -- sidecar writing, doctor, the CLI startup
+warning -- reads the same cached value.
 
 Issue #127: specialists patched installed PkDE source mid-run during the
 pilot campaign. 5 files modified, 29 insertions, all sidecars still
@@ -88,7 +88,7 @@ def _git_modified_files(git_root: Path) -> list[str]:
 def check_integrity() -> ToolchainState:
     """Return the toolchain integrity state, caching for the session.
 
-    Safe to call from any thread — worst case is a duplicate subprocess
+    Safe to call from any thread -- worst case is a duplicate subprocess
     invocation, and the result is idempotent.
     """
     global _cached

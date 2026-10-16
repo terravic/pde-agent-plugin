@@ -10,9 +10,9 @@ the `homology` threshold set. Writes a `.homology.analysis.json`.
 Phase 3: download a single PDB coordinate file and write a provenance
 sidecar recording the download endpoint and SHA-256 hash.
 
-  search          — phase 1. BLAST a UniProt subsequence against the PDB.
-  analyze         — phase 2. Classify hits by identity, resolution, coverage.
-  fetch-structure — phase 3. Download a PDB coordinate file from RCSB.
+  search          -- phase 1. BLAST a UniProt subsequence against the PDB.
+  analyze         -- phase 2. Classify hits by identity, resolution, coverage.
+  fetch-structure -- phase 3. Download a PDB coordinate file from RCSB.
 """
 
 from __future__ import annotations
@@ -66,7 +66,7 @@ def _fetch_uniprot(accession: str) -> tuple[str, int, str | None]:
     """Fetch canonical sequence, length, and gene symbol from UniProt.
 
     Returns (sequence, length, gene_symbol). Raises EndpointError on
-    failure — unlike alphafold's lenient cross-check, the sequence is
+    failure -- unlike alphafold's lenient cross-check, the sequence is
     required input here, not optional metadata.
     """
     url = f"{UNIPROT_API}/{accession}.json?fields=length,gene_primary,sequence"
@@ -106,11 +106,11 @@ def _parse_range(residue_range: str, canonical_length: int) -> tuple[int, int]:
         ) from e
     if start > end:
         raise UsageError(
-            f"range START ({start}) must be ≤ END ({end})",
+            f"range START ({start}) must be <= END ({end})",
         )
     if start < 1:
         raise UsageError(
-            f"range START ({start}) must be ≥ 1",
+            f"range START ({start}) must be >= 1",
         )
     if end > canonical_length:
         raise UsageError(
@@ -281,7 +281,7 @@ def _fetch_structure_metadata(hits: list[dict[str, Any]], query_accession: str) 
         )
 
         # Determine source UniProt and whether this is a direct structure.
-        # Only inspect the polymer entity that the BLAST hit matched —
+        # Only inspect the polymer entity that the BLAST hit matched --
         # other entities in the same PDB entry (e.g. a co-crystallised
         # partner in a heterocomplex) must not influence the decision.
         polymer_entities = entry.get("polymer_entities") or []
@@ -556,7 +556,7 @@ def orthologs(
     # Determine if this is a UniProt accession or a gene symbol
     accession_candidate = raw_input.upper()
     if _UNIPROT_RE.match(accession_candidate):
-        # It's a UniProt accession — fetch gene symbol for query
+        # It's a UniProt accession -- fetch gene symbol for query
         _seq, _len, gene_symbol = _fetch_uniprot(accession_candidate)
         if not gene_symbol:
             raise UsageError(
@@ -567,7 +567,7 @@ def orthologs(
         query_gene = gene_symbol
         query_accession = accession_candidate
     else:
-        # Treat as a gene symbol — resolve to accession for provenance
+        # Treat as a gene symbol -- resolve to accession for provenance
         query_gene = raw_input
         query_accession = _resolve_gene_to_accession(query_gene)
 
@@ -629,7 +629,7 @@ def orthologs(
     for orth in ortholog_list[:5]:
         emit.line(f"  {orth['accession']}  {orth['organism']}")
     if len(ortholog_list) > 5:
-        emit.line(f"  … {len(ortholog_list) - 5} more")
+        emit.line(f"  ... {len(ortholog_list) - 5} more")
     emit.path(project.relative(fasta_path), "fasta")
     emit.path(project.relative(manifest_path), "manifest")
     emit.path(project.relative(meta), "sidecar")
@@ -637,7 +637,7 @@ def orthologs(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — homology analysis
+# Phase 2 -- homology analysis
 # ---------------------------------------------------------------------------
 
 
@@ -694,12 +694,12 @@ def _compute_verdict(hit_assessments: list[dict[str, Any]], hit_count: int) -> s
     """Compute the overall verdict from classified hits.
 
     Priority order (first match wins):
-      1. strong-candidates  — at least one high-identity + adequate coverage
-      2. moderate-candidates — best is moderate band with adequate coverage,
+      1. strong-candidates  -- at least one high-identity + adequate coverage
+      2. moderate-candidates -- best is moderate band with adequate coverage,
                                OR high band but inadequate coverage
-      3. remote-only        — all hits below identity_moderate
-      4. no-coverage        — hits exist but none have adequate coverage
-      5. no-hits            — hit_count == 0
+      3. remote-only        -- all hits below identity_moderate
+      4. no-coverage        -- hits exist but none have adequate coverage
+      5. no-hits            -- hit_count == 0
     """
     if hit_count == 0:
         return "no-hits"
@@ -820,7 +820,7 @@ def analyze(
             raise ArtifactError(f"manifest path escapes project root: {manifest_path}")
         manifest_path = confined
     else:
-        # Treat as a UniProt accession — search for the manifest
+        # Treat as a UniProt accession -- search for the manifest
         accession = uniprot_id_or_path.strip().upper()
         matches = sorted(source_dir.glob(f"HOMOLOGY-{accession}-*.search.json"))
         if len(matches) == 1:
@@ -984,7 +984,7 @@ def analyze(
             f"({ha['coverage']})"
         )
     if len(hit_assessments) > 10:
-        emit.line(f"  … {len(hit_assessments) - 10} more hit(s) omitted")
+        emit.line(f"  ... {len(hit_assessments) - 10} more hit(s) omitted")
     for advisory in advisories[:3]:
         emit.line(f"* {advisory}")
     emit.path(project.relative(analysis_path), "analysis")
@@ -992,7 +992,7 @@ def analyze(
 
 
 # ---------------------------------------------------------------------------
-# Phase 3 — fetch-structure
+# Phase 3 -- fetch-structure
 # ---------------------------------------------------------------------------
 
 

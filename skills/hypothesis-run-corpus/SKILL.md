@@ -20,30 +20,30 @@ tournament run. Entry points include:
 
 **Do not use when:**
 
-- You need to interpret a Co-Scientist tournament export — use
+- You need to interpret a Co-Scientist tournament export -- use
   `tournament-corpus`.
-- You need to decide which stage 0 strategy to use — use
+- You need to decide which stage 0 strategy to use -- use
   `hypothesis-entry`.
-- You need to verify citations in a standalone document — use
+- You need to verify citations in a standalone document -- use
   `citation-verification`.
 - You need to evaluate the scientific evidence for or against a
-  target identified by the tournament — use the capability skills
+  target identified by the tournament -- use the capability skills
   for that evidence type (structure, expression, constraint,
   regulatory variants, citations).
 
 ## 2. Preconditions
 
 - **Completed run directory** (for `ingest`): a hypex tournament run
-  directory containing the datastore — `hypotheses/`, `matches/`,
+  directory containing the datastore -- `hypotheses/`, `matches/`,
   `ratings/`, `reviews/`, `meta/`, and optionally `quarantine/` and
   `proximity/`. The datastore is append-only with atomic writes and
   one writer per file. The ingest derives every count from the
   datastore, never from `run.yaml` budgets.
 - **Normalised artifact** (for `analyze`): the `.hypex.json` produced
-  by `ingest`. This is the stable Layer 0 record — do not pass the
+  by `ingest`. This is the stable Layer 0 record -- do not pass the
   raw run directory to `analyze`.
-- **No authentication** needed — the tool reads local files only.
-- **No network** — `ingest` and `analyze` are both offline.
+- **No authentication** needed -- the tool reads local files only.
+- **No network** -- `ingest` and `analyze` are both offline.
 - Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
@@ -81,19 +81,19 @@ paths only, `--out` to override the default output directory.
 
 `analyze` applies the `hypex@1.0` threshold set and emits one of:
 
-- **clear-leader** — one hypothesis has a decisive ELO gap over the
+- **clear-leader** -- one hypothesis has a decisive ELO gap over the
   runner-up and carries no advisories.
-- **leader-with-advisories** — the ELO gap is decisive but the leader
+- **leader-with-advisories** -- the ELO gap is decisive but the leader
   carries advisories (phantom citations, integrity issues, low win rate,
   or too few matches).
-- **no-clear-leader** — the ELO gap between #1 and #2 is below the
+- **no-clear-leader** -- the ELO gap between #1 and #2 is below the
   configured `elo_decisive_gap`. The ranking does not support a confident
   selection.
-- **single-candidate** — only one hypothesis was in the run. No
+- **single-candidate** -- only one hypothesis was in the run. No
   comparative judgment is possible; the hypothesis is trivially ranked.
-- **unrankable** — insufficient matches to establish any ranking. The
+- **unrankable** -- insufficient matches to establish any ranking. The
   tournament produced no usable ordering.
-- **unconverged** — budget was exhausted or the run was aborted. The
+- **unconverged** -- budget was exhausted or the run was aborted. The
   ranking is where the run stopped, not where the tournament settled.
   A `clear-leader` or `no-clear-leader` within an `unconverged` run is
   not evidence the result would have held had the run continued.
@@ -101,27 +101,27 @@ paths only, `--out` to override the default output directory.
 ### Per-hypothesis advisories
 
 Each ranked hypothesis is checked against these conditions. An advisory
-is not a veto — it is a fact that must travel with any claim based on
+is not a veto -- it is a fact that must travel with any claim based on
 the hypothesis's ranking:
 
-- **Phantom citations** — the hypothesis has phantom citations in its
+- **Phantom citations** -- the hypothesis has phantom citations in its
   citation manifest (count above `max_phantom_citations`). A phantom
   citation invalidates the claim resting on it.
-- **Suspect citations** — suspect-title-match citations are present.
+- **Suspect citations** -- suspect-title-match citations are present.
   When `max_suspect_citations` resolves, this will become a threshold
   check; while UNRESOLVED, the advisory fires on any non-zero count.
-- **Low win rate** — the hypothesis's win rate is below the configured
+- **Low win rate** -- the hypothesis's win rate is below the configured
   `min_win_rate` threshold.
-- **Too few matches** — fewer than the configured `min_matches`
+- **Too few matches** -- fewer than the configured `min_matches`
   threshold were played. The ranking is not well supported.
-- **Low safety score** — the reviewer-assessed safety score is below
-  `min_safety_score`. While UNRESOLVED, this advisory cannot fire —
+- **Low safety score** -- the reviewer-assessed safety score is below
+  `min_safety_score`. While UNRESOLVED, this advisory cannot fire --
   the threshold has no defensible value yet.
-- **Integrity violations** — dangling references or other structural
+- **Integrity violations** -- dangling references or other structural
   problems detected by the ingest (not by `hypex validate`, which does
   not check these).
 
-### The denominator contrast — hypex is different from Co-Scientist
+### The denominator contrast -- hypex is different from Co-Scientist
 
 **This section is load-bearing.** A reader carrying the co-scientist
 rule ("never compute a rate from the deep-verification denominator")
@@ -129,7 +129,7 @@ would wrongly refuse a valid computation here. The two strategies have
 different denominator semantics, and the skill must make that explicit.
 
 **Co-Scientist (tournament-corpus):** The `deepVerification` section is
-an exception list — it contains only the claims the verifier took issue
+an exception list -- it contains only the claims the verifier took issue
 with. `n_claims_reported_total` is the count of disputed claims, not
 total claims. Dividing `n_contradicted` by `n_reported` gives ~1.0 and
 is meaningless. `tournament-corpus` forbids computing a rate.
@@ -142,13 +142,13 @@ computation here where it was not for co-scientist.
 
 **Why this holds:** The citation manifest's `summary.total` comes from
 the `pkde.citation-manifest.v1` schema, which counts every citation the
-extractor found — verified, suspect, phantom, and unverified alike.
+extractor found -- verified, suspect, phantom, and unverified alike.
 Unlike Co-Scientist's exception list, the manifest is a complete
 enumeration of what the extractor saw.
 
 **The condition:** This claim holds only if `cite.extraction_incomplete`
 is honoured. When `extraction_basis != "structured"`, the `total` is the
-count the extractor *found*, not the count the document *contains* — it
+count the extractor *found*, not the count the document *contains* -- it
 becomes a floor, not a census. If a finding rests on a phantom rate and
 `cite.extraction_incomplete` fired on the underlying manifest, the rate
 must carry that qualifier: the denominator is incomplete.
@@ -156,7 +156,7 @@ must carry that qualifier: the denominator is incomplete.
 **In practice:** compute the phantom rate when a citation manifest is
 present and `cite.extraction_incomplete` did not fire (or, if it fired,
 carry the qualifier). Do NOT refuse to compute it on the grounds that
-co-scientist forbids it — the prohibition exists because co-scientist
+co-scientist forbids it -- the prohibition exists because co-scientist
 lacks the denominator, and hypex has one.
 
 ### UNRESOLVED thresholds
@@ -167,11 +167,11 @@ Three of the six thresholds in `hypex@1.0` ship UNRESOLVED:
 |---|---|
 | `elo_decisive_gap` | `MarginMultiplier`'s undocumented 0.75 damping puts hypex ELO on a different scale from Co-Scientist. Cannot inherit `50.0` by analogy. Needs the distribution measured over real converged runs. |
 | `max_suspect_citations` | No corpus has been measured to establish a cutoff. |
-| `min_safety_score` | The 1–5 anchors are LLM-reviewer judgements; no basis for a cutoff without calibration. |
+| `min_safety_score` | The 1-5 anchors are LLM-reviewer judgements; no basis for a cutoff without calibration. |
 
 Calling `get()` on an UNRESOLVED threshold raises. When a verdict
 depends on an UNRESOLVED threshold, the task reports blocked. **This is
-correct behaviour, not a bug** — it is better than a number nobody can
+correct behaviour, not a bug** -- it is better than a number nobody can
 defend.
 
 On day one, all three are UNRESOLVED. This means:
@@ -180,17 +180,17 @@ On day one, all three are UNRESOLVED. This means:
   than applying a calibrated threshold.
 - `min_safety_score` advisories cannot fire at all.
 
-### `leader_gap_is_decisive` — tri-state
+### `leader_gap_is_decisive` -- tri-state
 
 The assessment carries `leader_gap_is_decisive`:
 
-- **`true`** — the ELO gap between #1 and #2 exceeds the configured
+- **`true`** -- the ELO gap between #1 and #2 exceeds the configured
   `elo_decisive_gap`. The verdict is `clear-leader` or
   `leader-with-advisories` depending on whether the leader carries
   advisories.
-- **`false`** — the ELO gap is below `elo_decisive_gap`. The verdict
+- **`false`** -- the ELO gap is below `elo_decisive_gap`. The verdict
   is `no-clear-leader`.
-- **`null`** — `elo_decisive_gap` is UNRESOLVED, so the question cannot
+- **`null`** -- `elo_decisive_gap` is UNRESOLVED, so the question cannot
   be answered. This is also the value when there is only one candidate
   (`single-candidate`) or none (`unrankable`). Do not read `null` as
   `false`.
@@ -204,7 +204,7 @@ that has not been established.
 The ELO gap measures how consistently hypothesis #1 beat hypothesis #2
 in pairwise comparisons. A decisive gap means the ranking is stable, not
 that the hypothesis is correct. A `clear-leader` verdict says the
-tournament converged on this hypothesis — it does not say the hypothesis
+tournament converged on this hypothesis -- it does not say the hypothesis
 is scientifically sound. A finding must not conflate ranking confidence
 with hypothesis confidence.
 
@@ -229,7 +229,7 @@ obligation:
 | `hypex.unrated_hypotheses` | Qualifier | `integrity.unrated_hypotheses` non-empty | These hypotheses were not ranked; under Swiss pairing they were excluded entirely. Absence from the ranking is not elimination by it. |
 | `hypex.composite_ranking` | Qualifier | standings taken with `--composite` | The ranking number is a composite blending ELO with reviewer scores, not a pure ELO. Report it as a composite and name the preset used. Do not write it into a field named 'elo'. |
 | `hypex.quarantined_excluded` | Qualifier | `observed.n_quarantined > 0` | Report the quarantine count alongside the ranking. Quarantined hypotheses were excluded from the tournament and are not represented in the standings. |
-| `hypex.pacing_uncoordinated` | Defect | `meta/pacing.json` absent, or tier is not `"shared"`, or sub-agents disagreed on the resolved path | The run fanned out without verified shared pacing, so its retrieval rate against upstream hosts was up to roster_size × the intended limit. Findings resting on this run's retrievals may be incomplete through throttling rather than through absence. State the roster size and the tier observed. |
+| `hypex.pacing_uncoordinated` | Defect | `meta/pacing.json` absent, or tier is not `"shared"`, or sub-agents disagreed on the resolved path | The run fanned out without verified shared pacing, so its retrieval rate against upstream hosts was up to roster_size x the intended limit. Findings resting on this run's retrievals may be incomplete through throttling rather than through absence. State the roster size and the tier observed. |
 
 Check `mandatory_relays` in both the `.analysis.json` and the
 `.meta.json`. Every relay code present must be satisfied in the finding.
@@ -237,7 +237,7 @@ Check `mandatory_relays` in both the `.analysis.json` and the
 ### Consequence rules
 
 - **Clear leader**: state the hypothesis, the ELO gap, and the win
-  rate. Proceed to downstream assessment — but the ranking does not
+  rate. Proceed to downstream assessment -- but the ranking does not
   substitute for evidence from the tools that evaluate the hypothesis.
 - **Leader with advisories**: state the advisories alongside the
   ranking. Phantom citations, integrity violations, or low win rate
@@ -246,7 +246,7 @@ Check `mandatory_relays` in both the `.analysis.json` and the
 - **No clear leader**: the tournament did not converge on a winner.
   Do not select a hypothesis on the basis of this ranking.
 - **Single candidate**: no comparative judgment was possible. The
-  hypothesis is not "the winner" — it is the only entry.
+  hypothesis is not "the winner" -- it is the only entry.
 - **Unrankable**: the tournament produced no usable ranking. The
   hypotheses cannot be ordered.
 - **Unconverged**: the run stopped before settling. State the epoch
@@ -283,7 +283,7 @@ analysis. This is the shared contract across all stage 0 strategies:
   hypotheses.
 - `score.basis` is `"hypex-elo@1.0"`, which differs from Co-Scientist's
   `"coscientist-elo@1.1"`. **A reader cannot compare scores across
-  strategies** — the scales are different, and `basis` is the
+  strategies** -- the scales are different, and `basis` is the
   enforcement. Cross-strategy comparison is a judgement a program lead
   makes in prose, not by sorting values.
 
@@ -294,11 +294,11 @@ analysis. This is the shared contract across all stage 0 strategies:
   variants, citations). The ranking is the entry point, not the
   conclusion.
 - Phantom citations in the leader should be checked against the
-  evidence tools — a fabricated citation about a real mechanism does not
+  evidence tools -- a fabricated citation about a real mechanism does not
   make the mechanism a bad target, but it does make the tournament's
   reasoning unreliable at that point.
 - Integrity violations should be investigated before downstream work
-  begins — a dangling match reference means the ranking may rest on a
+  begins -- a dangling match reference means the ranking may rest on a
   comparison that cannot be traced.
 
 ### What this section produces
@@ -327,7 +327,7 @@ proceed on an assumed result.
 
 - **Refusing to compute a phantom citation rate.** Unlike Co-Scientist,
   hypex carries a real citation manifest with `summary.total`. A phantom
-  rate is a valid computation here (§4, "The denominator contrast").
+  rate is a valid computation here (Section 4, "The denominator contrast").
   Refusing it because `tournament-corpus` says "do not compute a rate"
   is applying the wrong skill's rule. The condition: the rate is valid
   when a manifest is present; if `cite.extraction_incomplete` fired,
@@ -337,7 +337,7 @@ proceed on an assumed result.
   census. If `extraction_basis != "structured"` on the underlying
   manifest, the total is a floor and the rate understates.
 - **Treating `leader_gap_is_decisive: null` as false.** `null` means
-  `elo_decisive_gap` is UNRESOLVED — the question cannot be answered.
+  `elo_decisive_gap` is UNRESOLVED -- the question cannot be answered.
   It does not mean the gap is small. Do not report "no clear leader"
   when the threshold does not exist to measure against.
 - **Inheriting Co-Scientist's `elo_decisive_gap: 50.0`.** hypex ELO is
@@ -366,14 +366,14 @@ proceed on an assumed result.
   `observed.n_matches` differs from `declared_budgets.max_matches`, the
   observed count is the one to cite.
 - **Treating `hypex validate` as an integrity check.** `hypex validate`
-  is schema-only. It does not check referential integrity — dangling
+  is schema-only. It does not check referential integrity -- dangling
   match references, dangling review references, and ID/filename
   mismatches go undetected. The ingest computes integrity; the
   `integrity` block in the normalised artifact is the only place these
   violations surface.
 - **Reporting a composite as an ELO.** When `hypex.composite_ranking`
-  fires, the number blends ELO with reviewer scores (up to ±60 at
-  `balanced`, ±90 at `focus_on_breakthroughs`). It is not an ELO. Do
+  fires, the number blends ELO with reviewer scores (up to +/-60 at
+  `balanced`, +/-90 at `focus_on_breakthroughs`). It is not an ELO. Do
   not write it into a field named `elo` or compare it against an ELO
   threshold.
 - **Silently collapsing the v2 loop to one epoch.** The PkDE Hypex contract is
@@ -383,4 +383,4 @@ proceed on an assumed result.
 - **Treating `prox` similarity as semantic.** The `prox` similarity
   metric is lexical (TF-IDF), not semantic. Two hypotheses proposing the
   same mechanism in different vocabulary score near zero. Cluster labels
-  ride through the ingest as data — nothing thresholds on them.
+  ride through the ingest as data -- nothing thresholds on them.

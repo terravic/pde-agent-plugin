@@ -98,13 +98,13 @@
             zmin: 0,
             zmax: maxPAE,
             hoverongaps: false,
-            hovertemplate: 'Scored residue: %{x}<br>Aligned residue: %{y}<br>PAE: %{z:.1f} Å<extra></extra>',
+            hovertemplate: 'Scored residue: %{x}<br>Aligned residue: %{y}<br>PAE: %{z:.1f} A<extra></extra>',
             colorbar: {
-              title: { text: 'PAE (Å)', side: 'right' },
-              ticksuffix: ' Å'
+              title: { text: 'PAE (A)', side: 'right' },
+              ticksuffix: ' A'
             }
           }], {
-            title: { text: 'Predicted Aligned Error — ' + escapeHtml(baseName), font: { size: 16 } },
+            title: { text: 'Predicted Aligned Error -- ' + escapeHtml(baseName), font: { size: 16 } },
             xaxis: {
               title: { text: 'Scored Residue' },
               constrain: 'domain'

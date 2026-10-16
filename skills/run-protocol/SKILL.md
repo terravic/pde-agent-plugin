@@ -14,8 +14,8 @@ loop; the retired single-epoch pilot is not a fallback mode.
 ## State Machine (v2)
 
 ```
-INIT → GENERATE → REVIEW → DEDUP → TOURNAMENT → EVOLVE → REVIEW_EVOLVED →
-  TOURNAMENT_REMATCH → META → [convergence check] → loop to GENERATE or FINALIZE → DONE
+INIT -> GENERATE -> REVIEW -> DEDUP -> TOURNAMENT -> EVOLVE -> REVIEW_EVOLVED ->
+  TOURNAMENT_REMATCH -> META -> [convergence check] -> loop to GENERATE or FINALIZE -> DONE
 ```
 
 Each state has a clear entry condition, a set of actions, and an exit condition
@@ -26,13 +26,13 @@ that advances to the next state.
 | State | Purpose | Workers |
 |---|---|---|
 | INIT | Set up run directory, decompose goal, initialize budgets | None |
-| GENERATE | Explore focus areas, produce hypotheses | 2–3 `hypex-generation` |
-| REVIEW | Score and critique all hypotheses | 1–2 `hypex-reflection` |
+| GENERATE | Explore focus areas, produce hypotheses | 2-3 `hypex-generation` |
+| REVIEW | Score and critique all hypotheses | 1-2 `hypex-reflection` |
 | DEDUP | Cluster hypotheses, merge duplicates | 1 `hypex-proximity` |
-| TOURNAMENT | Pairwise Elo-rated matches | 1–3 `hypex-tournament` |
+| TOURNAMENT | Pairwise Elo-rated matches | 1-3 `hypex-tournament` |
 | EVOLVE | Apply evolutionary operators to top-K hypotheses | 1 `hypex-evolution` |
 | REVIEW_EVOLVED | Review evolved variants (recurrent mode) | 1 `hypex-reflection` |
-| TOURNAMENT_REMATCH | Evolved variants compete; mandatory parent rematches | 1–3 `hypex-tournament` |
+| TOURNAMENT_REMATCH | Evolved variants compete; mandatory parent rematches | 1-3 `hypex-tournament` |
 | META | Produce per-epoch steering memo | 1 `hypex-meta-review` |
 | FINALIZE | Task meta-review agent for final report, then publish PkDE artifacts | 1 `hypex-meta-review` |
 | DONE | Signal completion | None |
@@ -103,7 +103,7 @@ To check stability:
    was also stable between epoch N-2 and epoch N-1), the stability criterion
    is satisfied.
 
-   Note: This requires at least 3 epochs (0, 1, 2) to evaluate — stability
+   Note: This requires at least 3 epochs (0, 1, 2) to evaluate -- stability
    is first checkable after epoch 2.
 
    Note: Convergence stability checks use raw `elo` (without `--composite`),
@@ -126,10 +126,10 @@ Any of the following triggers finalization without claiming convergence:
 After META completes:
 
 1. Check the hard finalization criterion first.
-2. Check stability criterion (soft limit — requires 2 consecutive stable
+2. Check stability criterion (soft limit -- requires 2 consecutive stable
    epochs).
-3. If **either** criterion is met → proceed to FINALIZE.
-4. If **neither** is met → increment the epoch counter and loop back to
+3. If **either** criterion is met -> proceed to FINALIZE.
+4. If **neither** is met -> increment the epoch counter and loop back to
    GENERATE.
 
 ---
@@ -207,7 +207,7 @@ focus areas.
    ARTIFACT_PATH = executions
    ```
 
-   This resolved value is used for the remainder of the run — in every
+   This resolved value is used for the remainder of the run -- in every
    `hypex`, `elo`, and `prox` invocation, in every worker task message, and
    in every path reference to the run directory. The default points to the
    shared scratchpad volume so that all worker agents (which run in
@@ -230,10 +230,10 @@ focus areas.
 
    Verify success by checking the output: `Initialized run: ${ARTIFACT_PATH}/<run-id>`
 
-5. **Decompose the goal into 3–6 focus areas.** Each focus area should be:
+5. **Decompose the goal into 3-6 focus areas.** Each focus area should be:
    - A specific sub-topic that can be independently explored
    - Narrow enough for a generation agent to cover in one session
-   - Broad enough to yield 2–4 hypotheses
+   - Broad enough to yield 2-4 hypotheses
    - Balanced so that the set covers the research space without major gaps
 
 6. **Record focus areas** by writing them to `${ARTIFACT_PATH}/<run-id>/meta/focus-areas.md`.
@@ -253,7 +253,7 @@ focus areas.
 ### Exit Condition
 
 - Run directory exists with valid `run.yaml`.
-- 3–6 focus areas are defined.
+- 3-6 focus areas are defined.
 - All budgets initialized.
 
 ---
@@ -272,7 +272,7 @@ hypotheses.
 
 ### Actions
 
-1. **Start 2–3 generation workers** — one per focus area batch. If you have
+1. **Start 2-3 generation workers** -- one per focus area batch. If you have
    more focus areas than workers, distribute focus areas across workers
    (e.g., 5 focus areas across 3 workers: 2+2+1).
 
@@ -287,7 +287,7 @@ hypotheses.
    - The run ID (so the worker can use `--run <run-id>` with `hypex`)
    - The run directory path: `${ARTIFACT_PATH}/<run-id>`
    - The current epoch number
-   - How many hypotheses to produce (2–4)
+   - How many hypotheses to produce (2-4)
    - **If epoch > 0:** The steering memo content (see Steering Memo Injection)
 
 2. **Signal that you are waiting:**
@@ -338,8 +338,8 @@ hypotheses.
    hypex list --run <run-id> --run-dir "${ARTIFACT_PATH}" --type hypothesis
    ```
 
-2. **Start 1–2 reflection workers** depending on hypothesis count:
-   - ≤ 6 hypotheses: 1 worker
+2. **Start 1-2 reflection workers** depending on hypothesis count:
+   - <= 6 hypotheses: 1 worker
    - > 6 hypotheses: 2 workers, split the hypothesis list evenly
 
    For each worker:
@@ -413,7 +413,7 @@ hypotheses, then retire duplicates before the tournament.
 
 3. **Wait for the worker to complete.** The proximity worker runs the full
    pipeline: `prox embed`, `prox graph`, `prox clusters`, `prox dupes`.
-   It adjudicates borderline pairs (0.80–0.92 similarity) and reports:
+   It adjudicates borderline pairs (0.80-0.92 similarity) and reports:
    - Cluster labels and member hypotheses
    - Merge recommendations (verdict: MERGE, KEEP, or FLAG)
    - Statistics
@@ -443,7 +443,7 @@ hypotheses, then retire duplicates before the tournament.
 
 - **Proximity worker crash:** Log the failure. Skip DEDUP and proceed to
   TOURNAMENT without cluster information. `elo pair` works without a
-  proximity graph — it just cannot use cluster-guided pairing.
+  proximity graph -- it just cannot use cluster-guided pairing.
 - **No duplicates found:** Normal. Proceed to TOURNAMENT with all hypotheses.
 
 ### Exit Condition
@@ -492,8 +492,8 @@ hypotheses, then retire duplicates before the tournament.
    If pairings is empty (no valid pairings possible), skip to EVOLVE.
 
 3. **Split pairings across workers:**
-   - ≤ 5 pairings: 1 ranking worker
-   - 6–12 pairings: 2 ranking workers
+   - <= 5 pairings: 1 ranking worker
+   - 6-12 pairings: 2 ranking workers
    - > 12 pairings: 3 ranking workers
 
    Each worker gets a non-overlapping subset of pairings.
@@ -516,7 +516,7 @@ hypotheses, then retire duplicates before the tournament.
    agent-status blocked "Waiting for ranking workers to complete"
    ```
 
-6. **Wait for ALL ranking workers to complete.** This is critical — ratings
+6. **Wait for ALL ranking workers to complete.** This is critical -- ratings
    must be recomputed from the complete match ledger.
 
 7. **Recompute ratings:**
@@ -531,7 +531,7 @@ hypotheses, then retire duplicates before the tournament.
    elo standings --run-dir ${ARTIFACT_PATH}/<run-id> --format json
    ```
 
-   Save these standings — you need them for EVOLVE (top-K selection) and
+   Save these standings -- you need them for EVOLVE (top-K selection) and
    convergence checking.
 
 ### Error Handling
@@ -625,7 +625,7 @@ improved variants.
 
 - **Evolution worker crash:** Log the failure. Skip EVOLVE,
   REVIEW_EVOLVED, and TOURNAMENT_REMATCH. Proceed directly to META.
-- **No variants produced:** Same as crash — skip to META. Note in meta
+- **No variants produced:** Same as crash -- skip to META. Note in meta
   that evolution produced no variants.
 
 ### Exit Condition
@@ -660,7 +660,7 @@ criticisms were addressed.
    - The list of evolved variant hypothesis IDs
    - The run ID and run directory path
    - The current epoch number
-   - **`recurrent: true`** — activates recurrent review mode
+   - **`recurrent: true`** -- activates recurrent review mode
    - **For each variant:** the `parent_id` (e.g., `parent_id: H-0012`)
    - The parent hypothesis IDs so the reviewer can read them
 
@@ -732,7 +732,7 @@ mandatory to validate that evolution produced genuine improvements.
 
    The default `--rematch-window 2` applies to strategy-generated pairings
    (preventing rematches within 2 epochs). Forced `--rematch` pairings
-   bypass the window — they are explicitly requested rematches.
+   bypass the window -- they are explicitly requested rematches.
 
 3. **Enforce budget:**
    ```
@@ -749,8 +749,8 @@ mandatory to validate that evolution produced genuine improvements.
    ```
 
 4. **Split pairings across workers** (same rules as TOURNAMENT):
-   - ≤ 5 pairings: 1 worker
-   - 6–12 pairings: 2 workers
+   - <= 5 pairings: 1 worker
+   - 6-12 pairings: 2 workers
    - > 12 pairings: 3 workers
 
 5. **Start ranking workers:**
@@ -847,7 +847,7 @@ analyzes the current epoch's results and provides guidance for the next epoch.
    cat ${ARTIFACT_PATH}/<run-id>/meta/epoch-<N>-steering.md
    ```
 
-   Save this content — it will be injected into the next epoch's GENERATE
+   Save this content -- it will be injected into the next epoch's GENERATE
    and REVIEW task messages.
 
 ### Error Handling
@@ -871,9 +871,9 @@ convergence criteria immediately after META completes.
 ### Actions
 
 1. **Check budget exhaustion** (hard limits):
-   - Is `CURRENT_EPOCH + 1 >= MAX_EPOCHS`? → converged
-   - Is `TOTAL_MATCHES_USED >= TOTAL_MATCH_BUDGET`? → converged
-   - Is the wall-clock limit exceeded (if configured)? → converged
+   - Is `CURRENT_EPOCH + 1 >= MAX_EPOCHS`? -> converged
+   - Is `TOTAL_MATCHES_USED >= TOTAL_MATCH_BUDGET`? -> converged
+   - Is the wall-clock limit exceeded (if configured)? -> converged
 
 2. **Check top-5 stability** (soft limit):
    - Read current epoch standings: top-5 IDs and Elo values
@@ -881,13 +881,13 @@ convergence criteria immediately after META completes.
      and Elo values
    - If epoch >= 2, also check epoch N-1 vs N-2 stability
    - Stability requires: same 5 IDs in top-5, AND all Elo deltas < 30
-   - **Stable for 2 consecutive epoch transitions** → converged
+   - **Stable for 2 consecutive epoch transitions** -> converged
    - Note: Convergence stability checks use raw `elo` (without `--composite`),
      because composite moves whenever a new review lands and convergence asks
      "has the tournament stopped learning".
 
 3. **Decision:**
-   - If converged → proceed to FINALIZE
+   - If converged -> proceed to FINALIZE
    - If not converged:
      - Increment `CURRENT_EPOCH`
      - Reset `EPOCH_MATCHES_USED = 0`
@@ -1002,13 +1002,13 @@ then publish the completed run into PkDE's Layer 0 artifact model.
 
 | Worker Type | Template | Count | Started In | Reports |
 |---|---|---|---|---|
-| Generation | `hypex-generation` | 2–3 | GENERATE | Hypothesis IDs, summaries |
-| Reflection | `hypex-reflection` | 1–2 | REVIEW | Review IDs, scores, quarantine events |
+| Generation | `hypex-generation` | 2-3 | GENERATE | Hypothesis IDs, summaries |
+| Reflection | `hypex-reflection` | 1-2 | REVIEW | Review IDs, scores, quarantine events |
 | Proximity | `hypex-proximity` | 1 | DEDUP | Clusters, merge recommendations |
-| Ranking | `hypex-tournament` | 1–3 | TOURNAMENT | Match IDs, match summaries |
+| Ranking | `hypex-tournament` | 1-3 | TOURNAMENT | Match IDs, match summaries |
 | Evolution | `hypex-evolution` | 1 | EVOLVE | Variant IDs, parent mappings, operators |
 | Reflection (recurrent) | `hypex-reflection` | 1 | REVIEW_EVOLVED | Review IDs, recurrent notes, quality deltas |
-| Ranking (rematch) | `hypex-tournament` | 1–3 | TOURNAMENT_REMATCH | Match IDs, match summaries |
+| Ranking (rematch) | `hypex-tournament` | 1-3 | TOURNAMENT_REMATCH | Match IDs, match summaries |
 | Meta-review (steering) | `hypex-meta-review` | 1 | META | Steering memo path, key findings |
 | Meta-review (final) | `hypex-meta-review` | 1 | FINALIZE | Final report path, summary |
 
@@ -1047,24 +1047,24 @@ waiting for each group of workers.
 
 ```
 Epoch 0:
-  INIT → GENERATE → REVIEW → DEDUP → TOURNAMENT →
-  EVOLVE → REVIEW_EVOLVED → TOURNAMENT_REMATCH →
-  META → [check convergence] → not converged → loop
+  INIT -> GENERATE -> REVIEW -> DEDUP -> TOURNAMENT ->
+  EVOLVE -> REVIEW_EVOLVED -> TOURNAMENT_REMATCH ->
+  META -> [check convergence] -> not converged -> loop
 
 Epoch 1:
-  GENERATE (with steering memo) → REVIEW (with steering memo) →
-  DEDUP → TOURNAMENT → EVOLVE → REVIEW_EVOLVED →
-  TOURNAMENT_REMATCH → META → [check convergence] → not converged → loop
+  GENERATE (with steering memo) -> REVIEW (with steering memo) ->
+  DEDUP -> TOURNAMENT -> EVOLVE -> REVIEW_EVOLVED ->
+  TOURNAMENT_REMATCH -> META -> [check convergence] -> not converged -> loop
 
 Epoch 2:
-  GENERATE (with steering memo) → REVIEW (with steering memo) →
-  DEDUP → TOURNAMENT → EVOLVE → REVIEW_EVOLVED →
-  TOURNAMENT_REMATCH → META → [check convergence] → converged (top-5 stable) →
-  FINALIZE → DONE
+  GENERATE (with steering memo) -> REVIEW (with steering memo) ->
+  DEDUP -> TOURNAMENT -> EVOLVE -> REVIEW_EVOLVED ->
+  TOURNAMENT_REMATCH -> META -> [check convergence] -> converged (top-5 stable) ->
+  FINALIZE -> DONE
 
 OR:
 
 Epoch 4 (max epochs):
-  ... → META → [check limits] → budget_exhausted →
-  FINALIZE → DONE
+  ... -> META -> [check limits] -> budget_exhausted ->
+  FINALIZE -> DONE
 ```

@@ -1,4 +1,4 @@
-"""`pkde disco` — DISCO single-cell immune dataset search.
+"""`pkde disco` -- DISCO single-cell immune dataset search.
 
 Queries the DISCO database (immunesinglecell.org / disco.bii.a-star.edu.sg)
 for single-cell datasets matching tissue, disease, or other metadata
@@ -14,7 +14,7 @@ Two phases:
            tissue distribution, disease distribution, platform breakdown,
            and cell count statistics.  No network.
 
-The search returns sample-level metadata — tissue annotations, disease
+The search returns sample-level metadata -- tissue annotations, disease
 labels, platform, and cell counts.  It does NOT return gene expression
 values.  A sample listed as containing a tissue does not confirm that a
 specific gene is expressed there; confirming expression requires

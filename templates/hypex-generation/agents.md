@@ -9,7 +9,7 @@ hypotheses.
 
 Never use `agent message --broadcast` (or the `-a`/`-b` flags) for status
 reports, completion messages, or any other communication during your task.
-Report only to the agent that started you — typically your supervisor —
+Report only to the agent that started you -- typically your supervisor --
 via `agent message <name> "..."`. If you don't know the exact name of the
 agent that tasked you, it should be evident from your task message (e.g.,
 "Run ID: ..." context implies a supervisor is orchestrating this run); ask
@@ -42,11 +42,11 @@ Verify that `pkde` literature commands are available before starting searches.
 
 You receive a task message from the supervisor containing:
 
-1. **Focus area** — the specific research direction to explore (e.g., "Gut-brain
+1. **Focus area** -- the specific research direction to explore (e.g., "Gut-brain
    axis in neurodegeneration").
-2. **Run ID** — the identifier for the current run (used with `--run` flag).
-3. **Run directory path** — the full path to the run directory.
-4. **Epoch** — the current epoch number.
+2. **Run ID** -- the identifier for the current run (used with `--run` flag).
+3. **Run directory path** -- the full path to the run directory.
+4. **Epoch** -- the current epoch number.
 
 Set `<run-base>` to the parent directory of the supplied run directory. Pass
 both `--run <run-id>` and `--run-dir <run-base>` to every `hypex` command; do
@@ -83,7 +83,7 @@ separate provenance-bearing artifacts.
 4. **Read the results.** Identify key themes, active debates, recent
    breakthroughs, and gaps in the literature.
 
-5. **Note promising directions** — unexplained observations, contradictions
+5. **Note promising directions** -- unexplained observations, contradictions
    between studies, or connections to adjacent fields that nobody has explored.
 
 ### Phase 2: Targeted Deep Dives
@@ -123,7 +123,7 @@ and `pkde litref resolve` for known identifiers.
    pkde litref resolve "<DOI or PMID>"
    ```
 
-Record the identifiers from every relevant result — you will need these as
+Record the identifiers from every relevant result -- you will need these as
 evidence references in your hypothesis evidence arrays.
 
 ### Phase 3: Hypothesis Formation
@@ -150,15 +150,15 @@ submission.** This is a mandatory quality gate.
 
 Follow the debate protocol (see the `debate-protocol` skill):
 
-1. **Propose** (Advocate) — present the hypothesis with evidence.
-2. **Attack** (Critic) — challenge evidence quality, mechanistic gaps,
+1. **Propose** (Advocate) -- present the hypothesis with evidence.
+2. **Attack** (Critic) -- challenge evidence quality, mechanistic gaps,
    prediction specificity, experimental feasibility, and search for
    contradicting literature.
-3. **Defend** (Advocate) — respond to criticisms, add new evidence, narrow
+3. **Defend** (Advocate) -- respond to criticisms, add new evidence, narrow
    claims if needed.
-4. **Refine** (Both) — synthesize into an improved hypothesis. Decide:
+4. **Refine** (Both) -- synthesize into an improved hypothesis. Decide:
    submit or abandon.
-5. **Final Challenge** (optional, Critic) — novelty and necessity check.
+5. **Final Challenge** (optional, Critic) -- novelty and necessity check.
 
 **Save the debate transcript** as a markdown file in the run's `meta/`
 directory:
@@ -198,9 +198,9 @@ HYPO
 
 **Important rules for submission:**
 
-- **Do not set the `id` field** — it is assigned automatically by
+- **Do not set the `id` field** -- it is assigned automatically by
   `hypex add-hypothesis`.
-- **Do not set the `cluster` field** — it is assigned later by the proximity
+- **Do not set the `cluster` field** -- it is assigned later by the proximity
   agent.
 - **Set `status` to `"proposed"`** for all new hypotheses.
 - **Set `lineage` to `{"parents": [], "operator": "null"}`** for original

@@ -1,8 +1,8 @@
-"""`pkde env` — inspect, predict and write the environment stamp.
+"""`pkde env` -- inspect, predict and write the environment stamp.
 
 Iterating on the tools environment is cheap; iterating on it *blind* is
 not, because every change partitions the artifacts written either side
-of it (tool-design-guidance §2, Rule 4). These four subcommands exist so
+of it (tool-design-guidance Section 2, Rule 4). These four subcommands exist so
 the partition is visible before it happens, explainable after it
 happens, and detectable when the environment has quietly stopped
 matching its own stamp.
@@ -29,7 +29,7 @@ from ..core.paths import is_safe_to_open, sanitize_slug
 
 #: Diff lines shown on the human path. The rest go to the JSON payload
 #: and the archived manifests; a wall of package versions in an agent's
-#: context is exactly what §6 exists to prevent.
+#: context is exactly what Section 6 exists to prevent.
 _DIFF_PREVIEW = 8
 
 
@@ -42,14 +42,14 @@ def _emit_changes(e, changes: list[str]) -> None:
     for line in envstamp.display(changes[:_DIFF_PREVIEW]):
         e.line(f"  {line}")
     if len(changes) > _DIFF_PREVIEW:
-        e.line(f"  … and {len(changes) - _DIFF_PREVIEW} more (use --json for all)")
+        e.line(f"  ... and {len(changes) - _DIFF_PREVIEW} more (use --json for all)")
     e.data("changes", changes)
 
 
 def _emit_host_requirements(e, home) -> None:
     """Compare source-tree host requirements against the stamped snapshot.
 
-    Silent when they match — no noise on the common path.  When they
+    Silent when they match -- no noise on the common path.  When they
     differ, one line names the shape of the change and the JSON payload
     carries the detail (#18).
     """
@@ -57,7 +57,7 @@ def _emit_host_requirements(e, home) -> None:
     stamped = envstamp.read_host_requirements_stamped(home)
 
     if current is None:
-        # No host-requirements.txt in the source tree — nothing to report.
+        # No host-requirements.txt in the source tree -- nothing to report.
         return
 
     if stamped is None:
@@ -144,7 +144,7 @@ def show(as_json: bool, quiet: bool) -> None:
                     parts.append(f"{removed} removed")
                 e.line(f"Host requirements changed since stamp ({', '.join(parts)}).")
             else:
-                e.line(f"{len(host_parsed)} host requirement(s) — match stamp.")
+                e.line(f"{len(host_parsed)} host requirement(s) -- match stamp.")
         else:
             e.data(
                 "host_requirements",
@@ -183,19 +183,19 @@ def plan(as_json: bool, quiet: bool) -> None:
     e.data("would_change", state.stamped != state.live_version)
 
     if state.stamped is None:
-        e.line(f"unstamped → {envstamp.short(state.live_version)}")
+        e.line(f"unstamped -> {envstamp.short(state.live_version)}")
         e.line("First stamp: nothing is partitioned, because nothing was stamped.")
         _emit_host_requirements(e, home)
         e.flush()
         return
 
     if state.stamped == state.live_version:
-        e.line(f"{envstamp.short(state.stamped)} — unchanged. Nothing to stamp.")
+        e.line(f"{envstamp.short(state.stamped)} -- unchanged. Nothing to stamp.")
         _emit_host_requirements(e, home)
         e.flush()
         return
 
-    e.line(f"{envstamp.short(state.stamped)} → {envstamp.short(state.live_version)}")
+    e.line(f"{envstamp.short(state.stamped)} -> {envstamp.short(state.live_version)}")
     e.line("Stamping this partitions the program: artifacts before and after")
     e.line("carry different env_version values and are not directly comparable.")
     if state.recorded is None:
@@ -205,7 +205,7 @@ def plan(as_json: bool, quiet: bool) -> None:
         # a partition and leaving the reader to guess it means "nothing
         # changed".
         e.line("No manifest beside the current stamp, so the change cannot be")
-        e.line("itemised — the existing value was produced by an earlier scheme.")
+        e.line("itemised -- the existing value was produced by an earlier scheme.")
     else:
         _emit_changes(e, state.changes())
     _emit_host_requirements(e, home)
@@ -236,13 +236,13 @@ def stamp(note: str | None, as_json: bool, quiet: bool) -> None:
 
     if result["changed"]:
         e.line(
-            f"{envstamp.short(result['previous'])} → "
+            f"{envstamp.short(result['previous'])} -> "
             f"{envstamp.short(str(result['env_version']))}"
         )
         _emit_changes(e, list(result["changes"]))
     else:
         e.line(
-            f"{envstamp.short(str(result['env_version']))} — unchanged, nothing logged."
+            f"{envstamp.short(str(result['env_version']))} -- unchanged, nothing logged."
         )
     e.flush()
 
@@ -254,7 +254,7 @@ def stamp(note: str | None, as_json: bool, quiet: bool) -> None:
 def diff(before: str, after: str, as_json: bool, quiet: bool) -> None:
     """Explain the difference between two stamped environments.
 
-    Takes full `sha256:…` values or unambiguous prefixes, as they appear
+    Takes full `sha256:...` values or unambiguous prefixes, as they appear
     in artifact sidecars; `current` means the live environment. This is
     how a partition gets settled: two results that disagree, produced
     under two env_versions, and a diff naming what actually differed.
@@ -271,7 +271,7 @@ def diff(before: str, after: str, as_json: bool, quiet: bool) -> None:
             raise ArtifactError(
                 f"no archived manifest for {token!r}",
                 detail=f"looked in {home / envstamp.ARCHIVE}",
-                remedy="pass a full sha256:… value from a sidecar, an unambiguous "
+                remedy="pass a full sha256:... value from a sidecar, an unambiguous "
                 "prefix of one, or `current`. Environments stamped before "
                 "manifests were archived cannot be reconstructed",
             )
@@ -285,6 +285,6 @@ def diff(before: str, after: str, as_json: bool, quiet: bool) -> None:
     if not changes:
         e.line(f"{before} and {after} describe the same environment.")
     else:
-        e.line(f"{before} → {after}: {envstamp.summarize(changes)}")
+        e.line(f"{before} -> {after}: {envstamp.summarize(changes)}")
         _emit_changes(e, changes)
     e.flush()

@@ -1,4 +1,4 @@
-"""`pkde phenotype` — model organism phenotype lookup (MGI, HPO).
+"""`pkde phenotype` -- model organism phenotype lookup (MGI, HPO).
 
 Two sources, two phases:
 
@@ -8,7 +8,7 @@ Two sources, two phases:
   analyze  reads stored search results and summarises phenotype
            associations relevant to target validation. No network.
 
-MGI is the primary source — free, no authentication — and provides
+MGI is the primary source -- free, no authentication -- and provides
 mouse knockout/knockin phenotype data via the Mammalian Phenotype (MP)
 ontology. HPO is secondary, also free, and maps genes to human
 phenotype terms through disease associations.
@@ -89,7 +89,7 @@ def _fetch_mgi(gene: str) -> tuple[bytes, dict[str, Any]]:
             remedy="check the gene symbol at informatics.jax.org",
         )
 
-    # Take the best match — prefer exact symbol match.
+    # Take the best match -- prefer exact symbol match.
     marker = _best_mgi_marker(markers, gene)
     symbol = marker.get("symbol") or gene
     marker_key = marker.get("marker_key", "")
@@ -295,7 +295,7 @@ def _fetch_hpo(gene: str) -> tuple[bytes, dict[str, Any]]:
             remedy="verify the gene symbol at ontology.jax.org",
         )
 
-    # Pick the best match — prefer exact name match.
+    # Pick the best match -- prefer exact name match.
     gene_entry = _best_hpo_gene(gene_results, gene)
     gene_id = gene_entry.get("id", "")  # e.g. "NCBIGene:672"
     resolved_name = gene_entry.get("name", gene.upper())

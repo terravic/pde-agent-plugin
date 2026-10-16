@@ -9,15 +9,15 @@ Use this skill when you need to analyze structure-activity relationships
 across a compound series using matched molecular pairs. Entry points
 include:
 
-- Systematic SAR analysis across a compound series — identifying which
+- Systematic SAR analysis across a compound series -- identifying which
   R-group transformations correlate with property changes in a DMTA
   round.
-- Identifying property cliffs — large property changes at a single
+- Identifying property cliffs -- large property changes at a single
   R-group position that warrant investigation.
-- Decomposing a compound into BRICS fragments — recording the full
+- Decomposing a compound into BRICS fragments -- recording the full
   fragmentation (core scaffold and R-group positions) for downstream
   pairing.
-- Identifying matched molecular pairs between compounds — finding
+- Identifying matched molecular pairs between compounds -- finding
   compound pairs that share the same BRICS core but differ at exactly
   one R-group.
 - Identifying which R-group transformations correlate with ADMET
@@ -46,11 +46,11 @@ include:
   must have `compound_id`, `smiles`, and a non-empty `properties` dict.
   Maximum 10,000 compounds. RDKit required.
 - **analyze**: a `.mmp-pairs.json` artifact produced by the `pairs`
-  step. RDKit is **not** required — analyze is Phase 2 (offline,
+  step. RDKit is **not** required -- analyze is Phase 2 (offline,
   deterministic, reads from disk).
 - Run `pkde doctor` before first use. Its verdict line (`STOP` or
   `PROCEED`) is the gate.
-- **No authentication** needed — all operations are offline.
+- **No authentication** needed -- all operations are offline.
 
 ## 3. Tool invocations
 
@@ -64,7 +64,7 @@ Run Phase 1 (`fragment`, `pairs`) before Phase 2 (`analyze`). `analyze`
 reads stored `.mmp-pairs.json` from disk and can be re-run with
 different thresholds without recomputing pairs.
 
-The `<slug>` is derived from canonical SMILES — deterministic and
+The `<slug>` is derived from canonical SMILES -- deterministic and
 filesystem-safe. The `<name>` is derived from the input filename. The
 `<ARTIFACT>` for `analyze` is the `.mmp-pairs.json` produced by `pairs`.
 
@@ -95,7 +95,7 @@ structure into a pass/fail verdict.
 
 A property cliff is a correlation in a dataset. A large property change
 across a single R-group transformation flags a substitution worth
-attention — it does not explain why the transformation matters
+attention -- it does not explain why the transformation matters
 mechanistically. The structural change may be incidental to the true
 driver.
 
@@ -103,13 +103,13 @@ A cliff detected from one matched pair is an observation, not a
 validated SAR rule. The pair count for the transformation must be
 considered alongside the cliff itself.
 
-### Threshold structure — cliff_absolute_delta
+### Threshold structure -- cliff_absolute_delta
 
 The `mmp-cliffs@1.0` threshold set contains:
 
-- `min_pair_count` — resolved. Cite by name; quote values from
+- `min_pair_count` -- resolved. Cite by name; quote values from
   `thresholds_applied` in the analysis being cited.
-- `cliff_absolute_delta` — a per-property dict. In `mmp-cliffs@1.0`,
+- `cliff_absolute_delta` -- a per-property dict. In `mmp-cliffs@1.0`,
   recognized properties (`cliff_absolute_delta["pic50"]` and
   `cliff_absolute_delta["pki"]`) have resolved thresholds. Cite the
   threshold by name from `thresholds_applied`; do not embed the numeric
@@ -131,15 +131,15 @@ Programs can add property thresholds via `.pkde/thresholds.yaml` under
 
 If a program overrides the entire `cliff_absolute_delta` to UNRESOLVED,
 the tool skips all cliff detection and emits the original advisory. The
-"do not invent" rule applies in full in that case — the absence of cliff
+"do not invent" rule applies in full in that case -- the absence of cliff
 detection is not "no cliffs exist," it means the question was not asked.
 
 ### Mandatory relays
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `mmp.small_pair_count` | Qualifier (defect-triggered) | Any transformation group has fewer matched pairs than the `min_pair_count` threshold | Note the low pair count and scope any SAR conclusion from that transformation as low-confidence. Do not report a property trend from this transformation with confidence — the number of matched pairs supporting it is below the minimum required for a reliable conclusion. Report the raw observation and the pair count, not a trend. |
-| `mmp.cliff_not_causation` | Stop (claim-triggered) | One or more property cliffs are detected | Report the cliff as a correlation, not as evidence of a causal mechanism. A large property change across a single R-group transformation flags a substitution worth attention but does not demonstrate that the R-group change caused the property change. Adding a disclaimer does not satisfy this relay — if the question is about mechanism, the answer is that the question is untooled by MMP analysis alone. |
+| `mmp.small_pair_count` | Qualifier (defect-triggered) | Any transformation group has fewer matched pairs than the `min_pair_count` threshold | Note the low pair count and scope any SAR conclusion from that transformation as low-confidence. Do not report a property trend from this transformation with confidence -- the number of matched pairs supporting it is below the minimum required for a reliable conclusion. Report the raw observation and the pair count, not a trend. |
+| `mmp.cliff_not_causation` | Stop (claim-triggered) | One or more property cliffs are detected | Report the cliff as a correlation, not as evidence of a causal mechanism. A large property change across a single R-group transformation flags a substitution worth attention but does not demonstrate that the R-group change caused the property change. Adding a disclaimer does not satisfy this relay -- if the question is about mechanism, the answer is that the question is untooled by MMP analysis alone. |
 
 Check `mandatory_relays` in both the `.mmp-analysis.json` and any
 upstream `.meta.json`. Every relay code present must be satisfied in
@@ -149,7 +149,7 @@ the finding.
 
 - **Cliffs detected**: state the transformation, the property, the
   delta (from the analysis, not from recomputation), and the pair count.
-  Carry the `mmp.cliff_not_causation` relay — the cliff is a
+  Carry the `mmp.cliff_not_causation` relay -- the cliff is a
   correlation, not a mechanism. Cross-reference
   `compound-property-profile` for the individual compounds involved.
 - **Low pair count**: carry the `mmp.small_pair_count` relay. State the
@@ -158,11 +158,11 @@ the finding.
 - **No cliffs detected (with resolved threshold)**: state that no
   property changes exceeded the configured cliff threshold for any
   transformation. This does not mean properties are insensitive to
-  structural changes — it means no large change was observed in this
+  structural changes -- it means no large change was observed in this
   dataset under the configured threshold.
 - **Properties not evaluated**: when the analysis reports
   `not_evaluated_properties`, carry the advisory unchanged. The question
-  of whether cliffs exist for those properties is unanswered — no
+  of whether cliffs exist for those properties is unanswered -- no
   threshold was configured. Do not infer absence of cliffs from absence
   of evaluation.
 - **Entire cliff_absolute_delta UNRESOLVED** (program override): the
@@ -175,7 +175,7 @@ the finding.
   a cliff does not mean the property is insensitive to that
   transformation in other scaffolds or chemical contexts.
 - A property change at one R-group position may not generalize to other
-  positions or scaffolds — pairwise SAR is not global SAR.
+  positions or scaffolds -- pairwise SAR is not global SAR.
 - Cross-reference `compound-property-profile` for the computed
   properties and structural alerts of individual compounds in a cliff
   pair. Cross-reference `bioactivity-landscape` when the properties
@@ -201,7 +201,7 @@ proceed on an assumed result.
 
 - **Treating a 2-compound cliff as a general rule.** A property cliff
   from one matched pair is an observation, not a validated SAR rule.
-  The pair count for the transformation must be considered — the
+  The pair count for the transformation must be considered -- the
   `mmp.small_pair_count` relay fires when the count is below the
   configured minimum.
 - **Extrapolating beyond explored chemical space.** MMPs only cover the
@@ -214,12 +214,12 @@ proceed on an assumed result.
   observed series.
 - **Confusing "no cliff" with insensitivity.** Absence of a cliff means
   no large change was observed in this dataset under the configured
-  threshold — not that the property is insensitive to structural
+  threshold -- not that the property is insensitive to structural
   changes.
 - **Treating "not evaluated" as "no cliffs."** When a property is
   absent from `cliff_absolute_delta`, the tool does not evaluate it for
   cliffs. The `not_evaluated_properties` field names these explicitly.
-  "Not evaluated" means the question was not asked — not that the answer
+  "Not evaluated" means the question was not asked -- not that the answer
   is "no cliffs." Do not supply a threshold the tool did not configure.
 - **Computing MMP fragmentation yourself instead of using the tool.**
   The tool pins the RDKit version and BRICS decomposition algorithm. A

@@ -553,7 +553,7 @@ def score_cmd(
                 if max_abs > 0 and span < _SMALL_RANGE_FRACTION * max_abs:
                     warn(
                         f"Metric {param!r} has range {span:.4g} across "
-                        f"{n_compounds} candidates — min-max normalization "
+                        f"{n_compounds} candidates -- min-max normalization "
                         "may exaggerate small differences."
                     )
 

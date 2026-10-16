@@ -9,8 +9,8 @@ revision is an immutable snapshot; the latest revision is the current
 state.  Record files are stored as ``IC-NNN-rN.json`` under
 ``.pkde/control/concepts/``.
 
-See the design document (tracker73-shared-contracts.md §2.1) for the
-full schema rationale and §1.1 for the lifecycle state machine.
+See the design document (tracker73-shared-contracts.md Section 2.1) for the
+full schema rationale and Section 1.1 for the lifecycle state machine.
 """
 
 from __future__ import annotations
@@ -159,7 +159,7 @@ def requires_new_revision(old: dict[str, Any], new: dict[str, Any]) -> bool:
 
     A new revision is required when any key field has changed.
     ``delivery_assumptions`` triggers only when the new value is non-null
-    (per design §2.1: "when non-null").
+    (per design Section 2.1: "when non-null").
 
     **Call-site note (2026-09-08):** This function is intentionally not
     wired into ``validate_concept()`` or ``write_record()`` because no
@@ -249,7 +249,7 @@ def validate_concept(data: dict[str, Any]) -> list[str]:
         elif "gene" not in tp:
             errors.append("target_pathway.gene is required")
 
-    # modality must be a string or null (null = gap declared per §3.4).
+    # modality must be a string or null (null = gap declared per Section 3.4).
     # The key is required (in _REQUIRED_FIELDS) but the value may be
     # None for migrated records that predate modality assignment.
     if (
@@ -296,9 +296,9 @@ def validate_concept(data: dict[str, Any]) -> list[str]:
     # This is a governance prerequisite, not a data-quality issue:
     # the record is well-formed but the action is not permitted
     # without the charter link.  Raise ``Refusal`` (exit 9) so the
-    # caller knows to set ``charter_ref`` and retry — the same
+    # caller knows to set ``charter_ref`` and retry -- the same
     # enforcement pattern as the human-approval gate on terminate
-    # decisions (design §1.1, §2.1 "Charter linkage").
+    # decisions (design Section 1.1, Section 2.1 "Charter linkage").
     # ---------------------------------------------------------------
     if "state" in data and data["state"] == "active":
         msg = check_charter_linkage(data, "active")

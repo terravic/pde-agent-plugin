@@ -77,9 +77,9 @@ pkde doctor --json | jq '.checks[] | select(.name | startswith("hypothesis strat
 
 | Strategy | Threshold set | Quality thresholds? |
 |---|---|---|
-| Adopted (sponsor, charter, prior-program, publication) | `hypothesis-set@1.0` | No — structural only (`min_candidates`) |
-| Co-Scientist | `coscientist@1.1` | Yes — ELO gap, win rate, contradiction count |
-| Hypex | `hypex@1.0` | Yes — but three values ship UNRESOLVED |
+| Adopted (sponsor, charter, prior-program, publication) | `hypothesis-set@1.0` | No -- structural only (`min_candidates`) |
+| Co-Scientist | `coscientist@1.1` | Yes -- ELO gap, win rate, contradiction count |
+| Hypex | `hypex@1.0` | Yes -- but three values ship UNRESOLVED |
 
 ## 7. Assessment output
 
@@ -105,5 +105,5 @@ core:
 ```
 
 For adopted sets: `rank` is always `null`, `score` is always `null`.
-For ranked strategies: `score` is `{value: <number>, basis: "<set>"}` —
+For ranked strategies: `score` is `{value: <number>, basis: "<set>"}` --
 never a bare number.

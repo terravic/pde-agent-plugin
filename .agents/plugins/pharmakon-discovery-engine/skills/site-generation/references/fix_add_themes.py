@@ -9,7 +9,7 @@ and applies the saved theme before first paint to prevent FOUC.
 Usage:
     python3 fix_add_themes.py <site-dir>
 
-Idempotent — skips pages that already contain the theme system.
+Idempotent -- skips pages that already contain the theme system.
 Follows the post-build fix pattern from references/postbuild-template.py.
 """
 
@@ -26,7 +26,7 @@ from pathlib import Path
 # Detection marker injected into themed pages.
 THEME_MARKER = "<!-- pkde-theme-system -->"
 
-# Web Fonts — one <link> tag loading all theme families.
+# Web Fonts -- one <link> tag loading all theme families.
 WEB_FONTS_LINK = (
     '<link rel="preconnect" href="https://fonts.cdn.example.org">'
     '<link rel="preconnect" href="https://static-fonts.cdn.example.org" crossorigin>'
@@ -37,7 +37,7 @@ WEB_FONTS_LINK = (
     'display=swap" rel="stylesheet">'
 )
 
-# Inline script placed in <head> — applies saved theme before first paint
+# Inline script placed in <head> -- applies saved theme before first paint
 # so the page never flashes in the wrong colours (FOUC prevention).
 FOUC_SCRIPT = (
     "<script>"
@@ -47,7 +47,7 @@ FOUC_SCRIPT = (
 )
 
 # ---------------------------------------------------------------------------
-# Theme CSS — five themes, ~30 custom properties each
+# Theme CSS -- five themes, ~30 custom properties each
 # ---------------------------------------------------------------------------
 
 THEME_CSS = """\
@@ -56,7 +56,7 @@ THEME_CSS = """\
 
 /* ---- Clean (default): light, sans-serif ---- */
 :root, [data-theme="clean"] {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, sans-serif;
   --font-family-code: 'Fira Code', ui-monospace, monospace;
   --font-size-base: 16px;
   --bg-primary: #ffffff;
@@ -90,7 +90,7 @@ THEME_CSS = """\
 
 /* ---- Dark mode ---- */
 [data-theme="dark"] {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, sans-serif;
   --font-family-code: 'Fira Code', ui-monospace, monospace;
   --font-size-base: 16px;
   --bg-primary: #1a1a2e;
@@ -158,7 +158,7 @@ THEME_CSS = """\
 
 /* ---- Ocean: blue accent variant ---- */
 [data-theme="ocean"] {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, sans-serif;
   --font-family-code: 'Fira Code', ui-monospace, monospace;
   --font-size-base: 16px;
   --bg-primary: #f0f7ff;
@@ -192,7 +192,7 @@ THEME_CSS = """\
 
 /* ---- Forest: green accent variant ---- */
 [data-theme="forest"] {
-  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family: 'Inter', system-ui, sans-serif;
   --font-family-code: 'Fira Code', ui-monospace, monospace;
   --font-size-base: 16px;
   --bg-primary: #f4f9f4;
@@ -319,7 +319,7 @@ THEME_CHOOSER = (
     "</select></span>"
 )
 
-# Theme switching script — under 20 lines of JS.
+# Theme switching script -- under 20 lines of JS.
 THEME_SCRIPT = """\
 <script>
 (function() {
@@ -362,7 +362,7 @@ def fix_add_themes(site_dir: Path) -> str:
             skipped += 1
             continue
 
-        # Skip viewer files — they are standalone utilities, not content pages.
+        # Skip viewer files -- they are standalone utilities, not content pages.
         if "-viewer.html" in html_file.name:
             continue
 
@@ -406,7 +406,7 @@ def fix_add_themes(site_dir: Path) -> str:
             chooser_placed = True
 
         if not chooser_placed:
-            # No nav or header element — place chooser right after <body>.
+            # No nav or header element -- place chooser right after <body>.
             new_text = re.sub(
                 r"(<body[^>]*>)",
                 r"\1\n" + THEME_CHOOSER,
@@ -430,9 +430,9 @@ def fix_add_themes(site_dir: Path) -> str:
 
     if changed == 0:
         if skipped > 0:
-            return f"skipped — already applied to {skipped} file(s)"
-        return "skipped — no eligible HTML files found"
-    return f"applied — injected theme system into {changed} file(s)"
+            return f"skipped -- already applied to {skipped} file(s)"
+        return "skipped -- no eligible HTML files found"
+    return f"applied -- injected theme system into {changed} file(s)"
 
 
 # ---------------------------------------------------------------------------

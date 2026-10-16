@@ -1,4 +1,4 @@
-"""`pkde schema` — schema introspection and template generation.
+"""`pkde schema` -- schema introspection and template generation.
 
 Subcommands:
 
@@ -6,7 +6,7 @@ Subcommands:
   show       Print a readable field table for a schema.
   template   Generate a skeleton JSON document for a schema.
 
-These commands are generic — they work for all groups, discovering
+These commands are generic -- they work for all groups, discovering
 schemas from the registry rather than being hand-coded per group.
 """
 
@@ -38,7 +38,7 @@ def list_cmd() -> None:
     for schema_id in ids:
         s = get_schema(schema_id)
         if s is not None:
-            click.echo(f"{schema_id}  —  {s.description}")
+            click.echo(f"{schema_id}  --  {s.description}")
         else:
             click.echo(schema_id)
 

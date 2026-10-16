@@ -13,7 +13,7 @@ func init() {
 	cmd := &cobra.Command{
 		Use:   "report",
 		Short: "Generate a run report (stub)",
-		Long: `Generates a report for a run. This is intentionally minimal — real
+		Long: `Generates a report for a run. This is intentionally minimal -- real
 report generation is the meta-review agent's responsibility in later
 phases. This stub checks that the run exists and the report directory
 is present, then reports that generation is deferred.`,

@@ -51,7 +51,7 @@ readiness verdict, signal `agent-status task_completed` and stop.
 **Every step below is fail-stop.** If any step fails, stop immediately. Report
 which step failed, the error output, and the suggested remedy to the agent
 that started you (see **Parent agent discovery** below).
-Do NOT continue past a failure — the purpose of this sequence is to catch failures
+Do NOT continue past a failure -- the purpose of this sequence is to catch failures
 before any other agent runs in a broken environment.
 
 ### Parent agent discovery
@@ -59,10 +59,10 @@ before any other agent runs in a broken environment.
 You must know who to report to. Resolve the recipient once, at startup, using this
 priority order:
 
-1. **`PKDE_PARENT_AGENT` environment variable** — authoritative when set.
-2. **Task prompt** — the agent that started you should have named itself in the
+1. **`PKDE_PARENT_AGENT` environment variable** -- authoritative when set.
+2. **Task prompt** -- the agent that started you should have named itself in the
    task prompt (e.g., "report readiness to `controller`").
-3. **`agent list` inference** — list running agents and identify the coordinating
+3. **`agent list` inference** -- list running agents and identify the coordinating
    agent. This is a fallback, not a reliable method: in projects with multiple
    coordinators, the correct recipient is ambiguous.
 
@@ -98,7 +98,7 @@ Skip this step and proceed to Step 1.
    ```
 
    If this fails, check whether `GITHUB_TOKEN` is set. If neither is available, STOP
-   and report — the clone requires authentication and none is configured.
+   and report -- the clone requires authentication and none is configured.
 
 2. Clone the repository to the shared scratchpad volume:
 
@@ -115,7 +115,7 @@ Skip this step and proceed to Step 1.
    gh repo clone <org>/pkde-agent-plugin .pkde/scratchpad/pkde-repo
    ```
 
-   Clone to the scratchpad volume, not into `.pkde-workspace` — this ensures the clone
+   Clone to the scratchpad volume, not into `.pkde-workspace` -- this ensures the clone
    survives the bootstrapper's container being deleted and is reusable by other agents.
 
    If your task prompt specifies a different repo URL, use that instead of the default.
@@ -157,8 +157,8 @@ documented in `tools/BOOTSTRAP.md`. If anything is missing, it prints the exact
 
 | Code | Meaning |
 |---|---|
-| 0 | Ready — all prerequisites present |
-| 1 | Missing prerequisites — the output names them and prints the install command |
+| 0 | Ready -- all prerequisites present |
+| 1 | Missing prerequisites -- the output names them and prints the install command |
 | 2 | Could not check |
 
 **If `bootstrap-preflight.sh` exits non-zero, STOP.** Report the missing
@@ -206,7 +206,7 @@ After `install.sh` succeeds, activate:
 source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
 ```
 
-**Use `env.sh` — not the venv's `activate` directly.** `env.sh` also:
+**Use `env.sh` -- not the venv's `activate` directly.** `env.sh` also:
 - adds provisioned tools (`fpocket`, `vina`, `hypex`, `elo`, `prox`) to `PATH`
 - sets `PKDE_TOOLS_HOME`, which the CLI requires for provenance stamping
 - sets `PYTHONDONTWRITEBYTECODE=1` to prevent stale bytecode
@@ -237,7 +237,7 @@ Your task prompt includes the program directory path.
 - **Fresh program:** run `pkde init <directory>` to create the program root with
   its `.pkde/` marker and `raw/` tree.
 - **Continuing from a prior phase:** check for an existing `.pkde/` directory at
-  the given path. If present, skip init — the existing control state is the source
+  the given path. If present, skip init -- the existing control state is the source
   of truth. Report that an existing program directory was found.
 
 ---
@@ -253,7 +253,7 @@ pkde doctor --json
 
 This is run after initialization (Step 5) so that doctor can perform the complete
 verification including project resolution. Running doctor before `pkde init` would
-report a "project root" failure because no `.pkde/` directory exists yet — that is
+report a "project root" failure because no `.pkde/` directory exists yet -- that is
 an expected state, not an environment problem.
 
 Parse the JSON output and evaluate:
@@ -261,13 +261,13 @@ Parse the JSON output and evaluate:
 - **If any check has `status: "fail"`:** STOP. Report the failure, its `remedy`
   field, and which check failed to the resolved parent (see **Parent agent discovery** above). The environment is not ready.
 - **If capability warnings exist** (`kind: "capability"`, `status: "warn"`):
-  record every one. These are not failures — the environment works, but certain
+  record every one. These are not failures -- the environment works, but certain
   capabilities are unavailable. Include all capability warnings in your readiness
   report so the controller can build its exclusion list.
 
 The distinction matters: a `"fail"` is a broken environment that blocks everything.
 A `"warn"` with `kind: "capability"` is a working environment with a reduced
-feature set — the program can proceed, but the controller must know what is missing.
+feature set -- the program can proceed, but the controller must know what is missing.
 
 ---
 
@@ -275,7 +275,7 @@ feature set — the program can proceed, but the controller must know what is mi
 
 Send a structured readiness report to the agent that started you (identified per
 the **Parent agent discovery** section above) using `agent message`.
-The report must be machine-parseable — use the exact format below.
+The report must be machine-parseable -- use the exact format below.
 
 **On success (all steps passed):**
 
@@ -312,7 +312,7 @@ Before marking this task complete, write a retrospective to `retrospectives/<you
 - What was confusing or underdocumented
 - Suggestions for improvement
 
-This is required — your agent will not be deleted until the retrospective exists.
+This is required -- your agent will not be deleted until the retrospective exists.
 
 ---
 

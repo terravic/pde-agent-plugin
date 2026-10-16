@@ -11,7 +11,7 @@ Two phases:
   analyze  reads stored search results and summarises: total results,
            cancer types represented, and a verdict.  No network.
 
-The search returns study-level metadata — study ID, name, description,
+The search returns study-level metadata -- study ID, name, description,
 cancer type, and reference genome.  It does NOT return mutation data,
 expression profiles, or patient-level clinical data.
 """
@@ -39,7 +39,7 @@ from ..core.errors import ArtifactError, SchemaError
 from ..core.qps import qps_for_host
 
 TOOL = "cbioportal"
-ARTIFACT_CLASS = "expression"  # → raw/expression/
+ARTIFACT_CLASS = "expression"  # -> raw/expression/
 
 CBIOPORTAL_API = "https://www.cbioportal.org/api"
 
@@ -220,7 +220,7 @@ def search_cmd(
     sidecar.note("source", "cBioPortal (www.cbioportal.org)")
     sidecar.note("n_results", len(artifact["results"]))
 
-    # Relay codes — fire conditionally
+    # Relay codes -- fire conditionally
     if len(artifact["results"]) == 0:
         sidecar.warn(
             "The cBioPortal search returned no results. Consider broadening "

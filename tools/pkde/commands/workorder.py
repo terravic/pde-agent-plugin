@@ -1,4 +1,4 @@
-"""`pkde workorder` — work-order management for the control plane.
+"""`pkde workorder` -- work-order management for the control plane.
 
 Creates, updates, commits, revises, transitions, accepts, displays,
 and lists work-order records in the control-plane state store.  Work
@@ -13,13 +13,18 @@ control records.
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import click
-import yaml
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
 
 from ..common import (
     AppState,
@@ -35,7 +40,7 @@ from ..core.provenance import sha256_file
 from ..core.statemachine import validate_transition
 
 # ---------------------------------------------------------------------------
-# YAML input fields — the required content fields the user supplies.
+# YAML input fields -- the required content fields the user supplies.
 # (state, created_at, committed_at are set by the CLI, not by YAML.)
 # ---------------------------------------------------------------------------
 
@@ -59,7 +64,7 @@ _YAML_REQUIRED_FIELDS = [
 _CLI_MANAGED_FIELDS = {"id", "revision", "state", "created_at", "committed_at"}
 
 # ---------------------------------------------------------------------------
-# Override allow-list — which validation checks may be hand-overridden.
+# Override allow-list -- which validation checks may be hand-overridden.
 # These are judgment calls where a human can verify the underlying
 # property by alternative means.  Hardcoded per settled design decision
 # (#178): do not make this configurable.
@@ -73,7 +78,7 @@ OVERRIDABLE_CHECKS: set[str] = {
     "relay_coverage",
 }
 
-# Checks that are never overridable — structural defects or security
+# Checks that are never overridable -- structural defects or security
 # boundaries, not judgment calls.  Any check not in either set is
 # rejected as unknown by the override command (safe default).
 NON_OVERRIDABLE_CHECKS: set[str] = {
@@ -109,14 +114,23 @@ def _load_yaml(path: Path) -> dict[str, Any]:
             f"YAML input file not found: {path}",
             remedy="provide a valid path to a work-order YAML file",
         )
-    try:
-        with open(path, encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-    except yaml.YAMLError as exc:
-        raise SchemaError(
-            f"invalid YAML in {path}",
-            detail=str(exc),
-        ) from exc
+    raw_text = path.read_text(encoding="utf-8")
+    if yaml is not None:
+        try:
+            data = yaml.safe_load(raw_text)
+        except yaml.YAMLError as exc:
+            raise SchemaError(
+                f"invalid YAML in {path}",
+                detail=str(exc),
+            ) from exc
+    else:
+        try:
+            data = json.loads(raw_text)
+        except ValueError as exc:
+            raise SchemaError(
+                f"invalid YAML/JSON in {path} (PyYAML not installed)",
+                detail=str(exc),
+            ) from exc
     if not isinstance(data, dict):
         raise SchemaError(
             f"YAML input must be a mapping, got {type(data).__name__}",
@@ -177,7 +191,7 @@ def _find_critical_liabilities(project_root: Path) -> list[str]:
     ``mitigated`` or ``accepted``.
 
     Returns an empty list if the tracker does not exist or contains no
-    active Critical entries.  An absent tracker is not an error — not
+    active Critical entries.  An absent tracker is not an error -- not
     every project has liabilities registered.
     """
     tracker_path = project_root / "program-state" / "liability-tracker.md"
@@ -277,7 +291,7 @@ def create_cmd(
 
     With --commit, the work order is created and immediately committed in
     a single invocation.  Both the create and commit steps run with full
-    validation — no checks are skipped.  This is equivalent to running
+    validation -- no checks are skipped.  This is equivalent to running
     ``pkde workorder create --from <file>`` followed by
     ``pkde workorder commit <ID>``.
     """
@@ -423,7 +437,7 @@ def _perform_commit(
 ) -> tuple[dict[str, Any], Path, Path]:
     """Execute the commit step for a work order.
 
-    Finds the latest revision, validates the proposed → committed
+    Finds the latest revision, validates the proposed -> committed
     transition, creates a context snapshot, and updates the record.
     All validation is identical to running ``commit`` as a separate
     command.
@@ -435,7 +449,7 @@ def _perform_commit(
     revision = record["revision"]
     current_state = record["state"]
 
-    # Validate transition proposed → committed.
+    # Validate transition proposed -> committed.
     validate_transition("workorder", current_state, "committed")
 
     # Validate all required content fields are present.
@@ -511,7 +525,7 @@ def _perform_commit(
             )
 
     # Build context snapshot.
-    # 256 KB default cap (design §4 Q2); configurable via program.yaml
+    # 256 KB default cap (design Section 4 Q2); configurable via program.yaml
     # once program.yaml configuration support lands.
     MAX_CONTEXT_BYTES = 256 * 1024
 
@@ -618,7 +632,7 @@ def revise_cmd(
     emit = emitter(as_json, quiet)
     project = state.project()
 
-    # Find the latest revision — must not be in proposed state.
+    # Find the latest revision -- must not be in proposed state.
     latest = _find_latest_revision(project.root, id)
     if latest.get("state") == "proposed":
         raise Refusal(
@@ -653,7 +667,7 @@ def revise_cmd(
         record,
     )
 
-    # Log the transition event (new revision, from_state=None → proposed).
+    # Log the transition event (new revision, from_state=None -> proposed).
     _log_transition(project.root, id, new_revision, None, "proposed")
 
     emit.data("id", id)
@@ -690,7 +704,7 @@ def transition_cmd(
     revision = record["revision"]
     current_state = record["state"]
 
-    # Guard: validation_failed → mechanically_validated requires the
+    # Guard: validation_failed -> mechanically_validated requires the
     # override subcommand, which enforces mandatory audit metadata
     # (reason, evidence, checks, actor).  Allowing it here would
     # bypass those guardrails entirely.
@@ -708,7 +722,7 @@ def transition_cmd(
             remedy="use `pkde workorder override` instead",
         )
 
-    # Guard: submitted → mechanically_validated requires running
+    # Guard: submitted -> mechanically_validated requires running
     # the 8 mechanical checks via `validate check`, which performs
     # this transition internally when all checks pass.  Allowing it
     # here would bypass the entire mechanical validation system.
@@ -719,7 +733,7 @@ def transition_cmd(
             remedy=f"use `pkde validate check {id}` instead",
         )
 
-    # Guard: proposed → committed requires running the full commit
+    # Guard: proposed -> committed requires running the full commit
     # validation and context-snapshot logic via `pkde workorder commit`.
     # Allowing it here would bypass artifact path checks, liability
     # gates, context size limits, and snapshot creation.
@@ -748,7 +762,7 @@ def transition_cmd(
     emit.data("revision", revision)
     emit.data("from_state", current_state)
     emit.data("to_state", target_state)
-    emit.line(f"{id}: {current_state} → {target_state}")
+    emit.line(f"{id}: {current_state} -> {target_state}")
     emit.flush()
 
 
@@ -805,7 +819,7 @@ def override_cmd(
 
     The override is recorded in the event log (with actor and detail) and
     as an entry in the work order's override_history list.  Neither the
-    validation record nor the checks_failed list is modified — override
+    validation record nor the checks_failed list is modified -- override
     history is permanent context, not a retroactive edit.
     """
     emit = emitter(as_json, quiet)
@@ -910,7 +924,7 @@ def override_cmd(
             ),
         )
 
-    # Block if any failed check is non-overridable — even if the
+    # Block if any failed check is non-overridable -- even if the
     # operator only named overridable checks, the presence of a
     # non-overridable failure means the work order cannot be overridden
     # until that structural/security issue is resolved.
@@ -932,7 +946,7 @@ def override_cmd(
             ),
         )
 
-    # Block if not all failed checks are covered — partial overrides
+    # Block if not all failed checks are covered -- partial overrides
     # would leave unaddressed failures, effectively bypassing validation
     # for the uncovered checks.
     uncovered = set(checks_failed) - set(check_names)
@@ -996,7 +1010,7 @@ def override_cmd(
                         ),
                     )
 
-    # All validation passed — perform the override.
+    # All validation passed -- perform the override.
     target_state = "mechanically_validated"
     validate_transition("workorder", current_state, target_state)
 
@@ -1013,7 +1027,7 @@ def override_cmd(
     }
 
     # Append to override_history on the WO record (append-only,
-    # never cleared — a WO could be overridden more than once across
+    # never cleared -- a WO could be overridden more than once across
     # revisions or re-validations).
     override_history = record.get("override_history", [])
     if not isinstance(override_history, list):
@@ -1058,7 +1072,7 @@ def override_cmd(
     emit.data("to_state", target_state)
     emit.data("actor", actor_str)
     emit.data("checks_overridden", check_names)
-    emit.line(f"{id}: {current_state} → {target_state} (override)")
+    emit.line(f"{id}: {current_state} -> {target_state} (override)")
     emit.line(f"  Actor:    {actor_str}")
     emit.line(f"  Reason:   {reason}")
     emit.line(f"  Evidence: {evidence}")
@@ -1242,7 +1256,7 @@ def list_cmd(
 # ---------------------------------------------------------------------------
 
 # The mechanical intermediate chain that ``accept`` auto-steps through.
-# Only the final hop (submitted → mechanically_validated) carries a real
+# Only the final hop (submitted -> mechanically_validated) carries a real
 # validation gate; the earlier hops are bookkeeping that a specialist or
 # system would normally drive individually.
 _MECHANICAL_CHAIN: list[str] = [
@@ -1265,18 +1279,18 @@ def accept_cmd(
 ) -> None:
     """Walk a work order through mechanical states to mechanically_validated.
 
-    Auto-steps through committed → queued → in_progress → submitted,
+    Auto-steps through committed -> queued -> in_progress -> submitted,
     then runs the full 8-check mechanical validation (the real
-    ``validate check`` logic — not a state flip).
+    ``validate check`` logic -- not a state flip).
 
     \b
     Behaviour:
-      - Starts from the WO's current state and walks forward — a WO
-        already at ``in_progress`` skips the committed → queued steps.
+      - Starts from the WO's current state and walks forward -- a WO
+        already at ``in_progress`` skips the committed -> queued steps.
       - Every intermediate hop is logged via the event log (one event
         per transition) so the audit trail is identical to manual calls.
       - If mechanical validation passes the WO reaches
-        ``mechanically_validated`` and the command stops — scientific
+        ``mechanically_validated`` and the command stops -- scientific
         acceptance is a separate judgment call.
       - If validation fails the WO moves to ``validation_failed`` and
         the command exits with the same failure output that
@@ -1331,7 +1345,7 @@ def accept_cmd(
             f"cannot accept {id} from state {current_state!r}",
             detail=(
                 f"accept auto-steps through: "
-                f"{' → '.join(_MECHANICAL_CHAIN)} → mechanically_validated"
+                f"{' -> '.join(_MECHANICAL_CHAIN)} -> mechanically_validated"
             ),
             remedy=(
                 f"the work order must be in one of "
@@ -1357,7 +1371,7 @@ def accept_cmd(
         )
         _log_transition(project.root, id, revision, from_state, to_state)
 
-        emit.line(f"  {id}: {from_state} → {to_state}")
+        emit.line(f"  {id}: {from_state} -> {to_state}")
 
     # --- At 'submitted': run real mechanical validation ---
     emit.line("")
@@ -1384,7 +1398,7 @@ def accept_cmd(
         emit.data("from_state", current_state)
         emit.data("to_state", val_to)
         emit.data("validation_result", overall_result)
-        emit.line(f"{id}: {val_from} → {val_to}  [validation {overall_result.upper()}]")
+        emit.line(f"{id}: {val_from} -> {val_to}  [validation {overall_result.upper()}]")
         emit.line("")
         emit.line(
             f"{id} is now mechanically_validated and ready for scientific acceptance."
@@ -1398,7 +1412,7 @@ def accept_cmd(
         emit.data("to_state", val_to)
         emit.data("validation_result", overall_result)
         emit.data("checks_failed", checks_failed)
-        emit.line(f"{id}: {val_from} → {val_to}  [validation {overall_result.upper()}]")
+        emit.line(f"{id}: {val_from} -> {val_to}  [validation {overall_result.upper()}]")
         emit.line("")
         emit.line(f"Failed checks: {', '.join(checks_failed)}")
         emit.line("")
@@ -1434,13 +1448,13 @@ def _try_accept_single(
     """Attempt to walk a single work order through to scientifically_accepted.
 
     Returns a result dict with keys: id, revision, outcome, detail, checks.
-    Does NOT raise on failure — returns status for batch reporting.
+    Does NOT raise on failure -- returns status for batch reporting.
     """
     wo_id = record["id"]
     revision = record["revision"]
     current_state = record["state"]
 
-    # Already accepted — nothing to do.
+    # Already accepted -- nothing to do.
     if current_state == "scientifically_accepted":
         return {
             "id": wo_id,
@@ -1500,7 +1514,7 @@ def _try_accept_single(
             )
             _log_transition(project_root, wo_id, revision, from_state, to_state)
 
-        # Now at 'submitted' — run mechanical validation.
+        # Now at 'submitted' -- run mechanical validation.
         from .validate import _perform_validation
 
         try:
@@ -1540,7 +1554,7 @@ def _try_accept_single(
 
         record = wo_record  # Updated by _perform_validation.
 
-    # At mechanically_validated — transition to scientifically_accepted.
+    # At mechanically_validated -- transition to scientifically_accepted.
     validate_transition(
         "workorder", "mechanically_validated", "scientifically_accepted"
     )
@@ -1584,16 +1598,16 @@ def accept_all_cmd(
     \b
     Behaviour:
       - Auto-steps each WO through the mechanical chain
-        (committed → queued → in_progress → submitted), runs the full
+        (committed -> queued -> in_progress -> submitted), runs the full
         8-check mechanical validation, and on pass transitions to
         scientifically_accepted.
       - Reports a consolidated table showing each WO's outcome.
       - Work orders that FAIL validation are left in validation_failed
-        and reported — they are NOT auto-overridden.
+        and reported -- they are NOT auto-overridden.
 
     \b
     Does NOT:
-      - Auto-override any failures — use ``pkde workorder override``
+      - Auto-override any failures -- use ``pkde workorder override``
         for individual WOs that need it.
       - Skip or weaken any mechanical validation checks.
     """
@@ -1634,29 +1648,29 @@ def accept_all_cmd(
         outcome = r["outcome"]
 
         if outcome == "pass":
-            emit.line(f"  {wo_id:<10} PASS      → accepted")
+            emit.line(f"  {wo_id:<10} PASS      -> accepted")
         elif outcome == "pass_with_warnings":
             # Count warnings.
             warn_count = sum(
                 1 for c in r.get("checks", []) if c.get("result") == "warning"
             )
             emit.line(
-                f"  {wo_id:<10} PASS (w)  → accepted "
+                f"  {wo_id:<10} PASS (w)  -> accepted "
                 f"({warn_count} warning{'s' if warn_count != 1 else ''})"
             )
         elif outcome == "already_accepted":
-            emit.line(f"  {wo_id:<10} PASS      → already accepted")
+            emit.line(f"  {wo_id:<10} PASS      -> already accepted")
         elif outcome == "fail":
             detail = r.get("detail", [])
             if isinstance(detail, list) and detail:
-                first_line = f"  {wo_id:<10} FAIL      → {detail[0]}"
+                first_line = f"  {wo_id:<10} FAIL      -> {detail[0]}"
                 emit.line(first_line)
                 for reason in detail[1:]:
                     emit.line(f"  {'':10}             {reason}")
             else:
-                emit.line(f"  {wo_id:<10} FAIL      → {detail}")
+                emit.line(f"  {wo_id:<10} FAIL      -> {detail}")
         elif outcome == "skip":
-            emit.line(f"  {wo_id:<10} SKIP      → {r.get('detail', '?')}")
+            emit.line(f"  {wo_id:<10} SKIP      -> {r.get('detail', '?')}")
 
     emit.line("")
     emit.line(

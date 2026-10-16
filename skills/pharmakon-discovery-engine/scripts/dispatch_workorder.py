@@ -8,7 +8,10 @@ import json
 import sys
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
 
 def _resolve_repo_root() -> Path:
     here = Path(__file__).resolve()
@@ -47,7 +50,8 @@ def main() -> int:
         spec = json.loads(spec_arg)
     else:
         spec_path = Path(spec_arg).expanduser().resolve()
-        spec = yaml.safe_load(spec_path.read_text(encoding="utf-8"))
+        raw_text = spec_path.read_text(encoding="utf-8")
+        spec = yaml.safe_load(raw_text) if yaml is not None else json.loads(raw_text)
 
     res = pkde_dispatch_workorder(spec=spec, project_dir=args.project)
     print(json.dumps(res, indent=2))

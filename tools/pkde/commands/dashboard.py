@@ -10,7 +10,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""`pkde dashboard` — Unified Multi-Agent + PkDE Interactive Scientific Dashboard.
+"""`pkde dashboard` -- Unified Multi-Agent + PkDE Interactive Scientific Dashboard.
 
 Builds a single-file self-contained HTML dashboard (`dashboard.html`) that
 combines:
@@ -19,7 +19,7 @@ combines:
      zoom/pan, Injected Skills inspector, 10-check `pkde validate` status matrix,
      active resource leases, and inter-agent message/event stream.
   2. Scientific Output & 14 Interactive Viewers (PkDE View): Executive summary,
-     Stage 0–3 Triage & Gate Dossiers, Liability Tracker, Mandatory Relays matrix,
+     Stage 0-3 Triage & Gate Dossiers, Liability Tracker, Mandatory Relays matrix,
      Layer 1 Markdown/KaTeX findings reader with interactive `{source: ...}`
      verification badges, and inline single-file renderers for all 14 PkDE
      scientific viewers (`3Dmol.js` and `Plotly.js`).
@@ -49,9 +49,85 @@ from typing import Any
 from urllib.parse import urlparse
 
 import click
-import jinja2
-import mistune
-import yaml
+
+try:
+    import jinja2
+except ImportError:  # pragma: no cover
+    jinja2 = None  # type: ignore[assignment]
+
+try:
+    import mistune
+except ImportError:  # pragma: no cover
+    mistune = None  # type: ignore[assignment]
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
+
+
+def _safe_yaml_load(text: str) -> Any:
+    """Parse YAML text via PyYAML when available, or fall back to JSON / key-value parsing."""
+    if yaml is not None:
+        return yaml.safe_load(text)
+    stripped = text.strip()
+    if not stripped:
+        return {}
+    try:
+        return json.loads(stripped)
+    except ValueError:
+        out: dict[str, Any] = {}
+        current_list_key: str | None = None
+        for line in stripped.splitlines():
+            raw = line.strip()
+            if not raw or raw.startswith("#"):
+                continue
+            if raw.startswith("- ") and current_list_key is not None:
+                val = raw[2:].strip().strip("'\"")
+                if isinstance(out.get(current_list_key), list):
+                    out[current_list_key].append(val)
+                continue
+            if ":" in raw:
+                k, v = raw.split(":", 1)
+                key = k.strip()
+                val_str = v.strip()
+                if not val_str:
+                    out[key] = []
+                    current_list_key = key
+                else:
+                    current_list_key = None
+                    out[key] = val_str.strip("'\"")
+        return out
+
+
+def _safe_yaml_dump(data: Any) -> str:
+    """Serialize data to YAML via PyYAML when available, or JSON (valid YAML 1.2) fallback."""
+    if yaml is not None:
+        return yaml.safe_dump(data, sort_keys=False)
+    return json.dumps(data, indent=2) + "\n"
+
+
+def _fallback_markdown_to_html(md_text: str) -> str:
+    """Lightweight stdlib Markdown-to-HTML fallback when mistune is not installed."""
+    escaped = html_mod.escape(md_text)
+    escaped = re.sub(
+        r"\*\*Relay:\s*`([^`]+)`\*\*",
+        r"<strong>Relay: <code>\1</code></strong>",
+        escaped,
+    )
+    escaped = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", escaped)
+    escaped = re.sub(r"`([^`]+)`", r"<code>\1</code>", escaped)
+    lines_out: list[str] = []
+    for ln in escaped.splitlines():
+        if ln.startswith("### "):
+            lines_out.append(f"<h3>{ln[4:]}</h3>")
+        elif ln.startswith("## "):
+            lines_out.append(f"<h2>{ln[3:]}</h2>")
+        elif ln.startswith("# "):
+            lines_out.append(f"<h1>{ln[2:]}</h1>")
+        elif ln.strip():
+            lines_out.append(f"<p>{ln}</p>")
+    return "\n".join(lines_out)
 
 from ..common import (
     AppState,
@@ -327,7 +403,7 @@ def _load_roles_catalog() -> dict[str, dict[str, Any]]:
         if not yaml_file.is_file():
             continue
         try:
-            spec = yaml.safe_load(yaml_file.read_text(encoding="utf-8")) or {}
+            spec = _safe_yaml_load(yaml_file.read_text(encoding="utf-8")) or {}
         except Exception:
             spec = {}
         role_name = role_dir.name
@@ -421,8 +497,11 @@ def _render_markdown_with_annotations(
             )
             source_citations.append(sf)
 
-    md_renderer = mistune.create_markdown(plugins=["table", "strikethrough"])
-    rendered_html = str(md_renderer(md_text))
+    if mistune is not None:
+        md_renderer = mistune.create_markdown(plugins=["table", "strikethrough"])
+        rendered_html = str(md_renderer(md_text))
+    else:
+        rendered_html = _fallback_markdown_to_html(md_text)
 
     # Replace **Relay: `<code>`** in rendered HTML with styled relay callout pill
     rendered_html = re.sub(
@@ -447,7 +526,7 @@ def _render_markdown_with_annotations(
             icon_prefix = "" if status == "ok" else ('<span class="badge-icon">[WARN]</span> ' if status == "warn" else '<span class="badge-icon">[FAIL]</span> ')
             val_info = f" | actual={actual}" if actual != "" else ""
             tooltip = html_mod.escape(
-                f"{raw_tag} — {status.upper()}: {detail}{val_info}"
+                f"{raw_tag} -- {status.upper()}: {detail}{val_info}"
             )
         else:
             cls = "verified"
@@ -1035,7 +1114,7 @@ def _build_agent_forest_and_messages(
     lead_decision_question = (
         f"Active Charter ({prog_cfg.get('target') or prog_cfg.get('name') or 'Discovery'}): {user_prompt}"
         if user_prompt
-        else "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0–4 gate decisions."
+        else "Synthesize cross-disciplinary evidence, manage Layer 2 program state, and govern Stage 0-4 gate decisions."
     )
 
     nodes.append(
@@ -1625,7 +1704,7 @@ def _build_agent_forest_and_messages(
             verdict = art.get("verdict") or "evaluated"
             ts_p2 = ana.get("timestamp") or ana.get("created_at") or _utc_now()
             relays_list = ana.get("mandatory_relays") or []
-            relay_suffix = f" · Relays: {', '.join(str(r) for r in relays_list[:3])}" if relays_list else ""
+            relay_suffix = f" . Relays: {', '.join(str(r) for r in relays_list[:3])}" if relays_list else ""
             messages.append(
                 {
                     "id": f"p2-{art_idx}-{rel_path}",
@@ -1664,7 +1743,7 @@ def _build_agent_forest_and_messages(
                 "category": "finding",
                 "tag": "FINDING",
                 "level": "success",
-                "summary": f"New Layer 1 Finding added: `{fpath}` — {f.get('title', '')} ({n_cites} source citations, {n_relays} relays)",
+                "summary": f"New Layer 1 Finding added: `{fpath}` -- {f.get('title', '')} ({n_cites} source citations, {n_relays} relays)",
                 "detail": {
                     "source_path": fpath,
                     "work_order_id": f.get("work_order_id"),
@@ -1737,7 +1816,7 @@ def _collect_yaml_or_json_dir(project_root: Path, dir_name: str, existing: list[
         if fpath.suffix.lower() not in (".yaml", ".yml", ".json"):
             continue
         try:
-            loaded = yaml.safe_load(fpath.read_text(encoding="utf-8"))
+            loaded = _safe_yaml_load(fpath.read_text(encoding="utf-8"))
             if isinstance(loaded, dict):
                 loaded = json.loads(json.dumps(loaded, default=str))
                 rec_id = str(loaded.get("id") or loaded.get("concept_id") or loaded.get("assessment_id") or loaded.get("decision_id") or fpath.stem)
@@ -1761,7 +1840,7 @@ def collect_dashboard_bundle(project_root: Path | str) -> dict[str, Any]:
     for cand in (root / ".pkde" / "program.yaml", root / "program.yaml"):
         if cand.is_file() and is_safe_to_open(cand):
             try:
-                loaded = yaml.safe_load(cand.read_text(encoding="utf-8"))
+                loaded = _safe_yaml_load(cand.read_text(encoding="utf-8"))
                 if isinstance(loaded, dict):
                     program_cfg = loaded
                     break
@@ -1931,7 +2010,7 @@ def collect_dashboard_bundle(project_root: Path | str) -> dict[str, Any]:
     if not active_stage and work_orders_latest:
         active_stage = work_orders_latest[-1].get("stage")
     if not active_stage:
-        active_stage = "Stage 0–1 Discovery"
+        active_stage = "Stage 0-1 Discovery"
 
     program_name = (
         program_cfg.get("name")
@@ -2064,12 +2143,6 @@ def build_dashboard_html(
     bundle["program"]["standalone_mode"] = bool(standalone_mode)
 
     template_dir = Path(__file__).resolve().parent.parent / "site_templates"
-    env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(str(template_dir)),
-        autoescape=jinja2.select_autoescape(["html"]),
-    )
-    template = env.get_template("dashboard.html")
-
     # Safe JSON embedding inside <script>: escape </script> and <!--
     bundle_json = (
         json.dumps(bundle, ensure_ascii=False, default=str)
@@ -2077,11 +2150,26 @@ def build_dashboard_html(
         .replace("<!--", "<\\!--")
     )
 
-    rendered = template.render(
-        program=bundle["program"],
-        bundle_json=bundle_json,
-        standalone_mode=standalone_mode,
-    )
+    if jinja2 is not None:
+        env = jinja2.Environment(
+            loader=jinja2.FileSystemLoader(str(template_dir)),
+            autoescape=jinja2.select_autoescape(["html"]),
+        )
+        template = env.get_template("dashboard.html")
+        rendered = template.render(
+            program=bundle["program"],
+            bundle_json=bundle_json,
+            standalone_mode=standalone_mode,
+        )
+    else:
+        raw_tpl = (template_dir / "dashboard.html").read_text(encoding="utf-8")
+        prog = bundle["program"]
+        rendered = (
+            raw_tpl.replace("{{ program.name }}", html_mod.escape(str(prog.get("name", ""))))
+            .replace("{{ program.stage }}", html_mod.escape(str(prog.get("stage", ""))))
+            .replace("{{ program.cli_version }}", html_mod.escape(str(prog.get("cli_version", ""))))
+            .replace("{{ bundle_json | safe }}", bundle_json)
+        )
 
     if output_path is not None:
         out_cand = Path(output_path).expanduser()
@@ -2407,9 +2495,11 @@ def ensure_dashboard_server(
         cmd,
         cwd=str(root if root.is_dir() else repo),
         env=env,
+        stdin=subprocess.DEVNULL,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         start_new_session=True,
+        close_fds=True,
     )
 
     deadline = time.monotonic() + 2.5
@@ -2544,7 +2634,7 @@ def bootstrap_prompt_session(
     existing: dict[str, Any] = {}
     if prog_path.is_file():
         try:
-            loaded = yaml.safe_load(prog_path.read_text(encoding="utf-8"))
+            loaded = _safe_yaml_load(prog_path.read_text(encoding="utf-8"))
             if isinstance(loaded, dict):
                 existing = loaded
         except Exception:
@@ -2572,7 +2662,7 @@ def bootstrap_prompt_session(
         "updated_at": _utc_now(),
     }
     prog_path.parent.mkdir(parents=True, exist_ok=True)
-    prog_path.write_text(yaml.safe_dump(prog_data, sort_keys=False), encoding="utf-8")
+    prog_path.write_text(_safe_yaml_dump(prog_data), encoding="utf-8")
 
     controlstore.append_event(
         root,

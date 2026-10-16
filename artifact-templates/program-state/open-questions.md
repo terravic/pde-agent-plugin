@@ -10,6 +10,6 @@ names what evidence would resolve it.
 **Impact**: What decisions this blocks or influences.
 **Assigned to**: [specialist role, or "unassigned"]
 **Status**: open | in progress | resolved
-**Resolution**: [added when resolved — answer and supporting evidence]
+**Resolution**: [added when resolved -- answer and supporting evidence]
 
 -->

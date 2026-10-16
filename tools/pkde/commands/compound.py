@@ -1,4 +1,4 @@
-"""`pkde compound` — compound property profiling with RDKit.
+"""`pkde compound` -- compound property profiling with RDKit.
 
 Phase 1 (no judgment):
   validate     Parse a SMILES string, canonicalize, write parse record.
@@ -13,7 +13,7 @@ Phase 2 (offline, applies thresholds):
 
 Multi-fragment SMILES (salts, mixtures) follow the "strip counterions,
 alert on parent" convention.  The convention is documented in the sidecar
-— the parent is not chosen silently.  An unparseable SMILES is a refusal
+-- the parent is not chosen silently.  An unparseable SMILES is a refusal
 (exit 9), not a failure, because a different input string is the remedy.
 """
 
@@ -43,7 +43,7 @@ from ..core.output import Emitter, warn
 
 ARTIFACT_CLASS = "compounds"
 
-# Common aggregator SMARTS patterns — these structures are known to cause
+# Common aggregator SMARTS patterns -- these structures are known to cause
 # non-specific assay interference through colloidal aggregation.  No single
 # curated aggregator catalog exists in RDKit's FilterCatalog; these are
 # drawn from Shoichet lab publications on colloidal aggregation
@@ -140,7 +140,7 @@ def _parse_smiles(smiles_input: str) -> tuple[Any, str, dict[str, Any], list[str
     """Parse a SMILES string, handling multi-fragment inputs.
 
     Returns ``(mol, canonical_smiles, fragment_notes, stripped_fragments)``.
-    Raises :class:`Refusal` on unparseable input — a different input
+    Raises :class:`Refusal` on unparseable input -- a different input
     string is the remedy, not a retry.
     """
     Chem = _require_rdkit()[0]
@@ -174,7 +174,7 @@ def _parse_smiles(smiles_input: str) -> tuple[Any, str, dict[str, Any], list[str
             "convention": (
                 "Counterions stripped; parent molecule selected as the largest "
                 "fragment by heavy atom count.  The stripped fragments are "
-                "listed here — this is documented, not silent."
+                "listed here -- this is documented, not silent."
             ),
         }
         mol = parent
@@ -274,7 +274,7 @@ def compound() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — validate
+# Phase 1 -- validate
 # ---------------------------------------------------------------------------
 
 
@@ -338,7 +338,7 @@ def validate_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — descriptors
+# Phase 1 -- descriptors
 # ---------------------------------------------------------------------------
 
 
@@ -407,7 +407,7 @@ def descriptors_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — alerts
+# Phase 1 -- alerts
 # ---------------------------------------------------------------------------
 
 
@@ -430,8 +430,8 @@ def alerts_cmd(
     """Run PAINS, Brenk, and aggregator substructure filters.
 
     Phase 1: alert hits are recorded with pattern names and sources.  No
-    judgment is made about the compound — that belongs to ``analyze``.
-    A clean result (no hits) is a first-class outcome, not the absence of
+    judgment is made about the compound -- that belongs to ``analyze``.
+    A clean result (no hits) is a primary outcome, not the absence of
     one.
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
@@ -521,7 +521,7 @@ def alerts_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — prepare-3d
+# Phase 1 -- prepare-3d
 # ---------------------------------------------------------------------------
 
 
@@ -577,7 +577,7 @@ def prepare_3d_cmd(
 
     rdkit_version = rdBase.rdkitVersion
 
-    # Add hydrogens — required for realistic 3D geometry.
+    # Add hydrogens -- required for realistic 3D geometry.
     mol_h = Chem.AddHs(mol)
 
     # Generate 3D coordinates using ETKDGv3.
@@ -656,7 +656,7 @@ def prepare_3d_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — sa-score
+# Phase 1 -- sa-score
 # ---------------------------------------------------------------------------
 
 
@@ -725,7 +725,7 @@ def sa_score_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — profile (batch: validate + descriptors + alerts + sa-score)
+# Phase 1 -- profile (batch: validate + descriptors + alerts + sa-score)
 # ---------------------------------------------------------------------------
 
 
@@ -779,7 +779,7 @@ def profile_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — analyze
+# Phase 2 -- analyze
 # ---------------------------------------------------------------------------
 
 #: Descriptor-to-threshold mappings for Lipinski Rule of Five.
@@ -824,11 +824,11 @@ def analyze_cmd(
     phase-1 subcommands, applies named threshold sets, and writes an
     ``.analysis.json`` with a verdict plus mandatory relays.  Optionally
     reads ``.sa-score.json`` when present (existing pipelines without
-    SA-score are not affected).  This command never queries an endpoint —
+    SA-score are not affected).  This command never queries an endpoint --
     the phase-2 latch enforces that automatically.
 
     When ``--name`` is provided, the SMILES positional argument may be
-    omitted — the slug is derived from the name and the canonical SMILES
+    omitted -- the slug is derived from the name and the canonical SMILES
     is read from the stored descriptors record.
     """
     if smiles is None and name is None:
@@ -870,7 +870,7 @@ def analyze_cmd(
         )
     alerts_doc = provenance.read_json(alerts_path, "alerts record")
 
-    # SA-score is optional — existing pipelines must not break if absent.
+    # SA-score is optional -- existing pipelines must not break if absent.
     sa_score_path = source_dir / f"{slug}.sa-score.json"
     sa_score_doc: dict[str, Any] | None = None
     if sa_score_path.is_file():
@@ -1019,7 +1019,7 @@ def analyze_cmd(
         v = lipinski_violations[0]
         advisories.append(
             f"One Lipinski violation ({v['rule']} = {v['value']}, "
-            f"limit {v['limit']}).  The Rule of Five allows one violation — "
+            f"limit {v['limit']}).  The Rule of Five allows one violation -- "
             "this compound is marginal by that criterion."
         )
 
@@ -1033,7 +1033,7 @@ def analyze_cmd(
             provenance.relay(
                 "compound.alerts_not_toxicology",
                 f"{canonical} has no PAINS/Brenk/aggregator hits, but "
-                "absence of these alerts is not evidence of safety — these "
+                "absence of these alerts is not evidence of safety -- these "
                 "filters detect known interference patterns, not toxicity "
                 "mechanisms.",
             )
@@ -1048,7 +1048,7 @@ def analyze_cmd(
                 "compound.sa_score_is_estimate",
                 f"{canonical} SA-score ({sa_score_doc.get('sa_score')}) is "
                 "below the accessibility threshold, but a low SA-score does "
-                "not confirm synthetic feasibility — it reflects fragment "
+                "not confirm synthetic feasibility -- it reflects fragment "
                 "frequency, not a synthesis route.",
             )
         )

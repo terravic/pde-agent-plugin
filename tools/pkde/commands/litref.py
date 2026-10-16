@@ -1,4 +1,4 @@
-"""`pkde litref` — does the cited record exist?
+"""`pkde litref` -- does the cited record exist?
 
 The narrowest tool in the set, and the one aimed most directly at the
 failure mode the pilot is testing. It takes a citation and answers
@@ -19,7 +19,7 @@ comes from a live case. `query.titles=PALOMA-3` on ClinicalTrials.gov
 returns two real trials and puts the wrong one first:
 
     NCT05388669  lazertinib + subcutaneous amivantamab study (NSCLC)
-    NCT01942135  palbociclib + fulvestrant study (breast) — the target record
+    NCT01942135  palbociclib + fulvestrant study (breast) -- the target record
 
 NCT01942135's `acronym` field is null; the name PALOMA-3 appears only
 inside its title prose, so acronym matching cannot separate them. The
@@ -29,10 +29,10 @@ A resolver that took the top hit would not merely fail to verify a
 breast-cancer claim. It would hand the specialist an NSCLC trial to
 check it against, the specialist would "verify" it, and the audit trail
 would look clean. A silent wrong answer is worse than a loud missing
-one, so more than one match is `ambiguous`: a first-class outcome and a
+one, so more than one match is `ambiguous`: a primary outcome and a
 hard stop, never a `resolved` with a warning stapled to a chosen record.
 
-Resolution by unique identifier — NCT, PMID, PMCID, DOI — may return
+Resolution by unique identifier -- NCT, PMID, PMCID, DOI -- may return
 `resolved`. Resolution by name returns every match, and a single match
 by name is still flagged, because a title search cannot prove the name
 is unique: a trial that mentions the name only in its description is
@@ -182,7 +182,7 @@ def _ctgov_by_id(nct: str) -> tuple[str, bytes]:
 
 
 # ---------------------------------------------------------------------------
-# Match extraction (phase 2 — pure, reads bytes already on disk)
+# Match extraction (phase 2 -- pure, reads bytes already on disk)
 # ---------------------------------------------------------------------------
 
 
@@ -253,7 +253,7 @@ def _ctgov_matches(payload: Any) -> tuple[list[dict[str, Any]], int]:
 
 @click.group()
 def litref() -> None:
-    """Resolve a cited paper or trial to a real record — or fail."""
+    """Resolve a cited paper or trial to a real record -- or fail."""
 
 
 @litref.command("resolve")
@@ -336,7 +336,7 @@ def resolve_cmd(
         url, body = _epmc_query(query, page_size, "core")
         save("literature", url, body)
 
-    else:  # name — query every registry the caller allowed, keep every match
+    else:  # name -- query every registry the caller allowed, keep every match
         if source in {"auto", "trials"}:
             url, body = _ctgov_search(value, page_size)
             save("trials", url, body)
@@ -372,7 +372,7 @@ def analyze_cmd(
     """Report resolved / ambiguous / not_found for a resolved CITATION.
 
     Reads only what `resolve` wrote. This command never reads a record's
-    contents to judge whether it supports the claim — that is the
+    contents to judge whether it supports the claim -- that is the
     specialist's job, and a tool that guessed would recreate the failure
     it exists to catch.
     """
@@ -401,7 +401,7 @@ def analyze_cmd(
 
     if not totals:
         raise ArtifactError(
-            f"no response files found for {slug!r} — run 'pkde litref resolve' first",
+            f"no response files found for {slug!r} -- run 'pkde litref resolve' first",
             detail=(
                 f"expected at least one of: {slug}.trials.json, "
                 f"{slug}.literature.json in {source_dir}"
@@ -449,7 +449,7 @@ def analyze_cmd(
                 "litref.ambiguous_name",
                 f"{value!r} matches {total_hits} records "
                 f"({', '.join(f'{k}: {v}' for k, v in totals.items())}): {listed}"
-                + (" …" if len(matches) > 4 else ""),
+                + (" ..." if len(matches) > 4 else ""),
             )
         )
 
@@ -491,7 +491,7 @@ def analyze_cmd(
     for match in matches[:5]:
         emit.line(f"  {match.get('source')} {match.get('id')}: {match.get('title')}")
     if len(matches) > 5:
-        emit.line(f"  … {len(matches) - 5} more in the analysis artifact")
+        emit.line(f"  ... {len(matches) - 5} more in the analysis artifact")
     for warning in warnings:
         emit.line(f"warning: {warning}")
     for record in relays:
@@ -502,8 +502,8 @@ def analyze_cmd(
     # `ambiguous` is a refusal, not a failure: the analysis artifact was
     # written and its path has already been printed above. It exits
     # non-zero so that a specialist chaining `pkde litref analyze X &&
-    # …` cannot proceed on a citation the tool declined to resolve.
-    # `not_found` exits 0 by contrast — "this record does not exist" is
+    # ...` cannot proceed on a citation the tool declined to resolve.
+    # `not_found` exits 0 by contrast -- "this record does not exist" is
     # a completed analysis and is itself the finding, whereas "which of
     # these 26 did you mean" is an unanswered question.
     if outcome == "ambiguous":
@@ -511,9 +511,9 @@ def analyze_cmd(
             f"{value!r} matches {total_hits} records; this tool will not choose "
             "between them",
             detail=", ".join(str(m.get("id")) for m in matches[:8])
-            + (" …" if len(matches) > 8 else ""),
+            + (" ..." if len(matches) > 8 else ""),
             remedy=(
-                "supply a unique identifier — NCT number, PMID or DOI. Do not "
+                "supply a unique identifier -- NCT number, PMID or DOI. Do not "
                 "pick a candidate from the list: they are listed because "
                 "choosing among them is what produces a clean audit trail for "
                 "the wrong record"

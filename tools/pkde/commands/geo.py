@@ -12,7 +12,7 @@ Two phases:
            count, assay type distribution, organism breakdown, sample
            count statistics, and platform distribution.  No network.
 
-The search returns dataset-level metadata — title, summary, sample list,
+The search returns dataset-level metadata -- title, summary, sample list,
 platform, and FTP links.  It does NOT return expression values or
 differential expression results.  Determining whether a gene is
 differentially expressed in a dataset requires downloading and analysing
@@ -149,7 +149,7 @@ def _fetch_geo(
         year_to,
     )
 
-    # Phase 1a: esearch — get matching IDs.
+    # Phase 1a: esearch -- get matching IDs.
     esearch_data = http.get_json(
         ESEARCH_URL,
         params={
@@ -174,7 +174,7 @@ def _fetch_geo(
     esearch_count = int(esearch_result.get("count", 0))
 
     if not id_list:
-        # No results — return empty artifact.
+        # No results -- return empty artifact.
         artifact: dict[str, Any] = {
             "schema": "pkde.geo-search.v1",
             "query": {
@@ -195,7 +195,7 @@ def _fetch_geo(
         }
         return json.dumps(esearch_data, indent=2).encode("utf-8"), artifact
 
-    # Phase 1b: esummary — get details for each ID.
+    # Phase 1b: esummary -- get details for each ID.
     esummary_data = http.get_json(
         ESUMMARY_URL,
         params={

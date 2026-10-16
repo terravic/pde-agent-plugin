@@ -1,4 +1,4 @@
-"""Tests for prox.embed — TF-IDF embedding of hypothesis text."""
+"""Tests for prox.embed -- TF-IDF embedding of hypothesis text."""
 
 from __future__ import annotations
 

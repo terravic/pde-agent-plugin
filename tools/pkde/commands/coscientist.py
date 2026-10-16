@@ -1,18 +1,18 @@
 """Co-Scientist tournament ingest and analysis.
 
-Two phases (docs/tool-design-guidance.md §3):
+Two phases (docs/tool-design-guidance.md Section 3):
 
-  ingest  — phase 1. Normalises a tournament export into a stable Layer 0
+  ingest  -- phase 1. Normalises a tournament export into a stable Layer 0
             artifact plus a provenance sidecar. The export itself is the
             expensive, non-reproducible act (~2h of tournament compute);
             we treat the file as the fetched payload and record its
             checksum so a reviewer can confirm which export a finding
             rests on.
-  analyze — phase 2. Reads the normalised artifact, applies the
+  analyze -- phase 2. Reads the normalised artifact, applies the
             `coscientist` threshold set, emits `.analysis.json` and a
             bounded summary.
 
-  show    — a bounded reader for one idea's prose sections, written to a
+  show    -- a bounded reader for one idea's prose sections, written to a
             file rather than streamed into context.
 
 ## Why keys are resolved structurally
@@ -459,9 +459,9 @@ def ingest(
     generated = record["stats"].get("n_ideas_generated")
 
     # The partial_export relay fires when the normalised artifact is a
-    # genuine subset — either because the export itself was pre-filtered
+    # genuine subset -- either because the export itself was pre-filtered
     # by the Co-Scientist platform, or because the caller used --top to
-    # reduce the set.  It must never fire unconditionally (§5.1, §8):
+    # reduce the set.  It must never fire unconditionally (Section 5.1, Section 8):
     # a relay that fires on every invocation trains the reader past the
     # conditional relays beside it.
     user_filtered = top is not None and top < n_in_export
@@ -650,11 +650,11 @@ def analyze(
     # The denominator caveat is a standing property of how the tournament
     # reports claims (true on every export), not a conditional warning
     # about a particular run's result.  It was an unconditional relay
-    # (coscientist.claim_denominator) that fired on every analysis — a
+    # (coscientist.claim_denominator) that fired on every analysis -- a
     # signal that never varies carries no information and trains the
     # reader past the conditional relays beside it (partial_export).
     # Moved to a sidecar field on .analysis.json per the always-true rule
-    # (tool-design-guidance §8, exit 2: relabel and move).  The finding
+    # (tool-design-guidance Section 8, exit 2: relabel and move).  The finding
     # author reading the artifact still has the information; it no longer
     # competes with partial_export in the relay channel.
     metrics["claim_denominator"] = COSCIENTIST_CLAIM_DENOMINATOR
@@ -711,7 +711,7 @@ def analyze(
     # Mandatory relay: review recommendation available.
     # Fires when the export contains a structured recommendation section.
     # Per tool-design-guidance section 8, conditional relays must not fire
-    # unconditionally — this one fires only when section is non-None.
+    # unconditionally -- this one fires only when section is non-None.
     if recommendation["section"]:
         relay_code = "coscientist.review_recommendation_available"
         if not any(r["code"] == relay_code for r in relays):
@@ -786,14 +786,14 @@ def analyze(
         emit.line(
             "Disputed claims: "
             + ", ".join(f"{v} {k.lower()}" for k, v in verdict_counts.most_common())
-            + " (exception list, not a census — see analysis advisories)"
+            + " (exception list, not a census -- see analysis advisories)"
         )
     emit.line(f"Flagged ideas: {len(flagged)}")
     for idea in flagged[:5]:
         emit.line(f"  #{idea['ranking']} {idea['gene']}: {idea['advisories'][0]}")
 
     # Advisory: suggest foundational-claim-check template when the leader
-    # has contradicted claims.  This is human-readable output only — does
+    # has contradicted claims.  This is human-readable output only -- does
     # not change the analysis engine, scoring, or machine-readable data.
     if (
         per_idea
@@ -854,7 +854,7 @@ def show(
     """Write one idea's prose to a file. Prints the path, not the prose.
 
     Long-form content goes to a file so it does not consume context
-    (§6). Read the file when you need the text.
+    (Section 6). Read the file when you need the text.
     """
     if rank is None and gene is None:
         raise UsageError(
@@ -948,7 +948,7 @@ def show(
 
 
 # ---------------------------------------------------------------------------
-# Guards — extracted so tests can call them directly
+# Guards -- extracted so tests can call them directly
 # ---------------------------------------------------------------------------
 
 
@@ -1396,7 +1396,7 @@ def compare(
 
     Requires prior ``ingest`` on both files.  Produces a side-by-side
     comparison written to a file and emits a bounded summary + path.
-    This is a read-only viewer — it does not produce analysis artifacts
+    This is a read-only viewer -- it does not produce analysis artifacts
     or provenance sidecars.
     """
     project = state.project()

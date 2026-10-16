@@ -18,7 +18,7 @@ Public Patent Registry XHR is an undocumented internal endpoint that powers
 the Public Patent Registry web UI.  It returns JSON, requires no
 authentication, and supports the same query syntax as the web search
 (free text, boolean, CPC codes, assignee filters).  Rate limiting is
-aggressive — HTTP 503 after approximately five rapid requests — so
+aggressive -- HTTP 503 after approximately five rapid requests -- so
 queries are paced at 0.5 QPS.
 """
 
@@ -62,7 +62,7 @@ def _fetch_public_patents(query: str) -> tuple[bytes, dict[str, Any]]:
     """Fetch patent results from the Public Patent Registry XHR endpoint.
 
     NOTE: This uses an undocumented XHR endpoint that powers the Public
-    Patent Registry web UI.  It is not an official API — it may change or become
+    Patent Registry web UI.  It is not an official API -- it may change or become
     unavailable without notice.  Rate limiting is aggressive (~5 requests
     before HTTP 503).
 
@@ -76,7 +76,7 @@ def _fetch_public_patents(query: str) -> tuple[bytes, dict[str, Any]]:
     total_results: int = 0
 
     for page in range(_MAX_PAGES):
-        # Build the URL — page parameter is embedded in the url= value.
+        # Build the URL -- page parameter is embedded in the url= value.
         encoded_query = quote(query, safe="")
         if page == 0:
             url = f"{PUBLIC_PATENTS_API}?url=q%3D{encoded_query}&exp="
@@ -102,7 +102,7 @@ def _fetch_public_patents(query: str) -> tuple[bytes, dict[str, Any]]:
                         "rate-limited (~5 requests before 503)"
                     ),
                 )
-            # Got some results before hitting the limit — use what we have.
+            # Got some results before hitting the limit -- use what we have.
             break
 
         raw_pages.append(response.content)
@@ -141,7 +141,7 @@ def _fetch_public_patents(query: str) -> tuple[bytes, dict[str, Any]]:
         if len(all_patents) >= _MAX_PATENTS:
             break
 
-    # Build verbatim bytes — combine pages if paginated.
+    # Build verbatim bytes -- combine pages if paginated.
     if len(raw_pages) == 1:
         raw = raw_pages[0]
     elif raw_pages:
@@ -217,9 +217,9 @@ def patent() -> None:
     """Patent landscape search and FTO assessment."""
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary

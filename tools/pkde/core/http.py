@@ -1,9 +1,9 @@
 """Shared HTTP client: rate limiting and retry in one place.
 
 Not re-implemented per subcommand, and not requested of the agent in
-prose (docs/tool-design-guidance.md §8).
+prose (docs/tool-design-guidance.md Section 8).
 
-Error bodies are returned, not just codes — an agent can act on
+Error bodies are returned, not just codes -- an agent can act on
 "429, retry after 300s"; it cannot act on "request failed".
 
 Pacing state is persisted to disk with ``flock(2)`` so that the
@@ -13,13 +13,16 @@ filesystem volume is available (``.pkde/scratchpad/pace`` or
 an explicit ``PKDE_PACE_DIR``), cross-container coordination is active
 and multiple agents on the same host observe the per-host interval.
 When falling back to container-local pacing (``~/.cache/pkde/pace``),
-cross-container coordination is NOT covered — each container enforces
+cross-container coordination is NOT covered -- each container enforces
 the interval independently.
 """
 
 from __future__ import annotations
 
-import fcntl
+try:
+    import fcntl
+except ImportError:  # pragma: no cover
+    fcntl = None  # type: ignore[assignment]
 import os
 import re
 import time
@@ -58,11 +61,11 @@ def _resolve_pace_dir() -> tuple[Path, str]:
     """Resolve the pacing directory with a three-tier fallback.
 
     Returns (path, tier) where tier is one of:
-    - "shared" — cross-container coordination via env var or shared volume
-    - "local" — container-local (~/.cache/pkde/pace)
-    - "memory" — in-process only (no disk pacing)
+    - "shared" -- cross-container coordination via env var or shared volume
+    - "local" -- container-local (~/.cache/pkde/pace)
+    - "memory" -- in-process only (no disk pacing)
 
-    Always completes without raising — even when
+    Always completes without raising -- even when
     ``PKDE_PACE_REQUIRE_SHARED=1`` is set and no shared tier is found.
     The strict-mode check is deferred to :func:`_pace` so that the CLI
     (including ``pkde doctor``) can import this module without crashing.
@@ -78,7 +81,7 @@ def _resolve_pace_dir() -> tuple[Path, str]:
         else:
             if p.is_dir():
                 return p, "shared"
-            # PKDE_PACE_DIR exists as a file — misconfiguration; fall through
+            # PKDE_PACE_DIR exists as a file -- misconfiguration; fall through
             # and let ``pkde doctor`` show the resolved tier.
 
     # Tier 2: shared project volume (shared project default)
@@ -142,7 +145,7 @@ def _sanitize_url(url: str) -> str:
                 (parts.scheme, host, parts.path, parts.query, parts.fragment)
             )
     except ValueError:
-        pass  # Malformed URL — fall through to param redaction.
+        pass  # Malformed URL -- fall through to param redaction.
     # Redact sensitive query-string parameters.
     return _SENSITIVE_PARAMS.sub(r"\1\2=<REDACTED>", url)
 
@@ -226,9 +229,12 @@ def _pace(url: str, qps: float) -> None:
 
 def _pace_disk(host: str, interval: float) -> None:
     """Disk-based pacing with flock for cross-invocation coordination."""
+    if fcntl is None:
+        _pace_memory(host, interval)
+        return
     pace_file = _PACE_DIR / host.replace(":", "_")
 
-    # Refuse to open symlinks — fall back to memory pacing.
+    # Refuse to open symlinks -- fall back to memory pacing.
     if not is_safe_to_open(pace_file):
         _pace_memory(host, interval)
         return
@@ -236,7 +242,8 @@ def _pace_disk(host: str, interval: float) -> None:
     # Open atomically with O_NOFOLLOW to prevent TOCTOU symlink attacks.
     # This collapses the symlink check and open into one kernel operation,
     # complementing the is_safe_to_open belt-and-suspenders pre-check above.
-    fd = os.open(str(pace_file), os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW, 0o644)
+    open_flags = os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(str(pace_file), open_flags, 0o644)
     with os.fdopen(fd, "r+") as f:
         fcntl.flock(f, fcntl.LOCK_EX)
         try:

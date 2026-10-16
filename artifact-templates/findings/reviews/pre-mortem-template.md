@@ -3,7 +3,7 @@
 **Reviewer**: [reviewer role] | **Date**: [date]
 **Finding under review**: [findings/<path>]
 **Decision question**: [from brief]
-**Review budget**: [N objections — the maximum number of failure hypotheses the lead will pursue]
+**Review budget**: [N objections -- the maximum number of failure hypotheses the lead will pursue]
 
 ## Summary
 
@@ -22,7 +22,7 @@ carry a discriminating check that the lead elevates.
 
 Each hypothesis proposes a specific, scoped failure mode. Speculative
 narratives without a discriminating check are noted but do not constitute
-accepted fatal flaws — they cannot gate progress.
+accepted fatal flaws -- they cannot gate progress.
 
 <!-- Entry template for each hypothesis:
 
@@ -32,7 +32,7 @@ accepted fatal flaws — they cannot gate progress.
 **Consequence**: [what happens if this failure mode is real]
 **Evidence**: [what evidence exists for or against this hypothesis]
 **Discriminating check**: [a specific, executable test that would
-determine whether this failure mode is real — or "none" if this is
+determine whether this failure mode is real -- or "none" if this is
 a speculative concern]
 
 If discriminating check is "none", this hypothesis is speculative.
@@ -73,10 +73,10 @@ four resolution types:
 
 **Resolution type**: accepted | rebutted | accepted_risk | unresolved
 **Rationale**: [why this resolution was chosen]
-**Evidence refs**: [for rebuttal — what evidence supports the rebuttal]
-**Policy ref**: [for accepted_risk — the policy under which the risk is accepted]
-**Owner**: [for unresolved — who will investigate the follow-up]
-**Liability tracker ref**: [for unresolved/accepted_risk — entry in liability-tracker.md]
+**Evidence refs**: [for rebuttal -- what evidence supports the rebuttal]
+**Policy ref**: [for accepted_risk -- the policy under which the risk is accepted]
+**Owner**: [for unresolved -- who will investigate the follow-up]
+**Liability tracker ref**: [for unresolved/accepted_risk -- entry in liability-tracker.md]
 
 Resolution type definitions:
 - **accepted**: The lead agrees with the objection. The plan changes.

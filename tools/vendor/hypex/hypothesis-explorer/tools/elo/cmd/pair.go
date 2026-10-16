@@ -211,7 +211,7 @@ func loadReviewScores(runDir string) (pairing.ReviewScores, error) {
 //  2. Match records (hypotheses that have competed).
 //  3. The hypotheses/ directory in runDir (hypothesis JSON files on disk).
 //
-// Source 3 is essential for epoch 0, when no ratings or matches exist yet —
+// Source 3 is essential for epoch 0, when no ratings or matches exist yet --
 // without it, the function returns zero IDs and pairing produces no output.
 func collectHypothesisIDs(runDir string, ratings map[string]*rating.HypothesisRating, matches []rating.Match) ([]string, error) {
 	seen := make(map[string]bool)

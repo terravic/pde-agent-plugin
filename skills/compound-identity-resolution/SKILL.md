@@ -13,7 +13,7 @@ Entry points include:
   citing it in a finding.
 - Confirming that a ChEMBL ID exists in the ChEMBL database.
 - Checking whether a compound name maps to exactly one registry
-  record — or to several.
+  record -- or to several.
 - Surfacing the canonical name and SMILES for a resolved compound so
   a downstream step can cross-check what it is working with.
 - Discovering that a compound identifier does not exist in any
@@ -33,11 +33,11 @@ Entry points include:
 ## 2. Preconditions
 
 - **Identifier input**: one of:
-  - **PubChem CID** (e.g. `2244`) — all digits, unique identifier,
+  - **PubChem CID** (e.g. `2244`) -- all digits, unique identifier,
     looked up on PubChem PUG REST.
-  - **ChEMBL ID** (e.g. `CHEMBL25`) — CHEMBL followed by digits,
+  - **ChEMBL ID** (e.g. `CHEMBL25`) -- CHEMBL followed by digits,
     unique identifier, looked up on ChEMBL REST.
-  - **Compound name** (e.g. `palbociclib`) — searched by name on
+  - **Compound name** (e.g. `palbociclib`) -- searched by name on
     PubChem and ChEMBL. Every match is returned; the tool never picks
     one.
 - **Source override** (`--source`): `auto` (default), `pubchem`, or
@@ -45,7 +45,7 @@ Entry points include:
   names to both registries.
 - **Network access** required for `resolve` (queries PubChem PUG REST
   and ChEMBL REST). `analyze` is offline.
-- **No authentication** needed — both registries are public APIs.
+- **No authentication** needed -- both registries are public APIs.
 - Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
@@ -72,28 +72,28 @@ paths only, `--out` to override the default output directory.
 
 `analyze` returns one of:
 
-- **resolved** — exactly one match across all registries queried. If
+- **resolved** -- exactly one match across all registries queried. If
   resolved by a unique identifier (CID or ChEMBL ID), the record
-  exists. If resolved by name, the match is flagged — see
+  exists. If resolved by name, the match is flagged -- see
   `compreg.name_match_not_unique_identifier` below.
-- **ambiguous** — more than one match. This is a first-class outcome
+- **ambiguous** -- more than one match. This is a primary outcome
   and a hard stop: the tool refused to choose, and the specialist must
   obtain a unique identifier before proceeding.
-- **not_found** — zero matches across all registries queried. This is
+- **not_found** -- zero matches across all registries queried. This is
   a completed analysis and a reportable finding: the compound does not
   exist in the queried registries.
 
 ### Exit codes and the refusal contract
 
-- **exit 0** — an answer, including a negative one. Both `resolved`
+- **exit 0** -- an answer, including a negative one. Both `resolved`
   and `not_found` exit 0.
-- **exit 9** — a refusal. Change the input; retrying the same query
+- **exit 9** -- a refusal. Change the input; retrying the same query
   is pointless. `ambiguous` exits 9.
-- **exit 1–8** — a failure. Keep the input; the fault is elsewhere
+- **exit 1-8** -- a failure. Keep the input; the fault is elsewhere
   and may clear.
 
 `analyze` exits **9** on `ambiguous`. The analysis artifact is still
-written and its path is still printed — this is not "nothing happened."
+written and its path is still printed -- this is not "nothing happened."
 The artifact records what was refused and why, so it is citable evidence
 that the question was asked and could not be resolved. Treat exit 9 as
 **"blocked, obtain a unique identifier"**, not as a tool failure and
@@ -103,17 +103,17 @@ not as an empty result. Do not fall back to the first candidate.
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `compreg.resolved_not_verified` | Qualifier (claim-triggered) | Outcome is `resolved` (conditional) | This tool confirmed the identifier maps to a real compound record and surfaced its canonical name and SMILES. It did not verify biological activity, mechanism, or therapeutic indication — those claims require separate evidence. |
+| `compreg.resolved_not_verified` | Qualifier (claim-triggered) | Outcome is `resolved` (conditional) | This tool confirmed the identifier maps to a real compound record and surfaced its canonical name and SMILES. It did not verify biological activity, mechanism, or therapeutic indication -- those claims require separate evidence. |
 | `compreg.name_match_not_unique_identifier` | Qualifier (claim-triggered) | Outcome is `resolved` AND identifier kind is `name` (conditional) | This compound was matched by name, not by a unique registry identifier. A name search may miss synonyms and cannot prove uniqueness. Obtain the CID or ChEMBL ID and re-resolve. |
 
-Both relays are conditional — they fire only on `resolved` outcome.
+Both relays are conditional -- they fire only on `resolved` outcome.
 Check `mandatory_relays` in both the `.analysis.json` and the
 `.meta.json`. Every relay code present must be satisfied in the finding.
 
 ### Consequence rules
 
 - **Resolved by unique identifier**: the record exists. The
-  `resolved_not_verified` relay still applies — existence is not
+  `resolved_not_verified` relay still applies -- existence is not
   verification. The tool confirmed the identifier maps to a real
   compound; it has not confirmed that the compound has the claimed
   biological activity, mechanism, or therapeutic indication.
@@ -123,18 +123,18 @@ Check `mandatory_relays` in both the `.analysis.json` and the
   that the compound was matched by name search, not by unique
   identifier.
 - **Ambiguous**: blocked. The finding cannot proceed until a unique
-  identifier is provided. Do not pick the most-likely candidate —
+  identifier is provided. Do not pick the most-likely candidate --
   the tool's entire design is the refusal to pick.
 - **Not found**: report the negative. A compound that does not
-  resolve is a finding — it may indicate a non-existent compound, a
+  resolve is a finding -- it may indicate a non-existent compound, a
   registry that does not index it, or an incorrect identifier. State
   which registries were searched.
 
 ### Threshold set: compreg@1.0
 
 The threshold set is **empty**. `compreg` makes no scientific judgment,
-so it has no scientific cutoffs. The ambiguity contract — more than one
-match is ambiguous — is hardcoded, exactly as in `litref`. The empty
+so it has no scientific cutoffs. The ambiguity contract -- more than one
+match is ambiguous -- is hardcoded, exactly as in `litref`. The empty
 set is declared so the analysis artifact carries a well-formed
 `threshold_set` tag and program-level overrides can be added later if a
 meaningful threshold emerges. There is nothing to cite by name because
@@ -158,21 +158,21 @@ proceed on an assumed result.
 
 - **Picking a candidate from an ambiguous result.** The tool exits 9
   specifically to block this. The candidates are listed so the
-  specialist can find the right identifier elsewhere — they are not a
+  specialist can find the right identifier elsewhere -- they are not a
   menu. Picking one reintroduces the failure the tool exists to prevent:
   a clean audit trail for the wrong compound.
 - **Treating a name-matched `resolved` as equivalent to an
   ID-matched `resolved`.** It is not. The
   `compreg.name_match_not_unique_identifier` relay exists for exactly
   this reason. A name search may miss synonyms and cannot prove
-  uniqueness — a single name match is evidence of existence, not proof
+  uniqueness -- a single name match is evidence of existence, not proof
   of uniqueness.
 - **Treating `not_found` as an error rather than a finding.**
   `not_found` exits 0 and is a reportable finding. A compound that
   does not resolve may indicate a non-existent identifier, a registry
   that does not index it, or a fabricated compound reference.
 - **Using compreg to verify biological activity.** This tool confirms
-  identity — that a compound record exists and surfaces its canonical
+  identity -- that a compound record exists and surfaces its canonical
   name and SMILES. It does not verify that the compound has the claimed
   activity, mechanism, or therapeutic indication. Those claims require
   separate evidence from bioactivity tools.
@@ -201,11 +201,11 @@ proceed on an assumed result.
 
 Registries queried:
 
-- **PubChem PUG REST** — NCBI's public compound database
+- **PubChem PUG REST** -- NCBI's public compound database
   (pubchem.ncbi.nlm.nih.gov). The annotation tool (section 7)
   queries additional PubChem endpoints: synonyms, classification,
   and InChIKey for cross-referencing to ChEMBL.
-- **ChEMBL REST** — EMBL-EBI's public bioactivity database
+- **ChEMBL REST** -- EMBL-EBI's public bioactivity database
   (www.ebi.ac.uk/chembl). The annotation tool queries the molecule
   endpoint for drug development phase and the mechanism endpoint for
   mechanism of action.
@@ -215,8 +215,8 @@ enforced by the CLI.
 
 ## 7. Compound annotation
 
-Compreg (sections 1–6) answers "does this compound exist?" Annotation
-answers "what is already known about it?" — synonyms, trade names,
+Compreg (sections 1-6) answers "does this compound exist?" Annotation
+answers "what is already known about it?" -- synonyms, trade names,
 pharmacological classification, drug development status, and mechanism
 of action. Annotation is the enrichment step after identity resolution.
 Both tool groups share the CID/ChEMBL ID namespace and the
@@ -235,7 +235,7 @@ need to know what is already published about the compound:
 
 **Input is a PubChem CID (integer).** Resolve to a CID first via
 `pkde compreg resolve` if you have a name. This enforces identity
-resolution before annotation — the annotation tool does not accept
+resolution before annotation -- the annotation tool does not accept
 names, preventing annotation of the wrong compound.
 
 **Do not use when:**
@@ -252,10 +252,10 @@ names, preventing annotation of the wrong compound.
 - **Input**: PubChem CID (integer). Not a name, not a ChEMBL ID.
 - **Network access** required for `annotate` (queries PubChem PUG REST
   and ChEMBL REST). `analyze-annotation` is offline.
-- **No authentication** needed — both registries are public APIs.
+- **No authentication** needed -- both registries are public APIs.
 - **Identity resolution first**: the CID should have been verified via
   `pkde compreg resolve` before annotating. The CID-only input
-  contract enforces this sequence — if you only have a name, you must
+  contract enforces this sequence -- if you only have a name, you must
   resolve it first.
 
 ### Tool invocations
@@ -280,23 +280,23 @@ alternate source directory.
 
 `analyze-annotation` returns one of:
 
-- **known-drug** — ChEMBL max_phase >= 1. The compound has entered
+- **known-drug** -- ChEMBL max_phase >= 1. The compound has entered
   clinical trials or is approved (for some indication, in some
-  jurisdiction — see relay).
-- **known-compound** — annotations exist (synonyms, pharmacological
+  jurisdiction -- see relay).
+- **known-compound** -- annotations exist (synonyms, pharmacological
   classification, actions) but no drug development history.
-- **unknown** — CID resolves on PubChem but has minimal annotation.
+- **unknown** -- CID resolves on PubChem but has minimal annotation.
   Rare (most PubChem compounds have at least synonyms).
-- **not_found** — CID does not exist on PubChem. Exit 0, artifact
+- **not_found** -- CID does not exist on PubChem. Exit 0, artifact
   still written (same pattern as compreg).
 
 #### Exit codes
 
 Same contract as compreg:
 
-- **exit 0** — an answer (including not_found).
-- **exit 1–8** — a failure (network, etc.).
-- No exit 9 for annotation — there is no ambiguity contract (input
+- **exit 0** -- an answer (including not_found).
+- **exit 1-8** -- a failure (network, etc.).
+- No exit 9 for annotation -- there is no ambiguity contract (input
   is a unique CID).
 
 #### Mandatory relays
@@ -323,8 +323,8 @@ code present must be satisfied in the finding.
   pharmacological class) are database records from heterogeneous
   sources.
 - **Unknown**: minimal annotations. No relays fire (nothing to
-  over-read). This is unusual — most PubChem compounds have at least
-  synonyms — and may indicate a very new or niche compound.
+  over-read). This is unusual -- most PubChem compounds have at least
+  synonyms -- and may indicate a very new or niche compound.
 - **Not found**: CID does not exist. Report the negative as a finding.
 
 #### Threshold set: pubchem-annotation@1.0

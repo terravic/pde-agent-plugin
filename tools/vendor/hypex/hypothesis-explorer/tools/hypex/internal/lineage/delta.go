@@ -20,10 +20,10 @@ type CitationDelta struct {
 }
 
 // OperatorRule maps an evolution operator to its citation rule.
-//   - combine, ground → "superset" (child must include all parent citations)
-//   - simplify → "subset" (child may only use parent citations, no new ones)
-//   - oob → "free" (no constraints)
-//   - anything else (including "null") → "skip" (no delta computed)
+//   - combine, ground -> "superset" (child must include all parent citations)
+//   - simplify -> "subset" (child may only use parent citations, no new ones)
+//   - oob -> "free" (no constraints)
+//   - anything else (including "null") -> "skip" (no delta computed)
 func OperatorRule(operator string) string {
 	switch operator {
 	case "combine", "ground":
@@ -130,7 +130,7 @@ func evaluateCompliance(rule string, added, dropped []string) bool {
 		// Always compliant.
 		return true
 	default:
-		// "skip" — should not reach here in normal flow.
+		// "skip" -- should not reach here in normal flow.
 		return true
 	}
 }

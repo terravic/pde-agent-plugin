@@ -251,9 +251,9 @@ def trials() -> None:
     """Clinical trial pipeline search and analysis."""
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary
@@ -417,7 +417,7 @@ def analyze_cmd(
     if assessment.get("confidence") == "low_text_match_only":
         emit.line(
             f"[WARN] LOW CONFIDENCE: text-match query on short symbol "
-            f"{query_term!r} — results likely include false positives. "
+            f"{query_term!r} -- results likely include false positives. "
             f"Verify trial titles/interventions manually before citing "
             f"this verdict."
         )
@@ -499,7 +499,7 @@ def _analyze_trials(
         verdict = "no_pipeline"
 
     # Text-match confidence safeguard.  ClinicalTrials.gov full-text search
-    # matches any mention of the query string — a short gene symbol like
+    # matches any mention of the query string -- a short gene symbol like
     # "ARTN" will match hundreds of unrelated studies.  When any of the
     # low-specificity heuristics fire, downgrade confidence and fire a
     # mandatory relay so downstream consumers cannot cite the verdict
@@ -530,7 +530,7 @@ def _analyze_trials(
         confidence = "low_text_match_only"
         confidence_reason = (
             f"Query {query_term!r} ({len(query_term)} chars) returned "
-            f"{n_total} studies — text matching of short gene symbols is "
+            f"{n_total} studies -- text matching of short gene symbols is "
             f"unreliable. Triggers: {'; '.join(confidence_triggers)}. "
             f"Manual review of trial titles/interventions is required."
         )

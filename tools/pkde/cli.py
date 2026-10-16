@@ -23,7 +23,22 @@ import os
 import sys
 from typing import Any
 
-import click
+try:
+    import click
+except ImportError as _click_exc:  # pragma: no cover
+    if __name__ == "__main__":
+        _unprov_payload = {
+            "ok": False,
+            "error": True,
+            "error_code": "ENVIRONMENT_UNPROVISIONED",
+            "message": "Required Python package 'click' is not installed in the active interpreter.",
+            "remedy": "Run 'bash tools/install.sh' from the repository root to provision the PkDE environment.",
+        }
+        sys.stderr.write(json.dumps(_unprov_payload) + "\n")
+        if "--json" in sys.argv:
+            sys.stdout.write(json.dumps(_unprov_payload) + "\n")
+        raise SystemExit(3) from _click_exc
+    raise
 
 from .commands.admet import admet
 from .commands.allen import allen
@@ -107,10 +122,10 @@ from .core.toolchain import check_integrity
 )
 @click.pass_context
 def cli(ctx: click.Context, project_override: str | None) -> None:
-    """pkde — execution surface for pkde agent tooling.
+    """pkde -- execution surface for pkde agent tooling.
 
     Artifacts land under the program directory, resolved from
-    $PKDE_PROJECT or a .pkde/ marker — never from the current
+    $PKDE_PROJECT or a .pkde/ marker -- never from the current
     working directory.
     """
     ctx.obj = AppState(project_override=project_override)
@@ -139,7 +154,7 @@ def init(directory: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Relay emission enumeration — derived mechanically, not hand-maintained
+# Relay emission enumeration -- derived mechanically, not hand-maintained
 # ---------------------------------------------------------------------------
 
 
@@ -223,7 +238,7 @@ def _module_helpers(mod: Any) -> dict[str, str]:
 def _enumerate_emission_sites() -> dict[str, list[str]]:
     """Which subcommand(s) can emit each registered relay code.
 
-    **Pass 1 — direct match (high confidence).**  Walks the registered
+    **Pass 1 -- direct match (high confidence).**  Walks the registered
     Click command tree and, for each leaf command, searches its
     callback's source for literal occurrences of each ``RELAY_CODES``
     key.  Both ``provenance.relay("code", ...)`` and
@@ -232,7 +247,7 @@ def _enumerate_emission_sites() -> dict[str, list[str]]:
     Nested closures (e.g. ``genetics.py``'s ``add_relay``) are covered
     here because they live inside the command function body.
 
-    **Pass 2 — module-helper search.**  For codes still unmatched after
+    **Pass 2 -- module-helper search.**  For codes still unmatched after
     pass 1, searches module-level helper functions in each command's
     source file.  A code is attributed to a command when:
 
@@ -326,7 +341,7 @@ def relays(as_json: bool) -> None:
     `.analysis.json` and confirm each was addressed.
 
     Each code's emission site is derived mechanically by searching
-    command source for literal code strings — not from a hand-maintained
+    command source for literal code strings -- not from a hand-maintained
     list.
     """
     emissions = _enumerate_emission_sites()
@@ -350,7 +365,7 @@ def relays(as_json: bool) -> None:
         if sites:
             click.echo(f"    emitted by: {', '.join(sorted(sites))}")
         else:
-            click.echo("    emitted by: (none found — check registration)")
+            click.echo("    emitted by: (none found -- check registration)")
         click.echo(f"    {meaning}")
 
     click.echo()

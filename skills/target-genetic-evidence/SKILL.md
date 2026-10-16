@@ -34,7 +34,7 @@ points include:
 
 - **Gene input**: a gene symbol (e.g. `TP53`, `PKMYT1`). All tools
   resolve one symbol to one gene or refuse.
-- **No authentication** needed — all sources are public APIs.
+- **No authentication** needed -- all sources are public APIs.
 - **Rate limiting**: gnomAD throttles aggressively (HTTP 200 with errors
   array). NCBI E-utilities allow 3 req/s without API key. Open Targets
   and GTEx pace politely. Do not run parallel fetches across containers.
@@ -71,9 +71,9 @@ can be re-run without re-querying. All tools support `--json`,
 `genetics analyze` applies the `gnomad-constraint` threshold set and
 emits:
 
-- **lof_intolerant** — pLI or LOEUF (or both) indicates constraint.
-- **lof_tolerant** — both metrics indicate tolerance.
-- **indeterminate** — the gene is too small for reliable constraint
+- **lof_intolerant** -- pLI or LOEUF (or both) indicates constraint.
+- **lof_tolerant** -- both metrics indicate tolerance.
+- **indeterminate** -- the gene is too small for reliable constraint
   estimation.
 
 The verdict derives from two independent metrics (`verdict_by_pli` and
@@ -84,7 +84,7 @@ split-verdict problem and the v2/v4 LOEUF cutoff hazard.
 
 #### Unresolved threshold
 
-`loeuf_unreliable_min_expected_lof` is **UNRESOLVED** — gnomAD
+`loeuf_unreliable_min_expected_lof` is **UNRESOLVED** -- gnomAD
 publishes no minimum expected-LoF count below which LOEUF should be
 distrusted. The analysis reports `exp_lof` and the full 90% CI and
 declines to threshold on them. Do not invent a floor.
@@ -94,12 +94,12 @@ declines to threshold on them. Do not invent a floor.
 `gwas analyze` classifies associations from Open Targets or GWAS
 Catalog:
 
-- **associations_found** — one or more associations above the
+- **associations_found** -- one or more associations above the
   significance threshold. Open Targets uses an overall association
   score (higher is stronger); GWAS Catalog uses p-values (lower is
   more significant). The threshold applied is recorded in
   `thresholds_applied` in the `.analysis.json`.
-- **no_associations** — no associations above the threshold.
+- **no_associations** -- no associations above the threshold.
 
 The `--threshold` flag overrides the default significance cutoff. The
 analysis records top diseases and the number of significant hits.
@@ -109,9 +109,9 @@ analysis records top diseases and the number of significant hits.
 `gwas analyze --source clinvar` classifies by ACMG clinical
 significance tier, not by numeric threshold:
 
-- **pathogenic_variants_found** — one or more variants classified as
+- **pathogenic_variants_found** -- one or more variants classified as
   Pathogenic or Likely pathogenic.
-- **no_pathogenic_variants** — no pathogenic/LP variants found (may
+- **no_pathogenic_variants** -- no pathogenic/LP variants found (may
   still have VUS, benign, or other classifications).
 
 ClinVar classifications carry a **review status** that determines
@@ -131,14 +131,14 @@ sidecar records this.
 `gtex analyze` reports the median TPM from GTEx whole-blood RNA-seq
 (755 samples, bulk RNA-seq from femoral/subclavian veins):
 
-- **measured** — a median TPM value exists. Classification into
+- **measured** -- a median TPM value exists. Classification into
   expression tiers (not_expressed, low, moderate, high) is only applied
   when program-level threshold overrides are set in
   `.pkde/thresholds.yaml`. By default, all `gtex-expression`
-  thresholds are **UNRESOLVED** — GTEx publishes no expression-level
+  thresholds are **UNRESOLVED** -- GTEx publishes no expression-level
   cutoffs, and HPA nTPM cutoffs do not transfer (different
   normalization). Do not invent expression-level cutoffs.
-- **no_data** — GTEx holds no whole-blood expression data for this gene.
+- **no_data** -- GTEx holds no whole-blood expression data for this gene.
   This is a real answer (the gene is not measured in whole blood), not
   an error.
 
@@ -149,22 +149,22 @@ sidecar records this.
 | `gnomad.constraint_unreliable` | Qualifier | pLI is in the intermediate band, OR gnomAD flags the transcript, OR pLI and LOEUF disagree (conditional) | Report the constraint metric with its 90% CI and say the gene could not be confidently categorised. Do not pick the metric that agrees with the hypothesis. |
 | `gnomad.constraint_is_not_safety` | Stop | The overall verdict is lof_intolerant (conditional) | Do not carry constraint into a safety or tolerability claim. LoF intolerance describes complete loss from conception; it says nothing about partial, reversible, adult pharmacological inhibition. |
 | `gwas.association_not_causation` | Qualifier | Significant GWAS associations exist (conditional) | State that GWAS associations are statistical correlations between genetic variants and disease phenotypes, not evidence of causation or therapeutic mechanism. |
-| `clinvar.classification_is_curated` | Qualifier | Pathogenic/LP variants exist (conditional) | State that these are curated clinical assertions that the variant causes the named condition, not statistical correlations — but variant-level pathogenicity does not imply the gene is a therapeutic target. |
+| `clinvar.classification_is_curated` | Qualifier | Pathogenic/LP variants exist (conditional) | State that these are curated clinical assertions that the variant causes the named condition, not statistical correlations -- but variant-level pathogenicity does not imply the gene is a therapeutic target. |
 | `clinvar.weak_review_status` | Qualifier | Pathogenic/LP variants have weak review status (conditional) | Do not cite the pathogenic classification without stating its review status. A classification without review status is incomplete. |
-| `gtex.whole_blood_is_not_peripheral_blood` | Qualifier | Every GTEx query (unconditional) | Report this as "GTEx whole-blood RNA-seq expression", not as "peripheral blood expression". GTEx whole blood is drawn from femoral/subclavian veins and measured by bulk RNA-seq — a partial proxy, not an equivalent measurement. |
+| `gtex.whole_blood_is_not_peripheral_blood` | Qualifier | Every GTEx query (unconditional) | Report this as "GTEx whole-blood RNA-seq expression", not as "peripheral blood expression". GTEx whole blood is drawn from femoral/subclavian veins and measured by bulk RNA-seq -- a partial proxy, not an equivalent measurement. |
 
 The same relay list appears under two different key names depending on
 where you read it:
 
-- `mandatory_relays` — the key in persisted artifact files
+- `mandatory_relays` -- the key in persisted artifact files
   (`.analysis.json`, `.meta.json`). This is the authoritative
   representation and what `pkde validate` checks.
-- `relays` — the key in CLI stdout JSON output (`--json` flag). The
+- `relays` -- the key in CLI stdout JSON output (`--json` flag). The
   two names refer to the same data.
 
 Always check `mandatory_relays` in the persisted `.analysis.json` and
 `.meta.json` files. If you search for `relays` in an `.analysis.json`
-file, you will find nothing — the key is `mandatory_relays`. Always
+file, you will find nothing -- the key is `mandatory_relays`. Always
 use `mandatory_relays` when reading persisted artifact files. Every
 relay code present in `mandatory_relays` must be satisfied in the
 finding.
@@ -190,7 +190,7 @@ When combining evidence across the grouped sources:
 ### Consequence rules
 
 - **LoF intolerant**: the gene is constrained. The
-  `constraint_is_not_safety` relay fires — do not carry this into a
+  `constraint_is_not_safety` relay fires -- do not carry this into a
   safety claim. See `references/gnomad-constraint-details.md`.
 - **LoF tolerant / indeterminate**: report as stated; do not treat
   indeterminate as tolerant.
@@ -198,7 +198,7 @@ When combining evidence across the grouped sources:
   Do not substitute a related gene's constraint.
 - **GWAS associations found**: report the top diseases and the number
   of significant associations. The `association_not_causation` relay
-  fires — these are correlations, not causal evidence.
+  fires -- these are correlations, not causal evidence.
 - **No GWAS associations**: report as "no associations above the
   significance threshold", not as "gene has no disease link."
 - **Pathogenic ClinVar variants found**: report the count, the review
@@ -259,7 +259,7 @@ proceed on an assumed result.
   both with the 90% CI when `constraint_unreliable` fires. See
   `references/gnomad-constraint-details.md`.
 - **Carrying LoF intolerance into a safety claim.** The
-  `constraint_is_not_safety` relay blocks this inference — pLI
+  `constraint_is_not_safety` relay blocks this inference -- pLI
   describes complete loss from conception, not reversible
   pharmacological inhibition.
 - **Treating indeterminate constraint as tolerant.** Indeterminate

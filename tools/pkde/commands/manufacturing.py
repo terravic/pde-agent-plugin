@@ -1,4 +1,4 @@
-"""`pkde manufacturing` — progressive manufacturing assessment CLI.
+"""`pkde manufacturing` -- progressive manufacturing assessment CLI.
 
 Stage 0 (qualitative, no external APIs):
   assess-stage0  Assess production-platform fit for a concept record.
@@ -6,7 +6,7 @@ Stage 0 (qualitative, no external APIs):
   stage-requirements  Print the stage-gated requirement structure.
 
 Assessment logic lives in ``core/manufacturing.py``; this module is
-the thin CLI wrapper following the project's tier separation (§1 of
+the thin CLI wrapper following the project's tier separation (Section 1 of
 tool-design-guidance.md).
 """
 

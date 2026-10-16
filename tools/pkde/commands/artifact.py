@@ -1,4 +1,4 @@
-"""`pkde artifact` — artifact management commands.
+"""`pkde artifact` -- artifact management commands.
 
 Provides ``pkde artifact register`` for assigning provenance sidecars to
 files produced outside the PkDE tool surface (e.g. files fetched from

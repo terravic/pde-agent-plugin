@@ -11,7 +11,7 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Hypothesis Generation Agent — explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament"
+description: "Hypothesis Generation Agent -- explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 

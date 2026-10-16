@@ -20,13 +20,13 @@ Verified facts the code depends on, each of which cost a 502 to learn:
     silently mis-reads the second, so both are handled here.
   * Roughly half of a score_variant tensor is NaN, and that is
     structural rather than an error: a gene is scored only on tracks
-    matching its own strand. Treating NaN as missing data — or calling
-    `max()` over the raw array — is the mistake this module exists to
+    matching its own strand. Treating NaN as missing data -- or calling
+    `max()` over the raw array -- is the mistake this module exists to
     prevent.
 
 Two backends, one interface (--backend):
-  cloud — cloud auth, no API key. score_variant, predict_interval.
-  pip    — the `alphagenome` package against api.alphagenome.org,
+  cloud -- cloud auth, no API key. score_variant, predict_interval.
+  pip    -- the `alphagenome` package against api.alphagenome.org,
            needs ALPHAGENOME_API_KEY. The only path offering ISM.
 
 Source: candidate-tools/alphagenome-toolkit notes.md, the schema
@@ -99,7 +99,7 @@ OUTPUT_TYPES = [
 
 # The magnitude bands in the alphagenome-variant-effect threshold set were
 # read off RNA-seq. Applying them to another assay is an extrapolation,
-# and the finding has to say so — see the band_modality_mismatch relay.
+# and the finding has to say so -- see the band_modality_mismatch relay.
 BAND_NATIVE_OUTPUT = "RNA_SEQ"
 
 SCORERS = [
@@ -124,8 +124,8 @@ SCORERS = [
 FIELDLESS_SCORERS = frozenset({"paQtl", "spliceJunction", "contactMap"})
 
 # geneMaskSplicing takes a requestedOutput but only accepts splicing
-# modalities. Anything else — including RNA_SEQ, which every other
-# gene-mask scorer accepts — comes back 502, indistinguishable from an
+# modalities. Anything else -- including RNA_SEQ, which every other
+# gene-mask scorer accepts -- comes back 502, indistinguishable from an
 # outage. Constrained here so the failure is a local error message
 # instead of a ten-minute retry budget spent on a rejected request.
 SCORER_OUTPUT_TYPES = {
@@ -133,8 +133,8 @@ SCORER_OUTPUT_TYPES = {
 }
 
 # Output types whose response has never come back under the gateway's
-# size limit, at any window tested. They 502 — the same code a real
-# outage produces — so without this an agent spends its whole retry
+# size limit, at any window tested. They 502 -- the same code a real
+# outage produces -- so without this an agent spends its whole retry
 # budget waiting for a response that cannot fit. Not a hard block: the
 # limit is the gateway's, not the model's, and a narrower window may
 # yet succeed. The point is that the caller knows which failure to
@@ -154,7 +154,7 @@ ORGANISMS = {
 # Track strands that carry no orientation, and so are scored for a gene
 # on either strand. STRAND_UNSTRANDED is a real value, not a synonym for
 # unset: RNA_SEQ returns 271 positive, 271 negative and 125 unstranded
-# tracks, and a gene is scored on 396 of them — its own 271 plus all 125.
+# tracks, and a gene is scored on 396 of them -- its own 271 plus all 125.
 # Treating only STRAND_UNSPECIFIED as unoriented made the tool report
 # 1000 unexplained missing scores (8 genes x 125) for a mask that was in
 # fact fully explained.
@@ -197,7 +197,7 @@ def _centred_interval(chrom: str, pos: int, window: int, strand: str) -> dict[st
     """An interval of exactly `window` bases centred on `pos`.
 
     Length is preserved when clamping at the start of the chromosome,
-    because the model rejects any other length — shifting the window is
+    because the model rejects any other length -- shifting the window is
     the only legal response to running off the left edge, and the caller
     is told when that happened via the returned `centred` flag.
     """
@@ -319,7 +319,7 @@ def _call(
 
     502 is retried but is *not* assumed transient any more: since the
     scale-to-zero fix it usually means the request itself was rejected by
-    the backend — a missing organism, a bad interval length, or a
+    the backend -- a missing organism, a bad interval length, or a
     response too large for the gateway. The exhaustion message says so,
     because "retry later" sent an earlier version of this tool into a
     ten-minute wait for an error that a corrected request would have
@@ -414,7 +414,7 @@ def _decompress(chunk: dict[str, Any]) -> bytes:
         raise SchemaError(
             f"unsupported tensor compression {compression!r}",
             detail="only COMPRESSION_TYPE_ZSTD and uncompressed chunks are handled",
-            remedy="report the compression type so the decoder can be extended — "
+            remedy="report the compression type so the decoder can be extended -- "
             "do not hand-derive a verdict from the raw artifact",
         )
     try:
@@ -433,7 +433,7 @@ def _to_array(raw: bytes, shape: list[int], data_type: str):
     bfloat16 is float32 with the low 16 mantissa bits dropped, so it
     widens exactly: shift each 16-bit word up into the high half of a
     32-bit word and reinterpret. numpy has no bfloat16 dtype, and reading
-    those bytes as float16 instead — the obvious near-miss — produces
+    those bytes as float16 instead -- the obvious near-miss -- produces
     numbers that are wrong without being obviously wrong.
     """
     np = _require_numpy()
@@ -471,7 +471,7 @@ def _decode_response(raw: bytes) -> list[tuple[dict[str, Any], Any]]:
     One request can carry several scorers, and the response then
     interleaves: header, its chunks, next header, its chunks. Decoding
     only the first header and treating every remaining line as its chunks
-    concatenates two different tensors into one buffer — which is why the
+    concatenates two different tensors into one buffer -- which is why the
     declared-vs-seen chunk count below is checked per block rather than
     per response.
     """
@@ -548,7 +548,7 @@ def _split_score_dims(array) -> tuple[Any, Any | None]:
     """Separate raw scores from quantile scores.
 
     The leading dimension is 1 or 2. When it is 2, index 1 holds a
-    *signed* quantile in [-1, 1] whose sign tracks the raw score's — not
+    *signed* quantile in [-1, 1] whose sign tracks the raw score's -- not
     a [0, 1] percentile. Verified on RNA_SEQ for chr17:7675088 C>T: sign
     agreement with the raw score is 100% across all eight genes and
     Spearman rho between the two runs 0.94-0.997.
@@ -571,7 +571,7 @@ def _split_score_dims(array) -> tuple[Any, Any | None]:
     raise SchemaError(
         f"variant tensor has {leading} leading planes; only 1 (raw) and 2 "
         "(raw + quantile) are understood",
-        remedy="report the shape so the decoder can be extended — do not "
+        remedy="report the shape so the decoder can be extended -- do not "
         "assume plane 0 is the raw score",
     )
 
@@ -588,7 +588,7 @@ def _strand_summary(
 
     Half of a score_variant tensor is NaN by design: a gene is scored
     only on tracks that match its own strand. The finite mask is taken as
-    ground truth — it is what the model returned — and the strand rule is
+    ground truth -- it is what the model returned -- and the strand rule is
     then checked *against* it. If the two disagree the discrepancy is
     reported rather than reconciled, because a NaN the tool cannot
     explain is a missing score, and averaging over 546 tracks when 273
@@ -603,8 +603,8 @@ def _strand_summary(
     # Two opposite disagreements with the same-strand hypothesis, kept
     # apart because only one of them threatens a finding. A cell that is
     # scored where the rule predicted NaN just means the rule is too
-    # narrow for this scorer — paQtl scores every track regardless of
-    # strand — and costs nothing, because every count below is taken
+    # narrow for this scorer -- paQtl scores every track regardless of
+    # strand -- and costs nothing, because every count below is taken
     # from the finite mask rather than from the prediction. A cell that
     # is *missing* where the rule predicted a score is the dangerous
     # one: something dropped out for a reason the tool cannot name.
@@ -690,7 +690,7 @@ def _require_api_key() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — score a variant
+# Phase 1 -- score a variant
 # ---------------------------------------------------------------------------
 
 
@@ -774,7 +774,7 @@ def score_variant(
         # Only an *explicit* --output-type is worth warning about. The
         # default is the CLI's own, and telling the user their unstated
         # preference was ignored is noise that trains them to skim
-        # warnings — which is how the load-bearing ones get missed.
+        # warnings -- which is how the load-bearing ones get missed.
         source = click.get_current_context().get_parameter_source("output_types")
         if source is not None and source.name != "DEFAULT":
             dropped_output_types = list(requested)
@@ -841,7 +841,7 @@ def score_variant(
         # still a decision to make.
         click.echo(
             f"warning: {', '.join(rt.removeprefix('OUTPUT_TYPE_') for rt in oversized)} "
-            "has never returned successfully — expect a 502 after the retry "
+            "has never returned successfully -- expect a 502 after the retry "
             "budget, and consider --deadline to shorten the wait.",
             err=True,
         )
@@ -913,8 +913,8 @@ def score_variant(
 
         # contactMap scores the interval, not the genes in it: it returns
         # trackMetadata but no geneMetadata, and a single row. Rather than
-        # invent a gene name for that row — which would put a fabricated
-        # label on a real number — the row is named for the interval and
+        # invent a gene name for that row -- which would put a fabricated
+        # label on a real number -- the row is named for the interval and
         # marked as not gene-resolved, so nothing downstream can attribute
         # a contact-map score to a gene.
         interval_level = not genes and matrix.shape[0] == 1
@@ -1049,7 +1049,7 @@ def score_variant(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — predict tracks across an interval
+# Phase 1 -- predict tracks across an interval
 # ---------------------------------------------------------------------------
 
 
@@ -1186,7 +1186,7 @@ def predict_interval(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — ISM (no Dedicated path)
+# Phase 1 -- ISM (no Dedicated path)
 # ---------------------------------------------------------------------------
 
 
@@ -1219,7 +1219,7 @@ def ism(
     except ImportError as e:
         raise DependencyError(
             "the `alphagenome` package is not installed; ISM is unavailable",
-            detail="ISM has no Dedicated endpoint equivalent — the endpoint rejects "
+            detail="ISM has no Dedicated endpoint equivalent -- the endpoint rejects "
             "score_ism_variants as an invalid request_type",
             remedy="install alphagenome>=0.6.1 into the tools environment",
         ) from e
@@ -1232,7 +1232,7 @@ def ism(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — analysis
+# Phase 2 -- analysis
 # ---------------------------------------------------------------------------
 
 
@@ -1263,9 +1263,9 @@ def analyze(
     Whether a significance call is possible depends on the output type,
     not on the scorer: RNA_SEQ comes back with a signed quantile plane
     and CAGE, ATAC, DNASE and PROCAP do not. So the verdict is qualified
-    per block. Where quantiles exist the guide's artifact rule applies —
+    per block. Where quantiles exist the guide's artifact rule applies --
     an extreme quantile on a negligible raw score is a ranking against a
-    flat background, not a molecular effect — and where they do not, the
+    flat background, not a molecular effect -- and where they do not, the
     verdict says it is a magnitude reading rather than borrowing a word
     the guide reserves for a test that was never run.
     """
@@ -1475,7 +1475,7 @@ def analyze(
 
     # Claim-triggered relay for the confident, large-effect verdict.
     # A complete quantile set with a confirmed strong or moderate effect
-    # used to produce zero relays — the most quotable result went out
+    # used to produce zero relays -- the most quotable result went out
     # with the least guidance. The wrong reading: a large predicted
     # regulatory effect stands in for pathogenicity or causality.
     #
@@ -1563,7 +1563,7 @@ def analyze(
             flag = " [ARTIFACT]" if hit.get("statistical_artifact") else ""
             emit.line(
                 f"  {hit['gene_name']}: max |raw| {hit['max_abs_raw_score']:.4f} "
-                f"over {hit['n_tracks_scored']} scored track(s) — "
+                f"over {hit['n_tracks_scored']} scored track(s) -- "
                 f"{hit['magnitude']}{flag}"
             )
     if without_quantiles:
@@ -1601,7 +1601,7 @@ def analyze_ism(
     ability to regenerate it elsewhere must not depend on whoever
     resolves the thresholds also remembering the flag. `pkde doctor`
     checks the shape and would have to carry an exception for this
-    command otherwise — an exception nobody would revisit.
+    command otherwise -- an exception nobody would revisit.
     """
     thresholds = load_thresholds(state, "alphagenome-ism")
     unresolved = thresholds.unresolved()

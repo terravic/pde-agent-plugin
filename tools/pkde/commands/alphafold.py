@@ -1,34 +1,34 @@
 """AlphaFold: AFDB lookup and AF3 prediction.
 
 Two sources, one command group, because the interpretation contract is
-shared — both produce a structure plus confidence metrics.
+shared -- both produce a structure plus confidence metrics.
 
-  fetch    — phase 1, AlphaFold DB. Downloads mmCIF + PAE + API record.
-  analyze  — phase 2. pLDDT bands and PAE domain segmentation.
-  predict  — phase 1, AlphaFold 3 on the dedicated prediction endpoint.
-  analyze-prediction — phase 2 for an AF3 result.
+  fetch    -- phase 1, AlphaFold DB. Downloads mmCIF + PAE + API record.
+  analyze  -- phase 2. pLDDT bands and PAE domain segmentation.
+  predict  -- phase 1, AlphaFold 3 on the dedicated prediction endpoint.
+  analyze-prediction -- phase 2 for an AF3 result.
 
 Blended from:
   * science-skills alphafold_database_fetch_and_analyze
-    (fetch_structure.py, analyze_plddt.py, analyze_pae.py) — the AFDB
+    (fetch_structure.py, analyze_plddt.py, analyze_pae.py) -- the AFDB
     path and the pLDDT/PAE algorithms.
-  * candidate-tools/af3-toolkit af3_client.py — endpoint discovery by
+  * candidate-tools/af3-toolkit af3_client.py -- endpoint discovery by
     display name, two-tier 429 backoff, single-flight serialisation.
 
 Changes made in the blend, per tool-design-guidance:
-  * fetch no longer prints a report; it prints paths (§6).
+  * fetch no longer prints a report; it prints paths (Section 6).
   * thresholds moved out of module constants into the `alphafold` and
-    `af3` threshold sets, program-overridable and cited by name (§7).
+    `af3` threshold sets, program-overridable and cited by name (Section 7).
   * every artifact gets a .meta.json sidecar; analyses get
-    .analysis.json (§5).
+    .analysis.json (Section 5).
   * the isoform-substitution and fragment warnings, which upstream
     printed to stdout and lost, are now recorded in the sidecar so a
-    reviewer can confirm they were relayed (§5).
+    reviewer can confirm they were relayed (Section 5).
   * fetch cross-checks the modelled length against UniProt's canonical
     length. AFDB answers a long-protein query with short isoform records
     and no indication that most of the protein is absent; without the
     cross-check both this tool and its predecessor reported a fragment's
-    confidence as the protein's (§8, "never degrade silently").
+    confidence as the protein's (Section 8, "never degrade silently").
 """
 
 from __future__ import annotations
@@ -83,7 +83,7 @@ def _canonical_length(accession: str) -> tuple[int | None, str | None]:
     """Canonical sequence length and gene symbol from UniProt.
 
     Needed because AFDB's coverage gap is invisible from its own
-    response. For a long protein the API does not say "truncated" — it
+    response. For a long protein the API does not say "truncated" -- it
     returns a set of *short isoform* records and nothing else. Asking
     for SYNE1 (Q8NF91, 8797 aa) yields six isoforms of which the longest
     is 1725 aa, with no field indicating that 80% of the protein is
@@ -121,13 +121,13 @@ def alphafold() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — AlphaFold DB
+# Phase 1 -- AlphaFold DB
 # ---------------------------------------------------------------------------
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary
@@ -284,7 +284,7 @@ def fetch(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — AFDB analysis
+# Phase 2 -- AFDB analysis
 # ---------------------------------------------------------------------------
 
 
@@ -498,7 +498,7 @@ def analyze(
         # the bare accession finds nothing. Recover the round-trip, but
         # never by guessing: with more than one isoform on disk there is
         # no way to tell which the caller meant, and picking one would
-        # attach the finding to a molecule they did not name — the exact
+        # attach the finding to a molecule they did not name -- the exact
         # error the isoform_substituted relay exists to prevent.
         isoforms = sorted(source_dir.glob(f"AF-{accession}-*-F1.afdb.json"))
         if len(isoforms) == 1:
@@ -562,12 +562,12 @@ def analyze(
     # Scope the verdict to what was actually modelled. Read from the
     # sidecar's structured fields rather than by matching warning text.
     # Without this an incidentally well-modelled 20% of a protein reads
-    # as "confidently predicted and likely fully ordered" — a statement
+    # as "confidently predicted and likely fully ordered" -- a statement
     # about a fragment presented as one about the protein.
     statement = plddt_assessment["statement"]
     if coverage is not None and coverage < 1.0:
         statement = (
-            f"{statement.rstrip('.')} — but this describes only the modelled "
+            f"{statement.rstrip('.')} -- but this describes only the modelled "
             f"{modelled_length} aa ({coverage:.0%} of the {canonical_length} aa "
             "canonical sequence), not the whole protein."
         )
@@ -592,7 +592,7 @@ def analyze(
         )
 
     # Claim-triggered relays for high-confidence verdicts. A full-coverage,
-    # high-pLDDT model used to produce zero relays — the run that went well
+    # high-pLDDT model used to produce zero relays -- the run that went well
     # was the one with the most quotable number and the least guidance.
     # These guard the two well-known wrong readings of a confident fold.
     #
@@ -621,8 +621,8 @@ def analyze(
             provenance.relay(
                 "afdb.model_is_not_docking_ready",
                 f"{stem} is a predicted fold, not an experimental structure; "
-                "side-chain and loop conformations — what docking depends "
-                "on — are the parts pLDDT is least informative about.",
+                "side-chain and loop conformations -- what docking depends "
+                "on -- are the parts pLDDT is least informative about.",
             )
         )
 
@@ -690,7 +690,7 @@ def analyze(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — AlphaFold 3 on dedicated endpoint
+# Phase 1 -- AlphaFold 3 on dedicated endpoint
 # ---------------------------------------------------------------------------
 
 AF3_PROJECT = os.environ.get("PKDE_AF3_PROJECT", "pharma-oss-factory")
@@ -760,7 +760,7 @@ def _af3_template(template_type: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Per-residue pLDDT computation (Item 1 — SAFETY-RELEVANT)
+# Per-residue pLDDT computation (Item 1 -- SAFETY-RELEVANT)
 # ---------------------------------------------------------------------------
 #
 # AF3 produces per-atom pLDDT values stored in the B-factor column of
@@ -776,17 +776,17 @@ def _parse_cif_plddt(
     """Parse per-atom B-factors from a CIF file, return per-residue mean pLDDT.
 
     AF3 stores pLDDT in the ``B_iso_or_equiv`` column.  Atoms are
-    grouped by ``(auth_asym_id, auth_seq_id)`` — the user-facing chain
+    grouped by ``(auth_asym_id, auth_seq_id)`` -- the user-facing chain
     and residue number.
 
     Returns:
         ``(per_residue_plddt, chain_mean_plddt)``
 
-        ``per_residue_plddt`` maps chain → {residue_number → mean pLDDT}::
+        ``per_residue_plddt`` maps chain -> {residue_number -> mean pLDDT}::
 
             {"A": {"1": 92.3, "2": 88.1}, "B": {"1": 45.2}}
 
-        ``chain_mean_plddt`` maps chain → mean pLDDT over all residues.
+        ``chain_mean_plddt`` maps chain -> mean pLDDT over all residues.
     """
     lines = cif_text.splitlines()
     columns: list[str] = []
@@ -876,7 +876,7 @@ def _response_bytes(response: Any) -> bytes:
     `HttpBody` the SDK docs describe, and the two expose the body under
     different names. Guessing wrong is expensive in a specific way: the
     prediction succeeds, the H100 time is spent, and the result is then
-    thrown away by a TypeError — which is exactly what happened before
+    thrown away by a TypeError -- which is exactly what happened before
     this function existed.
 
     Raising on an unrecognised object is deliberate. The previous code
@@ -939,7 +939,7 @@ def _validate_af3_input(payload: dict) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Lock helpers — used by ``predict`` for single-flight serialisation.
+# Lock helpers -- used by ``predict`` for single-flight serialisation.
 # ---------------------------------------------------------------------------
 
 _LOCK_POLL_INTERVAL = 0.5  # seconds between non-blocking lock attempts
@@ -975,11 +975,11 @@ def _acquire_lock_bounded(fd: int, deadline_mono: float) -> None:
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
             return  # lock acquired
         except OSError:
-            # EWOULDBLOCK / EAGAIN — lock is held by another process
+            # EWOULDBLOCK / EAGAIN -- lock is held by another process
             pass
         if time.monotonic() >= deadline_mono:
             raise EndpointUnavailable(
-                "timed out waiting for the AF3 lock file — another "
+                "timed out waiting for the AF3 lock file -- another "
                 "prediction is likely running on this host",
                 remedy="wait for the other prediction to finish, "
                 "raise --deadline, or remove the stale lock file",
@@ -1044,8 +1044,8 @@ def predict(
     concurrency; this command serialises callers on one machine with a
     file lock and applies two-tier backoff.
 
-    Cross-container concurrency is NOT solved here — see the lease broker
-    note in tool-design-guidance.md §8. Parallel specialists in separate
+    Cross-container concurrency is NOT solved here -- see the lease broker
+    note in tool-design-guidance.md Section 8. Parallel specialists in separate
     containers can still collide.
 
     With ``--template``, prints a valid AF3 input JSON template to stdout
@@ -1152,7 +1152,7 @@ def predict(
                 elapsed = round(time.time() - started)
                 click.echo(
                     f"waiting for AF3 endpoint (attempt {attempts}, "
-                    f"{elapsed}s elapsed, transport error — "
+                    f"{elapsed}s elapsed, transport error -- "
                     f"retrying in {busy_wait:.0f}s)...",
                     err=True,
                 )
@@ -1193,13 +1193,13 @@ def predict(
 
             if status == 504:
                 sidecar.warn(
-                    "Gateway timeout (504) — likely a cold-start timeout at the "
+                    "Gateway timeout (504) -- likely a cold-start timeout at the "
                     "gateway level; retrying on a now-warm endpoint."
                 )
                 elapsed = round(time.time() - started)
                 click.echo(
                     f"waiting for AF3 endpoint (attempt {attempts}, "
-                    f"{elapsed}s elapsed, 504 gateway timeout — "
+                    f"{elapsed}s elapsed, 504 gateway timeout -- "
                     f"retrying in {gateway_timeout_wait:.0f}s)...",
                     err=True,
                 )
@@ -1223,7 +1223,7 @@ def predict(
     pred = predictions[0]
 
     raw_path = target_dir / f"{stem}.response.json"
-    # Bytes by construction — _response_bytes raises rather than handing
+    # Bytes by construction -- _response_bytes raises rather than handing
     # back something that would stringify into a convincing-looking file.
     raw_path.write_bytes(data)
     sidecar.add_output(raw_path)
@@ -1302,7 +1302,7 @@ def analyze_prediction(
     advisories: list[str] = []
     if iptm is None:
         advisories.append(
-            "ipTM is null — single-chain prediction; interface confidence is "
+            "ipTM is null -- single-chain prediction; interface confidence is "
             "not defined and must not be reported."
         )
         verdict = "monomer"
@@ -1420,7 +1420,7 @@ def analyze_plddt(
         "note": (
             "Values are arithmetic means of per-atom pLDDT (B-factor) "
             "values grouped by (chain, residue_number). Do NOT index "
-            "a flat per-atom array as per-residue — the number of atoms "
+            "a flat per-atom array as per-residue -- the number of atoms "
             "per residue varies, and the resulting values are wrong."
         ),
     }

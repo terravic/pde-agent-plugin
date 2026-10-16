@@ -1,4 +1,4 @@
-"""`pkde triage` — Stage 0 bounded portfolio triage CLI.
+"""`pkde triage` -- Stage 0 bounded portfolio triage CLI.
 
 Compares intervention concepts before final target/modality commitment
 and authorizes a defined next investment.  Runs three parallel
@@ -169,7 +169,7 @@ def run_cmd(
         cref, struct_id = spec.split(":", 1)
         structures_by_concept.setdefault(cref, []).append(struct_id)
 
-    # --- Resolve project root (optional — triage can run without one) ---
+    # --- Resolve project root (optional -- triage can run without one) ---
     project_root: str | None = None
     try:
         project_root = str(state.project().root)

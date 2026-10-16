@@ -1,4 +1,4 @@
-# Pharmakon Discovery Engine (`PkDE` — `pkde-agent-plugin`)
+# Pharmakon Discovery Engine (`PkDE` -- `pkde-agent-plugin`)
 
 Pharmakon Discovery Engine (`PkDE`, `pkde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pkde-engine` / `pkde_plugin.mcp_server`) exposing 6 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pkde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
 
@@ -159,14 +159,12 @@ In addition to its 43 Markdown skills and `./bin/pkde` CLI, this repository incl
 {
   "mcpServers": {
     "pkde-engine": {
-      "command": ".venv/bin/python",
-      "args": [
-        "-m",
-        "pkde_plugin.mcp_server"
-      ],
+      "command": "./bin/pkde-mcp",
+      "args": [],
       "cwd": ".",
       "env": {
         "PKDE_ROOT": ".",
+        "PYTHONNOUSERSITE": "1",
         "PYTHONPATH": ".:./tools:./tools/vendor/hypex"
       }
     }
@@ -341,6 +339,7 @@ All paths below are relative to the repository root (`./`):
 |   '-- pkde-skill-overview.svg                   # Vector source for system workflow diagram (SVG)
 |-- bin/
 |   |-- pkde                                      # Primary PkDE command-line executable (hermetic .venv wrapper)
+|   |-- pkde-mcp                                 # Cross-platform MCP stdio server launcher
 |   |-- env.sh                                   # Environment activation script (PATH, .venv, and PYTHONPATH setup)
 |   |-- hypex                                    # Multi-architecture Hypothesis exploration datastore launcher
 |   |-- elo                                      # Multi-architecture Pairwise ELO rating & pairing launcher
@@ -444,8 +443,8 @@ All paths below are relative to the repository root (`./`):
 |   |   |-- elo                                  # POSIX OS/CPU dispatcher for native elo binary
 |   |   |-- prox                                 # Hermetic Python wrapper for prox CLI
 |   |   '-- arch/                                # Pre-compiled static native binaries (CGO_ENABLED=0)
-|   |       |-- darwin-arm64/{hypex,elo}         # macOS Apple Silicon (M1/M2/M3/M4) Mach-O arm64 binaries
-|   |       |-- darwin-amd64/{hypex,elo}         # macOS Intel Mach-O x86_64 binaries
+|   |       |-- darwin-arm64/{hypex,elo}         # macOS ARM64 Mach-O binaries
+|   |       |-- darwin-amd64/{hypex,elo}         # macOS x86_64 Mach-O binaries
 |   |       |-- linux-amd64/{hypex,elo}          # Linux x86_64 ELF binaries
 |   |       '-- linux-arm64/{hypex,elo}          # Linux ARM64/aarch64 ELF binaries
 |   |-- env-manifest.txt                         # Canonical environment manifest hashed into ENV_VERSION
@@ -493,6 +492,7 @@ All paths below are relative to the repository root (`./`):
     |-- test_custom_byoa.py                      # BYOA, private data ingestion, and extension loader tests
     |-- test_dashboard.py                        # Dashboard and 20 scientific studio integration tests
     |-- test_pocket_geometric.py                 # Built-in geometric pocket detector fallback and docking grid tests
+    |-- test_real_execution_anti_echo.py         # Differential math, scaling, binary, and SHA-256 tamper verification tests
     |-- test_targets_compile.py                  # Plugin and skill bundle compilation tests
     '-- test_tool_bridge.py                      # Two-phase tool bridge and MCP server tests
 ```
@@ -593,9 +593,9 @@ Every workflow executed by `pkde-agent-plugin` enforces four scientific integrit
 
 ## Technical Setup & CLI Usage
 
-### 1. Environment Provisioning & Initialization (Ubuntu Linux & macOS)
+### 1. Environment Provisioning & Initialization (Linux & macOS)
 
-Whether you are running on **Ubuntu Linux** (`x86_64` or `arm64`) or **macOS** (`Apple Silicon arm64` or `Intel x86_64`), pre-compiled static binaries (`CGO_ENABLED=0`) for `hypex` and `elo` are bundled out of the box under `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/`, so no local Go toolchain is required unless modifying the vendored Go source in `tools/vendor/hypex/`.
+Whether you are running on **Linux** (`x86_64` or `arm64`) or **macOS** (`arm64` or `x86_64`), pre-compiled static binaries (`CGO_ENABLED=0`) for `hypex` and `elo` are bundled under `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/`, so no local Go toolchain is required unless modifying the vendored Go source in `tools/vendor/hypex/`.
 
 Run the cross-platform provisioner once after cloning or installing the plugin to provision the Python virtual environment (`.venv`), scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`), and Hypex CLI launchers (`bin/hypex`, `bin/elo`, `bin/prox`):
 

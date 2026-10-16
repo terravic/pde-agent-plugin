@@ -70,14 +70,14 @@ HOST_QPS: dict[str, float] = {
     "api.crossref.org": 2.0,  # cite/crossref=2
     # -- Preprint servers --------------------------------------------
     "export.arxiv.org": 0.333,  # preprint/arxiv; politeness minimum
-    "api.biorxiv.org": 3.0,  # preprint/biorxiv; design spec §4.1.2
+    "api.biorxiv.org": 3.0,  # preprint/biorxiv; design spec Section 4.1.2
     # -- Other --------------------------------------------------------
     "www.inbirg.com": 2.0,  # disignatlas=2
     "data.epo.org": 0.5,  # patent=0.5
     "askcos.mit.edu": 1.0,  # retro=1
 }
 
-# Default for hosts not in the table — conservative.
+# Default for hosts not in the table -- conservative.
 _DEFAULT_QPS: float = 2.0
 
 

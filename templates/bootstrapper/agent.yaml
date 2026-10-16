@@ -15,5 +15,5 @@ description: "Short-lived agent that provisions the PkDE tools environment, runs
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 
-# No skills needed — the bootstrapper uses CLI tools directly.
-# No env vars — PKDE_PROJECT is discovered by .pkde/ walk-up.
+# No skills needed -- the bootstrapper uses CLI tools directly.
+# No env vars -- PKDE_PROJECT is discovered by .pkde/ walk-up.

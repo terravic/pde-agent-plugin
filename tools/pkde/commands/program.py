@@ -1,8 +1,8 @@
-"""``pkde program`` — cross-phase state continuity for the control plane.
+"""``pkde program`` -- cross-phase state continuity for the control plane.
 
 Imports accepted work-order records (and their associated runs,
 contexts, validations) from a prior phase's control plane into the
-current project's control plane, solving the Phase 1 → Phase 2 state
+current project's control plane, solving the Phase 1 -> Phase 2 state
 continuity problem described in issue #78.
 
 This is NOT a science tool: no ``Sidecar``, no HTTP client, no
@@ -18,7 +18,11 @@ from pathlib import Path
 from typing import Any
 
 import click
-import yaml
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
 
 from ..common import (
     AppState,
@@ -91,7 +95,7 @@ def _read_source_records(
     Returns a list of ``(identifier, data)`` pairs sorted by filename.
     The identifier is the file stem (e.g. ``WO-001-r1``, ``RUN-003``).
 
-    Silently skips files that are not valid JSON or not dicts — the same
+    Silently skips files that are not valid JSON or not dicts -- the same
     lenience ``list_records`` shows during listing.
     """
     subdir = controlstore.RECORD_TYPES.get(record_type)
@@ -133,7 +137,7 @@ def _conflict_exists(
 # Markdown work-order parsing
 # ---------------------------------------------------------------------------
 #
-# INFERRED FORMAT — NOT SOURCED FROM A REAL ARTIFACT
+# INFERRED FORMAT -- NOT SOURCED FROM A REAL ARTIFACT
 #
 # No actual Phase 1 hand-tracked markdown work-order files were found in
 # any reachable directory.  The format below was approved by tools-lead
@@ -158,17 +162,17 @@ def _conflict_exists(
 #     ---
 #
 #     ## Context
-#     (free text → context.content)
+#     (free text -> context.content)
 #
 #     ## Deliverables
-#     - name: description   → deliverables dict
+#     - name: description   -> deliverables dict
 #
 #     ## Acceptance Criteria
-#     - bullet list          → acceptance_criteria list
+#     - bullet list          -> acceptance_criteria list
 #
 #     ## Alert Policy
-#     - name: condition      → alert_policy dict
-#     (or free text          → {"mode": text})
+#     - name: condition      -> alert_policy dict
+#     (or free text          -> {"mode": text})
 #
 # The parser is tolerant but not silent: missing frontmatter or fields
 # that cannot be confidently extracted cause the file to be refused with
@@ -236,13 +240,25 @@ def _parse_frontmatter(text: str) -> tuple[dict[str, Any], str]:
     frontmatter_text = rest[:end]
     body = rest[end + 4 :]  # skip \n---
 
-    try:
-        frontmatter = yaml.safe_load(frontmatter_text)
-    except yaml.YAMLError as exc:
-        raise SchemaError(
-            "markdown work order has invalid YAML frontmatter",
-            detail=str(exc),
-        ) from exc
+    if yaml is not None:
+        try:
+            frontmatter = yaml.safe_load(frontmatter_text)
+        except yaml.YAMLError as exc:
+            raise SchemaError(
+                "markdown work order has invalid YAML frontmatter",
+                detail=str(exc),
+            ) from exc
+    else:
+        try:
+            frontmatter = json.loads(frontmatter_text)
+        except ValueError:
+            frontmatter = {}
+            for line in frontmatter_text.splitlines():
+                s = line.strip()
+                if not s or s.startswith("#") or ":" not in s:
+                    continue
+                k, v = s.split(":", 1)
+                frontmatter[k.strip()] = v.strip().strip("'\"")
 
     if not isinstance(frontmatter, dict):
         raise SchemaError(
@@ -382,16 +398,16 @@ def _build_markdown_record(
         return "; ".join(errors)
 
     # --- Parse body sections ---
-    # Context → dict with "content" key
+    # Context -> dict with "content" key
     context_content = sections["Context"]
     context: dict[str, Any] = {"content": context_content}
 
-    # Deliverables → dict
+    # Deliverables -> dict
     deliverables = _parse_deliverables_section(sections["Deliverables"])
     if isinstance(deliverables, str):
         return deliverables  # error message
 
-    # Acceptance Criteria → list
+    # Acceptance Criteria -> list
     criteria = _parse_bullet_list(sections["Acceptance Criteria"])
     if not criteria:
         # If no bullets, treat the whole section as a single criterion.
@@ -401,7 +417,7 @@ def _build_markdown_record(
         else:
             return "Acceptance Criteria section is empty"
 
-    # Alert Policy → dict
+    # Alert Policy -> dict
     alert_policy = _parse_alert_policy_section(sections["Alert Policy"])
 
     # --- Build the record ---
@@ -499,7 +515,7 @@ def _read_markdown_work_orders(
         result = _build_markdown_record(frontmatter, sections, path.name)
 
         if isinstance(result, str):
-            # Error message — file refused.
+            # Error message -- file refused.
             refused.append((path.name, result))
         else:
             ident, data = result
@@ -518,7 +534,7 @@ def _check_prior_markdown_imports(
 
     Non-canonical IDs (those not matching ``WO-NNN``) are remapped to
     a fresh sequential ID on each invocation, which means the normal
-    ``_conflict_exists`` check can never catch a re-import — the
+    ``_conflict_exists`` check can never catch a re-import -- the
     reconciled ID is different every time by construction.
 
     This function closes that gap by scanning the destination for
@@ -653,13 +669,13 @@ def resume_cmd(
     dest_root = project.root
 
     # ------------------------------------------------------------------
-    # Resolve source — control-plane project or markdown-only directory.
+    # Resolve source -- control-plane project or markdown-only directory.
     # ------------------------------------------------------------------
     has_control_plane = True
     try:
         source_root = _resolve_source(source)
     except ArtifactError as e:
-        # No control plane — check for a directory of markdown files.
+        # No control plane -- check for a directory of markdown files.
         source_path = Path(source).resolve()
         if not source_path.is_dir():
             raise ArtifactError(
@@ -768,7 +784,7 @@ def resume_cmd(
 
     # Classify each WO by its latest revision's state.
     accepted_wos: list[tuple[str, dict[str, Any]]] = []
-    skipped_wos: dict[str, str] = {}  # wo_id → state
+    skipped_wos: dict[str, str] = {}  # wo_id -> state
 
     for wo_id, revisions in sorted(wo_by_id.items()):
         latest = max(revisions, key=lambda x: x[1].get("revision", 0))
@@ -805,7 +821,7 @@ def resume_cmd(
         import_validations = []
 
     # ------------------------------------------------------------------
-    # 4. Check for ID conflicts — refuse on any conflict.
+    # 4. Check for ID conflicts -- refuse on any conflict.
     # ------------------------------------------------------------------
     all_imports: list[tuple[str, str, dict[str, Any]]] = []
     for ident, data in accepted_wos:
@@ -855,7 +871,7 @@ def resume_cmd(
         # 5a. Validate identifier against _SAFE_IDENTIFIER_RE (#298).
         if not controlstore._SAFE_IDENTIFIER_RE.match(ident):
             validation_errors.append(
-                f"{record_type} {ident}: invalid identifier — "
+                f"{record_type} {ident}: invalid identifier -- "
                 "identifiers must contain only alphanumeric characters, "
                 "hyphens, and underscores"
             )
@@ -865,7 +881,7 @@ def resume_cmd(
             json.dumps(data)
         except (TypeError, ValueError, OverflowError) as exc:
             validation_errors.append(
-                f"{record_type} {ident}: data is not JSON-serializable — {exc}"
+                f"{record_type} {ident}: data is not JSON-serializable -- {exc}"
             )
 
         # 5c. Schema validation.
@@ -1058,7 +1074,7 @@ def _propose_concept_record(
 ) -> dict[str, Any]:
     """Build a proposed concept record from an active-series entry.
 
-    Gaps are declared as null, following design §3.4 point 2.
+    Gaps are declared as null, following design Section 3.4 point 2.
     """
     return {
         "schema": CONCEPT_SCHEMA,
@@ -1204,7 +1220,7 @@ def migrate_concepts_cmd(
     if dry_run:
         if not quiet:
             emit.line("")
-            emit.line("Dry run — no records written.")
+            emit.line("Dry run -- no records written.")
         emit.flush()
         return
 

@@ -1,4 +1,4 @@
-# gnomAD constraint — detailed interpretation notes
+# gnomAD constraint -- detailed interpretation notes
 
 Referenced from the main `SKILL.md` for detailed gnomAD-specific
 interpretation. The main skill covers all four genetic evidence sources
@@ -10,12 +10,12 @@ that overflows that scope.
 The overall gnomAD constraint verdict derives from two independent
 metrics that **can disagree**:
 
-- **verdict_by_pli** — intolerant | tolerant | indeterminate. pLI at
+- **verdict_by_pli** -- intolerant | tolerant | indeterminate. pLI at
   or above the configured `lof_intolerant_pli` threshold is intolerant;
   pLI below `pli_indeterminate_floor` is tolerant; between them is
   indeterminate (gnomAD documents this range as "too small to
   categorise").
-- **verdict_by_loeuf** — intolerant | tolerant. LOEUF below the
+- **verdict_by_loeuf** -- intolerant | tolerant. LOEUF below the
   configured `loeuf_constrained` threshold is intolerant; at or above
   is tolerant.
 
@@ -35,12 +35,12 @@ The widely-quoted LOEUF cutoff of 0.35 is the gnomAD **v2** figure.
 gnomAD's own documentation states that o/e values are higher in v4 and
 that "any LOEUF thresholds used on v2 will not give an equivalent number
 of genes when applied to v4." The tool's default is the v4 figure from
-gnomAD's published guidance. Do not import 0.35 from the literature —
+gnomAD's published guidance. Do not import 0.35 from the literature --
 carrying it forward would silently reclassify genes near the boundary.
 
 ## Unresolved threshold detail
 
-`loeuf_unreliable_min_expected_lof` is **UNRESOLVED** — gnomAD
+`loeuf_unreliable_min_expected_lof` is **UNRESOLVED** -- gnomAD
 publishes no minimum expected-LoF count below which LOEUF should be
 distrusted. The analysis reports `exp_lof` and the full 90% CI and
 declines to threshold on them. Do not invent a floor.

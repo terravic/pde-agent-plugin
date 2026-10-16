@@ -591,7 +591,7 @@ def analyze_cmd(
                     ),
                 ) from exc
         else:
-            # A scalar override was set — this cannot be applied uniformly
+            # A scalar override was set -- this cannot be applied uniformly
             # across heterogeneous properties.  Treat as misconfigured.
             unresolved_cliff_thresholds.append("cliff_absolute_delta")
     except ThresholdError:
@@ -726,7 +726,7 @@ def analyze_cmd(
             f"in property_deltas but have no cliff threshold configured in "
             f"cliff_absolute_delta. Cliff detection was not performed for "
             f"{'this property' if len(all_not_evaluated) == 1 else 'these properties'}. "
-            f"This is not 'no cliffs' — the question was not asked. Configured "
+            f"This is not 'no cliffs' -- the question was not asked. Configured "
             f"properties: {', '.join(configured) if configured else 'none'}."
         )
 

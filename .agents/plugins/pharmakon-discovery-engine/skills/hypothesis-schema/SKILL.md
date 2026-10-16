@@ -22,17 +22,17 @@ All of the following fields are **required**:
 
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `id` | string | Pattern: `H-NNNN` (e.g., `H-0042`) | Unique identifier. **Assigned automatically** by `hypex add-hypothesis` — do not set this yourself. |
-| `title` | string | Max 120 characters | Short descriptive title. Aim for ≤ 15 words. |
-| `statement` | string | — | One-paragraph falsifiable claim. |
-| `mechanism` | string | — | Proposed causal mechanism explaining the claim. |
+| `id` | string | Pattern: `H-NNNN` (e.g., `H-0042`) | Unique identifier. **Assigned automatically** by `hypex add-hypothesis` -- do not set this yourself. |
+| `title` | string | Max 120 characters | Short descriptive title. Aim for <= 15 words. |
+| `statement` | string | -- | One-paragraph falsifiable claim. |
+| `mechanism` | string | -- | Proposed causal mechanism explaining the claim. |
 | `predictions` | array of strings | Min 1 item | Observable, testable predictions that follow from the hypothesis. |
 | `experiments` | array of objects | Min 1 item | Proposed experiments to test the hypothesis (see below). |
 | `evidence` | array of objects | Min 1 item | Literature evidence with PkDE-resolved record IDs (see below). |
-| `focus_area` | string | — | Research focus area this hypothesis belongs to. |
-| `lineage` | object | — | Evolutionary lineage tracking (see below). |
+| `focus_area` | string | -- | Research focus area this hypothesis belongs to. |
+| `lineage` | object | -- | Evolutionary lineage tracking (see below). |
 | `status` | string | Enum: `proposed`, `reviewed`, `active`, `merged`, `retired`, `quarantined` | Current lifecycle status. Use `"proposed"` for new hypotheses. |
-| `created_by` | string | — | Name of the agent that created this hypothesis. |
+| `created_by` | string | -- | Name of the agent that created this hypothesis. |
 | `epoch` | integer | Min: 0 | Epoch in which this hypothesis was created. |
 | `created_at` | string | ISO 8601 date-time | Timestamp of creation (e.g., `"2026-09-05T14:30:00Z"`). |
 
@@ -40,7 +40,7 @@ All of the following fields are **required**:
 
 | Field | Type | Constraints | Description |
 |---|---|---|---|
-| `cluster` | string | Pattern: `C-NN` (e.g., `C-03`) | Proximity cluster identifier. **Not set by generation agents** — assigned later by the proximity agent. |
+| `cluster` | string | Pattern: `C-NN` (e.g., `C-03`) | Proximity cluster identifier. **Not set by generation agents** -- assigned later by the proximity agent. |
 
 ### The `experiments` Array
 
@@ -56,8 +56,8 @@ Each experiment object has three required fields:
 
 | Field | Type | Values | Description |
 |---|---|---|---|
-| `design` | string | — | What the experiment involves — methodology, model system, key controls. |
-| `readout` | string | — | What you measure and what the expected result looks like. |
+| `design` | string | -- | What the experiment involves -- methodology, model system, key controls. |
+| `readout` | string | -- | What you measure and what the expected result looks like. |
 | `est_difficulty` | string | `low`, `med`, `high` | Estimated difficulty. `low` = standard lab techniques; `med` = specialized equipment or expertise; `high` = novel methods or multi-year effort. |
 
 No additional properties are allowed on experiment objects.
@@ -76,18 +76,18 @@ Each evidence item links a literature record to the hypothesis:
 
 | Field | Type | Values | Description |
 |---|---|---|---|
-| `lit_id` | string | — | Literature record identifier from PkDE search/resolve results (e.g., `PMID:38012345`, `arXiv:2301.12345v2`, `10.1101/2024.01.01.573838`). |
+| `lit_id` | string | -- | Literature record identifier from PkDE search/resolve results (e.g., `PMID:38012345`, `arXiv:2301.12345v2`, `10.1101/2024.01.01.573838`). |
 | `role` | string | `supports`, `constrains`, `contradicts` | Relationship of this evidence to the hypothesis. |
-| `note` | string | — | Brief explanation of relevance — what the cited paper shows and why it matters. |
+| `note` | string | -- | Brief explanation of relevance -- what the cited paper shows and why it matters. |
 
 No additional properties are allowed on evidence objects.
 
 **Role definitions:**
 
-- `supports` — the evidence directly supports the hypothesis claim or mechanism.
-- `constrains` — the evidence limits the scope or applicability of the hypothesis
+- `supports` -- the evidence directly supports the hypothesis claim or mechanism.
+- `constrains` -- the evidence limits the scope or applicability of the hypothesis
   (e.g., effect is tissue-specific, or only observed in certain conditions).
-- `contradicts` — the evidence conflicts with the hypothesis. Include
+- `contradicts` -- the evidence conflicts with the hypothesis. Include
   contradicting evidence to demonstrate awareness of counterarguments.
 
 ### The `lineage` Object
@@ -135,17 +135,17 @@ Lineage tracks how a hypothesis was derived:
 
 Every hypothesis you produce must meet these minimum requirements:
 
-1. **Title ≤ 120 characters.** Concise and descriptive.
+1. **Title <= 120 characters.** Concise and descriptive.
 2. **At least 1 prediction.** Each prediction must be observable and testable.
 3. **At least 1 experiment.** With concrete design, readout, and difficulty
    estimate.
 4. **At least 1 evidence item with a `lit_id`.** Every factual claim needs a
    literature citation. The `lit_id` must be a real record ID from a PkDE search
-   results — never fabricate IDs.
+   results -- never fabricate IDs.
 5. **Falsifiable statement.** The `statement` must be a claim that could be
    proven wrong by experiment.
 6. **Causal mechanism.** The `mechanism` must explain *why* the claim is
-   expected to be true — not just *that* it is true.
+   expected to be true -- not just *that* it is true.
 
 Hypotheses that fail these requirements will be rejected by schema validation
 or flagged in review.
@@ -245,9 +245,9 @@ echo '<hypothesis-json>' | hypex add-hypothesis --run my-run --run-dir <run-base
 
 ### Important Notes
 
-- **Do not set the `id` field** — it is assigned automatically by the command.
+- **Do not set the `id` field** -- it is assigned automatically by the command.
   If you include an `id` in your JSON, it will be overwritten.
-- **Do not set the `cluster` field** — it is assigned later by the proximity
+- **Do not set the `cluster` field** -- it is assigned later by the proximity
   agent. The field is optional in the schema.
 - **Validation happens automatically.** If your hypothesis does not conform to
   the schema, the command will fail with a validation error. Fix the error and
@@ -289,9 +289,9 @@ Allocate the next sequential ID (used internally by `add-hypothesis`, but
 available if needed):
 
 ```bash
-hypex next-id hypothesis --run my-run --run-dir <run-base>           # → H-0043
-hypex next-id match --run my-run --run-dir <run-base>                # → M-0001
-hypex next-id review --run my-run --run-dir <run-base> --for H-0043  # → H-0043.R-01
+hypex next-id hypothesis --run my-run --run-dir <run-base>           # -> H-0043
+hypex next-id match --run my-run --run-dir <run-base>                # -> M-0001
+hypex next-id review --run my-run --run-dir <run-base> --for H-0043  # -> H-0043.R-01
 ```
 
 ### `hypex status`
@@ -325,7 +325,7 @@ hypex init-run my-run --run-dir <run-base> --goal "Explore mechanisms of age-rel
   ],
   "experiments": [
     {
-      "design": "Colonize germ-free mice ± Lactobacillus; measure p-tau at 3, 6, 9 months",
+      "design": "Colonize germ-free mice +/- Lactobacillus; measure p-tau at 3, 6, 9 months",
       "readout": "p-tau/total-tau ratio in hippocampal lysates",
       "est_difficulty": "med"
     }
@@ -346,4 +346,4 @@ hypex init-run my-run --run-dir <run-base> --goal "Explore mechanisms of age-rel
 }
 ```
 
-**Do not include `id` or `cluster`** — they are assigned by the system.
+**Do not include `id` or `cluster`** -- they are assigned by the system.

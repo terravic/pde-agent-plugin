@@ -1,4 +1,4 @@
-"""`pkde cite` — citation verification against upstream registries.
+"""`pkde cite` -- citation verification against upstream registries.
 
 Takes a document file, extracts citations from it, resolves each against
 upstream sources (CrossRef, Europe PMC, ClinicalTrials.gov), compares
@@ -9,7 +9,7 @@ Two phases:
   verify   extracts and resolves citations from a document (network).
   analyze  reads the manifest and computes a verdict (offline).
 
-**CRITICAL correctness requirement (§3.3)**: `all_verified` requires
+**CRITICAL correctness requirement (Section 3.3)**: `all_verified` requires
 that suspect == 0 AND phantom == 0 AND unverified == 0.  A suspect
 title match is NOT verified.
 """
@@ -57,10 +57,10 @@ PMID_RE = re.compile(r"(?:PMID[:\s]*)(\d{1,8})", re.IGNORECASE)
 PMCID_RE = re.compile(r"(PMC\d+)", re.IGNORECASE)
 NCT_RE = re.compile(r"(NCT\d{8})", re.IGNORECASE)
 # Title-like: a line of at least 20 chars starting with a capital, ending
-# with a period, possibly followed by a journal-style suffix.  Very loose —
+# with a period, possibly followed by a journal-style suffix.  Very loose --
 # this is a fallback extractor, not a parser.
 TITLE_RE = re.compile(
-    r"^([A-Z][A-Za-z0-9 ,;:\-–—()/'\"]{18,}\.)\s*$",  # noqa: RUF001 — en-dash/em-dash intentional in char class
+    r"^([A-Z][A-Za-z0-9 ,;:\-\u2013\u2014()/'\"]{18,}\.)\s*$",  # noqa: RUF001 -- en-dash/em-dash intentional in char class
     re.MULTILINE,
 )
 
@@ -347,7 +347,7 @@ def _resolve_citation(
         result = _resolve_ctgov(value)
     elif kind == "title":
         # Sanitize double quotes to prevent query injection and
-        # malformed Europe PMC queries (HTTP 400 → false network_error).
+        # malformed Europe PMC queries (HTTP 400 -> false network_error).
         sanitized = value.replace('"', " ")
         result = _resolve_epmc(f'TITLE:"{sanitized}"', "title")
     else:
@@ -388,7 +388,7 @@ def _resolve_citation(
             "error": None,
         }
 
-    # Found — compare titles
+    # Found -- compare titles
     resolved_title = result.get("title")
     similarity = _title_similarity(claimed_title, resolved_title)
 
@@ -484,7 +484,7 @@ def verify_cmd(
     n_suspect = sum(1 for r in resolved if r["status"] == "suspect-title-match")
     n_phantom = sum(1 for r in resolved if r["status"] == "phantom")
     n_unverified = sum(1 for r in resolved if r["status"] == "unverified")
-    # §3.3 CRITICAL: all_verified requires suspect == 0 too
+    # Section 3.3 CRITICAL: all_verified requires suspect == 0 too
     all_verified = (
         len(resolved) > 0 and n_suspect == 0 and n_phantom == 0 and n_unverified == 0
     )

@@ -1,4 +1,4 @@
-"""`pkde scp` -- Broad Institute Single Cell Portal study search.
+"""`pkde scp` -- Single Cell Portal study search.
 
 Queries the Broad Single Cell Portal (singlecell.broadinstitute.org) for
 studies matching keyword terms.  The SCP hosts 1,042+ studies with ~85.9M
@@ -86,7 +86,7 @@ def _parse_studies(data: dict[str, Any]) -> list[dict[str, Any]]:
 
 @click.group()
 def scp() -> None:
-    """Broad Institute Single Cell Portal study search."""
+    """Single Cell Portal study search."""
 
 
 @scp.command("search")
@@ -181,7 +181,7 @@ def search_cmd(
             "max_results": max_results,
         },
     )
-    sidecar.note("source", "Broad Institute Single Cell Portal")
+    sidecar.note("source", "Single Cell Portal")
     sidecar.note("n_results", str(len(studies)))
     sidecar.note("total_found", str(total_found))
 

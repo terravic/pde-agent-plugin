@@ -8,7 +8,7 @@ description: "Steering memo format, final report format, and pattern-identificat
 This skill teaches you how to synthesize individual reviews and tournament match
 data into two types of output: **steering memos** (per-epoch guidance) and
 **final reports** (end-of-run deliverables). Your role is to see the big picture
-that individual reviewers and judges cannot — recurring patterns, systemic
+that individual reviewers and judges cannot -- recurring patterns, systemic
 weaknesses, and strategic opportunities across the full hypothesis portfolio.
 
 ---
@@ -17,8 +17,8 @@ weaknesses, and strategic opportunities across the full hypothesis portfolio.
 
 Your task message from the supervisor specifies which mode to operate in:
 
-- **"steering memo"** or **"steering"** → produce a per-epoch steering memo.
-- **"final report"** or **"final"** → produce the end-of-run final report.
+- **"steering memo"** or **"steering"** -> produce a per-epoch steering memo.
+- **"final report"** or **"final"** -> produce the end-of-run final report.
 
 If the task message is ambiguous, ask the supervisor for clarification before
 proceeding.
@@ -32,20 +32,20 @@ proceeding.
 Guide the next epoch's generation, review, and evolution agents by identifying
 recurring patterns in the current epoch's reviews and tournament matches. The
 steering memo is injected by the supervisor into subsequent workers' task
-messages — it must be concrete and actionable.
+messages -- it must be concrete and actionable.
 
 ### Input
 
-1. **All reviews from the current epoch** — read every `reviews/H-XXXX.R-NN.json`
+1. **All reviews from the current epoch** -- read every `reviews/H-XXXX.R-NN.json`
    file where the review's `epoch` field matches the current epoch.
-2. **Match records from the current epoch** — read every `matches/M-NNNN.json`
+2. **Match records from the current epoch** -- read every `matches/M-NNNN.json`
    file where the match's `epoch` field matches the current epoch.
-3. **Match transcripts** — if a match record has a `transcript_path` field, read
+3. **Match transcripts** -- if a match record has a `transcript_path` field, read
    the transcript. Tier 2 multi-turn debate transcripts are especially valuable
    because they expose the reasoning behind losses.
-4. **Current standings** — read `ratings/epoch-N.json` for the current epoch
+4. **Current standings** -- read `ratings/epoch-N.json` for the current epoch
    to understand relative hypothesis strength.
-5. **Prior steering memos** (if any) — read `meta/epoch-*-steering.md` from
+5. **Prior steering memos** (if any) -- read `meta/epoch-*-steering.md` from
    previous epochs to build on past guidance and track whether prior
    recommendations were addressed.
 
@@ -53,7 +53,7 @@ messages — it must be concrete and actionable.
 
 The goal is to identify **recurring patterns**, not just list individual
 findings. A useful steering memo says "Reviewers repeatedly flag missing dosing
-rationale across hypotheses in the neuroinflammation cluster" — not "H-0003
+rationale across hypotheses in the neuroinflammation cluster" -- not "H-0003
 got a low testability score."
 
 #### Step 1: Aggregate Review Findings
@@ -68,7 +68,7 @@ Then look for cross-cutting patterns:
 
 - **Which criticisms appear in multiple reviews?** Group criticisms by theme
   (e.g., "weak experimental controls", "unsupported mechanistic step",
-  "low novelty — prior art exists").
+  "low novelty -- prior art exists").
 - **Which scoring axes are consistently low?** If testability scores are
   low across the board, generation agents need guidance on experimental design.
 - **Which focus areas produce stronger hypotheses?** Compare score distributions
@@ -103,20 +103,20 @@ Then identify loss patterns:
 
 Transform patterns into concrete, actionable guidance:
 
-- **Guidance for generation** — what kinds of hypotheses to produce (or avoid)
+- **Guidance for generation** -- what kinds of hypotheses to produce (or avoid)
   in the next epoch. Reference specific patterns: "Focus area X is underexplored
-  — only 2 hypotheses from this area, both scored well. Consider generating more
+  -- only 2 hypotheses from this area, both scored well. Consider generating more
   hypotheses here." Or: "Avoid hypotheses that rely solely on correlational
   evidence from animal models without a proposed causal mechanism."
-- **Guidance for review** — calibration adjustments for reviewers. "Reviewers
-  may be too lenient on testability — several hypotheses scored 4/5 despite
+- **Guidance for review** -- calibration adjustments for reviewers. "Reviewers
+  may be too lenient on testability -- several hypotheses scored 4/5 despite
   lacking specific experimental readouts. Apply the testability anchors more
-  strictly." Or: "Contradiction searches are effective — 3 reviews found
+  strictly." Or: "Contradiction searches are effective -- 3 reviews found
   contradicting evidence that lowered correctness scores. Continue this practice."
-- **Guidance for evolution** — which hypotheses to target with which operators.
-  "H-0007 lost its match on testability — consider applying the simplify
+- **Guidance for evolution** -- which hypotheses to target with which operators.
+  "H-0007 lost its match on testability -- consider applying the simplify
   operator to reduce experimental complexity." Or: "Hypotheses in cluster C-01
-  share a common mechanistic gap at step 3 — a ground operator targeting this
+  share a common mechanistic gap at step 3 -- a ground operator targeting this
   step could strengthen the entire cluster."
 
 ### Output Format
@@ -181,7 +181,7 @@ A good steering memo:
   affect only one
 - Connects tournament loss patterns to specific improvable weaknesses
 - Is short enough to be read and acted upon by generation and review agents
-  (aim for 1–3 pages, not 10)
+  (aim for 1-3 pages, not 10)
 
 ---
 
@@ -191,24 +191,24 @@ A good steering memo:
 
 Produce a comprehensive research report when the system converges or the
 exploration budget is exhausted. This is the primary deliverable of the
-PkDE Hypex subgraph — it should be well-structured, evidence-based,
+PkDE Hypex subgraph -- it should be well-structured, evidence-based,
 and actionable for a research team planning follow-up experiments.
 
 ### Input
 
-1. **All hypotheses** — read every `hypotheses/H-XXXX.json` file (all epochs).
-2. **All reviews** — read every `reviews/H-XXXX.R-NN.json` file (all epochs).
-3. **All match records** — read every `matches/M-NNNN.json` file (all epochs).
-4. **All ratings files** — read every `ratings/epoch-N.json` file to compute
+1. **All hypotheses** -- read every `hypotheses/H-XXXX.json` file (all epochs).
+2. **All reviews** -- read every `reviews/H-XXXX.R-NN.json` file (all epochs).
+3. **All match records** -- read every `matches/M-NNNN.json` file (all epochs).
+4. **All ratings files** -- read every `ratings/epoch-N.json` file to compute
    Elo trajectories.
-5. **Final Elo standings** — use `elo standings --run-dir <run-dir> --composite --explain --format json`
+5. **Final Elo standings** -- use `elo standings --run-dir <run-dir> --composite --explain --format json`
    to get the definitive rankings. Each entry includes `elo`, `elo_composite`,
    `composite_delta`, `composite_weights`, and `components`.
-6. **Cluster data** — read `proximity/clusters.json` for cluster assignments
+6. **Cluster data** -- read `proximity/clusters.json` for cluster assignments
    and labels.
-7. **Steering memos** — read all `meta/epoch-*-steering.md` files for the
+7. **Steering memos** -- read all `meta/epoch-*-steering.md` files for the
    system's learning trajectory.
-8. **Run configuration** — read `run.yaml` for the original research goal,
+8. **Run configuration** -- read `run.yaml` for the original research goal,
    epoch count, budget configuration.
 
 ### Analysis Methodology
@@ -282,7 +282,7 @@ Write the final report to `report/final.md`:
 [Original research question from run.yaml]
 
 ## Executive Summary
-[2–3 paragraph overview of key findings, top hypotheses, and recommended
+[2-3 paragraph overview of key findings, top hypotheses, and recommended
 next steps. Written for a PI or research director who needs the bottom line.]
 
 ## Methodology
@@ -327,8 +327,8 @@ next steps. Written for a PI or research director who needs the bottom line.]
 | ...   | ... | ...     | ...  | ...  |
 
 **Proposed Experiments:**
-1. [Design] — Readout: [readout] — Difficulty: [easy/med/hard]
-2. [Design] — Readout: [readout] — Difficulty: [easy/med/hard]
+1. [Design] -- Readout: [readout] -- Difficulty: [easy/med/hard]
+2. [Design] -- Readout: [readout] -- Difficulty: [easy/med/hard]
 
 ---
 
@@ -349,11 +349,11 @@ next steps. Written for a PI or research director who needs the bottom line.]
 
 ## Experimental Roadmap
 
-### Phase 1: Quick Wins (Easy, 1–3 months)
+### Phase 1: Quick Wins (Easy, 1-3 months)
 - [Experiment from H-XXXX]: [brief description]
 - [Experiment from H-YYYY]: [brief description]
 
-### Phase 2: Core Validation (Medium, 3–12 months)
+### Phase 2: Core Validation (Medium, 3-12 months)
 - [Experiment from H-XXXX]: [brief description]
 
 ### Phase 3: Deep Investigation (Hard, 12+ months)
@@ -365,12 +365,12 @@ next steps. Written for a PI or research director who needs the bottom line.]
 ---
 
 ## Cluster Analysis
-- **C-01: [Label]** — [N] hypotheses, top-ranked: H-XXXX (Elo NNNN)
-- **C-02: [Label]** — [N] hypotheses, top-ranked: H-XXXX (Elo NNNN)
+- **C-01: [Label]** -- [N] hypotheses, top-ranked: H-XXXX (Elo NNNN)
+- **C-02: [Label]** -- [N] hypotheses, top-ranked: H-XXXX (Elo NNNN)
 ...
 
 ## System Learning Trajectory
-[Brief summary of how steering memos evolved across epochs — what the system
+[Brief summary of how steering memos evolved across epochs -- what the system
 learned, what guidance was most effective, what patterns persisted]
 
 ## Appendix: Full Hypothesis Index

@@ -1,9 +1,9 @@
-"""`pkde validate` — mechanical validation of submitted work-order deliverables.
+"""`pkde validate` -- mechanical validation of submitted work-order deliverables.
 
 Runs 10 mechanical checks against a submitted work order's deliverables.
 Each check inspects a specific property of the Layer 0 and Layer 1
 artifacts referenced by the work order and produces a pass/fail/skip
-result.  This is Phase 2 of issue #22 — control plane CLI.
+result.  This is Phase 2 of issue #22 -- control plane CLI.
 
 This is NOT a science tool: it reads artifacts and metadata but never
 modifies them.  It writes only to ``.pkde/control/validations/`` and
@@ -50,7 +50,7 @@ def _overall_verdict(checks: list[dict[str, Any]]) -> str:
     """Compute overall validation verdict from individual check results."""
     non_skipped = [c for c in checks if c.get("status") != "skip"]
     if not non_skipped:
-        return "fail"  # vacuous — nothing was validated
+        return "fail"  # vacuous -- nothing was validated
     if any(c.get("status") == "fail" for c in non_skipped):
         return "fail"
     if any(c.get("status") == "warn" for c in non_skipped):
@@ -107,7 +107,7 @@ def _check_deliverables_schema(
             "kind": "COMPLETENESS",
             "detail": (
                 "deliverables dict contains neither layer_0/layer_0_classes "
-                "nor layer_1 — 5 of 9 checks cannot run and will be skipped. "
+                "nor layer_1 -- 5 of 9 checks cannot run and will be skipped. "
                 f"Keys found: {known_keys}"
             ),
         }
@@ -157,13 +157,13 @@ def _find_layer0_artifacts(
     when the directory does not exist *or* the class is unknown (callers
     distinguish via ``_is_known_artifact_class``).
 
-    Excludes sidecar and analysis files — those are metadata about
+    Excludes sidecar and analysis files -- those are metadata about
     artifacts, not artifacts themselves.
 
     Symlinks are resolved and confined to the project root before
     inclusion.  A symlink targeting a file outside the project
     (e.g. ``raw/structures/evil.pdb -> ../outside-project/secret.txt``) is silently
-    skipped — ``sha256_file`` must never read outside the project.
+    skipped -- ``sha256_file`` must never read outside the project.
     """
     normalized = normalize_artifact_class(artifact_class)
     rel_dir = ARTIFACT_DIRS.get(normalized)
@@ -195,10 +195,10 @@ def _find_layer0_artifacts(
 def _build_consumes_map(
     deliverables: dict[str, Any],
 ) -> dict[str, set[str]]:
-    """Parse the ``consumes`` block into ``{normalized_class: {wo_id, …}}``.
+    """Parse the ``consumes`` block into ``{normalized_class: {wo_id, ...}}``.
 
     Returns an empty dict when ``consumes`` is absent or not a list.
-    Malformed entries (wrong type, missing keys) are silently skipped —
+    Malformed entries (wrong type, missing keys) are silently skipped --
     commit-time validation (Phase 3) is responsible for rejecting them.
     """
     consumes = deliverables.get("consumes", [])
@@ -222,7 +222,7 @@ def _has_artifacts_from_consumed_wos(
     """Check if any artifact in *art_dir* is attributed to a consumed WO.
 
     Calls ``_build_sidecar_index`` once per consumed WO (the set is
-    expected to be small — typically 1).  Returns ``True`` as soon as a
+    expected to be small -- typically 1).  Returns ``True`` as soon as a
     match is found.
     """
     for consumed_wo_id in consumed_wo_ids:
@@ -248,23 +248,23 @@ def _check_deliverables_exist(
     deliverables: dict[str, Any],
     wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 1 — verify all declared deliverable files exist.
+    """Check 1 -- verify all declared deliverable files exist.
 
     Handles both ``required_classes`` and ``authorized_classes`` (#103):
 
-    - **required_classes** entries: missing → ``fail`` / ``COMPLETENESS``
-      (existing behavior).  Entries with ``not_applicable`` → ``skip``
+    - **required_classes** entries: missing -> ``fail`` / ``COMPLETENESS``
+      (existing behavior).  Entries with ``not_applicable`` -> ``skip``
       with reason.
-    - **authorized_classes** entries: missing → no finding (pass
-      silently).  Present → provenance checked as before.
+    - **authorized_classes** entries: missing -> no finding (pass
+      silently).  Present -> provenance checked as before.
 
     Also supports consumed upstream classes (#132) and optional classes:
 
     - **consumed classes** (via ``consumes`` block): when a required
       class is not produced by this WO but is available from a consumed
-      upstream WO → ``pass`` with cross-WO citation recorded.
-    - **layer_0_classes_optional** entries: present → recorded as
-      present, absent → recorded as absent (INFO, not a failure).
+      upstream WO -> ``pass`` with cross-WO citation recorded.
+    - **layer_0_classes_optional** entries: present -> recorded as
+      present, absent -> recorded as absent (INFO, not a failure).
 
     When *wo_id* is provided, only artifacts attributed to that work
     order (or untagged, for backward compatibility with pre-#166 records)
@@ -487,7 +487,7 @@ def _check_deliverables_exist(
     # Determine layer_0_classes list for the detail dict (backward compat).
     layer_0_classes = deliverables.get("layer_0_classes", [])
 
-    # Unknown artifact classes are toolchain bugs — return a distinct
+    # Unknown artifact classes are toolchain bugs -- return a distinct
     # finding so they are never confused with "no artifacts found"
     # (which is a real scientific result).  Issue #131 / #83 / #85.
     if unknown_classes:
@@ -539,11 +539,11 @@ def _wo_reference_found(
 
     Returns ``(match_kind, found_text)`` where *match_kind* is one of:
 
-    - ``"exact"`` — the canonical ``WO-<num>-r<rev>`` form is present.
-    - ``"accepted"`` — a recognised alternative form is present
+    - ``"exact"`` -- the canonical ``WO-<num>-r<rev>`` form is present.
+    - ``"accepted"`` -- a recognised alternative form is present
       (e.g. split metadata fields, ``WO-004 r1``, ``WO-004 (rev 1)``,
       ``WO-004, Revision 1``).  Triggers a warning, not a failure.
-    - ``"none"`` — no WO identifier detected.  Triggers a failure.
+    - ``"none"`` -- no WO identifier detected.  Triggers a failure.
 
     *found_text* is the literal text matched for the ``accepted`` case
     (``None`` for ``exact`` and ``none``).
@@ -608,23 +608,23 @@ def _check_report_headings(
     wo_id: str,
     revision: int,
 ) -> dict[str, Any]:
-    """Check 2 — verify Layer 1 findings contain the WO reference string
+    """Check 2 -- verify Layer 1 findings contain the WO reference string
     and the ``## Key Findings`` heading (or a plausible equivalent).
 
     Two sub-checks:
 
-    1. **WO reference** — the work order must be identified in each
+    1. **WO reference** -- the work order must be identified in each
        Layer 1 file.  The canonical form is ``WO-<id>-r<rev>``, but
        split metadata (``Work Order: WO-004`` + ``Revision: 1``) and
        other unambiguous forms are accepted with a warning.
-       - Canonical form → ``ok``.
-       - Accepted alternative form → ``warn`` / ``CONVENTION``.
-       - No identifier found → ``fail`` / ``COMPLETENESS``.
-    2. **Key Findings heading** — ``## Key Findings`` must appear.
+       - Canonical form -> ``ok``.
+       - Accepted alternative form -> ``warn`` / ``CONVENTION``.
+       - No identifier found -> ``fail`` / ``COMPLETENESS``.
+    2. **Key Findings heading** -- ``## Key Findings`` must appear.
        When absent, we look for any ``##``-level heading between
        ``## Summary`` and ``## Implications`` (or end-of-file).
-       - Variant found → ``warn`` / ``CONVENTION``.
-       - Nothing found → ``fail`` / ``COMPLETENESS``.
+       - Variant found -> ``warn`` / ``CONVENTION``.
+       - Nothing found -> ``fail`` / ``COMPLETENESS``.
 
     The returned result reflects the *worst* status across both
     sub-checks.
@@ -769,7 +769,7 @@ def _check_paths_resolve(
     project_root: Path,
     deliverables: dict[str, Any],
 ) -> dict[str, Any]:
-    """Check 3 — verify internal markdown links resolve within the project.
+    """Check 3 -- verify internal markdown links resolve within the project.
 
     When a broken link would resolve from the project root, emit
     ``warn`` / ``CONVENTION`` and suggest the corrected relative path.
@@ -854,7 +854,7 @@ def _check_paths_resolve(
                 "detail": detail,
             }
         else:
-            # All broken links are root-resolvable → convention warning.
+            # All broken links are root-resolvable -> convention warning.
             return {
                 "name": "paths_resolve",
                 "result": "pass",
@@ -890,7 +890,7 @@ def _build_sidecar_index(
     The index is built once per artifact-class directory so each sidecar
     file is read at most once regardless of how many artifacts it covers.
 
-    Symlinks are resolved and confined to *project_root* — a sidecar
+    Symlinks are resolved and confined to *project_root* -- a sidecar
     symlink targeting a file outside the project is silently skipped.
     """
     index: dict[str, Path] = {}
@@ -920,7 +920,7 @@ def _build_sidecar_index(
         # WO scoping: skip records from other work orders.
         sidecar_wo = data.get("work_order_id")
         if wo_id is not None and sidecar_wo is not None and sidecar_wo != wo_id:
-            # This sidecar belongs to a different work order — still track its
+            # This sidecar belongs to a different work order -- still track its
             # hashes so we can distinguish "other WO's artifact" from "genuinely
             # missing provenance", but keep it out of the primary index.
             for entry in outputs:
@@ -939,7 +939,7 @@ def _check_provenance_valid(
     deliverables: dict[str, Any],
     wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 4 — verify provenance sidecars exist and checksums match.
+    """Check 4 -- verify provenance sidecars exist and checksums match.
 
     Scans all ``*.meta.json`` sidecars in each artifact-class directory
     and matches artifacts by ``sha256`` against the sidecars' ``outputs[]``
@@ -970,7 +970,7 @@ def _check_provenance_valid(
         if not artifacts:
             continue
 
-        # Build a sha256 → sidecar mapping once for the whole directory.
+        # Build a sha256 -> sidecar mapping once for the whole directory.
         art_dir = artifacts[0].parent
         sidecar_index, sidecar_issues, other_wo_hashes = _build_sidecar_index(
             art_dir,
@@ -988,7 +988,7 @@ def _check_provenance_valid(
             artifacts_checked += 1
             if actual_sha not in sidecar_index:
                 # JSON files without provenance are handled by the
-                # unrecognized_record_type check (#130) — they should
+                # unrecognized_record_type check (#130) -- they should
                 # not be folded into provenance_valid.
                 if artifact_path.name.endswith(".json"):
                     continue
@@ -1023,7 +1023,7 @@ def _check_analysis_citations(
     deliverables: dict[str, Any],
     wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 5 — verify analysis records have source and threshold_set.
+    """Check 5 -- verify analysis records have source and threshold_set.
 
     When *wo_id* is provided, only analysis files tagged with that work
     order (or untagged, for backward compatibility with pre-#166 records)
@@ -1073,11 +1073,11 @@ def _check_analysis_citations(
             # WO scoping: read the record early to check work_order_id.
             # Skip analysis files tagged with a different work order.
             # Untagged files (work_order_id absent or null) are always
-            # checked — backward compatibility with pre-#166 records.
+            # checked -- backward compatibility with pre-#166 records.
             try:
                 data = read_json(child, "analysis record")
             except ArtifactError:
-                # Invalid JSON — still count and report below.
+                # Invalid JSON -- still count and report below.
                 data = None
             if data is not None and isinstance(data, dict):
                 record_wo = data.get("work_order_id")
@@ -1132,7 +1132,7 @@ def _check_analysis_citations(
                             "file": str(child.relative_to(project_root)),
                             "issue": (
                                 f"Analysis cites source {source!r} which resolved "
-                                f"to '{source_path}' — file not found. Expected "
+                                f"to '{source_path}' -- file not found. Expected "
                                 "project-relative path like "
                                 f"'raw/<class>/{Path(source).name}'."
                             ),
@@ -1223,15 +1223,15 @@ def _check_relay_coverage(
     deliverables: dict[str, Any],
     wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 6 — verify mandatory relay codes are addressed in findings.
+    """Check 6 -- verify mandatory relay codes are addressed in findings.
 
     Two-tier check:
 
-    1. **Presence** — the relay code string must appear somewhere in
-       the findings text.  Missing → ``fail`` / ``COMPLETENESS``.
-    2. **Label format** — when present, the code should appear in the
+    1. **Presence** -- the relay code string must appear somewhere in
+       the findings text.  Missing -> ``fail`` / ``COMPLETENESS``.
+    2. **Label format** -- when present, the code should appear in the
        standard ``**Relay: \\`<code>\\`**`` format.  Present without the
-       label → ``warn`` / ``FORMAT`` sub-finding.
+       label -> ``warn`` / ``FORMAT`` sub-finding.
 
     When *wo_id* is provided, only relay codes from records tagged with
     that work order (or untagged records) are checked (#166).
@@ -1339,7 +1339,7 @@ def _check_relay_coverage(
 def _check_version_policy(
     project_root: Path,
 ) -> dict[str, Any]:
-    """Check 7 — verify version policy compliance.
+    """Check 7 -- verify version policy compliance.
 
     Today program.yaml does not exist, so skip is the expected result.
     When program.yaml is added (deferred to a future program.yaml /
@@ -1353,7 +1353,7 @@ def _check_version_policy(
             "result": "skip",
             "status": "skip",
             "kind": None,
-            "detail": "program.yaml not present — check deferred to a future program.yaml configuration issue",
+            "detail": "program.yaml not present -- check deferred to a future program.yaml configuration issue",
         }
 
     # Future: read version requirements and check against sidecars.
@@ -1370,7 +1370,7 @@ def _check_version_policy(
 def _check_findings_integrity(
     project_root: Path,
 ) -> dict[str, Any]:
-    """Check 8 — verify no provenance sidecars are misplaced under findings/.
+    """Check 8 -- verify no provenance sidecars are misplaced under findings/.
 
     Scans findings/ recursively for sidecar and analysis files (including
     the ``.sc-`` variants).  These are tool-written provenance records
@@ -1418,11 +1418,11 @@ def _check_unrecognized_json(
     deliverables: dict[str, Any],
     wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 10 — flag JSON files that are neither analysis nor provenance-covered.
+    """Check 10 -- flag JSON files that are neither analysis nor provenance-covered.
 
     Scans each artifact-class directory for ``.json`` files that are not
     sidecars, not analysis records (by suffix or content), and not covered
-    by any provenance sidecar.  These files are unrecognised — they may
+    by any provenance sidecar.  These files are unrecognised -- they may
     indicate a toolchain bug (e.g. a new record type whose suffix was not
     added to the allowlist).
 
@@ -1477,7 +1477,7 @@ def _check_unrecognized_json(
             if actual_sha in other_wo_hashes and actual_sha not in sidecar_index:
                 continue  # belongs to another WO
             if actual_sha in sidecar_index:
-                continue  # covered by provenance — it is a known raw artifact
+                continue  # covered by provenance -- it is a known raw artifact
             unrecognized.append(
                 {
                     "file": str(child.relative_to(project_root)),
@@ -1528,7 +1528,7 @@ _CODE_FENCE_RE = re.compile(r"```.*?```", re.DOTALL)
 _INLINE_CODE_RE = re.compile(r"`[^`]+`")
 
 # Identifier-like tokens: letter immediately adjacent to digits (Q99650,
-# CID12345, PDB:1ABC, rs123456) — used to reject non-numerical claims.
+# CID12345, PDB:1ABC, rs123456) -- used to reject non-numerical claims.
 _IDENTIFIER_LIKE_RE = re.compile(r"[A-Za-z]\d+|\d+[A-Za-z]")
 
 
@@ -1540,7 +1540,7 @@ def _strip_code_spans(text: str) -> str:
 
 
 def _values_match(claimed: float, actual: float) -> bool:
-    """Check whether *claimed* matches *actual* within ±1% tolerance."""
+    """Check whether *claimed* matches *actual* within +/-1% tolerance."""
     if claimed == actual:
         return True
     if abs(actual) < 1e-10:
@@ -1583,12 +1583,12 @@ def _check_source_tags_resolve(
     project_root: Path,
     deliverables: dict[str, Any],
 ) -> dict[str, Any]:
-    """Check 9 — verify {source:} and {source-table:} tags resolve and match.
+    """Check 9 -- verify {source:} and {source-table:} tags resolve and match.
 
     Parses source tags from all Layer 1 files, resolves each tag's path
-    and locator against the project root, and — for scalar tags with a
-    claimed numerical value — compares the claimed value against the
-    resolved actual value within ±1% tolerance.
+    and locator against the project root, and -- for scalar tags with a
+    claimed numerical value -- compares the claimed value against the
+    resolved actual value within +/-1% tolerance.
     """
     try:
         from jsonpath_ng import parse as jsonpath_parse  # deferred import
@@ -1598,7 +1598,7 @@ def _check_source_tags_resolve(
             "result": "skip",
             "status": "skip",
             "kind": None,
-            "detail": "jsonpath-ng is not installed — cannot evaluate source tags",
+            "detail": "jsonpath-ng is not installed -- cannot evaluate source tags",
         }
 
     layer_1 = deliverables.get("layer_1", [])
@@ -1754,9 +1754,9 @@ def _evaluate_scalar_tag(
                 **base,
                 "status": "warn",
                 "kind": "FORMAT",
-                "detail": "missing locator — cannot verify value mechanically",
+                "detail": "missing locator -- cannot verify value mechanically",
             }
-        # Non-numerical reference — file-level provenance is sufficient.
+        # Non-numerical reference -- file-level provenance is sufficient.
         return {
             **base,
             "status": "ok",
@@ -1764,7 +1764,7 @@ def _evaluate_scalar_tag(
             "detail": "file-level provenance (no locator, non-numerical)",
         }
 
-    # Locator present — determine type and evaluate.
+    # Locator present -- determine type and evaluate.
     if locator.startswith("$"):
         return _evaluate_jsonpath_locator(
             resolved=resolved,
@@ -1775,7 +1775,7 @@ def _evaluate_scalar_tag(
             jsonpath_parse=jsonpath_parse,
         )
 
-    # Line-number locator: path has :N suffix — but in the source-tag convention
+    # Line-number locator: path has :N suffix -- but in the source-tag convention
     # the locator is a separate token, so check if it looks like a line number.
     line_match = re.match(r"^:?(\d+)$", locator)
     if line_match:
@@ -1786,7 +1786,7 @@ def _evaluate_scalar_tag(
             base=base,
         )
 
-    # Unrecognised locator format — treat as ok (might be a future extension).
+    # Unrecognised locator format -- treat as ok (might be a future extension).
     return {
         **base,
         "status": "ok",
@@ -1825,7 +1825,7 @@ def _evaluate_table_tag(
         }
 
     if locator is None:
-        # Table tag without locator — file-level provenance.
+        # Table tag without locator -- file-level provenance.
         return {
             **base,
             "status": "ok",
@@ -1951,7 +1951,7 @@ def _evaluate_jsonpath_locator(
             "detail": f"value mismatch: claimed {claimed_value}, actual {actual}",
         }
 
-    # Actual is a string — attempt exact match with claimed value string.
+    # Actual is a string -- attempt exact match with claimed value string.
     claimed_str = str(claimed_value)
     # Also try integer representation if the float is integral.
     if claimed_value == int(claimed_value):
@@ -2177,8 +2177,8 @@ def _perform_validation(
 
     This is the shared core behind ``validate check`` and
     ``workorder accept``.  Both code paths call this function so the
-    validation logic — including the ``submitted``-state guard (#237)
-    — is never reimplemented or bypassed.
+    validation logic -- including the ``submitted``-state guard (#237)
+    -- is never reimplemented or bypassed.
 
     Returns ``(wo_record, validation_record_path, overall_result,
     checks, checks_failed, from_state, to_state)``.
@@ -2197,7 +2197,7 @@ def _perform_validation(
     current_state = wo_record["state"]
 
     # The WO must be in submitted state for validation.  Fail fast
-    # before running any checks — otherwise we'd write an orphaned
+    # before running any checks -- otherwise we'd write an orphaned
     # validation record that no state transition references.
     if current_state != "submitted":
         raise Refusal(
@@ -2420,6 +2420,6 @@ def check_cmd(
     emit.line("")
     if checks_failed:
         emit.line(f"Failed checks: {', '.join(checks_failed)}")
-    emit.line(f"State: {current_state} → {target_state}")
+    emit.line(f"State: {current_state} -> {target_state}")
     emit.path(record_path, role="validation_record")
     emit.flush()

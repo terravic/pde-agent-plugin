@@ -3,10 +3,10 @@
 Produces structured competitive-differentiation findings that keep
 three distinct dimensions separate:
 
-  1. **Competitor activity** — what programs/compounds/publications
+  1. **Competitor activity** -- what programs/compounds/publications
      exist for this target or modality+indication combination.
-  2. **Patentability/novelty** — is there white space for new IP.
-  3. **Freedom to operate (FTO)** — can the concept be pursued without
+  2. **Patentability/novelty** -- is there white space for new IP.
+  3. **Freedom to operate (FTO)** -- can the concept be pursued without
      infringing existing IP.
 
 These dimensions are NEVER blended into a single score.  Each carries:
@@ -60,7 +60,7 @@ TOOL = "pkde.differentiation"
 ARTIFACT_CLASS = "ip"
 
 # ---------------------------------------------------------------------------
-# Mandatory disclaimer — the brief's hard constraint.
+# Mandatory disclaimer -- the brief's hard constraint.
 # ---------------------------------------------------------------------------
 
 FTO_DISCLAIMER = (
@@ -78,7 +78,7 @@ COVERAGE_DISCLAIMER_TEMPLATE = (
 )
 
 # ---------------------------------------------------------------------------
-# Evidence types following the naming convention from design §1.5
+# Evidence types following the naming convention from design Section 1.5
 # ---------------------------------------------------------------------------
 
 EVIDENCE_TYPE_COMPETITOR = "competitive_precedent"
@@ -100,7 +100,7 @@ def _assess_competitor_activity(
     """Assess competitor activity from patent and literature data.
 
     Returns a structured finding for the competitor-activity dimension.
-    Existing competitor activity is NOT by itself a veto — a crowded
+    Existing competitor activity is NOT by itself a veto -- a crowded
     field with a differentiated angle should surface as
     "differentiated despite crowding", not as a rejection.
     """
@@ -135,7 +135,7 @@ def _assess_competitor_activity(
     n_recent = len(recent_patents)
     n_assignees = len(assignee_counts)
 
-    # Density classification — informational, not a veto.
+    # Density classification -- informational, not a veto.
     if n_recent == 0:
         density = "uncrowded"
         summary = f"No recent patent activity (last {current_year - cutoff_year} years) for {query_term!r}."
@@ -195,7 +195,7 @@ def _assess_patentability(
 ) -> dict[str, Any]:
     """Assess patentability/novelty from the patent landscape.
 
-    Checks for white space — areas where new IP could be filed.
+    Checks for white space -- areas where new IP could be filed.
     """
     current_year = datetime.date.today().year
     current_year - 5
@@ -332,7 +332,7 @@ def _assess_fto(
             "Formal FTO analysis by patent counsel is strongly recommended."
         )
 
-    # Unresolved questions — always present.
+    # Unresolved questions -- always present.
     unresolved: list[str] = []
     if not jurisdictions:
         unresolved.append(
@@ -368,7 +368,7 @@ def _assess_fto(
         "search_date": search_date,
         "search_scope": search_scope,
         "coverage_limits": coverage_limits,
-        # Mandatory disclaimer — NEVER omit.
+        # Mandatory disclaimer -- NEVER omit.
         "fto_disclaimer": FTO_DISCLAIMER,
     }
 
@@ -482,7 +482,7 @@ def assess_competitive_differentiation(
         ),
         # Explicit: dimensions are never blended.
         "dimensions_are_independent": True,
-        "blended_score": None,  # Explicitly null — never populated.
+        "blended_score": None,  # Explicitly null -- never populated.
     }
 
     return result
@@ -666,7 +666,7 @@ def _fto_to_evidence_status(risk_level: str) -> str:
 
     This maps the informational risk level into the evidence status
     vocabulary.  Note: even a "supported" FTO status carries the
-    mandatory disclaimer — it is NEVER treated as legal clearance.
+    mandatory disclaimer -- it is NEVER treated as legal clearance.
     """
     if risk_level == "no_recent_filings":
         return "supported"
@@ -699,7 +699,7 @@ def _scan_unconsumed_trial_artifacts(source_dir: Path) -> list[str]:
     """Return filenames of trial artifacts in *source_dir*.
 
     These are artifacts that ``assess_cmd`` recognises but does not
-    consume — their presence is informational for the operator.
+    consume -- their presence is informational for the operator.
     """
     return sorted(p.name for p in source_dir.glob(_TRIAL_ARTIFACT_GLOB))
 
@@ -851,7 +851,7 @@ def assess_cmd(
                 "differentiation.crowded_landscape",
                 f"Competitive landscape for {query_term!r} shows "
                 f"{comp['density']}. Existing competitor activity is "
-                "informational — a differentiated angle may still be "
+                "informational -- a differentiated angle may still be "
                 "viable. See coverage limits for search boundaries.",
             )
         )
@@ -863,7 +863,7 @@ def assess_cmd(
         )
     )
 
-    # Write analysis record first — it checks _may_write() internally
+    # Write analysis record first -- it checks _may_write() internally
     # and raises Refusal if a differing analysis already exists. Writing
     # the primary assessment AFTER this check prevents inconsistent state
     # where the .differentiation.json is overwritten but the analysis
@@ -901,7 +901,7 @@ def assess_cmd(
         suppress_warnings=as_json,
     )
 
-    # Write assessment — only reached if provenance check passed.
+    # Write assessment -- only reached if provenance check passed.
     out_path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
 
     # Emit output.

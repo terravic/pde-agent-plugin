@@ -108,8 +108,8 @@ _ENTITY_REF_PATTERNS: dict[str, re.Pattern[str]] = {
 _ENTITY_TYPES = set(_ENTITY_REF_PATTERNS.keys())
 
 # Authorities that may bypass human approval for concept termination.
-# Everything not in this set — including None, unrecognized strings,
-# empty strings, and invalid types — requires human approval (fail-closed).
+# Everything not in this set -- including None, unrecognized strings,
+# empty strings, and invalid types -- requires human approval (fail-closed).
 _AUTONOMOUS_AUTHORITIES: frozenset[str] = frozenset({"program_lead"})
 
 # ---------------------------------------------------------------------------
@@ -344,7 +344,7 @@ def validate_decision(
             errors.extend(_validate_human_approval(approval))
 
     # ---------------------------------------------------------------
-    # Human-approval gate  (design SS1.1, SS2.2 — review finding R1)
+    # Human-approval gate  (design SS1.1, SS2.2 -- review finding R1)
     #
     # This is the primary enforcement.  A terminate decision on a
     # concept or program MUST carry a populated human_approval when
@@ -356,7 +356,7 @@ def validate_decision(
     #     cannot be looked up.
     #   - "program": always requires human approval.  Design principle
     #     #4 ("must not enable autonomous program termination") and
-    #     program.yaml's human_reserved list (§4.4.1) both name
+    #     program.yaml's human_reserved list (Section 4.4.1) both name
     #     program_termination as unconditionally human-reserved.
     #
     # Not covered (by design):
@@ -384,9 +384,9 @@ def validate_decision(
             # 2. Fail-closed allowlist: only explicitly authorized
             # roles may bypass human approval.  Design principle #4
             # requires that the system never enable autonomous
-            # termination.  Everything not in the allowlist —
+            # termination.  Everything not in the allowlist --
             # including None, unrecognized strings, empty strings,
-            # and invalid types — requires human approval.
+            # and invalid types -- requires human approval.
             if term_auth not in _AUTONOMOUS_AUTHORITIES and approval is None:
                 detail_ref = eref or "(unknown)"
                 raise Refusal(
@@ -409,7 +409,7 @@ def validate_decision(
         elif etype == "program":
             # Program termination is unconditionally human-reserved.
             # Design principle #4: "must not enable autonomous program
-            # termination."  program.yaml human_reserved (§4.4.1)
+            # termination."  program.yaml human_reserved (Section 4.4.1)
             # names "program_termination" explicitly.
             if approval is None:
                 detail_ref = eref or "(unknown)"

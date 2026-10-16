@@ -186,11 +186,11 @@ func TestSchemaForFile(t *testing.T) {
 		{"M-0001.json", "match.schema.json", false},
 		{"epoch-0.json", "ratings.schema.json", false},
 		{"citations/H-0001.json", "citation-manifest.schema.json", false},
-		{"/path/to/run/citations/H-0001.json", "citation-manifest.schema.json", false},
+		{"runs/active/citations/H-0001.json", "citation-manifest.schema.json", false},
 		{"executions/lupus-therapeutics-02/citations/H-0001.json", "citation-manifest.schema.json", false},
 		{"citations.json", "citation-manifest.schema.json", false},
 		{"report/citations.json", "citation-manifest.schema.json", false},
-		{"/path/to/run/report/citations.json", "citation-manifest.schema.json", false},
+		{"runs/active/report/citations.json", "citation-manifest.schema.json", false},
 		{"unknown.txt", "", true},
 		{"random.json", "", true},
 	}

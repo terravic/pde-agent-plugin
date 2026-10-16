@@ -73,13 +73,13 @@ record, and analysis output. It is not optional prose.
 
 Every search finding must state:
 
-1. **What was searched** (search scope) — e.g., "Public Patent Registry public
+1. **What was searched** (search scope) -- e.g., "Public Patent Registry public
    search for 'CDK4 inhibitor'".
-2. **What was NOT searched** (coverage limits) — e.g., "Non-English
+2. **What was NOT searched** (coverage limits) -- e.g., "Non-English
    filings may be underrepresented; unpublished applications within
    18-month window are not visible; patent databases other than Cloud
    Patents were not queried."
-3. **The search date** — results reflect the database state at this date.
+3. **The search date** -- results reflect the database state at this date.
 
 No patent search finding may be presented as exhaustive.
 
@@ -100,9 +100,9 @@ records with the following evidence types:
 Following the design doc (SS1.5): lowercase, underscored, descriptive of
 the evidence domain rather than the specific tool.
 
-- `competitive_precedent` — ligand, program, or patent precedent in
+- `competitive_precedent` -- ligand, program, or patent precedent in
   the competitive landscape.
-- `patent_landscape` — patent filing landscape relevant to IP position.
+- `patent_landscape` -- patent filing landscape relevant to IP position.
 
 ## Workflow
 
@@ -126,7 +126,7 @@ When Hypex generation or reflection produces hypotheses about a target:
 2. The **reflection agent** should check patent landscape as part of
    its Phase 2c prior art search.
 3. The competitive differentiation assessment complements Hypex's
-   scientific evaluation — Hypex evaluates scientific merit, this skill
+   scientific evaluation -- Hypex evaluates scientific merit, this skill
    evaluates competitive positioning.
 
 The two are complementary and should not duplicate each other.

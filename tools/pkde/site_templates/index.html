@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}PkDE Program — Index{% endblock %}
+{% block title %}PkDE Program -- Index{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
   <span>Home</span>
@@ -24,7 +24,7 @@
 <div class="executive-excerpt">
 {{ executive_content | markdown }}
 </div>
-<p><a href="executive.html">Read more &rarr;</a></p>
+<p><a href="executive.html">Read more</a></p>
 {% else %}
 <p>High-level program status derived from accepted work-order outcomes.</p>
 {% endif %}
@@ -84,7 +84,7 @@
 {% if findings %}
 <ul>
 {% for finding in findings %}
-  <li><a href="{{ finding.html_filename }}">{{ finding.title }}</a> — {{ finding.work_order_id }}-r{{ finding.revision }}</li>
+  <li><a href="{{ finding.html_filename }}">{{ finding.title }}</a> -- {{ finding.work_order_id }}-r{{ finding.revision }}</li>
 {% endfor %}
 </ul>
 {% else %}
@@ -96,7 +96,7 @@
 <p>Per-work-order operations pages with full metadata and cross-references.</p>
 <ul>
 {% for wo_page in work_order_pages %}
-  <li><a href="{{ wo_page.html_filename }}">{{ wo_page.id }}-r{{ wo_page.revision }}</a> — {{ wo_page.requested_role }}</li>
+  <li><a href="{{ wo_page.html_filename }}">{{ wo_page.id }}-r{{ wo_page.revision }}</a> -- {{ wo_page.requested_role }}</li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -105,7 +105,7 @@
 <h2 id="gates">Gate Documents</h2>
 <ul>
 {% for gate in gates %}
-  <li><a href="{{ gate.html_filename }}">{{ gate.title }}</a> — {{ gate.stage_name }}</li>
+  <li><a href="{{ gate.html_filename }}">{{ gate.title }}</a> -- {{ gate.stage_name }}</li>
 {% endfor %}
 </ul>
 {% endif %}
@@ -115,7 +115,7 @@
 {% if artifact_classes %}
 <ul>
 {% for ac in artifact_classes %}
-  <li><a href="{{ ac.html_filename }}">{{ ac.name }}</a> — {{ ac.count }} artifact(s)</li>
+  <li><a href="{{ ac.html_filename }}">{{ ac.name }}</a> -- {{ ac.count }} artifact(s)</li>
 {% endfor %}
 </ul>
 {% else %}
@@ -124,6 +124,6 @@
 
 {% if has_retrospectives is defined and has_retrospectives %}
 <h2 id="retrospectives">Retrospectives</h2>
-<p><a href="retrospectives.html">View retrospectives &rarr;</a></p>
+<p><a href="retrospectives.html">View retrospectives</a></p>
 {% endif %}
 {% endblock %}

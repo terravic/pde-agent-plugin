@@ -1,4 +1,4 @@
-"""`pkde dice` — DICE immune cell subtype expression (bulk RNA-seq, TPM).
+"""`pkde dice` -- DICE immune cell subtype expression (bulk RNA-seq, TPM).
 
 This tool answers: *which immune cell subtypes express this gene, and at
 what level?*  DICE (Database of Immune Cell Expression, dice-database.org)
@@ -227,9 +227,9 @@ def dice() -> None:
     """DICE immune cell subtype expression (bulk RNA-seq, TPM)."""
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary

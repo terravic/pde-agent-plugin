@@ -10,7 +10,7 @@ resolved" must NEVER be read as "no biological data".  Distinguish
 lookup failure from negative evidence.
 
 Resolution order:
-  1. Ensembl ID passthrough (``ENSG...``) — no HGNC lookup needed
+  1. Ensembl ID passthrough (``ENSG...``) -- no HGNC lookup needed
   2. Official HGNC symbol
   3. Previous symbols (historical names)
   4. Alias symbols (synonyms)
@@ -88,7 +88,7 @@ def _hgnc_search(search_field: str, term: str) -> list[dict[str, Any]]:
 def resolve_gene(symbol: str) -> GeneResolution:
     """Resolve a gene symbol or Ensembl ID to its canonical HGNC form.
 
-    Returns a :class:`GeneResolution` — always, never raises on its own.
+    Returns a :class:`GeneResolution` -- always, never raises on its own.
     The caller decides whether an unresolved result is fatal.
 
     Results are cached for the process lifetime (``@lru_cache``).

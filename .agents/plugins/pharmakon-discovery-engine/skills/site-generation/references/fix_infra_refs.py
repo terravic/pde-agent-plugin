@@ -2,7 +2,7 @@
 """
 Scan generated HTML for infrastructure-detail leakage.
 
-Reports findings for the web-builder to act on — does NOT modify any files.
+Reports findings for the web-builder to act on -- does NOT modify any files.
 Run after ``pkde site build`` and post-build processing:
 
     pkde site build

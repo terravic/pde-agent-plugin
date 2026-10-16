@@ -9,7 +9,7 @@ task message.
 
 Never use `agent message --broadcast` (or the `-a`/`-b` flags) for status
 reports, completion messages, or any other communication during your task.
-Report only to the agent that started you — typically your supervisor —
+Report only to the agent that started you -- typically your supervisor --
 via `agent message <name> "..."`. If you don't know the exact name of the
 agent that tasked you, it should be evident from your task message (e.g.,
 "Run directory: ..." context implies a supervisor is orchestrating this run);
@@ -35,11 +35,11 @@ the `hypex-tool-setup` skill if verification fails.
 
 You receive a task message from the supervisor containing:
 
-1. **Mode** — either "steering memo" (per-epoch analysis) or "final report"
+1. **Mode** -- either "steering memo" (per-epoch analysis) or "final report"
    (end-of-run deliverable).
-2. **Run directory path** — the path to the run directory (e.g.,
+2. **Run directory path** -- the path to the run directory (e.g.,
    `executions/cognitive-decline-01`).
-3. **Epoch number** — the current epoch (for steering memos) or the total
+3. **Epoch number** -- the current epoch (for steering memos) or the total
    number of epochs completed (for final reports).
 
 ## Mode 1: Steering Memo Workflow
@@ -78,9 +78,9 @@ current epoch number. For each match, extract:
 - `margin` (decisive or narrow)
 - `criterion_scores` (novelty, plausibility, testability for each contestant)
 - `rationale`
-- `transcript_path` (if present — read the transcript file)
+- `transcript_path` (if present -- read the transcript file)
 
-**Pay special attention to Tier 2 match transcripts** — these multi-turn debates
+**Pay special attention to Tier 2 match transcripts** -- these multi-turn debates
 expose the detailed reasoning behind losses, including specific weaknesses that
 judges identified during argumentation.
 
@@ -146,12 +146,12 @@ mv "$tmpfile" <run-dir>/meta/epoch-<N>-steering.md
 Follow the steering memo format specified in the `meta-review-protocol` skill.
 The memo must include:
 
-- **Summary statistics** — counts and means
-- **Recurring patterns** — with evidence from specific reviews and matches
-- **Guidance for generation** — what to produce and what to avoid
-- **Guidance for review** — calibration adjustments
-- **Guidance for evolution** — operator recommendations for specific hypotheses
-- **Priority focus areas** — underexplored vs. saturated areas
+- **Summary statistics** -- counts and means
+- **Recurring patterns** -- with evidence from specific reviews and matches
+- **Guidance for generation** -- what to produce and what to avoid
+- **Guidance for review** -- calibration adjustments
+- **Guidance for evolution** -- operator recommendations for specific hypotheses
+- **Priority focus areas** -- underexplored vs. saturated areas
 - **Comparison to prior steering** (if applicable)
 
 ### Step 7: Report to Supervisor
@@ -215,7 +215,7 @@ For each `epoch-N.json` file, read the ratings and extract each hypothesis's
 Elo, matches, and wins. Build a per-hypothesis trajectory table showing how
 each hypothesis's ranking evolved over time.
 
-**This is a key differentiator of the final report** — it shows not just where
+**This is a key differentiator of the final report** -- it shows not just where
 hypotheses ended up, but how they got there. A hypothesis that started low and
 climbed steadily tells a different story than one that started high and declined.
 
@@ -283,9 +283,9 @@ For each contradiction, identify what experiment or analysis could resolve it.
 
 From the top-10 hypotheses' `experiments` fields, build a prioritized plan:
 
-1. **Phase 1 (Quick Wins):** Easy experiments using standard techniques, 1–3
+1. **Phase 1 (Quick Wins):** Easy experiments using standard techniques, 1-3
    months, that could provide initial validation or refutation.
-2. **Phase 2 (Core Validation):** Medium-difficulty experiments, 3–12 months,
+2. **Phase 2 (Core Validation):** Medium-difficulty experiments, 3-12 months,
    that test the central mechanisms.
 3. **Phase 3 (Deep Investigation):** Hard experiments requiring specialized
    equipment or long timelines, 12+ months.
@@ -306,7 +306,7 @@ Read all steering memos:
 ls <run-dir>/meta/epoch-*-steering.md
 ```
 
-Summarize the system's learning trajectory — how guidance evolved across epochs,
+Summarize the system's learning trajectory -- how guidance evolved across epochs,
 what patterns persisted, and what the system learned over time.
 
 ### Step 11: Write Final Report

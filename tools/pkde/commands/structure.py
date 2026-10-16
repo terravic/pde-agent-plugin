@@ -1,17 +1,17 @@
-"""`pkde structure` — structural analysis utilities.
+"""`pkde structure` -- structural analysis utilities.
 
 ``interface``          Identify interface residues between chains in a
                        complex structure (PDB or mmCIF).  Produces a
                        residue list suitable for ``pkde pocket run --near``,
                        closing the loop between complex prediction and
                        site-specific druggability.  This is a structural
-                       computation, not an API call — it works directly
+                       computation, not an API call -- it works directly
                        from the coordinate file.
 
 ``annotate-topology``  Map GPCR transmembrane topology onto pocket-lining
                        residues, answering "which pocket is the orthosteric
                        site?" by checking which pockets have residues in
-                       TM3, TM6, and TM7 — the helices that form the
+                       TM3, TM6, and TM7 -- the helices that form the
                        orthosteric binding cleft in Class A GPCRs.  TM
                        boundaries are fetched from UniProt (primary).
 
@@ -32,12 +32,16 @@ from pathlib import Path
 from typing import Any
 
 import click
-import numpy as np
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None  # type: ignore[assignment]
 
 from ..common import AppState, out_option, output_options, pass_state, resolve_artifact
 from ..core import http, provenance
 from ..core import thresholds as thresholds_mod
-from ..core.errors import ArtifactError, SchemaError, UsageError
+from ..core.errors import ArtifactError, DependencyError, SchemaError, UsageError
 from ..core.output import Emitter
 from ..core.paths import sanitize_slug
 from ..core.qps import qps_for_host
@@ -79,7 +83,7 @@ def _parse_atoms_pdb(text: str) -> list[dict[str, Any]]:
 
     Returns a list of dicts with keys: chain, resnum, resname, x, y, z,
     element, bfactor.  Hydrogen atoms (element H/D in columns 76-78, or
-    atom name starting with H/digit-H) are excluded — interface contacts
+    atom name starting with H/digit-H) are excluded -- interface contacts
     are defined on heavy atoms only.
 
     The B-factor (columns 60-66) is extracted because AlphaFold structures
@@ -139,7 +143,7 @@ def _parse_atoms_cif(text: str) -> list[dict[str, Any]]:
     and ``Cartn_x/y/z`` (coordinates).  Falls back to ``label_asym_id``
     and ``label_seq_id`` when auth variants are absent.
 
-    Also extracts ``B_iso_or_equiv`` (B-factor) when available — for
+    Also extracts ``B_iso_or_equiv`` (B-factor) when available -- for
     AlphaFold structures this is per-residue pLDDT.
 
     Hydrogen atoms are excluded via the ``type_symbol`` column when
@@ -207,7 +211,7 @@ def _parse_atoms_cif(text: str) -> list[dict[str, Any]]:
             except (ValueError, IndexError):
                 pass
 
-        # Element symbol — extracted for both hydrogen filtering and
+        # Element symbol -- extracted for both hydrogen filtering and
         # vdW radius lookup in SASA computation.
         element = ""
         if col_element is not None:
@@ -329,14 +333,14 @@ def resolve_accession(identifier: str) -> tuple[str, str | None]:
     Otherwise treat it as a gene symbol and search UniProt for a
     human (organism 9606) exact gene match.
 
-    Returns ``(accession, gene_symbol)`` — the gene symbol is the
+    Returns ``(accession, gene_symbol)`` -- the gene symbol is the
     query when we searched, or ``None`` when the input was already an
     accession.
     """
     if _is_accession(identifier):
         return identifier, None
 
-    # Gene symbol → accession via UniProt search.
+    # Gene symbol -> accession via UniProt search.
     gene = identifier.upper()
     url = (
         f"{UNIPROT_API}/search"
@@ -409,7 +413,7 @@ def parse_tm_regions(features: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Extract transmembrane regions from UniProt features array.
 
     Each TM region gets a label (TM1, TM2, ...) based on position
-    along the sequence (N→C ordering).
+    along the sequence (N->C ordering).
     """
     raw = []
     for feat in features:
@@ -538,7 +542,7 @@ _VDW_RADII: dict[str, float] = {
 _VDW_DEFAULT = 1.70
 
 # Maximum accessible surface area per residue type (Angstrom^2).
-# Tien et al., PLoS ONE 2013;8:e80635 — theoretical maxASA from
+# Tien et al., PLoS ONE 2013;8:e80635 -- theoretical maxASA from
 # Gly-X-Gly tripeptides.
 MAX_ASA_TIEN: dict[str, float] = {
     "ALA": 129.0,
@@ -593,6 +597,11 @@ def _compute_sasa(
 
     Returns a list of SASA values (Angstrom^2), one per input atom.
     """
+    if np is None:
+        raise DependencyError(
+            "the 'numpy' package is required for SASA computation",
+            remedy="install numpy into the tools environment (run `tools/install.sh`)",
+        )
     n_atoms = len(atoms)
     if n_atoms == 0:
         return []
@@ -608,7 +617,7 @@ def _compute_sasa(
     # Generate test points on the unit sphere.
     sphere_pts = _generate_sphere_points(n_points)
 
-    # Grid-based spatial hashing — cell size must be >= max possible
+    # Grid-based spatial hashing -- cell size must be >= max possible
     # interaction distance between two atoms.
     max_radius = float(expanded.max())
     cell_size = 2.0 * max_radius
@@ -648,7 +657,7 @@ def _compute_sasa(
         test_points = ci + sphere_pts * ri  # (n_points, 3)
 
         if not neighbors:
-            # No neighbors — all points exposed.
+            # No neighbors -- all points exposed.
             sasa[i] = 4.0 * math.pi * ri * ri
             continue
 
@@ -709,7 +718,7 @@ def _compute_rsa(
         if max_asa is not None and max_asa > 0:
             rsa = min(1.0, max(0.0, sasa / max_asa))
         else:
-            # Non-standard residue — report SASA but no RSA.
+            # Non-standard residue -- report SASA but no RSA.
             rsa = None
 
         bfactors = rd["bfactors"]
@@ -729,7 +738,7 @@ def _compute_rsa(
 
 
 # ---------------------------------------------------------------------------
-# Pocket ↔ TM mapping
+# Pocket <-> TM mapping
 # ---------------------------------------------------------------------------
 
 
@@ -802,7 +811,7 @@ def map_pocket_to_topology(
             bundle_void_reason = (
                 f"Pocket {rank} has residues in {n_tm_segments} TM segments"
                 f" with {volume} A^3 volume"
-                " — likely TM bundle interior, not a discrete cavity"
+                " -- likely TM bundle interior, not a discrete cavity"
             )
 
     return {
@@ -859,8 +868,8 @@ def interface_cmd(
 ) -> None:
     """Identify interface residues between chains in a complex structure.
 
-    Reads a multi-chain structure (PDB or mmCIF) — e.g., an AF3
-    prediction — and finds residues at the interface between each pair
+    Reads a multi-chain structure (PDB or mmCIF) -- e.g., an AF3
+    prediction -- and finds residues at the interface between each pair
     of chains using a distance-based contact analysis.  A residue is an
     interface residue if any of its heavy atoms is within the distance
     cutoff of any heavy atom on a different chain.
@@ -871,8 +880,8 @@ def interface_cmd(
 
     \b
     Outputs:
-      {stem}.interface.artifact.json — interface residue record
-      {stem}.interface.meta.json     — provenance sidecar
+      {stem}.interface.artifact.json -- interface residue record
+      {stem}.interface.meta.json     -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
 
@@ -1069,7 +1078,7 @@ def annotate_topology(
     gene_label = gene_from_search or topology.get("gene") or accession
 
     if not tm_regions:
-        # Non-GPCR or no annotated TM regions — still report, don't fail.
+        # Non-GPCR or no annotated TM regions -- still report, don't fail.
         pass
 
     # -- map pockets ----------------------------------------------------------
@@ -1166,12 +1175,12 @@ def annotate_topology(
                 res_str = ", ".join(seg["residues"])
                 emit.line(f"  {seg['label']}: {seg['count']} residues ({res_str})")
             if ann["orthosteric_candidate"]:
-                emit.line("  → Candidate orthosteric site (TM3+TM6+TM7 lining)")
+                emit.line("  -> Candidate orthosteric site (TM3+TM6+TM7 lining)")
             if ann["bundle_void_advisory"]:
                 n_segs = ann["n_tm_segments"]
                 n_alpha = ann.get("n_alpha_spheres")
                 emit.line(
-                    f"  → Bundle void advisory: {n_segs} TM segments,"
+                    f"  -> Bundle void advisory: {n_segs} TM segments,"
                     f" {int(n_alpha) if n_alpha else '?'} alpha spheres"
                 )
         else:
@@ -1205,7 +1214,7 @@ def _parse_near_residues(near: str) -> list[tuple[str, int]]:
             except ValueError:
                 continue
         else:
-            # Bare residue number — assume chain "_".
+            # Bare residue number -- assume chain "_".
             try:
                 result.append(("_", int(token)))
             except ValueError:
@@ -1216,7 +1225,7 @@ def _parse_near_residues(near: str) -> list[tuple[str, int]]:
 def _format_residue_ranges(resnums: list[int]) -> str:
     """Format a sorted list of residue numbers into compact ranges.
 
-    E.g., [1, 2, 3, 7, 8, 15] → "1-3, 7-8, 15"
+    E.g., [1, 2, 3, 7, 8, 15] -> "1-3, 7-8, 15"
     """
     if not resnums:
         return ""
@@ -1239,7 +1248,7 @@ def _format_residue_ranges(resnums: list[int]) -> str:
 @click.option(
     "--gene",
     default=None,
-    help="Gene symbol or UniProt accession — fetches glycosylation sites.",
+    help="Gene symbol or UniProt accession -- fetches glycosylation sites.",
 )
 @click.option(
     "--near",
@@ -1269,12 +1278,12 @@ def surface_cmd(
     UniProt and reported alongside the surface analysis.
 
     The B-factor column is extracted as a pLDDT proxy for AlphaFold
-    structures — residues with pLDDT < 50 are flagged as likely disordered.
+    structures -- residues with pLDDT < 50 are flagged as likely disordered.
 
     \b
     Outputs:
-      {stem}.surface.artifact.json — surface accessibility record
-      {stem}.surface.meta.json     — provenance sidecar
+      {stem}.surface.artifact.json -- surface accessibility record
+      {stem}.surface.meta.json     -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
 
@@ -1457,7 +1466,7 @@ def surface_cmd(
     sidecar.note("threshold_set", ts.tag)
     sidecar.add_output(artifact_path)
 
-    # Mandatory relays — always fired.
+    # Mandatory relays -- always fired.
     sidecar.warn(
         provenance.RELAY_CODES["surface.sasa_is_static_snapshot"],
         code="surface.sasa_is_static_snapshot",
@@ -1554,7 +1563,7 @@ _AA_3TO1: dict[str, str] = {
     "TRP": "W",
     "TYR": "Y",
     "VAL": "V",
-    "MSE": "M",  # selenomethionine → methionine
+    "MSE": "M",  # selenomethionine -> methionine
 }
 
 #: Backbone atom names used for --atoms backbone mode.
@@ -1683,7 +1692,7 @@ def _collect_residues(
     """Group atoms by (chain, resnum) and collect per-atom coordinates.
 
     Returns sorted list of residue dicts with keys: chain, resnum,
-    resname, one_letter, atom_coords (dict mapping atom_name → (x,y,z)).
+    resname, one_letter, atom_coords (dict mapping atom_name -> (x,y,z)).
     """
     grouped: dict[tuple[str, int], dict[str, Any]] = {}
     for atom in atoms:
@@ -1777,27 +1786,27 @@ def _kabsch_superimpose(
 
     Parameters
     ----------
-    ref_coords : (N, 3) array — reference coordinates
-    mob_coords : (N, 3) array — mobile coordinates
+    ref_coords : (N, 3) array -- reference coordinates
+    mob_coords : (N, 3) array -- mobile coordinates
 
     Returns
     -------
     rotation : (3, 3) rotation matrix
     translation : (3,) translation vector
-    rmsd : float — RMSD after optimal superposition
+    rmsd : float -- RMSD after optimal superposition
 
     The transformed mobile coordinates are: mob_coords @ rotation.T + translation
 
     Raises
     ------
     ArtifactError
-        If the SVD fails (degenerate coordinate set) — per #84,
+        If the SVD fails (degenerate coordinate set) -- per #84,
         an SVD failure must never read as a biological finding.
     """
     n = ref_coords.shape[0]
     if n < 3:
         raise ArtifactError(
-            f"only {n} matched atom(s) — need at least 3 for superposition",
+            f"only {n} matched atom(s) -- need at least 3 for superposition",
             detail="SVD-based superposition requires 3 non-collinear points",
             remedy="check chain selection and sequence matching; the two "
             "structures may share too few residues",
@@ -1816,7 +1825,7 @@ def _kabsch_superimpose(
         U, _S, Vt = np.linalg.svd(H)
     except np.linalg.LinAlgError as exc:
         raise ArtifactError(
-            "SVD failed during superposition — this is an alignment failure, "
+            "SVD failed during superposition -- this is an alignment failure, "
             "not a finding about the structures",
             detail=str(exc),
             remedy="check that the coordinate sets are not degenerate "
@@ -1926,10 +1935,15 @@ def superimpose_cmd(
 
     \b
     Outputs:
-      {stem}.superimposed.pdb           — aligned mobile structure
-      {stem}.superposition.artifact.json — superposition record
-      {stem}.superposition.meta.json     — provenance sidecar
+      {stem}.superimposed.pdb           -- aligned mobile structure
+      {stem}.superposition.artifact.json -- superposition record
+      {stem}.superposition.meta.json     -- provenance sidecar
     """
+    if np is None:
+        raise DependencyError(
+            "the 'numpy' package is required for structure superposition",
+            remedy="install numpy into the tools environment (run `tools/install.sh`)",
+        )
     emit = Emitter(as_json=as_json, quiet=quiet)
 
     # --- resolve inputs ---
@@ -2043,7 +2057,7 @@ def superimpose_cmd(
                     }
                 )
         else:
-            # All heavy atoms — match by atom name
+            # All heavy atoms -- match by atom name
             common = set(ref_ac.keys()) & set(mob_ac.keys())
             if common:
                 for aname in sorted(common):

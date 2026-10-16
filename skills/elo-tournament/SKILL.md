@@ -17,30 +17,30 @@ publishes with `pkde hypex analyze`; workers do not publish a separate result.
 Every match uses one of two tiers, selected based on the contestants' current
 ratings.
 
-### Tier 1 — Single-Turn Comparison
+### Tier 1 -- Single-Turn Comparison
 
 A quick structured comparison. Used for:
 
-- **Placement matches** — when one or both hypotheses are unrated.
-- **Large rating gaps** — when the rating difference exceeds 50 points.
+- **Placement matches** -- when one or both hypotheses are unrated.
+- **Large rating gaps** -- when the rating difference exceeds 50 points.
 
 **Format:**
 
 1. Read both hypotheses from `hypotheses/`.
 2. Read the latest review for each from `reviews/` (if available).
-3. Score each hypothesis on three criteria (1–5 scale each):
-   - **Novelty** — Does it propose something genuinely new?
-   - **Plausibility** — Is the mechanism well-supported by evidence?
-   - **Testability** — Are predictions specific and experiments feasible?
+3. Score each hypothesis on three criteria (1-5 scale each):
+   - **Novelty** -- Does it propose something genuinely new?
+   - **Plausibility** -- Is the mechanism well-supported by evidence?
+   - **Testability** -- Are predictions specific and experiments feasible?
 4. Declare a winner with margin (`decisive` or `narrow`) and rationale.
-5. No transcript file is needed — the rationale is captured in the match record.
+5. No transcript file is needed -- the rationale is captured in the match record.
 
-### Tier 2 — Multi-Turn Adversarial Debate
+### Tier 2 -- Multi-Turn Adversarial Debate
 
 An in-depth adversarial debate. Used for:
 
-- **Top-quartile matches** — when both hypotheses are in the top 25% by rating.
-- **Close matches** — when the rating difference is ≤ 50 points.
+- **Top-quartile matches** -- when both hypotheses are in the top 25% by rating.
+- **Close matches** -- when the rating difference is <= 50 points.
 
 Either condition triggers Tier 2. This ensures that closely-rated and
 high-performing hypotheses receive the most thorough evaluation.
@@ -53,23 +53,23 @@ match record.
 
 ```
 if either hypothesis is unrated:
-    → Tier 1 (placement match)
+    -> Tier 1 (placement match)
 elif abs(rating_a - rating_b) > 50:
-    → Tier 1 (large gap — likely a mismatch)
+    -> Tier 1 (large gap -- likely a mismatch)
 else:
-    → Tier 2 (close or high-stakes match)
+    -> Tier 2 (close or high-stakes match)
 ```
 
 Note: once the first two branches are evaluated, the remaining hypotheses are
-all rated with a gap ≤ 50 — exactly the population where Tier 2 applies.
+all rated with a gap <= 50 -- exactly the population where Tier 2 applies.
 Top-quartile matches are a subset of this group (they are rated and typically
 close together).
 
 ## Randomization Rule
 
 **Always randomize which hypothesis is presented as "Hypothesis A" vs
-"Hypothesis B".** Position bias — the tendency to favor whichever hypothesis
-is read first — is a well-documented cognitive bias. Before each match, flip
+"Hypothesis B".** Position bias -- the tendency to favor whichever hypothesis
+is read first -- is a well-documented cognitive bias. Before each match, flip
 a coin (use any random method) to decide presentation order.
 
 The match record fields `a` and `b` always reflect the *original* hypothesis
@@ -128,7 +128,7 @@ For Tier 2 matches, add the `transcript_path` field:
 
 | Field | Type | Description |
 |---|---|---|
-| `id` | string | `M-NNNN` — allocated automatically by `hypex add-match` (or `hypex next-id --run <run-id> match`) |
+| `id` | string | `M-NNNN` -- allocated automatically by `hypex add-match` (or `hypex next-id --run <run-id> match`) |
 | `epoch` | integer | Current epoch number |
 | `a` | string | First contestant hypothesis ID (`H-NNNN`) |
 | `b` | string | Second contestant hypothesis ID (`H-NNNN`) |
@@ -148,11 +148,11 @@ For Tier 2 matches, add the `transcript_path` field:
 
 ### Criterion Scores
 
-Each criterion is scored 1–5 for both contestants:
+Each criterion is scored 1-5 for both contestants:
 
-- **novelty** — Originality of the hypothesis beyond existing literature.
-- **plausibility** — Strength of the proposed causal mechanism and evidence.
-- **testability** — Specificity of predictions and feasibility of experiments.
+- **novelty** -- Originality of the hypothesis beyond existing literature.
+- **plausibility** -- Strength of the proposed causal mechanism and evidence.
+- **testability** -- Specificity of predictions and feasibility of experiments.
 
 Scores in `criterion_scores` use `a` and `b` keys matching the `a` and `b`
 fields in the match record (the original hypothesis IDs, not the randomized
@@ -160,27 +160,27 @@ presentation order).
 
 ### Margin Guidelines
 
-- **decisive** — Winner is clearly stronger across multiple criteria; score
-  gap ≥ 3 total points.
-- **narrow** — Close contest; score gap ≤ 2 total points or winner is stronger
+- **decisive** -- Winner is clearly stronger across multiple criteria; score
+  gap >= 3 total points.
+- **narrow** -- Close contest; score gap <= 2 total points or winner is stronger
   on some criteria but weaker on others.
 
 ### Margin Multipliers (Rating Impact)
 
-The margin field is not just a label — it directly affects the Elo rating
+The margin field is not just a label -- it directly affects the Elo rating
 calculation. The `elo recompute` engine applies a **margin multiplier** to the
-rating delta (the K × (S - E) term):
+rating delta (the K x (S - E) term):
 
 | Margin | Multiplier | Effect |
 |---|---|---|
-| `decisive` | 1.0× | Full rating change applied |
-| `narrow` | 0.75× | Rating change reduced by 25% |
+| `decisive` | 1.0x | Full rating change applied |
+| `narrow` | 0.75x | Rating change reduced by 25% |
 
 A narrow win moves ratings less than a decisive win. This means close matches
 have a smaller impact on rankings than clear-cut victories, reflecting the
 lower confidence in the outcome. For draws, use `"narrow"` as the margin
 (per the required fields table above); the draw itself already halves the
-actual score (0.5 instead of 1.0), and the 0.75× multiplier further dampens
+actual score (0.5 instead of 1.0), and the 0.75x multiplier further dampens
 the rating exchange between unevenly-rated contestants.
 
 ## elo CLI Usage
@@ -243,24 +243,24 @@ Options:
 
 The `elo pair` command applies pairing policies in order, filling the budget:
 
-1. **Placement** — Unrated hypotheses are paired against high-rated,
+1. **Placement** -- Unrated hypotheses are paired against high-rated,
    median-rated, and low-rated anchors (3 matches each). This calibrates new
    entrants quickly.
 
-2. **Refinement** — Among top-quartile rated hypotheses, pair nearest-rated
+2. **Refinement** -- Among top-quartile rated hypotheses, pair nearest-rated
    within the same proximity cluster. This produces the most informative
-   matches — close contests between the strongest related hypotheses.
+   matches -- close contests between the strongest related hypotheses.
 
-3. **Exploration** — 15% of the remaining budget is allocated to cross-cluster
+3. **Exploration** -- 15% of the remaining budget is allocated to cross-cluster
    pairings. This prevents clusters from becoming rating silos where hypotheses
    are only compared to their neighbors.
 
-4. **Rematch constraint** — No two hypotheses can be paired more than once
+4. **Rematch constraint** -- No two hypotheses can be paired more than once
    within an epoch, unless one has undergone evolution (producing a new
    hypothesis variant) since the last match.
 
 These policies are implemented in the `elo` tool. You do not need to implement
-them — just call `elo pair` and use the pairings it returns.
+them -- just call `elo pair` and use the pairings it returns.
 
 ## Atomic Writes & Match Creation
 
@@ -294,11 +294,11 @@ EOF
 Multiple ranking agents can run in parallel against different pairings. Safety
 is ensured by:
 
-- **Unique IDs** — Each match gets a unique `M-NNNN` ID from `hypex add-match`
+- **Unique IDs** -- Each match gets a unique `M-NNNN` ID from `hypex add-match`
   (which calls `hypex next-id` internally), using filesystem locking (`flock`)
   to serialize ID allocation across concurrent processes.
-- **One-writer-per-file** — Each match record is a separate file. No two agents
+- **One-writer-per-file** -- Each match record is a separate file. No two agents
   write to the same match file.
-- **Deferred recomputation** — Ratings are recomputed *after* all matches
+- **Deferred recomputation** -- Ratings are recomputed *after* all matches
   complete by replaying the full match ledger. No agent writes to ratings files
   during matches.

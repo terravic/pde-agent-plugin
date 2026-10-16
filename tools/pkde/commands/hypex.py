@@ -1,20 +1,20 @@
 """Hypex tournament ingest and analysis.
 
-Two phases (docs/tool-design-guidance.md §3):
+Two phases (docs/tool-design-guidance.md Section 3):
 
-  ingest  — phase 1. Walks a completed hypex run directory, validates
+  ingest  -- phase 1. Walks a completed hypex run directory, validates
             files against the hypex schemas, computes integrity checks
-            (what ``hypex validate`` does NOT check — §3.7), normalises
+            (what ``hypex validate`` does NOT check -- Section 3.7), normalises
             everything into ``pkde.hypex.v1`` JSON, archives the run
             directory as ``.tar.zst``, and writes to
             ``raw/hypotheses/hx-<slug>.hypex.json`` with a sidecar.
-  analyze — phase 2. Reads the normalised artifact, applies the
+  analyze -- phase 2. Reads the normalised artifact, applies the
             ``hypex@1.0`` threshold set, computes a verdict, fires
             relay codes conditionally, and emits
             ``pkde.hypothesis-assessment.v1`` core alongside the
             analysis.
 
-The coscientist.py command is the closest analogue — study it for the
+The coscientist.py command is the closest analogue -- study it for the
 two-phase pattern, sidecar handling, and emitter output.
 """
 
@@ -133,7 +133,7 @@ def _validate_review(data: dict) -> list[str]:
 
 
 # ---------------------------------------------------------------------------
-# Integrity checks (what ``hypex validate`` does NOT check — §3.7)
+# Integrity checks (what ``hypex validate`` does NOT check -- Section 3.7)
 # ---------------------------------------------------------------------------
 
 
@@ -147,7 +147,7 @@ def _compute_integrity(
     """Compute referential integrity checks the ingest must surface."""
     h_ids = set(hypotheses.keys())
 
-    # Dangling match refs — match.a or match.b not in hypotheses/
+    # Dangling match refs -- match.a or match.b not in hypotheses/
     dangling_match_refs = []
     for m in matches:
         for ref_field in ("a", "b"):
@@ -155,7 +155,7 @@ def _compute_integrity(
             if ref and ref != "draw" and ref not in h_ids:
                 dangling_match_refs.append(f"{m.get('id', '?')}.{ref_field}={ref}")
 
-    # Dangling review refs — review.hypothesis_id not in hypotheses/
+    # Dangling review refs -- review.hypothesis_id not in hypotheses/
     dangling_review_refs = []
     for r in reviews:
         ref = r.get("hypothesis_id")
@@ -171,18 +171,18 @@ def _compute_integrity(
             if p not in h_ids:
                 dangling_lineage_parents.append(f"{h_id}.lineage.parents={p}")
 
-    # ID-filename mismatches — H-0042.json should contain id: "H-0042"
+    # ID-filename mismatches -- H-0042.json should contain id: "H-0042"
     id_filename_mismatches = []
     for h_id, h in hypotheses.items():
         declared_id = h.get("id")
         if declared_id and declared_id != h_id:
             id_filename_mismatches.append(f"file {h_id}.json declares id={declared_id}")
 
-    # Unrated hypotheses — in hypotheses/ but not in the ratings
+    # Unrated hypotheses -- in hypotheses/ but not in the ratings
     rated_ids = set(ratings_per_h.keys())
     unrated_hypotheses = sorted(h_ids - rated_ids)
 
-    # Quarantine duplicates — present in both hypotheses/ and quarantine/
+    # Quarantine duplicates -- present in both hypotheses/ and quarantine/
     quarantine_duplicates = sorted(h_ids & set(quarantine.keys()))
 
     return {
@@ -331,7 +331,7 @@ def _build_hypex_record(
                 suspect_count = summary.get("suspect", 0) if "suspect" in summary else 0
                 unverified_count = summary.get("unverified", 0)
             except SchemaError:
-                pass  # manifest_present stays False — relay fires
+                pass  # manifest_present stays False -- relay fires
 
         # Lineage
         lineage = h.get("lineage", {})
@@ -569,7 +569,7 @@ def ingest(
 
     # --- Read meta files ---
 
-    # Ratings — look for the latest epoch-N.json
+    # Ratings -- look for the latest epoch-N.json
     ratings_data: dict | None = None
     ratings_dir = run_path / "ratings"
     if ratings_dir.is_dir():
@@ -646,7 +646,7 @@ def ingest(
         except SchemaError:
             pass
 
-    # meta/pacing.json — read but not used in ingest, carried into the record
+    # meta/pacing.json -- read but not used in ingest, carried into the record
     pacing: dict | None = None
     pacing_path = run_path / "meta" / "pacing.json"
     if pacing_path.is_file() and is_safe_to_open(pacing_path):
@@ -787,12 +787,12 @@ def analyze(
     min_win = thresholds.get("min_win_rate")
     max_phantom = thresholds.get("max_phantom_citations")
 
-    # elo_decisive_gap may be UNRESOLVED — handle gracefully
+    # elo_decisive_gap may be UNRESOLVED -- handle gracefully
     gap_cutoff: float | None = None
     try:
         gap_cutoff = thresholds.get("elo_decisive_gap")
     except ThresholdError:
-        # UNRESOLVED — leave as None
+        # UNRESOLVED -- leave as None
         pass
 
     hypotheses = record.get("hypotheses", [])
@@ -843,7 +843,7 @@ def analyze(
         if gap_cutoff is not None:
             leader_gap_is_decisive = elo_gap >= gap_cutoff
         else:
-            # UNRESOLVED — must be null, NOT fall back to 50.0
+            # UNRESOLVED -- must be null, NOT fall back to 50.0
             leader_gap_is_decisive = None
 
     # --- Verdict ---
@@ -908,7 +908,7 @@ def analyze(
         if not any(r["code"] == code for r in relays):
             relays.append(provenance.relay(code, message))
 
-    # run_not_converged — when termination.reason != "converged"
+    # run_not_converged -- when termination.reason != "converged"
     if term_reason != "converged":
         _fire(
             "hypex.run_not_converged",
@@ -916,7 +916,7 @@ def analyze(
             "reflects where the run stopped, not where it settled.",
         )
 
-    # run_aborted — when termination.declared == false or reason == "aborted"
+    # run_aborted -- when termination.declared == false or reason == "aborted"
     if not term_declared or term_reason == "aborted":
         _fire(
             "hypex.run_aborted",
@@ -924,7 +924,7 @@ def analyze(
             f"Epoch reached: {termination.get('epoch_reached', 0)}.",
         )
 
-    # phantom_citations_present — when any hypothesis has phantom > 0
+    # phantom_citations_present -- when any hypothesis has phantom > 0
     phantoms = [h for h in hypotheses if h.get("citations", {}).get("phantom", 0) > 0]
     if phantoms:
         ids = ", ".join(h["id"] for h in phantoms[:10])
@@ -933,7 +933,7 @@ def analyze(
             f"Phantom citations found in: {ids}.",
         )
 
-    # citation_manifest_absent — when any hypothesis lacks a manifest
+    # citation_manifest_absent -- when any hypothesis lacks a manifest
     no_manifest = [
         h
         for h in hypotheses
@@ -946,7 +946,7 @@ def analyze(
             f"No citation manifest for: {ids}.",
         )
 
-    # integrity_violations — when any integrity array non-empty
+    # integrity_violations -- when any integrity array non-empty
     has_violations = any(len(v) > 0 for v in integrity.values() if isinstance(v, list))
     if has_violations:
         violation_summary = "; ".join(
@@ -956,10 +956,10 @@ def analyze(
         )
         _fire(
             "hypex.integrity_violations",
-            f"Integrity violations found — {violation_summary}.",
+            f"Integrity violations found -- {violation_summary}.",
         )
 
-    # unrated_hypotheses — when integrity.unrated_hypotheses non-empty
+    # unrated_hypotheses -- when integrity.unrated_hypotheses non-empty
     unrated = integrity.get("unrated_hypotheses", [])
     if unrated:
         ids = ", ".join(str(u) for u in unrated[:10])
@@ -968,7 +968,7 @@ def analyze(
             f"Unrated hypotheses: {ids}.",
         )
 
-    # composite_ranking — when standings taken with --composite
+    # composite_ranking -- when standings taken with --composite
     composite_preset = record.get("run", {}).get("composite_preset")
     has_composite = any(h.get("composite") is not None for h in hypotheses)
     if has_composite or composite_preset:
@@ -978,7 +978,7 @@ def analyze(
             "The number is not an ELO.",
         )
 
-    # quarantined_excluded — when observed.n_quarantined > 0
+    # quarantined_excluded -- when observed.n_quarantined > 0
     n_quarantined = observed.get("n_quarantined", 0)
     if n_quarantined > 0:
         _fire(
@@ -987,9 +987,9 @@ def analyze(
             "from the tournament standings.",
         )
 
-    # pacing_uncoordinated — when pacing absent, tier != "shared",
+    # pacing_uncoordinated -- when pacing absent, tier != "shared",
     # or paths disagree.  Read from the record (persisted at ingest)
-    # instead of from the filesystem — the run dir may be archived.
+    # instead of from the filesystem -- the run dir may be archived.
     pacing_data = record.get("pacing")
 
     pacing_uncoordinated = False

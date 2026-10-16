@@ -11,7 +11,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Generate a complete Stage 1–3 KRAS G12D Demo Program Workspace & Interactive Scientific Dashboard.
+"""Generate a complete Stage 1-3 KRAS G12D Demo Program Workspace & Interactive Scientific Dashboard.
 
 Creates real Work Orders, Runs, Resource Leases, Correction Loops, 10-Check
 Mechanical Validations, Layer 0 Scientific Artifacts (all 14 viewer types with
@@ -272,10 +272,10 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "- **Normal Tissue Expression (GTEx)**: Peak expression occurs in Colon - Transverse at 48.5 "
         "{source: raw/gtex/KRAS.tissue.json $.max_tpm} TPM and Pancreas at 22.4 "
         "{source: raw/gtex/KRAS.tissue.json $.tissues[3].median_tpm} TPM.\n"
-        "- **Relay: `ESSENTIAL_GENE_WT_SPARING_REQUIRED`** — Medicinal chemistry and docking must enforce >=50x G12D over WT selectivity.\n"
-        "- **Relay: `GI_MUCOSA_WT_EXPRESSION_MONITOR`** — Preclinical toxicology must monitor GI mucosa.\n\n"
+        "- **Relay: `ESSENTIAL_GENE_WT_SPARING_REQUIRED`** -- Medicinal chemistry and docking must enforce >=50x G12D over WT selectivity.\n"
+        "- **Relay: `GI_MUCOSA_WT_EXPRESSION_MONITOR`** -- Preclinical toxicology must monitor GI mucosa.\n\n"
         "## Verdict\n"
-        "**GO WITH CAUTION** — Proceed with non-covalent Switch-II pocket inhibitors specifically engaging Asp12.\n\n"
+        "**GO WITH CAUTION** -- Proceed with non-covalent Switch-II pocket inhibitors specifically engaging Asp12.\n\n"
         "## Evidence\n"
         "- [KRAS gnomAD Constraint](../../raw/genomics/KRAS.gnomad-constraint.json)\n"
         "- [KRAS GTEx Expression](../../raw/gtex/KRAS.tissue.json)\n\n"
@@ -530,10 +530,10 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "- **Switch-II Allosteric Pocket (SII-P)**: `POCKET_1_SIIP` achieves a druggability score of 0.84 "
         "{source: raw/pocket/KRAS_G12D_SIIP.pockets.json $.top_druggability_score} with volume 542.6 "
         "{source: raw/pocket/KRAS_G12D_SIIP.pockets.json $.pockets[0].volume_a3} A^3.\n"
-        "- **Relay: `SWITCH_II_CONFORMATIONAL_PLASTICITY`** — Use ensemble docking across Switch-II loop states.\n"
-        "- **Relay: `ASP12_SALT_BRIDGE_ANCHOR_REQUIRED`** — Anchor basic amine against Asp12 carboxylate.\n\n"
+        "- **Relay: `SWITCH_II_CONFORMATIONAL_PLASTICITY`** -- Use ensemble docking across Switch-II loop states.\n"
+        "- **Relay: `ASP12_SALT_BRIDGE_ANCHOR_REQUIRED`** -- Anchor basic amine against Asp12 carboxylate.\n\n"
         "## Verdict\n"
-        "**PASS** — Switch-II pocket is structurally validated for non-covalent salt-bridge inhibitor design.\n\n"
+        "**PASS** -- Switch-II pocket is structurally validated for non-covalent salt-bridge inhibitor design.\n\n"
         "## Evidence\n"
         "- [KRAS G12D pLDDT Profile](../../raw/structures/KRAS_G12D.afdb.json)\n"
         "- [KRAS G12D PAE Matrix](../../raw/structures/KRAS_G12D.pae.json)\n"
@@ -721,9 +721,9 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "{source: raw/admet/MRTX1133.predict.json $.predictions.hlm_t12_min} min and hERG IC50 is 14.2 "
         "{source: raw/admet/MRTX1133.predict.json $.predictions.herg_ic50_um} uM, while Caco-2 permeability is 2.4 "
         "{source: raw/admet/MRTX1133.predict.json $.predictions.caco2_papp_1e6} x 10^-6 cm/s.\n"
-        "- **Relay: `LOW_ORAL_PERMEABILITY_PRODRUG_EVAL`** — Evaluate phenolic pivaloyloxymethyl prodrugs to boost oral bioavailability above 11.5%.\n\n"
+        "- **Relay: `LOW_ORAL_PERMEABILITY_PRODRUG_EVAL`** -- Evaluate phenolic pivaloyloxymethyl prodrugs to boost oral bioavailability above 11.5%.\n\n"
         "## Verdict\n"
-        "**PASS WITH WARNINGS** — Potent G12D scaffold with clean CYP/hERG profile; optimize permeability in Cycle 2.\n\n"
+        "**PASS WITH WARNINGS** -- Potent G12D scaffold with clean CYP/hERG profile; optimize permeability in Cycle 2.\n\n"
         "## Evidence\n"
         "- [MRTX1133 3D Conformer](../../raw/compounds/MRTX1133.3d.sdf)\n"
         "- [MRTX1133 BRICS SAR](../../raw/sar/MRTX1133_series.brics.json)\n"
@@ -903,9 +903,9 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "{source: raw/bioactivity/KRAS_G12D_panel.json $.selectivity_fold} fold (ddG = -3.6 "
         "{source: raw/docking/MRTX1133_SIIP.docking_result.json $.selectivity_ddg_kcal_mol} kcal/mol), "
         "satisfying the `ESSENTIAL_GENE_WT_SPARING_REQUIRED` constraint.\n"
-        "- **Relay: `SIIP_POSE1_SALT_BRIDGE_CONFIRMED`** — Proceed to cellular pERK and resistance tournament evaluation.\n\n"
+        "- **Relay: `SIIP_POSE1_SALT_BRIDGE_CONFIRMED`** -- Proceed to cellular pERK and resistance tournament evaluation.\n\n"
         "## Verdict\n"
-        "**PASS** — Structural and biophysical selectivity criteria (>50x WT sparing) are exceeded at 725x.\n\n"
+        "**PASS** -- Structural and biophysical selectivity criteria (>50x WT sparing) are exceeded at 725x.\n\n"
         "## Evidence\n"
         "- [MRTX1133 Docking Scores](../../raw/docking/MRTX1133_SIIP.docking_result.json)\n"
         "- [MRTX1133 Contact Map](../../raw/docking/MRTX1133_SIIP.contacts.json)\n"
@@ -1049,9 +1049,9 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
         "- **#1 Ranked Hypothesis (`HYP-001`, ELO 1648)**: Pulsatile MRTX1133 + SHP2 co-inhibition suppresses RTK-driven WT RAS feedback.\n"
         "- **#2 Ranked Hypothesis (`HYP-002`, ELO 1572 {source: raw/hypotheses/kras_resistance.tournament.json $.hypotheses[1].elo})**: "
         "Conformational C2-pyrrolizidine lock retains potency against Tyr96Asp/His95Gln Switch-II mutations.\n"
-        "- **Relay: `HYPEX_TOP_RANKED_SHP2_COMBO`** — Prioritize AsPC-1 72h pERK rebound combination matrix in Stage 3.\n\n"
+        "- **Relay: `HYPEX_TOP_RANKED_SHP2_COMBO`** -- Prioritize AsPC-1 72h pERK rebound combination matrix in Stage 3.\n\n"
         "## Verdict\n"
-        "**PASS** — Tournament converged with clear separation (ELO 1648 vs 1572) and actionable experimental relays.\n\n"
+        "**PASS** -- Tournament converged with clear separation (ELO 1648 vs 1572) and actionable experimental relays.\n\n"
         "## Evidence\n"
         "- [Hypex Tournament Leaderboard](../../raw/hypotheses/kras_resistance.tournament.json)\n\n"
         "## Implications\n"
@@ -1149,7 +1149,7 @@ def populate_demo_workspace(workspace_dir: Path) -> dict[str, Any]:
     )
 
     (workspace_dir / "executive/program-summary.md").write_text(
-        "# Executive Program Summary — KRAS G12D Selective Inhibitor (`KRAS-G12D-Selective-Inhibitor`)\n\n"
+        "# Executive Program Summary -- KRAS G12D Selective Inhibitor (`KRAS-G12D-Selective-Inhibitor`)\n\n"
         "## Stage 2 Gate Readiness: **GO TO STAGE 3**\n\n"
         "| Dimension | Metric | Target Gate | Observed | Status |\n"
         "|---|---|---|---|---|\n"

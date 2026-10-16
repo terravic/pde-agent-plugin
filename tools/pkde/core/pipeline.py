@@ -137,7 +137,7 @@ def run_docking(
     ``poses``, ``poses_text``), or None on failure.
 
     Unlike the original ``analog.py`` helper, the grid box path is
-    accepted explicitly — ``screen`` receives it from ``--gridbox``
+    accepted explicitly -- ``screen`` receives it from ``--gridbox``
     while ``analog`` computes it from the receptor naming convention.
     """
     vina_path = shutil.which("vina")

@@ -8,7 +8,7 @@ description: "Four evolutionary operators (ground, simplify, combine, oob) for r
 This skill teaches you the four evolutionary operators used to derive improved
 hypothesis variants from existing hypotheses. Each operator targets a specific
 weakness identified by reviewers or tournament loss patterns. Every variant
-records its lineage — parent IDs and the operator used — so the system can
+records its lineage -- parent IDs and the operator used -- so the system can
 track evolutionary history and enforce mandatory rematches.
 
 This protocol contributes records to a run that the supervisor ultimately
@@ -28,7 +28,7 @@ missing citations.
 
 **Procedure:**
 
-1. Read the hypothesis and its reviews. Identify the weakest evidential claim —
+1. Read the hypothesis and its reviews. Identify the weakest evidential claim --
    the one reviewers flagged as poorly supported or speculative.
 2. Run targeted literature searches to find evidence that supports or
    contradicts the weak claim:
@@ -48,7 +48,7 @@ missing citations.
    citations and refine the mechanism description to incorporate the new
    findings. Add the new literature to the `evidence` array.
 4. **If contradicting evidence is found:** Rewrite the claim to accommodate the
-   contradiction — narrow the scope, add a qualifying condition, or pivot the
+   contradiction -- narrow the scope, add a qualifying condition, or pivot the
    mechanism. Add the contradicting evidence with `"role": "contradicts"` or
    `"role": "constrains"`.
 5. Produce the variant hypothesis with the updated evidence array and revised
@@ -93,7 +93,7 @@ explanations.
      refutable by the remaining experiments.
 
 3. Produce the variant hypothesis with simplified experiments, mechanism, and
-   predictions. Do not drop evidence — evidence items should remain unless they
+   predictions. Do not drop evidence -- evidence items should remain unless they
    support a claim you removed.
 
 **Lineage:** One parent.
@@ -110,7 +110,7 @@ explanations.
 proximity cluster into a stronger unified variant.
 
 **When to use:** Two hypotheses in the same cluster address complementary
-aspects of the same phenomenon — one explains mechanism A, the other explains
+aspects of the same phenomenon -- one explains mechanism A, the other explains
 mechanism B, and a combined A+B mechanism is more complete and testable than
 either alone.
 
@@ -133,13 +133,13 @@ either alone.
      insights. It should be stronger or broader than either parent alone.
    - **Mechanism:** A unified causal mechanism that incorporates both parents'
      mechanistic contributions.
-   - **Predictions:** Include predictions that test the joint mechanism —
+   - **Predictions:** Include predictions that test the joint mechanism --
      especially predictions that would distinguish the combined hypothesis
      from either parent individually.
    - **Experiments:** Design experiments that test the interaction or combined
      effect, not just each parent's claim independently.
    - **Evidence:** Merge evidence arrays from both parents. Deduplicate by
-     `lit_id` — if both parents cite the same paper, keep one entry with the
+     `lit_id` -- if both parents cite the same paper, keep one entry with the
      more informative note.
 
 4. Produce the variant hypothesis with both parent IDs in the lineage.
@@ -157,7 +157,7 @@ either alone.
 **Purpose:** Transfer an insight from an adjacent or distant field to create a
 novel variant with a fresh perspective.
 
-**When to use:** The hypothesis space feels saturated — all hypotheses share
+**When to use:** The hypothesis space feels saturated -- all hypotheses share
 the same literature base, the same mechanisms, and the same experimental
 approaches. Or when a hypothesis has stalled in tournament rankings without
 clear evidence-based weaknesses to fix.
@@ -170,7 +170,7 @@ clear evidence-based weaknesses to fix.
 2. Search for analogies in adjacent or distant fields:
 
    ```bash
-   # Cross-category arXiv search — look for structural analogies
+   # Cross-category arXiv search -- look for structural analogies
    pkde preprint search --source arxiv "cat:q-bio.MN AND abs:<analogous mechanism>" --max-results 10
    pkde preprint search --source arxiv "cat:cs.AI AND abs:<phenomenon keyword>" --max-results 10
    pkde preprint search --source arxiv "cat:physics.bio-ph AND abs:<system keyword>" --max-results 10
@@ -190,7 +190,7 @@ clear evidence-based weaknesses to fix.
 
 4. Build the variant:
    - **Statement:** Incorporate the cross-disciplinary insight into a new
-     falsifiable claim. Make the analogy explicit — state what is being
+     falsifiable claim. Make the analogy explicit -- state what is being
      transferred and why it applies.
    - **Mechanism:** Describe the mechanism using the transferred framework.
      Explain both the analogy (why the systems are structurally similar) and
@@ -230,7 +230,7 @@ and their offspring.
 
 | Operator | Parents | Description |
 |---|---|---|
-| `null` | `[]` (empty) | Original hypothesis — no parent |
+| `null` | `[]` (empty) | Original hypothesis -- no parent |
 | `ground` | `["H-NNNN"]` (one) | Strengthened evidence from one parent |
 | `simplify` | `["H-NNNN"]` (one) | Simplified from one parent |
 | `combine` | `["H-NNNN", "H-MMMM"]` (two) | Merged from two parents |
@@ -270,11 +270,11 @@ reviewers and tournament outcomes:
 | Two complementary hypotheses both lost to a third | **combine** them |
 
 When multiple signals apply, prioritize:
-1. **ground** if evidence quality is the primary weakness — a well-grounded
+1. **ground** if evidence quality is the primary weakness -- a well-grounded
    hypothesis survives all other criticisms better.
 2. **simplify** if the hypothesis is strong in evidence but too complex to
-   test — parsimony wins tournaments.
-3. **combine** only when two hypotheses genuinely complement each other — do
+   test -- parsimony wins tournaments.
+3. **combine** only when two hypotheses genuinely complement each other -- do
    not force combinations between unrelated hypotheses.
-4. **oob** as a strategic diversification move — use sparingly, not on every
+4. **oob** as a strategic diversification move -- use sparingly, not on every
    hypothesis.

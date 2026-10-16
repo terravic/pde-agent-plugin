@@ -58,7 +58,7 @@ def _guard_input_output_alias(input_path: Path, target_dir: Path, label: str) ->
         input_path.resolve().is_relative_to(target_dir.resolve())
     ):
         raise Refusal(
-            f"input {label} path aliases output directory — would clobber input",
+            f"input {label} path aliases output directory -- would clobber input",
             remedy="use --out to write output to a different directory",
         )
 

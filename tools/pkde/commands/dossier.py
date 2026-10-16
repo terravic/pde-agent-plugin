@@ -1,4 +1,4 @@
-"""pkde dossier — IND evidence-package readiness checker and CTD exporter.
+"""pkde dossier -- IND evidence-package readiness checker and CTD exporter.
 
 Scans the project tree (read-only) and reports which required nonclinical
 study types have supporting evidence for an IND Module 4 submission.
@@ -29,7 +29,7 @@ from ..core.errors import Refusal
 from ..core.paths import is_safe_to_open
 
 # ---------------------------------------------------------------------------
-# IND Module 4 checklist — small-molecule FDA IND default
+# IND Module 4 checklist -- small-molecule FDA IND default
 # ---------------------------------------------------------------------------
 # Future extension point: the checklist could be made configurable per
 # jurisdiction (e.g., EMA, PMDA) by loading from an external YAML/JSON
@@ -48,7 +48,7 @@ IND_MODULE4_CHECKLIST: list[dict[str, Any]] = [
     # artifact suffix (.assay.json) because the assay artifact schema does
     # not encode pharmacology sub-type.  Artifact matching therefore cannot
     # distinguish primary, secondary, and safety pharmacology at the file
-    # level — a single assay artifact will satisfy all three sections.
+    # level -- a single assay artifact will satisfy all three sections.
     {
         "section": "pharmacology.primary",
         "label": "Primary Pharmacodynamics",
@@ -204,7 +204,7 @@ def _scan_findings(project_root: Path) -> list[dict[str, Any]]:
     results: list[dict[str, Any]] = []
 
     for md_file in sorted(findings_dir.rglob("*.md")):
-        # Confine each file — never follow symlinks outside the project.
+        # Confine each file -- never follow symlinks outside the project.
         if not md_file.resolve().is_relative_to(root_resolved):
             continue
         if not md_file.is_file():
@@ -243,7 +243,7 @@ def _scan_raw_dirs(project_root: Path) -> dict[str, list[str]]:
     """Scan ``raw/`` subdirectories and return ``{dir_name: [file_paths]}``.
 
     File paths are relative to the project root.  Provenance sidecars
-    (``.meta.json``) are excluded — they are provenance, not evidence.
+    (``.meta.json``) are excluded -- they are provenance, not evidence.
     """
     raw_dir = project_root / "raw"
     if not raw_dir.is_dir():
@@ -440,7 +440,7 @@ ICH_GUIDANCE_REFERENCES: dict[str, list[dict[str, str]]] = {
 
 
 # ---------------------------------------------------------------------------
-# CTD section → artifact mapping for export
+# CTD section -> artifact mapping for export
 # ---------------------------------------------------------------------------
 
 # Maps CTD sections to the raw/ subdirectories and artifact suffixes they
@@ -622,10 +622,10 @@ def _extract_fields(
         if value is not None:
             row[field] = value
         else:
-            row[field] = "NOT AVAILABLE — field not present in source artifact"
+            row[field] = "NOT AVAILABLE -- field not present in source artifact"
     row["source"] = {
         "artifact_path": artifact_path,
-        "work_order_id": work_order_id or "NOT AVAILABLE — no work order",
+        "work_order_id": work_order_id or "NOT AVAILABLE -- no work order",
     }
     return row
 
@@ -797,7 +797,7 @@ def _build_export(
         if code in _MUST_PROPAGATE_RELAY_CODES or "prediction_not_measurement" in code:
             forwarded_relays.append(r)
 
-    # Also include all other relays — the must-propagate set is a
+    # Also include all other relays -- the must-propagate set is a
     # minimum, not a filter.  All upstream relays are forwarded so
     # provenance is not lost.
     other_relays = [r for r in unique_relays if r not in forwarded_relays]
@@ -829,7 +829,7 @@ def _export_to_tsv(export: dict[str, Any]) -> str:
     lines: list[str] = []
 
     for section in export["sections"]:
-        lines.append(f"# {section['ctd_section']} — {section['title']}")
+        lines.append(f"# {section['ctd_section']} -- {section['title']}")
         refs = section.get("guidance_references", [])
         if refs:
             ref_str = ", ".join(r["code"] for r in refs)
@@ -908,7 +908,7 @@ def _export_to_markdown(export: dict[str, Any]) -> str:
 
             if subsection["status"] == "NOT_AVAILABLE":
                 reason = subsection.get("reason", "No source artifact found")
-                lines.append(f"*NOT AVAILABLE — {reason}*")
+                lines.append(f"*NOT AVAILABLE -- {reason}*")
                 lines.append("")
                 continue
 
@@ -1024,7 +1024,7 @@ def check_cmd(state: AppState, as_json: bool, quiet: bool) -> None:
     emit.data("summary", report["summary"])
 
     # Human-readable summary.
-    emit.line(f"IND Module 4 Readiness — {summary['total_sections']} sections")
+    emit.line(f"IND Module 4 Readiness -- {summary['total_sections']} sections")
     emit.line(f"  covered:      {summary['covered']}")
     emit.line(f"  finding_only: {summary['finding_only']}")
     emit.line(f"  missing:      {summary['missing']}")
@@ -1082,7 +1082,7 @@ def export_cmd(
     reach the regulatory submission.
 
     Sections without supporting artifacts are emitted with explicit
-    NOT_AVAILABLE status — never silently omitted.
+    NOT_AVAILABLE status -- never silently omitted.
 
     \b
     Output is written to ``gates/dossier-export/``.
@@ -1163,7 +1163,7 @@ def export_cmd(
         for ss in s["subsections"]
         if ss["status"] == "NOT_AVAILABLE"
     )
-    emit.line(f"CTD Export — {section_count} sections, {relay_count} relay(s)")
+    emit.line(f"CTD Export -- {section_count} sections, {relay_count} relay(s)")
     emit.line(f"  populated:     {populated}")
     emit.line(f"  not_available: {not_available}")
     emit.line()

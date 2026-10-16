@@ -1,4 +1,4 @@
-"""`pkde spatialdb` — SpatialDB spatial transcriptomics dataset search.
+"""`pkde spatialdb` -- SpatialDB spatial transcriptomics dataset search.
 
 Queries SpatialDB (www.spatialomics.org/SpatialDB/) for spatial
 transcriptomics datasets matching a gene symbol.  SpatialDB indexes
@@ -15,7 +15,7 @@ Two phases:
 
 SpatialDB captures gene expression with tissue coordinates but covers a
 limited set of tissues and studies.  Absence from SpatialDB does not mean
-a gene lacks spatial expression data — the database indexes published
+a gene lacks spatial expression data -- the database indexes published
 spatial transcriptomics datasets, not all spatial experiments.
 """
 
@@ -321,7 +321,7 @@ def analyze_cmd(
                 "Spatial transcriptomics captures gene expression with tissue "
                 "coordinates but covers a limited set of tissues and studies. "
                 "Absence from SpatialDB does not mean a gene lacks spatial "
-                "expression data — the database indexes published spatial "
+                "expression data -- the database indexes published spatial "
                 "transcriptomics datasets, not all spatial experiments.",
             )
         )

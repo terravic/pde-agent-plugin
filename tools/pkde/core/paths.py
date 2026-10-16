@@ -68,7 +68,7 @@ def is_safe_to_open(path: Path, *, allow_symlinks: bool = False) -> bool:
     """Check whether *path* is safe to open for reading or writing.
 
     Returns ``False`` if the path is a symlink (unless *allow_symlinks*
-    is ``True``).  Does **not** resolve or check confinement — use
+    is ``True``).  Does **not** resolve or check confinement -- use
     :func:`confine_path` for that.
     """
     if not allow_symlinks and path.is_symlink():

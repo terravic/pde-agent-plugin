@@ -21,7 +21,7 @@ must differ from the `written_by` of the record under audit.** That is the
 independence guarantee, and it is checkable by anyone reading this report.
 
 If you omitted `--out` and agreed with the specialist, the tool declined
-to write — exit 0 with a `left as it is` warning. Your confirmation is
+to write -- exit 0 with a `left as it is` warning. Your confirmation is
 real but unrecorded. The second row is empty and cannot be filled from the
 specialist's record. Re-run with `--out "$OUT"` to produce a citable
 record, then fill both rows from the files on disk.
@@ -44,7 +44,7 @@ Threshold set used: [name@version]. Matches program policy: yes / no / unverifie
 - [ ] No tool-written byte appears under `findings/`
 - [ ] Cited PMIDs, DOIs, NCT numbers resolve to real records
 
-**Evidence intact**: yes, [n] files guarded | ALTERED — review void | VOID — snapshot empty
+**Evidence intact**: yes, [n] files guarded | ALTERED -- review void | VOID -- snapshot empty
 **Re-analysis written to**: raw/reanalysis/[date]-[slug]/
 **Phase-2 coverage**: [n] of [n] commands latched offline, redirectable and non-clobbering
 **Prior verdict encountered**: none | exit 9 at [path], written_by [slug]

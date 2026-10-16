@@ -1,4 +1,4 @@
-"""`pkde selectivity` — selectivity panel analysis.
+"""`pkde selectivity` -- selectivity panel analysis.
 
 Phase 1 (no judgment):
   compare  Parse a canonical selectivity panel JSON file (schema
@@ -10,12 +10,12 @@ Phase 1 (no judgment):
 Phase 2 (offline, applies thresholds):
   analyze  Read stored selectivity data, apply the ``selectivity-margins``
            threshold set.  hERG margin is classified against the ICH S7B
-           ≥30-fold guideline; all other off-target margins report
+           >=30-fold guideline; all other off-target margins report
            UNRESOLVED.  Produces ``.analysis.json`` with mandatory relays.
 
 The two phases enforce the same contract as every other tool: phase 1
 writes numbers, phase 2 writes verdicts. The ``analyze`` subcommand is
-genuinely offline — the phase-2 latch enforces this automatically for
+genuinely offline -- the phase-2 latch enforces this automatically for
 any command named ``analyze*``.
 """
 
@@ -278,7 +278,7 @@ def compare(
     A higher ratio means better selectivity (less potent against the
     off-target).
 
-    Refuses mixed IC50/Ki panels — computing a ratio between different
+    Refuses mixed IC50/Ki panels -- computing a ratio between different
     measure types is misleading without Cheng-Prusoff correction.
     """
     source = Path(panel_file).expanduser()
@@ -302,7 +302,7 @@ def compare(
             detail=f"got {type(doc).__name__}",
         )
 
-    # Schema version check — non-canonical input is a refusal.
+    # Schema version check -- non-canonical input is a refusal.
     if doc.get("schema") != "pkde.selectivity-panel.v1":
         raise Refusal(
             "selectivity panel file does not match canonical schema "
@@ -386,8 +386,8 @@ def analyze(
     stored ratios from disk, applies the ``selectivity-margins`` threshold
     set, and produces an ``.analysis.json`` with per-off-target verdicts.
 
-    hERG margin is classified against the ICH S7B ≥30-fold guideline.
-    All other off-target margins are UNRESOLVED — there are no universally
+    hERG margin is classified against the ICH S7B >=30-fold guideline.
+    All other off-target margins are UNRESOLVED -- there are no universally
     citable conventions for off-target selectivity margins.
     """
     project = state.project()
@@ -420,7 +420,7 @@ def analyze(
                 seen_codes.add(item["code"])
 
     # --- Claim-triggered relay: ratio_not_affinity ---
-    # Fires on every analysis — a selectivity ratio computed from two
+    # Fires on every analysis -- a selectivity ratio computed from two
     # IC50 values inherits whatever caveats apply to IC50 as a measure
     # of affinity.
     code = "selectivity.ratio_not_affinity"
@@ -451,7 +451,7 @@ def analyze(
                     f"Selectivity panel for {compound_id} is incomplete. "
                     f"Off-targets tested: {', '.join(off_target_names)}. "
                     "Do not generalise the selectivity claim beyond these "
-                    "targets — a narrow panel cannot support a broad "
+                    "targets -- a narrow panel cannot support a broad "
                     "selectivity statement.",
                 )
             )
@@ -486,11 +486,11 @@ def analyze(
                     "ICH S7B, 'The Non-Clinical Evaluation of the Potential "
                     "for Delayed Ventricular Repolarization (QT Interval "
                     "Prolongation) by Human Pharmaceuticals' (adopted 2005): "
-                    "recommends a ≥30-fold safety margin between the "
+                    "recommends a >=30-fold safety margin between the "
                     "therapeutic free plasma concentration and the IC50 for "
                     "hERG channel inhibition. herg_marginal is a local "
                     "operational boundary (herg_margin / 3), not a cited "
-                    "value — see pocket's borderline_dscore for precedent"
+                    "value -- see pocket's borderline_dscore for precedent"
                 )
                 target_result["classification"] = classification
             except ThresholdError:

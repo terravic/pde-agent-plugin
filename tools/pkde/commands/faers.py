@@ -1,8 +1,8 @@
-"""`pkde faers` — FDA adverse event and drug label lookup.
+"""`pkde faers` -- FDA adverse event and drug label lookup.
 
 Queries the openFDA API for FAERS (FDA Adverse Event Reporting System)
 spontaneous reports and drug labeling/SPL data.  FAERS reports are
-voluntary — they cannot establish incidence, causation, or comparative
+voluntary -- they cannot establish incidence, causation, or comparative
 safety; see the relay code registered below.
 
 Two phases:
@@ -62,8 +62,8 @@ def _slugify(name: str) -> str:
 def _search_events(drug: str, max_results: int) -> tuple[bytes, dict[str, Any]]:
     """Query openFDA FAERS adverse event endpoint.
 
-    Returns (verbatim response bytes, parsed payload).  A 404 — no
-    matching reports — is returned as an empty result dict rather than
+    Returns (verbatim response bytes, parsed payload).  A 404 -- no
+    matching reports -- is returned as an empty result dict rather than
     raised, because "no reports" is a legitimate finding.
     """
     url = (

@@ -21,17 +21,17 @@ low, while two that share boilerplate phrasing may score high. Keep this
 limitation in mind when interpreting results.
 
 > **Note:** A sentence-transformer backend (`sbert`) is planned but not yet
-> implemented — `prox embed --backend sbert` raises `NotImplementedError`.
-> All current scores are TF-IDF–based.
+> implemented -- `prox embed --backend sbert` raises `NotImplementedError`.
+> All current scores are TF-IDF-based.
 
 Similarity scores are interpreted as follows:
 
 | Range | Interpretation | Action |
 |---|---|---|
-| < 0.30 | **Low lexical overlap** — little shared vocabulary (not necessarily semantically unrelated) | No edge in the proximity graph |
-| 0.30 – 0.80 | **Same cluster** — related hypotheses exploring similar themes | Grouped into the same cluster; no merge concern |
-| 0.80 – 0.92 | **Borderline duplicate** — high surface similarity, may or may not be genuinely distinct | LLM must adjudicate (see procedure below) |
-| ≥ 0.92 | **Auto-merge candidate** — very likely duplicates or paraphrases | Recommend merge to supervisor without further analysis |
+| < 0.30 | **Low lexical overlap** -- little shared vocabulary (not necessarily semantically unrelated) | No edge in the proximity graph |
+| 0.30 - 0.80 | **Same cluster** -- related hypotheses exploring similar themes | Grouped into the same cluster; no merge concern |
+| 0.80 - 0.92 | **Borderline duplicate** -- high surface similarity, may or may not be genuinely distinct | LLM must adjudicate (see procedure below) |
+| >= 0.92 | **Auto-merge candidate** -- very likely duplicates or paraphrases | Recommend merge to supervisor without further analysis |
 
 The graph threshold (0.30) determines which pairs get edges. The dupe threshold
 (0.80) determines which pairs are flagged for review.
@@ -65,7 +65,7 @@ prox graph --run-dir <run-dir> --threshold 0.3
 ```
 
 Computes pairwise cosine similarity from embeddings. Creates an adjacency graph
-with edges for all pairs with similarity ≥ 0.30. Writes `proximity/graph.json`.
+with edges for all pairs with similarity >= 0.30. Writes `proximity/graph.json`.
 
 ### 3. Clusters
 
@@ -84,17 +84,17 @@ Updates `proximity/graph.json` with cluster assignments and writes
 prox dupes --run-dir <run-dir> --threshold 0.80
 ```
 
-Reports near-duplicate pairs (similarity ≥ 0.80) to stdout as a JSON array.
+Reports near-duplicate pairs (similarity >= 0.80) to stdout as a JSON array.
 Each entry contains `a` (first hypothesis ID), `b` (second hypothesis ID),
 and `similarity` (cosine similarity score). Pairs are sorted by descending
 similarity.
 
 ---
 
-## Adjudication Procedure for Borderline Pairs (0.80 – 0.92)
+## Adjudication Procedure for Borderline Pairs (0.80 - 0.92)
 
 Pairs with similarity between 0.80 and 0.92 require LLM adjudication. These
-are too similar to ignore but not similar enough to auto-merge — the agent
+are too similar to ignore but not similar enough to auto-merge -- the agent
 must determine whether they are genuinely distinct hypotheses or duplicates.
 
 ### Steps
@@ -102,7 +102,7 @@ must determine whether they are genuinely distinct hypotheses or duplicates.
 For each borderline pair:
 
 1. **Read both hypothesis JSON files fully.** Load both files from the
-   `hypotheses/` directory and read all fields — not just the title.
+   `hypotheses/` directory and read all fields -- not just the title.
 
 2. **Compare along these axes:**
    - **Mechanism:** Are they proposing the same causal mechanism, or do they
@@ -118,9 +118,9 @@ For each borderline pair:
 
    | Verdict | Meaning | When to use |
    |---|---|---|
-   | **MERGE** | The pair are duplicates | Same mechanism, same predictions, same experiments — one is a paraphrase of the other |
+   | **MERGE** | The pair are duplicates | Same mechanism, same predictions, same experiments -- one is a paraphrase of the other |
    | **KEEP** | The pair are genuinely distinct | Despite surface similarity, they differ meaningfully in mechanism, predictions, or experimental approach |
-   | **FLAG** | Unclear — needs human review | The agent cannot confidently decide; differences are subtle or ambiguous |
+   | **FLAG** | Unclear -- needs human review | The agent cannot confidently decide; differences are subtle or ambiguous |
 
 4. **Record the decision with rationale** using the output format below.
 
@@ -133,7 +133,7 @@ Record each adjudication decision as a JSON object:
   "pair": ["H-0001", "H-0002"],
   "similarity": 0.87,
   "verdict": "MERGE",
-  "rationale": "Both hypotheses propose the same mechanism (gut Lactobacillus depletion → vagal TNF-α signaling → hippocampal tau phosphorylation) with identical predictions and overlapping evidence. H-0002 is a paraphrase of H-0001 with minor wording differences.",
+  "rationale": "Both hypotheses propose the same mechanism (gut Lactobacillus depletion -> vagal TNF-alpha signaling -> hippocampal tau phosphorylation) with identical predictions and overlapping evidence. H-0002 is a paraphrase of H-0001 with minor wording differences.",
   "recommended_action": "Retire H-0002 in favor of H-0001"
 }
 ```
@@ -146,7 +146,7 @@ For KEEP decisions:
   "similarity": 0.84,
   "verdict": "KEEP",
   "rationale": "Although both hypotheses address gut-brain signaling, H-0003 proposes a serotonergic mechanism while H-0004 proposes a dopaminergic mechanism. Their predictions and proposed experiments are distinct.",
-  "recommended_action": "No action — both remain active"
+  "recommended_action": "No action -- both remain active"
 }
 ```
 
@@ -157,7 +157,7 @@ For FLAG decisions:
   "pair": ["H-0005", "H-0006"],
   "similarity": 0.81,
   "verdict": "FLAG",
-  "rationale": "H-0005 and H-0006 share a similar mechanism but differ in scope — H-0005 is specific to Alzheimer's while H-0006 covers neurodegeneration broadly. Unclear whether the broader framing is meaningfully distinct or just less precise.",
+  "rationale": "H-0005 and H-0006 share a similar mechanism but differ in scope -- H-0005 is specific to Alzheimer's while H-0006 covers neurodegeneration broadly. Unclear whether the broader framing is meaningfully distinct or just less precise.",
   "recommended_action": "Supervisor should review whether the scope difference justifies keeping both"
 }
 ```
@@ -165,7 +165,7 @@ For FLAG decisions:
 ### Auto-Merge Candidates (> 0.92)
 
 Pairs with similarity above 0.92 are auto-merge candidates. These do not
-require full adjudication — recommend merge to the supervisor with a brief
+require full adjudication -- recommend merge to the supervisor with a brief
 note:
 
 ```json
@@ -174,7 +174,7 @@ note:
   "similarity": 0.95,
   "verdict": "MERGE",
   "rationale": "Auto-merge candidate: similarity 0.95 exceeds auto-merge threshold (0.92).",
-  "recommended_action": "Retire one hypothesis — recommend keeping H-0010 (earlier ID)"
+  "recommended_action": "Retire one hypothesis -- recommend keeping H-0010 (earlier ID)"
 }
 ```
 
@@ -207,7 +207,7 @@ C-03: Exercise-induced neurogenesis (H-0004)
 
 ### Cluster Semantics
 
-Each cluster represents a thematic focus area — a group of hypotheses that
+Each cluster represents a thematic focus area -- a group of hypotheses that
 explore similar scientific themes or mechanisms. Clusters help the supervisor:
 
 - Understand the distribution of hypotheses across research themes

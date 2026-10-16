@@ -142,7 +142,7 @@ def test_workorder_lifecycle_correction_loop_and_lease_release(tmp_path: Path) -
         "## Summary\n"
         "BRAF has pLI of 0.99 {source: raw/genomics/BRAF.gnomad-constraint.json $.constraint.pLI}.\n\n"
         "## Key Findings\n"
-        "- **Relay: `BRAF_PLI_HIGH`** — Addressed.\n\n"
+        "- **Relay: `BRAF_PLI_HIGH`** -- Addressed.\n\n"
         "## Verdict\nPASS\n\n"
         "## Evidence\n- [BRAF JSON](../../raw/genomics/BRAF.gnomad-constraint.json)\n\n"
         "## Implications\nProceed.\n",
@@ -404,5 +404,120 @@ def test_doctor_offline_degraded_mode(tmp_path: Path) -> None:
     assert proc_txt.returncode == 0
     assert "DEGRADED (LOCAL-ONLY SANDBOX)" in proc_txt.stdout
     assert "ENVIRONMENT_BLOCKED" in proc_txt.stdout
+
+
+def test_cross_platform_env_drift_and_missing_libraries_do_not_block_or_hang(
+    tmp_path: Path,
+) -> None:
+    """Verify pkde CLI and doctor work when optional packages are missing or OS/arch differs (e.g. macOS arm64)."""
+    import os
+    import subprocess
+    import sys
+    from pkde_plugin.tool_bridge import REPO_ROOT
+
+    ws = tmp_path / "ws-cross-platform"
+    script = """
+import sys
+import platform
+
+# Simulate missing optional packages (numpy, yaml, jinja2, mistune, scipy, sklearn, meeko)
+for mod in ("numpy", "yaml", "jinja2", "mistune", "scipy", "sklearn", "meeko"):
+    sys.modules[mod] = None
+
+# Simulate running on macOS ARM64 (darwin-arm64) so envstamp detects platform drift
+platform.machine = lambda: "arm64"
+platform.system = lambda: "Darwin"
+
+from pkde.cli import cli
+from click.testing import CliRunner
+
+runner = CliRunner()
+res_init = runner.invoke(cli, ["init", sys.argv[1]])
+assert res_init.exit_code == 0, res_init.output
+
+res_doc = runner.invoke(cli, ["--project", sys.argv[1], "doctor", "--json"])
+assert res_doc.exit_code == 0, res_doc.output
+import json
+data = json.loads(res_doc.output)
+assert data["ok"] is True
+assert data["execution_mode"] != "blocked"
+checks_by_name = {c["name"]: c for c in data["checks"]}
+assert checks_by_name["environment stamp"]["status"] == "warn"
+assert checks_by_name["environment stamp"]["kind"] == "housekeeping"
+assert checks_by_name["package numpy"]["status"] == "warn"
+assert checks_by_name["package numpy"]["kind"] == "capability"
+
+# Verify --strict promotes HOUSEKEEPING warnings (like environment stamp drift) to FAIL
+res_strict = runner.invoke(cli, ["--project", sys.argv[1], "doctor", "--strict", "--json"])
+assert res_strict.exit_code == 1
+strict_data = json.loads(res_strict.output)
+assert strict_data["ok"] is False
+
+# Verify dashboard build works even with jinja2, mistune, and yaml missing
+res_dash = runner.invoke(cli, ["--project", sys.argv[1], "dashboard", "build", "--standalone", "--json"])
+assert res_dash.exit_code == 0, res_dash.output
+"""
+    env = {
+        **os.environ,
+        "PKDE_OFFLINE": "1",
+        "PYTHONPATH": f"{REPO_ROOT}:{REPO_ROOT / 'tools'}:{REPO_ROOT / 'tools/vendor/hypex'}",
+    }
+    proc = subprocess.run(
+        [sys.executable, "-c", script, str(ws)],
+        cwd=str(REPO_ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        timeout=15,
+    )
+    assert proc.returncode == 0, f"Cross-platform/missing-lib test failed:\n{proc.stderr}\n{proc.stdout}"
+    assert (ws / "dashboard.html").is_file()
+
+
+def test_stdlib_mcp_fallback_when_mcp_package_missing(tmp_path: Path) -> None:
+    """Verify pkde_plugin.mcp_server falls back to stdlib JSON-RPC 2.0 server when mcp is not installed."""
+    import os
+    import subprocess
+    import sys
+    from pkde_plugin.tool_bridge import REPO_ROOT
+
+    script = """
+import sys
+import json
+for k in list(sys.modules):
+    if k == "mcp" or k.startswith("mcp."):
+        del sys.modules[k]
+sys.modules["mcp"] = None
+sys.modules["mcp.types"] = None
+sys.modules["mcp.server"] = None
+sys.modules["mcp.server.mcpserver"] = None
+sys.modules["mcp.server.fastmcp"] = None
+
+import importlib
+import pkde_plugin.mcp_server as srv
+importlib.reload(srv)
+
+init_resp = srv.mcp.handle_jsonrpc_message({"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {}})
+assert init_resp["result"]["serverInfo"]["name"] == "pkde-engine"
+
+list_resp = srv.mcp.handle_jsonrpc_message({"jsonrpc": "2.0", "id": 2, "method": "tools/list"})
+tool_names = {t["name"] for t in list_resp["result"]["tools"]}
+assert "pkde_exec" in tool_names
+assert "pkde_dispatch_workorder" in tool_names
+assert len(tool_names) == 6
+"""
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(REPO_ROOT),
+        env={
+            **os.environ,
+            "PYTHONPATH": f"{REPO_ROOT}:{REPO_ROOT / 'tools'}:{REPO_ROOT / 'tools/vendor/hypex'}",
+        },
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert proc.returncode == 0, f"Stdlib MCP fallback failed:\n{proc.stderr}"
+
 
 

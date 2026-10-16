@@ -1,8 +1,8 @@
-"""Environment identity — the value stamped into every artifact sidecar.
+"""Environment identity -- the value stamped into every artifact sidecar.
 
 The tools environment is a mutable shared volume, so reproducibility
 requires recording which version of it produced a result
-(docs/tool-design-guidance.md §2, Rule 4).
+(docs/tool-design-guidance.md Section 2, Rule 4).
 
 `ENV_VERSION` is authoritative when the shared volume is provisioned.
 When it is absent we are running against an unpinned developer
@@ -42,9 +42,9 @@ def env_version() -> str:
     """Return the environment version string stamped into sidecars.
 
     Forms:
-      "sha256:<hex>"          — provisioned shared volume, ENV_VERSION file
-      "unpinned-dev:sha256:…" — developer env, hashed from requirements.txt
-      "unpinned-dev:unknown"  — developer env, no requirements file found
+      "sha256:<hex>"          -- provisioned shared volume, ENV_VERSION file
+      "unpinned-dev:sha256:..." -- developer env, hashed from requirements.txt
+      "unpinned-dev:unknown"  -- developer env, no requirements file found
     """
     marker = tools_home() / "ENV_VERSION"
     if marker.is_file() and is_safe_to_open(marker):
@@ -65,7 +65,7 @@ def is_provisioned() -> bool:
 
 
 def interpreter_tag() -> str:
-    """Python minor version + architecture — the venv compatibility key."""
+    """Python minor version + architecture -- the venv compatibility key."""
     return f"py{sys.version_info.major}.{sys.version_info.minor}-{platform.machine()}"
 
 

@@ -29,7 +29,7 @@ func TestOperatorRule(t *testing.T) {
 }
 
 func TestComputeCitationDelta_Combine_Compliant(t *testing.T) {
-	// Child is a superset of parents — inherits all, adds new.
+	// Child is a superset of parents -- inherits all, adds new.
 	parentSets := [][]string{
 		{"PMID:1001", "PMID:1002"},
 		{"PMID:1002", "PMID:1003"},
@@ -56,7 +56,7 @@ func TestComputeCitationDelta_Combine_Compliant(t *testing.T) {
 }
 
 func TestComputeCitationDelta_Combine_NonCompliant(t *testing.T) {
-	// Child drops parent citations — non-compliant for combine.
+	// Child drops parent citations -- non-compliant for combine.
 	parentSets := [][]string{
 		{"PMID:1001", "PMID:1002", "PMID:1003"},
 	}
@@ -76,7 +76,7 @@ func TestComputeCitationDelta_Combine_NonCompliant(t *testing.T) {
 }
 
 func TestComputeCitationDelta_Ground_Compliant(t *testing.T) {
-	// Ground: child is superset with additions — compliant.
+	// Ground: child is superset with additions -- compliant.
 	parentSets := [][]string{
 		{"PMID:1001"},
 	}
@@ -96,7 +96,7 @@ func TestComputeCitationDelta_Ground_Compliant(t *testing.T) {
 }
 
 func TestComputeCitationDelta_Simplify_Compliant(t *testing.T) {
-	// Simplify: child is a subset of parent — compliant.
+	// Simplify: child is a subset of parent -- compliant.
 	parentSets := [][]string{
 		{"PMID:1001", "PMID:1002", "PMID:1003"},
 	}
@@ -116,7 +116,7 @@ func TestComputeCitationDelta_Simplify_Compliant(t *testing.T) {
 }
 
 func TestComputeCitationDelta_Simplify_NonCompliant(t *testing.T) {
-	// Simplify: child adds new citations — non-compliant.
+	// Simplify: child adds new citations -- non-compliant.
 	parentSets := [][]string{
 		{"PMID:1001", "PMID:1002"},
 	}
@@ -153,7 +153,7 @@ func TestComputeCitationDelta_OOB(t *testing.T) {
 }
 
 func TestComputeCitationDelta_EmptyParents(t *testing.T) {
-	// No parent citations — child adds everything, nothing inherited.
+	// No parent citations -- child adds everything, nothing inherited.
 	parentSets := [][]string{}
 	childSet := []string{"PMID:1001", "PMID:1002"}
 
@@ -169,7 +169,7 @@ func TestComputeCitationDelta_EmptyParents(t *testing.T) {
 }
 
 func TestComputeCitationDelta_EmptyChild(t *testing.T) {
-	// Child has no citations — all parent citations dropped.
+	// Child has no citations -- all parent citations dropped.
 	parentSets := [][]string{
 		{"PMID:1001", "PMID:1002"},
 	}

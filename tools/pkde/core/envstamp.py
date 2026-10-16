@@ -2,8 +2,8 @@
 
 `ENV_VERSION` goes into every provenance sidecar, so it partitions a
 program's artifacts: results produced under two different values are not
-comparable without an argument (tool-design-guidance §2, Rule 4). A
-partition is only bearable if it can be *explained* — "these two numbers
+comparable without an argument (tool-design-guidance Section 2, Rule 4). A
+partition is only bearable if it can be *explained* -- "these two numbers
 came from different environments" is useless unless someone can say what
 differed.
 
@@ -16,7 +16,7 @@ stamped manifest is archived under its own hash, the difference between
 two `env_version` values is a diff anyone can run months later.
 
 The previous stamp hashed `pip freeze` alone. Under that rule, adding a
-compiled binary to `bin/` — a change that alters what the tools *do* —
+compiled binary to `bin/` -- a change that alters what the tools *do* --
 produced no change in the value that claims to identify the environment.
 An identifier that misses the change you made is worse than no
 identifier, because artifacts then carry a false claim of comparability.
@@ -48,7 +48,7 @@ LOCK = "requirements.lock"
 #: Every manifest ever stamped, keyed by its own hash.
 ARCHIVE = "manifests"
 #: The commit the provisioning tree was on when the stamp was written.
-#: Deliberately *beside* the manifest rather than inside it — see
+#: Deliberately *beside* the manifest rather than inside it -- see
 #: `source_commit`.
 SOURCE = "ENV_SOURCE"
 #: Snapshot of host-requirements.txt, written beside the stamp so
@@ -118,8 +118,8 @@ def _git(*args: str, cwd: Path) -> str | None:
     """Run a read-only git command, or None if it cannot be answered.
 
     Never raises. A missing git, a directory that is not a repository,
-    and a command that failed are all the same answer here — "cannot be
-    determined" — and the callers must distinguish that from "no", which
+    and a command that failed are all the same answer here -- "cannot be
+    determined" -- and the callers must distinguish that from "no", which
     is why this returns None rather than "".
     """
     try:
@@ -139,7 +139,7 @@ def _git(*args: str, cwd: Path) -> str | None:
 
 def source_tree() -> Path:
     """The checkout this code is running from."""
-    # pkde/core/envstamp.py → pkde/core → pkde → tools
+    # pkde/core/envstamp.py -> pkde/core -> pkde -> tools
     return Path(__file__).resolve().parent.parent.parent
 
 
@@ -152,7 +152,7 @@ def source_commit(tree: Path | None = None) -> dict[str, object]:
     documentation commit bump the value and partition the program's
     artifacts over a change that alters nothing an artifact depends on.
     That is the exact mirror of the defect this module was written to
-    fix — an identifier that fires on what does not matter is as useless
+    fix -- an identifier that fires on what does not matter is as useless
     as one that misses what does, and it is worse in practice, because
     people learn to ignore it.
 
@@ -204,11 +204,11 @@ def source_commit(tree: Path | None = None) -> dict[str, object]:
     # container already has. That is a weaker claim than asking the
     # remote, and the weakness is stated rather than hidden: a stale
     # tracking ref can report a pushed commit as unreachable. The failure
-    # direction is the safe one — it complains about a commit that is
+    # direction is the safe one -- it complains about a commit that is
     # fine, rather than passing one that nobody can fetch.
     #
     # All refs under refs/remotes/origin/ are walked, not just
-    # origin/main — the provisioning tree may live on any branch (e.g.
+    # origin/main -- the provisioning tree may live on any branch (e.g.
     # origin/PkDE), and restricting the check to main produces a false
     # failure on a working environment (#45).
     on_origin: bool | None = None
@@ -222,7 +222,7 @@ def source_commit(tree: Path | None = None) -> dict[str, object]:
             on_origin = False
             for ref in refs:
                 # Translate full refname to the short form git commands
-                # expect (e.g. "refs/remotes/origin/PkDE" → "origin/PkDE").
+                # expect (e.g. "refs/remotes/origin/PkDE" -> "origin/PkDE").
                 short_ref = ref.replace("refs/remotes/", "", 1)
                 try:
                     probe = subprocess.run(
@@ -238,7 +238,7 @@ def source_commit(tree: Path | None = None) -> dict[str, object]:
                     on_origin = True
                     remote_ref = short_ref
                     break
-        # else: on_origin stays None — no refs to check against
+        # else: on_origin stays None -- no refs to check against
 
     return {
         "commit": head,
@@ -268,7 +268,7 @@ def provisioning_drift(stamped: str, tree: Path | None = None) -> list[str] | No
     Reachability answers "can anyone fetch the commit this was built
     from". It does not answer "is that still how we build it", and those
     diverge the moment someone edits `install.sh` without re-provisioning
-    — at which point the volume holds binaries built by instructions
+    -- at which point the volume holds binaries built by instructions
     nobody is reading any more. Existence and currency are different
     questions; the second is the one that provisions cleanly with the
     wrong contents.
@@ -279,7 +279,7 @@ def provisioning_drift(stamped: str, tree: Path | None = None) -> list[str] | No
     reader's attention.
 
     Returns [] for no drift, a list of paths for drift, and None when the
-    question cannot be answered — an unknown commit, no repository, a
+    question cannot be answered -- an unknown commit, no repository, a
     shallow clone. None is not [].
     """
     tree = tree or source_tree()
@@ -343,7 +343,7 @@ def short(version: str | None) -> str:
     if not version:
         return "(none)"
     body = version.split(":", 1)[-1]
-    return f"{version.split(':', 1)[0]}:{body[:12]}…" if len(body) > 12 else version
+    return f"{version.split(':', 1)[0]}:{body[:12]}..." if len(body) > 12 else version
 
 
 @dataclass(frozen=True)
@@ -433,7 +433,7 @@ def display(changes: list[str]) -> list[str]:
     64-character hex string in a doctor line is not information to a
     reader; it is what makes them stop reading doctor lines.
     """
-    return [_HEX.sub(lambda m: m.group(0)[:12] + "…", line) for line in changes]
+    return [_HEX.sub(lambda m: m.group(0)[:12] + "...", line) for line in changes]
 
 
 def summarize(changes: list[str]) -> str:

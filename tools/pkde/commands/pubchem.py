@@ -1,8 +1,8 @@
-"""`pkde pubchem` — compound annotation from PubChem and ChEMBL.
+"""`pkde pubchem` -- compound annotation from PubChem and ChEMBL.
 
-Retrieves published annotations about a compound — synonyms, trade
+Retrieves published annotations about a compound -- synonyms, trade
 names, pharmacological classifications, drug development status, and
-mechanism of action — and classifies the compound as known-drug,
+mechanism of action -- and classifies the compound as known-drug,
 known-compound, or unknown.
 
 Two phases:
@@ -14,7 +14,7 @@ Two phases:
                      verdict.  No network.
 
 This is distinct from compreg, which answers "does the compound
-exist?".  Annotation answers "what is already known about it?" —
+exist?".  Annotation answers "what is already known about it?" --
 the enrichment step after identity resolution.
 
 Input is a PubChem CID (integer). Resolve a name or structure to a
@@ -55,7 +55,7 @@ CHEMBL_API = "https://www.ebi.ac.uk/chembl/api/data"
 SCHEMA = "pkde.pubchem-annotation.v1"
 FETCH_SCHEMA = "pkde.pubchem-compound.v1"
 
-# Maximum synonyms to store — PubChem can return hundreds.
+# Maximum synonyms to store -- PubChem can return hundreds.
 MAX_SYNONYMS = 20
 
 
@@ -65,7 +65,7 @@ def _slug(cid: int) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — network fetches
+# Phase 1 -- network fetches
 # ---------------------------------------------------------------------------
 
 
@@ -153,7 +153,7 @@ def _fetch_inchikey(cid: int) -> tuple[str, bytes]:
 def _fetch_chembl_molecule(inchikey: str) -> tuple[str, bytes]:
     """Look up a ChEMBL molecule record by InChIKey.
 
-    A 404 means ChEMBL does not have this compound — that is fine,
+    A 404 means ChEMBL does not have this compound -- that is fine,
     PubChem-only annotation is valid.
     """
     url = f"{CHEMBL_API}/molecule/{inchikey}.json"
@@ -205,7 +205,7 @@ def _fetch_chembl_mechanism(chembl_id: str) -> tuple[str, bytes]:
 
 
 # ---------------------------------------------------------------------------
-# Data extraction (pure — reads dicts, not network)
+# Data extraction (pure -- reads dicts, not network)
 # ---------------------------------------------------------------------------
 
 
@@ -361,7 +361,7 @@ def _build_artifact(
 
 
 # ---------------------------------------------------------------------------
-# Classification (extracted for testability — R1 review fix)
+# Classification (extracted for testability -- R1 review fix)
 # ---------------------------------------------------------------------------
 
 
@@ -432,7 +432,7 @@ def pubchem() -> None:
 
 
 # ---------------------------------------------------------------------------
-# fetch — CID-to-compound-record (SMILES, InChIKey, formula, weight)
+# fetch -- CID-to-compound-record (SMILES, InChIKey, formula, weight)
 # ---------------------------------------------------------------------------
 
 _PROPERTY_FIELDS = (
@@ -592,7 +592,7 @@ def fetch_cmd(
         prop_url, props = _fetch_properties(cid)
 
         if props is None:
-            # CID not found — write a not-found artifact.
+            # CID not found -- write a not-found artifact.
             not_found_artifact: dict[str, Any] = {
                 "schema": FETCH_SCHEMA,
                 "_not_found": True,
@@ -767,7 +767,7 @@ def annotate_cmd(
 
     inchikey = _extract_inchikey(ik_payload)
 
-    # --- ChEMBL enrichment (optional — 404 is fine) ---
+    # --- ChEMBL enrichment (optional -- 404 is fine) ---
     chembl_mol_payload: dict[str, Any] = {"_not_found": True}
     chembl_moa_payload: dict[str, Any] = {"_not_found": True}
 
@@ -832,7 +832,7 @@ def annotate_cmd(
         if chembl_data.get("mechanisms"):
             for mech in chembl_data["mechanisms"][:3]:
                 emit.line(
-                    f"    MoA: {mech.get('action_type')} → {mech.get('target_name')}"
+                    f"    MoA: {mech.get('action_type')} -> {mech.get('target_name')}"
                 )
     emit.path(artifact_path, role="annotation")
     emit.path(meta_path, role="sidecar")

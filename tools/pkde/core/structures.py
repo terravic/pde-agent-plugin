@@ -9,7 +9,7 @@ differently, and every new tool rediscovered the gap (see #19 and #33).
 once it knows the format depends on the tool, not on the format:
 
   pocket.py   Dispatch to ``_parse_residues_pdb()`` or
-              ``_parse_residues_cif()`` — the tool must parse atom
+              ``_parse_residues_cif()`` -- the tool must parse atom
               coordinates natively, so it needs a format-specific
               parser per format.
 
@@ -65,8 +65,8 @@ def detect_structure_format(path: Path) -> Literal["pdb", "cif"]:
 
     Uses a two-stage strategy:
 
-    1. **Extension hint** — ``.pdb``/``.ent`` → PDB, ``.cif``/``.mmcif`` → CIF.
-    2. **Content sniff** — reads the first ~200 kB of the file and looks
+    1. **Extension hint** -- ``.pdb``/``.ent`` -> PDB, ``.cif``/``.mmcif`` -> CIF.
+    2. **Content sniff** -- reads the first ~200 kB of the file and looks
        for characteristic tokens.  mmCIF files use ``data_``, ``loop_``,
        and ``_atom_site.*`` block/loop syntax; PDB files use fixed-width
        ``ATOM``/``HETATM``/``HEADER`` records without CIF's syntax.
@@ -75,7 +75,7 @@ def detect_structure_format(path: Path) -> Literal["pdb", "cif"]:
     contradict it, the extension wins (fast path).  If the extension is
     absent or unrecognised, content alone decides.  If the content
     contradicts the extension, content wins (a mislabelled file should
-    not silently misparse — see ``pocket.py``'s ``_is_experimental()``,
+    not silently misparse -- see ``pocket.py``'s ``_is_experimental()``,
     which reads file content rather than trusting a name).
 
     Raises :class:`ArtifactError` if the file matches neither pattern
@@ -102,7 +102,7 @@ def detect_structure_format(path: Path) -> Literal["pdb", "cif"]:
     if content_format is not None:
         return content_format
 
-    # No content signal — fall back to extension.
+    # No content signal -- fall back to extension.
     if ext_format is not None:
         return ext_format
 
@@ -138,7 +138,7 @@ def _sniff_content(head: str) -> Literal["pdb", "cif"] | None:
     for line in head.splitlines():
         if not line or line.isspace():
             continue
-        # Check CIF tokens — these are unambiguous; no PDB file contains
+        # Check CIF tokens -- these are unambiguous; no PDB file contains
         # lines starting with ``data_`` or ``_atom_site.``.
         for token in _CIF_TOKENS:
             if line.startswith(token):
@@ -151,7 +151,7 @@ def _sniff_content(head: str) -> Literal["pdb", "cif"] | None:
 
     # CIF tokens are more specific and never appear in PDB files, so
     # they win if both signals are present (which can happen in a CIF
-    # file that also contains ATOM records — mmCIF does use ``ATOM``
+    # file that also contains ATOM records -- mmCIF does use ``ATOM``
     # as a record type in its ``_atom_site`` loop).
     if has_cif:
         return "cif"

@@ -1,8 +1,8 @@
-"""`pkde cellxgene` — CZ CELLxGENE Discover single-cell dataset search.
+"""`pkde cellxgene` -- CELLxGENE Discover single-cell dataset search.
 
-Queries the CZ CELLxGENE Discover public API for collections and datasets
+Queries the CELLxGENE Discover public API for collections and datasets
 matching tissue, cell type, organism, or disease criteria.  CELLxGENE hosts
-33M+ cells across 436+ datasets — this tool searches dataset *metadata*,
+33M+ cells across 436+ datasets -- this tool searches dataset *metadata*,
 not expression values.
 
 Two phases:
@@ -14,7 +14,7 @@ Two phases:
            type distributions, organism breakdown, and total cell count.
            No network.
 
-The search returns collection and dataset metadata — tissue annotations,
+The search returns collection and dataset metadata -- tissue annotations,
 cell type annotations, assay types, and H5AD download links.  It does NOT
 return gene expression values.  A dataset listed as containing a tissue
 does not confirm that a specific gene is expressed there; confirming
@@ -210,7 +210,7 @@ def _fetch_collections(
 
 @click.group()
 def cellxgene() -> None:
-    """CZ CELLxGENE Discover single-cell dataset search."""
+    """CELLxGENE Discover single-cell dataset search."""
 
 
 @cellxgene.command("search")
@@ -285,7 +285,7 @@ def search_cmd(
             "disease": disease or "",
         },
     )
-    sidecar.note("source", "CZ CELLxGENE Discover (cellxgene.cziscience.com)")
+    sidecar.note("source", "CELLxGENE Discover (cellxgene.cziscience.com)")
     sidecar.note("n_collections", artifact["summary"]["n_collections"])
     sidecar.note("n_datasets", artifact["summary"]["n_datasets"])
 

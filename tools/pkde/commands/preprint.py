@@ -91,7 +91,7 @@ def _parse_arxiv_entries(xml_bytes: bytes) -> tuple[list[dict[str, Any]], int]:
     results: list[dict[str, Any]] = []
 
     for entry in root.findall(f"{{{ATOM_NS}}}entry"):
-        # arXiv ID — extract from the id URL
+        # arXiv ID -- extract from the id URL
         id_el = entry.find(f"{{{ATOM_NS}}}id")
         if id_el is None or not id_el.text:
             continue
@@ -198,7 +198,7 @@ def _parse_biorxiv_collection(
         title = (item.get("title") or "").strip()
         abstract = (item.get("abstract") or "").strip()
 
-        # Client-side keyword filtering — bioRxiv has no search endpoint.
+        # Client-side keyword filtering -- bioRxiv has no search endpoint.
         if query_tokens:
             haystack = f"{title} {abstract}".lower()
             if not all(tok in haystack for tok in query_tokens):
@@ -210,7 +210,7 @@ def _parse_biorxiv_collection(
         if abstract:
             abstract = re.sub(r"\s+", " ", abstract)
 
-        # Authors — bioRxiv returns a single comma-separated string.
+        # Authors -- bioRxiv returns a single comma-separated string.
         raw_authors = item.get("authors") or ""
         authors: list[str] = [a.strip() for a in raw_authors.split(";") if a.strip()]
         if not authors and raw_authors:
@@ -371,7 +371,7 @@ def _search_arxiv(
     sidecar.add_output(raw_path)
     sidecar.add_output(artifact_path)
 
-    # Relay codes — fire conditionally
+    # Relay codes -- fire conditionally
     if len(results) == 0:
         sidecar.warn(
             f"arXiv search for {query!r} returned no results",
@@ -562,7 +562,7 @@ def analyze_cmd(
     source_dir = state.project().artifact_dir(ARTIFACT_CLASS, from_dir)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
 
-    # Locate the structured artifact — confine to source_dir.
+    # Locate the structured artifact -- confine to source_dir.
     artifact_path = confine_path(source_dir, Path(artifact))
     if artifact_path is None:
         raise UsageError(
@@ -600,7 +600,7 @@ def analyze_cmd(
     outcome = "results-found" if results else "no-results"
 
     relays: list[dict[str, str]] = []
-    # No additional relays in analyze — relays fire in search phase
+    # No additional relays in analyze -- relays fire in search phase
 
     assessment = {
         "outcome": outcome,

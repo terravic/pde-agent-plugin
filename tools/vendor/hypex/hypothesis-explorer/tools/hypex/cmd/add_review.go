@@ -113,6 +113,6 @@ func runAddReview(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("writing review file: %w", err)
 	}
 
-	fmt.Printf("Added review: %s → %s\n", id, outPath)
+	fmt.Printf("Added review: %s -> %s\n", id, outPath)
 	return nil
 }

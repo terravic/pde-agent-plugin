@@ -8,13 +8,13 @@ description: "Score docking poses and classify predicted binding strength -- rec
 Use this skill when you need to score docking poses or classify
 predicted binding strength. Entry points include:
 
-- Scoring how well a ligand fits a pocket — virtual screening result
+- Scoring how well a ligand fits a pocket -- virtual screening result
   interpretation.
-- Confirming a proposed binding mode — pose validation against a
+- Confirming a proposed binding mode -- pose validation against a
   prepared receptor.
-- Classifying poses by predicted binding strength — triage across
+- Classifying poses by predicted binding strength -- triage across
   one or more ligands.
-- Preparing a receptor for docking — PDBQT conversion and grid box
+- Preparing a receptor for docking -- PDBQT conversion and grid box
   derivation from a pocket record.
 - Confirming whether a docked pose contacts specific named residues
   (catalytic, interface, or other functionally important residues).
@@ -48,7 +48,7 @@ predicted binding strength. Entry points include:
 - **Dependencies**: Meeko (`mk_prepare_receptor.py`,
   `mk_prepare_ligand.py`) and the AutoDock Vina binary. Run
   `pkde doctor` before first use.
-- **No authentication** needed — all operations are offline.
+- **No authentication** needed -- all operations are offline.
 
 ## 3. Tool invocations
 
@@ -89,18 +89,18 @@ Notable options:
 `analyze` applies the `docking-scores` threshold set and emits one
 of:
 
-- **strong-binders-found** — at least one pose in the strong
+- **strong-binders-found** -- at least one pose in the strong
   predicted binding band (at or below the configured
   `strong_binding_energy` threshold).
-- **moderate-binders-found** — best pose in the moderate predicted
+- **moderate-binders-found** -- best pose in the moderate predicted
   binding band (at or below `moderate_binding_energy`, above
   `strong_binding_energy`).
-- **no-significant-binding** — all poses score above the
+- **no-significant-binding** -- all poses score above the
   `moderate_binding_energy` threshold.
 
 The `weak_binding_energy` threshold is UNRESOLVED in the
 `docking-scores` threshold set. Poses above the moderate threshold
-are classified as "unclassified" — the tool declines to classify
+are classified as "unclassified" -- the tool declines to classify
 them as weak or no-binding. Do not invent a weak binding threshold;
 the source has not published one.
 
@@ -108,7 +108,7 @@ the source has not published one.
 
 Vina scores are computed interaction energies in kcal/mol (more
 negative = stronger predicted binding). They are not measured
-binding affinities — they do not correspond to Kd, Ki, or IC50
+binding affinities -- they do not correspond to Kd, Ki, or IC50
 values. The `docking.score_is_not_affinity` relay enforces this
 distinction.
 
@@ -123,7 +123,7 @@ never from prose.
 This skill occupies the **affinity side** of the boundary. The
 `pocket-druggability` skill fires
 `fpocket.druggability_is_not_affinity` specifically because the
-binding affinity question was untooled — the stop says "if the
+binding affinity question was untooled -- the stop says "if the
 question is about binding or potency, the answer is that the
 question is untooled." With this skill, the binding prediction
 question is tooled via docking. The docking score answers the
@@ -135,8 +135,8 @@ not a measured affinity.
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `docking.score_is_not_affinity` | Stop | Any pose bands as strong or moderate — the over-readable result is available (claim-triggered, conditional) | Report the score as a computed interaction energy. Do not carry it as a measured binding affinity (Kd, Ki, IC50). If the question is about measured affinity, the answer is that the measurement has not been done — not that the docking score is strong. |
-| `docking.contact_is_not_binding_event` | Qualifier (standing) | Every `docking contacts` run | State that the reported contacts represent geometric proximity within a static, computationally docked pose — not a confirmed binding interaction. No hydrogen-bond geometry, electrostatic complementarity, or reactive-orientation check was performed. |
+| `docking.score_is_not_affinity` | Stop | Any pose bands as strong or moderate -- the over-readable result is available (claim-triggered, conditional) | Report the score as a computed interaction energy. Do not carry it as a measured binding affinity (Kd, Ki, IC50). If the question is about measured affinity, the answer is that the measurement has not been done -- not that the docking score is strong. |
+| `docking.contact_is_not_binding_event` | Qualifier (standing) | Every `docking contacts` run | State that the reported contacts represent geometric proximity within a static, computationally docked pose -- not a confirmed binding interaction. No hydrogen-bond geometry, electrostatic complementarity, or reactive-orientation check was performed. |
 
 **Upstream relays.** `analyze` collects upstream relays from the
 `prepare` and `run` phase-1 sidecars. These originate in the
@@ -169,11 +169,11 @@ the minimum distance recorded.
 
 A sub-cutoff contact distance confirms geometric proximity in one
 static computed pose. It does **not** confirm a binding interaction
-— no hydrogen-bond geometry, electrostatics, or reactive-orientation
+-- no hydrogen-bond geometry, electrostatics, or reactive-orientation
 check is performed.
 
-Contacts below the `--min-distance` threshold (default 2.0 Å) are
-flagged as potential steric clashes — artifacts of rigid-receptor
+Contacts below the `--min-distance` threshold (default 2.0 A) are
+flagged as potential steric clashes -- artifacts of rigid-receptor
 docking where the receptor cannot relax around the ligand.
 
 **Contacts vs. fpocket residue membership.** These are distinct
@@ -185,7 +185,7 @@ contacted by a given ligand, and a ligand can contact residues
 outside the pocket definition.
 
 **Use case.** Confirming or denying that a docked pose contacts a
-specific named residue — catalytic triad residues, interface
+specific named residue -- catalytic triad residues, interface
 residues, or other functionally important positions. This question
 is answerable deterministically from the poses and receptor PDBQTs
 already on disk; it does not require rendering or visualization.
@@ -200,7 +200,7 @@ already on disk; it does not require rendering or visualization.
   strong band.
 - **No-significant-binding**: all poses above the moderate threshold.
   When `weak_binding_energy` is UNRESOLVED, poses in this range are
-  unclassified — do not report "no binding" when the tool reported
+  unclassified -- do not report "no binding" when the tool reported
   "unclassified."
 
 ### Cross-disciplinary consequences
@@ -208,7 +208,7 @@ already on disk; it does not require rendering or visualization.
 - A docking score predicts binding in one conformation with one grid
   box. A different conformation or grid box is a different experiment.
 - Docking scores complement but do not replace measured binding
-  affinities — a strong computed score is a prediction, not a
+  affinities -- a strong computed score is a prediction, not a
   measurement.
 - Larger ligands can accumulate more van der Waals contacts and score
   more favourably without tighter binding. Comparing scores across
@@ -260,10 +260,10 @@ estimate, and do not proceed on an assumed result.
   recalculation.
 - **UNRESOLVED `weak_binding_energy`.** Treating poses above the
   moderate threshold as "no binding" when the threshold has not been
-  established. The tool reports these as "unclassified" — do not
+  established. The tool reports these as "unclassified" -- do not
   invent a classification the source declined to publish.
 - **Residue-contact verification via rendering.** Concluding that
   confirming whether a docked pose contacts a named residue requires
   rendering or visualization. `docking contacts` answers this
   question deterministically from the poses and receptor PDBQTs on
-  disk — no visual inspection needed.
+  disk -- no visual inspection needed.

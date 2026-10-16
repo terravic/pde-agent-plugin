@@ -1,4 +1,4 @@
-"""`pkde docking` — molecular docking with AutoDock Vina.
+"""`pkde docking` -- molecular docking with AutoDock Vina.
 
 Three-phase layout:
 
@@ -187,7 +187,7 @@ def _compute_grid_box(
     coords: list[tuple[float, float, float]] = []
 
     if pocket_atm_path.suffix.lower() == ".cif":
-        # Parse mmCIF ATOM/HETATM records — coordinates are in
+        # Parse mmCIF ATOM/HETATM records -- coordinates are in
         # Cartn_x/y/z columns; we locate them from the _atom_site header.
         lines = text.splitlines()
         columns: list[str] = []
@@ -469,7 +469,7 @@ def _convert_receptor_to_pdbqt(
 ) -> None:
     """Convert a receptor structure to PDBQT format using mk_prepare_receptor.py.
 
-    Invokes meeko's mk_prepare_receptor.py as a subprocess — the
+    Invokes meeko's mk_prepare_receptor.py as a subprocess -- the
     documented modern entry point for receptor PDBQT conversion.  Uses
     ``--read_with_prody`` (the ProDy-based reader) which transparently
     handles both PDB and mmCIF formats through a single code path.
@@ -572,7 +572,7 @@ def _vina_version(vina_path: str) -> str | None:
 def _convert_ligand_to_pdbqt(sdf_path: Path, output_path: Path) -> None:
     """Convert an SDF/MOL ligand to PDBQT format using mk_prepare_ligand.py.
 
-    Invokes meeko's mk_prepare_ligand.py as a subprocess — the
+    Invokes meeko's mk_prepare_ligand.py as a subprocess -- the
     documented entry point for ligand PDBQT conversion.  This matches
     the subprocess convention used for receptor preparation, fpocket,
     and Vina, and is robust to meeko's internal API changes.
@@ -901,7 +901,7 @@ def docking() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — prepare
+# Phase 1 -- prepare
 # ---------------------------------------------------------------------------
 
 
@@ -960,9 +960,9 @@ def prepare_cmd(
     Outputs are written under ``raw/docking/``:
 
     \b
-      {stem}.receptor.pdbqt    — prepared receptor
-      {stem}.gridbox.json      — grid box parameters
-      {stem}.prepare.meta.json — provenance sidecar
+      {stem}.receptor.pdbqt    -- prepared receptor
+      {stem}.gridbox.json      -- grid box parameters
+      {stem}.prepare.meta.json -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -1014,7 +1014,7 @@ def prepare_cmd(
     pocket_atm_path = _locate_pocket_atoms(fpocket_output_dir, pocket_rank)
 
     # --- derive grid box ---
-    # 10 A padding on each side beyond the pocket extent — common Vina
+    # 10 A padding on each side beyond the pocket extent -- common Vina
     # practice.  Eberhardt et al., J Chem Inf Model 2021;61:3891-3898
     # (AutoDock Vina 1.2.x) recommend a box that encompasses the binding
     # site with sufficient margin.
@@ -1113,7 +1113,7 @@ def prepare_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — run
+# Phase 1 -- run
 # ---------------------------------------------------------------------------
 
 
@@ -1172,9 +1172,9 @@ def run_cmd(
     is derived from the receptor filename (structure stem):
 
     \b
-      {ligand}_{receptor_id}.docking_result.json — per-ligand scores and poses
-      {ligand}_{receptor_id}.poses.pdbqt         — Vina output poses
-      {ligand}_{receptor_id}.docking.meta.json   — provenance sidecar
+      {ligand}_{receptor_id}.docking_result.json -- per-ligand scores and poses
+      {ligand}_{receptor_id}.poses.pdbqt         -- Vina output poses
+      {ligand}_{receptor_id}.docking.meta.json   -- provenance sidecar
 
     Including the receptor identifier prevents output collisions when
     the same ligand is docked against multiple receptors (#205).
@@ -1389,7 +1389,7 @@ def run_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — analyze
+# Phase 2 -- analyze
 # ---------------------------------------------------------------------------
 
 
@@ -1412,7 +1412,7 @@ def analyze_cmd(
     Reads one or more ``.docking_result.json`` files written by
     ``docking run``, applies the ``docking-scores`` threshold set, and
     writes a ``.docking.analysis.json`` per input with a verdict and
-    mandatory relays.  This command never queries an endpoint — the
+    mandatory relays.  This command never queries an endpoint -- the
     phase-2 latch enforces that automatically.
 
     Accepts multiple paths and glob patterns::
@@ -1434,7 +1434,7 @@ def analyze_cmd(
         if matches:
             expanded_paths.extend(matches)
         else:
-            # No glob match — pass through so resolve_artifact
+            # No glob match -- pass through so resolve_artifact
             # produces the standard "not found" error.
             expanded_paths.append(p)
 
@@ -1450,7 +1450,7 @@ def analyze_cmd(
     strong_threshold = thresholds.get("strong_binding_energy")
     moderate_threshold = thresholds.get("moderate_binding_energy")
 
-    # weak_binding_energy may be UNRESOLVED — handle gracefully per the
+    # weak_binding_energy may be UNRESOLVED -- handle gracefully per the
     # unresolved threshold pattern (consistent with genetics.py and
     # expression.py): check unresolved() rather than catching .get(),
     # and only fetch a value we will actually use.
@@ -1477,7 +1477,7 @@ def analyze_cmd(
         for pose in raw_poses:
             score = pose["affinity_kcalmol"]
             # Vina scores are negative kcal/mol: more negative = stronger.
-            # score <= threshold is the test (e.g. -8.5 <= -8.0 → strong).
+            # score <= threshold is the test (e.g. -8.5 <= -8.0 -> strong).
             if score <= strong_threshold:
                 band = "strong"
             elif score <= moderate_threshold:
@@ -1485,10 +1485,10 @@ def analyze_cmd(
             elif weak_resolved and score <= weak_threshold:
                 band = "weak"
             elif weak_resolved:
-                # Score is above the weak threshold — no meaningful binding
+                # Score is above the weak threshold -- no meaningful binding
                 band = "no-binding"
             else:
-                # weak_binding_energy is UNRESOLVED — score is above moderate
+                # weak_binding_energy is UNRESOLVED -- score is above moderate
                 # but cannot be split into weak/no-binding.  Label the band
                 # descriptively rather than "unclassified" (which implies a
                 # tool failure rather than a missing threshold).
@@ -1517,7 +1517,7 @@ def analyze_cmd(
             statement = (
                 f"At least one pose scores {best_score:.1f} kcal/mol, in the "
                 f"strong predicted binding band "
-                f"(≤ {strong_threshold} kcal/mol)."
+                f"(<= {strong_threshold} kcal/mol)."
             )
         elif has_moderate:
             best_moderate = min(
@@ -1529,7 +1529,7 @@ def analyze_cmd(
             statement = (
                 f"Best pose scores {best_moderate:.1f} kcal/mol, in the "
                 f"moderate predicted binding band "
-                f"(≤ {moderate_threshold} kcal/mol)."
+                f"(<= {moderate_threshold} kcal/mol)."
             )
         else:
             verdict = "no-significant-binding"
@@ -1587,14 +1587,14 @@ def analyze_cmd(
                 import logging
 
                 logging.getLogger("pkde.docking").warning(
-                    "prepare sidecar not found at %s — upstream relays "
+                    "prepare sidecar not found at %s -- upstream relays "
                     "(pocket quality alerts, conformation dependence, "
                     "peptide occlusion) will be missing from the analysis",
                     meta_candidate,
                 )
 
         # --- conditional relay: score_is_not_affinity ---
-        # Fires when any pose is in the strong or moderate band — the over-
+        # Fires when any pose is in the strong or moderate band -- the over-
         # readable result is available and may be carried as an affinity.
         if has_strong or has_moderate:
             code = "docking.score_is_not_affinity"
@@ -1708,8 +1708,8 @@ def contacts_cmd(
     Outputs under ``raw/docking/``:
 
     \b
-      {stem}.contacts.json       — contact analysis results
-      {stem}.contacts.meta.json  — provenance sidecar
+      {stem}.contacts.json       -- contact analysis results
+      {stem}.contacts.meta.json  -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -1944,14 +1944,14 @@ def contacts_matrix_cmd(
     are residues, columns are compounds, values are minimum distances
     (null if no contact within cutoff).
 
-    Consensus contacts — residues contacted by all or most compounds —
+    Consensus contacts -- residues contacted by all or most compounds --
     are identified and reported.
 
     Outputs under ``raw/docking/``:
 
     \b
-      matrix.contacts-matrix.json       — cross-compound contact matrix
-      matrix.contacts-matrix.meta.json  — provenance sidecar
+      matrix.contacts-matrix.json       -- cross-compound contact matrix
+      matrix.contacts-matrix.meta.json  -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -1969,7 +1969,7 @@ def contacts_matrix_cmd(
 
     # --- process each compound's pose file ---
     compound_names: list[str] = []
-    # residue_key → {compound_name → min_distance}
+    # residue_key -> {compound_name -> min_distance}
     all_residues: dict[tuple[str, str, int], dict[str, float]] = {}
 
     sidecar = provenance.Sidecar(
@@ -2022,7 +2022,7 @@ def contacts_matrix_cmd(
                     "error": str(exc),
                 }
             )
-            emit.line(f"{compound_stem}: error — {str(exc)[:100]}")
+            emit.line(f"{compound_stem}: error -- {str(exc)[:100]}")
 
     # --- build matrix ---
     # Sort residues by chain + res_num for stable output
@@ -2198,7 +2198,7 @@ def _parse_heavy_atoms_sdf(text: str) -> list[tuple[float, float, float]]:
     if len(lines) < 4:
         return []
 
-    # Counts line (line index 3) — first two fields are atom_count, bond_count
+    # Counts line (line index 3) -- first two fields are atom_count, bond_count
     counts_line = lines[3]
     try:
         parts = counts_line.split()
@@ -2248,7 +2248,7 @@ def _parse_heavy_atoms_mol2(text: str) -> list[tuple[float, float, float]]:
             z = float(parts[4])
         except ValueError:
             continue
-        # atom_type is e.g. "C.3", "N.am", "H" — extract element
+        # atom_type is e.g. "C.3", "N.am", "H" -- extract element
         atom_type = parts[5]
         element = atom_type.split(".")[0]
         if element in ("H", "D"):
@@ -2355,8 +2355,8 @@ def validate_pose_cmd(
 
     \b
     Outputs:
-      {stem}.pose-validation.artifact.json — validation record
-      {stem}.pose-validation.meta.json     — provenance sidecar
+      {stem}.pose-validation.artifact.json -- validation record
+      {stem}.pose-validation.meta.json     -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
 

@@ -13,14 +13,15 @@
 """Portable Tool Bridge for the Pharmakon Discovery Engine MCP Server and Agent Harness.
 
 Provides the 4 core orchestration and execution primitives:
-1. ``pkde_exec`` — Execute any two-phase or control-plane ``pkde`` CLI command.
-2. ``pkde_dispatch_workorder`` — Atomic 4-step Work Order intake, snapshot, lease, and run start.
-3. ``pkde_validate_and_gate`` — 10-check mechanical validation gate and correction loop driver.
-4. ``pkde_render_dashboard`` — Build the self-contained multi-agent and scientific dashboard HTML.
+1. ``pkde_exec`` -- Execute any two-phase or control-plane ``pkde`` CLI command.
+2. ``pkde_dispatch_workorder`` -- Atomic 4-step Work Order intake, snapshot, lease, and run start.
+3. ``pkde_validate_and_gate`` -- 10-check mechanical validation gate and correction loop driver.
+4. ``pkde_render_dashboard`` -- Build the self-contained multi-agent and scientific dashboard HTML.
 """
 
 from __future__ import annotations
 
+import importlib.util
 import json
 import os
 import shlex
@@ -30,7 +31,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-import yaml
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None  # type: ignore[assignment]
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 TOOLS_DIR = REPO_ROOT / "tools"
@@ -40,19 +44,96 @@ for _p in (str(REPO_ROOT), str(TOOLS_DIR), str(VENDOR_HYPEX_DIR)):
     if _p not in sys.path:
         sys.path.insert(0, _p)
 
-from pkde.commands.dashboard import (  # noqa: E402
-    bootstrap_prompt_session,
-    build_dashboard_html,
-    ensure_dashboard_server,
-    log_agent_message,
-    record_active_project,
-)
+try:
+    from pkde.commands.dashboard import (  # noqa: E402
+        bootstrap_prompt_session,
+        build_dashboard_html,
+        ensure_dashboard_server,
+        log_agent_message,
+        record_active_project,
+    )
+except ImportError:  # pragma: no cover
+
+    def record_active_project(project_root: Path) -> None:
+        return None
+
+    def ensure_dashboard_server(
+        project_root: Path, host: str = "0.0.0.0", port: int = 8765
+    ) -> dict[str, Any]:
+        return {"running": False, "url": f"http://localhost:{port}/dashboard.html"}
+
+    def build_dashboard_html(
+        project_root: Path,
+        output_path: Path | None = None,
+        standalone_mode: bool = True,
+    ) -> tuple[Path, dict[str, Any]]:
+        out = output_path or (project_root / "dashboard.html")
+        return out, {"program": {"name": project_root.name, "stage": 0, "summary_metrics": {}}}
+
+    def bootstrap_prompt_session(
+        project_root: Path,
+        prompt: str,
+        program_name: str | None = None,
+        stage: int | None = None,
+        host: str = "0.0.0.0",
+        port: int = 8765,
+        start_server: bool = True,
+    ) -> dict[str, Any]:
+        return {
+            "ok": True,
+            "status": "BOOTSTRAPPED",
+            "project_dir": str(project_root),
+            "program_name": program_name or project_root.name,
+            "stage": stage or 0,
+            "dashboard_html": str(project_root / "dashboard.html"),
+            "server": {"running": False, "url": f"http://localhost:{port}/dashboard.html"},
+        }
+
+    def log_agent_message(
+        project_root: Path,
+        from_agent: str,
+        to_agent: str,
+        summary: str,
+        work_order_id: str | None = None,
+    ) -> dict[str, Any]:
+        return controlstore.append_event(
+            project_root,
+            {
+                "type": "agent.message",
+                "subject_id": work_order_id or "session",
+                "actor": from_agent,
+                "detail": {
+                    "from": from_agent,
+                    "to": to_agent,
+                    "summary": summary,
+                    "work_order_id": work_order_id,
+                },
+            },
+        )
+
+
 from pkde.core import controlstore  # noqa: E402
 from pkde.core.context import init_project  # noqa: E402
 
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _resolve_pkde_python() -> str:
+    """Return the best Python interpreter for invoking pkde.cli."""
+    env_py = os.environ.get("PKDE_PYTHON", "").strip()
+    if env_py and Path(env_py).is_file() and os.access(env_py, os.X_OK):
+        return env_py
+    if importlib.util.find_spec("click") is not None:
+        return sys.executable
+    for candidate in (
+        REPO_ROOT / ".venv" / "bin" / "python",
+        REPO_ROOT / ".venv" / "Scripts" / "python.exe",
+    ):
+        if candidate.is_file() and os.access(candidate, os.X_OK):
+            return str(candidate)
+    return sys.executable
 
 
 def _has_raw_artifacts(workspace: Path) -> bool:
@@ -166,15 +247,38 @@ def pkde_exec(
             "project_dir": str(project_root),
         }
 
-    cmd = [sys.executable, "-m", "pkde.cli", "--project", str(project_root), *tokens]
-    proc = subprocess.run(
-        cmd,
-        cwd=str(project_root),
-        env=env,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    # Prevent foreground HTTP server commands from blocking the agent harness indefinitely.
+    if len(tokens) >= 2 and tokens[0] == "dashboard" and tokens[1] == "serve":
+        tokens = ["dashboard", "start", *tokens[2:]]
+
+    py_exe = _resolve_pkde_python()
+    timeout_sec = float(os.environ.get("PKDE_EXEC_TIMEOUT", "180"))
+    cmd = [py_exe, "-m", "pkde.cli", "--project", str(project_root), *tokens]
+    try:
+        proc = subprocess.run(
+            cmd,
+            cwd=str(project_root),
+            env=env,
+            stdin=subprocess.DEVNULL,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout_sec,
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "ok": False,
+            "exit_code": 124,
+            "command": f"pkde {' '.join(tokens)}",
+            "project_dir": str(project_root),
+            "data": None,
+            "stderr": {
+                "error_code": "COMMAND_TIMEOUT",
+                "message": f"pkde command timed out after {timeout_sec:.0f}s",
+                "stdout_partial": (exc.stdout or "") if isinstance(exc.stdout, str) else "",
+            },
+            "dashboard_html": None,
+        }
 
     stdout = proc.stdout.strip()
     stderr = proc.stderr.strip()
@@ -425,7 +529,12 @@ def pkde_dispatch_workorder(
     specs_dir.mkdir(parents=True, exist_ok=True)
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     yaml_path = specs_dir / f"wo-spec-{ts}-{role}.yaml"
-    yaml_path.write_text(yaml.safe_dump(normalized, sort_keys=False), encoding="utf-8")
+    spec_text = (
+        yaml.safe_dump(normalized, sort_keys=False)
+        if yaml is not None
+        else json.dumps(normalized, indent=2) + "\n"
+    )
+    yaml_path.write_text(spec_text, encoding="utf-8")
 
     # Step 1 & 2: Create and commit Work Order (creates context snapshot)
     create_res = pkde_exec(

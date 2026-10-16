@@ -123,7 +123,7 @@ func PlacementPairs(
 	// Get rated standings for anchors.
 	standings := rating.SortedStandings(ratings)
 	if len(standings) == 0 {
-		// No rated hypotheses — pair unrated against each other.
+		// No rated hypotheses -- pair unrated against each other.
 		return pairUnratedAmongThemselves(unrated, history, epoch, budget, window)
 	}
 

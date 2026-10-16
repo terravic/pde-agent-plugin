@@ -51,7 +51,7 @@ pkde site build --retrospectives-dir retrospectives/
 
 ## Content Preparation
 
-The CLI renders content — it does not generate it. The agent must prepare and maintain the source material before building.
+The CLI renders content -- it does not generate it. The agent must prepare and maintain the source material before building.
 
 ### Executive Summary
 
@@ -80,11 +80,11 @@ The build supports LaTeX math rendering via the mistune math plugin and vendored
 **Usage:**
 - Standard LaTeX math commands work: `\text{}`, `\times`, `\approx`, subscripts, superscripts, Greek letters, fractions.
 - Example: `$K_i \approx 5.6\ \text{nM}$` renders as formatted math.
-- Use inline math for values in running text (potency, IC₅₀). Use display blocks for complex equations.
+- Use inline math for values in running text (potency, IC50). Use display blocks for complex equations.
 
 **Avoid:**
 - Do not use HTML entities or Unicode workarounds for math that LaTeX handles natively.
-- Do not wrap math in code fences or backtick spans — those prevent rendering.
+- Do not wrap math in code fences or backtick spans -- those prevent rendering.
 - Do not mix delimiter styles within the same expression.
 
 **Build interaction:**
@@ -111,7 +111,7 @@ The build produces the following page types:
 
 Because `raw/` is bundled into `_site/` by default, viewer `?file=` URLs resolve within the site directory (`../raw/...`). This means viewers work correctly in exported archives and on static file hosts without path patching. When `--no-bundle-raw` is used, viewer URLs revert to the previous external-path layout (`../../raw/...`).
 
-The site includes 13 auto-wired specialized HTML viewers for scientific data files, plus one additional viewer not yet wired to a file extension. Viewers are standalone HTML files that load data via `?file=` query parameters. Viewers listed below are wired automatically by file extension via the `VIEWER_MAP` in `site.py` — the agent does not need to configure viewer wiring. One additional viewer (`contacts-viewer.html`) is included in the site but not yet wired to a file extension.
+The site includes 13 auto-wired specialized HTML viewers for scientific data files, plus one additional viewer not yet wired to a file extension. Viewers are standalone HTML files that load data via `?file=` query parameters. Viewers listed below are wired automatically by file extension via the `VIEWER_MAP` in `site.py` -- the agent does not need to configure viewer wiring. One additional viewer (`contacts-viewer.html`) is included in the site but not yet wired to a file extension.
 
 ### Native HTML Viewers (no CDN dependencies)
 
@@ -151,7 +151,7 @@ The site includes 13 auto-wired specialized HTML viewers for scientific data fil
 
 ## Post-Build Processing
 
-After `pkde site build` completes and before verification, run a post-build orchestrator to fix known rendering gaps in the build output. Every fix script must be **idempotent** — safe to re-run after every build without accumulating changes.
+After `pkde site build` completes and before verification, run a post-build orchestrator to fix known rendering gaps in the build output. Every fix script must be **idempotent** -- safe to re-run after every build without accumulating changes.
 
 ### Why This Phase Exists
 
@@ -170,11 +170,11 @@ The build tool renders markdown to HTML deterministically but does not handle ev
 
 1. Run `postbuild.py` (the orchestrator) against `_site/`.
 2. The orchestrator discovers and runs fix scripts in dependency order.
-3. Each script applies a **detection guard** — checks whether the fix has already been applied before modifying any file.
+3. Each script applies a **detection guard** -- checks whether the fix has already been applied before modifying any file.
 4. Recommended execution order:
    - Structural HTML fixes (tables, duplicate headings)
    - CSS/styling fixes (scroll context, layout)
-   - Link resolution (`.md` → `.html`, artifact links)
+   - Link resolution (`.md` -> `.html`, artifact links)
    - Cosmetic passes (whitespace, formatting)
    - Scan/report (summary of remaining issues)
 
@@ -200,7 +200,7 @@ A copy-and-adapt template orchestrator is provided at [`references/postbuild-tem
 
 ## Content Boundaries
 
-Stakeholder-facing sites must present scientific substance — not operational noise. Filter content before it reaches the built site.
+Stakeholder-facing sites must present scientific substance -- not operational noise. Filter content before it reaches the built site.
 
 ### What Belongs
 
@@ -212,15 +212,15 @@ Stakeholder-facing sites must present scientific substance — not operational n
 
 | Content source | Owned by this program? | Edit strategy |
 |---|---|---|
-| Program findings/decisions | Yes | Edit source markdown — persists across rebuilds |
+| Program findings/decisions | Yes | Edit source markdown -- persists across rebuilds |
 | Shared-volume retrospectives | No (other agents) | Post-build HTML scrub; re-apply after each rebuild |
 | Build-tool generated content | No (template) | Post-build HTML transformation |
 
-When content is owned by this program, fix the source markdown so the correction survives future rebuilds. When it is not — retrospectives from other agents, template-generated markup — apply post-build HTML modifications and re-apply them after every rebuild.
+When content is owned by this program, fix the source markdown so the correction survives future rebuilds. When it is not -- retrospectives from other agents, template-generated markup -- apply post-build HTML modifications and re-apply them after every rebuild.
 
 ### Scanning for Boundary Violations
 
-Run [`references/fix_infra_refs.py`](references/fix_infra_refs.py) after each build to detect infrastructure details that leaked into generated HTML. The script scans only — it does not modify files. Review its output and apply edits using the strategy table above.
+Run [`references/fix_infra_refs.py`](references/fix_infra_refs.py) after each build to detect infrastructure details that leaked into generated HTML. The script scans only -- it does not modify files. Review its output and apply edits using the strategy table above.
 
 ```bash
 pkde site build
@@ -232,11 +232,11 @@ python3 references/fix_infra_refs.py _site/
 
 After post-build processing, verify:
 
-1. **Exit code** — the build succeeded (check exit code and output message).
-2. **Page count** — matches expectations (reported in build output).
-3. **Spot-check pages** — does the landing page show the executive excerpt? Do findings render as formatted HTML (not raw markdown)?
-4. **Viewer links** — artifact pages should show "View" links for supported file types.
-5. **Broken links** — the build aborts on broken internal links. Report any that were found.
+1. **Exit code** -- the build succeeded (check exit code and output message).
+2. **Page count** -- matches expectations (reported in build output).
+3. **Spot-check pages** -- does the landing page show the executive excerpt? Do findings render as formatted HTML (not raw markdown)?
+4. **Viewer links** -- artifact pages should show "View" links for supported file types.
+5. **Broken links** -- the build aborts on broken internal links. Report any that were found.
 
 ## Exporting a Relocatable Archive
 
@@ -301,7 +301,7 @@ pkde dashboard build --standalone  # or: pkde dashboard serve --port 8765
 
 ### 3. Iterative rebuild-and-serve
 
-For iterative workflows (rebuild -> post-process -> verify -> revise), keep the server running and rebuild in place. Each `pkde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately — no server restart required. The agent can stay retained for revisions in this mode.
+For iterative workflows (rebuild -> post-process -> verify -> revise), keep the server running and rebuild in place. Each `pkde site build` followed by `python3 postbuild.py _site/` regenerates `_site/` and the served content updates immediately -- no server restart required. The agent can stay retained for revisions in this mode.
 
 ## What This Skill Does NOT Cover
 

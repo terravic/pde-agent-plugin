@@ -1,4 +1,4 @@
-"""`pkde admet` — ADMET endpoint prediction from molecular descriptors.
+"""`pkde admet` -- ADMET endpoint prediction from molecular descriptors.
 
 Phase 1 (no judgment):
   predict    Compute predicted ADMET endpoints from a SMILES string.
@@ -9,14 +9,14 @@ Phase 2 (offline, applies thresholds):
   analyze    Read stored predictions, apply the `admet-endpoints` threshold
              set, produce an analysis record with verdict and relays.
 
-All predictions are rule-based — molecular descriptors and SMARTS
+All predictions are rule-based -- molecular descriptors and SMARTS
 pharmacophore patterns, not trained ML models. Every endpoint names its
 source publication and the specific rules applied. A clean predicted
 ADMET profile is not a substitute for in vitro ADMET studies.
 
 Multi-fragment SMILES (salts, mixtures) follow the "strip counterions,
 alert on parent" convention. The convention is documented in the sidecar
-— the parent is not chosen silently. An unparseable SMILES is a refusal
+-- the parent is not chosen silently. An unparseable SMILES is a refusal
 (exit 9), not a failure, because a different input string is the remedy.
 """
 
@@ -92,7 +92,7 @@ def _parse_smiles(smiles_input: str) -> tuple[Any, str, dict[str, Any], list[str
     """Parse a SMILES string, handling multi-fragment inputs.
 
     Returns ``(mol, canonical_smiles, fragment_notes, stripped_fragments)``.
-    Raises :class:`Refusal` on unparseable input — a different input
+    Raises :class:`Refusal` on unparseable input -- a different input
     string is the remedy, not a retry.
     """
     Chem = _require_rdkit()[0]
@@ -126,7 +126,7 @@ def _parse_smiles(smiles_input: str) -> tuple[Any, str, dict[str, Any], list[str
             "convention": (
                 "Counterions stripped; parent molecule selected as the largest "
                 "fragment by heavy atom count.  The stripped fragments are "
-                "listed here — this is documented, not silent."
+                "listed here -- this is documented, not silent."
             ),
         }
         mol = parent
@@ -232,9 +232,9 @@ def _predict_metabolic_stability(
     ADMET Rules of Thumb", J Med Chem 2008;51:817-834.
 
     Gleeson's rules:
-      - LogP > 4 AND aromatic ring count >= 3 → high metabolic liability
-      - LogP 1-3 → low metabolic liability
-      - Intermediate → moderate
+      - LogP > 4 AND aromatic ring count >= 3 -> high metabolic liability
+      - LogP 1-3 -> low metabolic liability
+      - Intermediate -> moderate
     """
     if logp > 4 and aromatic_rings >= 3:
         stability_class = "high"
@@ -251,8 +251,8 @@ def _predict_metabolic_stability(
             "aromatic_rings": aromatic_rings,
         },
         "rules_applied": (
-            "Gleeson 2008: LogP > 4 AND aromatic rings >= 3 → high; "
-            "LogP 1-3 → low; otherwise → moderate"
+            "Gleeson 2008: LogP > 4 AND aromatic rings >= 3 -> high; "
+            "LogP 1-3 -> low; otherwise -> moderate"
         ),
         "citation": (
             "Gleeson, 'Generation of a Set of Simple, Interpretable ADMET "
@@ -288,7 +288,7 @@ def _predict_cyp_inhibition(
 
     isoforms: dict[str, dict[str, Any]] = {}
 
-    # CYP2D6: lipophilic bases — LogP > 4 and basic nitrogen
+    # CYP2D6: lipophilic bases -- LogP > 4 and basic nitrogen
     cyp2d6_flagged = logp > 4 and has_basic_nitrogen
     cyp2d6_features = []
     if logp > 4:
@@ -304,7 +304,7 @@ def _predict_cyp_inhibition(
         ),
     }
 
-    # CYP3A4: larger lipophilic molecules — MW > 400 and LogP > 3
+    # CYP3A4: larger lipophilic molecules -- MW > 400 and LogP > 3
     cyp3a4_flagged = mw > 400 and logp > 3
     cyp3a4_features = []
     if mw > 400:
@@ -355,9 +355,9 @@ def _predict_permeability(
     Statistics", J Med Chem 2000;43:3867-3877.
 
     Egan's boundaries:
-      - TPSA <= 132 AND LogP in [-1, 6] → high permeability
-      - TPSA > 150 → low permeability
-      - Otherwise → moderate
+      - TPSA <= 132 AND LogP in [-1, 6] -> high permeability
+      - TPSA > 150 -> low permeability
+      - Otherwise -> moderate
     Also: MW > 500 reduces permeability regardless.
     """
     if mw > 500:
@@ -382,9 +382,9 @@ def _predict_permeability(
             "mw": mw,
         },
         "rules_applied": (
-            "Egan 2000: TPSA <= 132 AND LogP in [-1, 6] → high; "
-            "TPSA > 150 → low; MW > 500 → low (override); "
-            "otherwise → moderate"
+            "Egan 2000: TPSA <= 132 AND LogP in [-1, 6] -> high; "
+            "TPSA > 150 -> low; MW > 500 -> low (override); "
+            "otherwise -> moderate"
         ),
         "citation": (
             "Egan et al., 'Prediction of Drug Absorption Using Multivariate "
@@ -448,7 +448,7 @@ def _predict_herg(
         ),
         "rules_applied": (
             "Aronov 2005: basic nitrogen + LogP > 3.7 + >= 2 aromatic rings "
-            "→ hERG liability flagged"
+            "-> hERG liability flagged"
         ),
         "citation": (
             "Aronov, 'Predictive in silico modeling for hERG channel blockers', "
@@ -610,7 +610,7 @@ def admet() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — predict
+# Phase 1 -- predict
 # ---------------------------------------------------------------------------
 
 
@@ -635,7 +635,7 @@ def predict_cmd(
     Five rule-based endpoints: metabolic stability, CYP inhibition risk,
     permeability, hERG liability, and solubility (ESOL model).  Phase 1:
     predictions are recorded with sources and contributing descriptors.
-    No judgment is made — that belongs to ``analyze``.
+    No judgment is made -- that belongs to ``analyze``.
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -663,7 +663,7 @@ def predict_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — predict-batch
+# Phase 1 -- predict-batch
 # ---------------------------------------------------------------------------
 
 
@@ -672,7 +672,7 @@ def _read_batch_input(input_path: Path) -> list[dict[str, str]]:
 
     Returns a list of dicts with ``smiles`` and optional ``name`` keys.
     CSV files must have a ``smiles`` column; JSON files must be a list of
-    objects with a ``smiles`` key.  Uses stdlib ``csv`` — no pandas.
+    objects with a ``smiles`` key.  Uses stdlib ``csv`` -- no pandas.
     """
     text = input_path.read_text(encoding="utf-8")
     suffix = input_path.suffix.lower()
@@ -716,25 +716,25 @@ def _endpoint_pass_fail(endpoints: dict[str, Any]) -> dict[str, str]:
     """
     flags: dict[str, str] = {}
 
-    # metabolic stability: "high" liability → fail
+    # metabolic stability: "high" liability -> fail
     metab = endpoints.get("metabolic_stability", {})
     metab_class = metab.get("predicted_class", "")
     flags["metabolic_stability"] = "fail" if metab_class == "high" else "pass"
 
-    # CYP inhibition: any isoform flagged → fail
+    # CYP inhibition: any isoform flagged -> fail
     cyp = endpoints.get("cyp_inhibition", {})
     flags["cyp_inhibition"] = "fail" if cyp.get("any_flagged") else "pass"
 
-    # permeability: "low" → fail
+    # permeability: "low" -> fail
     perm = endpoints.get("permeability", {})
     perm_class = perm.get("predicted_class", "")
     flags["permeability"] = "fail" if perm_class == "low" else "pass"
 
-    # hERG: flagged → fail
+    # hERG: flagged -> fail
     herg = endpoints.get("herg_liability", {})
     flags["herg_liability"] = "fail" if herg.get("flagged") else "pass"
 
-    # solubility: "insoluble" → fail
+    # solubility: "insoluble" -> fail
     sol = endpoints.get("solubility", {})
     sol_class = sol.get("predicted_class", "")
     flags["solubility"] = "fail" if sol_class == "insoluble" else "pass"
@@ -770,9 +770,9 @@ def predict_batch_cmd(
     Outputs under ``raw/admet/``:
 
     \b
-      {slug}.predict.json          — per-compound prediction (one each)
-      batch.admet-batch.json       — comparative summary table
-      batch.admet-batch.meta.json  — provenance sidecar
+      {slug}.predict.json          -- per-compound prediction (one each)
+      batch.admet-batch.json       -- comparative summary table
+      batch.admet-batch.meta.json  -- provenance sidecar
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     target_dir = state.project().artifact_dir(ARTIFACT_CLASS, out)
@@ -905,7 +905,7 @@ def predict_batch_cmd(
                 error_row["name"] = name
             summary_rows.append(error_row)
             n_failed += 1
-            emit.line(f"{smiles_input}: error — {str(exc)[:100]}")
+            emit.line(f"{smiles_input}: error -- {str(exc)[:100]}")
 
     # --- write batch summary ---
     batch_record: dict[str, Any] = {
@@ -935,7 +935,7 @@ def predict_batch_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 1 — topical (Potts-Guy skin permeability)
+# Phase 1 -- topical (Potts-Guy skin permeability)
 # ---------------------------------------------------------------------------
 
 
@@ -1149,7 +1149,7 @@ def topical_cmd(
 
 
 # ---------------------------------------------------------------------------
-# Phase 2 — analyze
+# Phase 2 -- analyze
 # ---------------------------------------------------------------------------
 
 
@@ -1174,7 +1174,7 @@ def analyze_cmd(
     Reads the ``.predict.json`` written by ``admet predict``, applies the
     ``admet-endpoints`` threshold set, and writes an ``.analysis.json``
     with a verdict plus mandatory relays.  This command never queries an
-    endpoint — the phase-2 latch enforces that automatically.
+    endpoint -- the phase-2 latch enforces that automatically.
     """
     emit = Emitter(as_json=as_json, quiet=quiet)
     source_dir = state.project().artifact_dir(ARTIFACT_CLASS, from_dir)
@@ -1216,7 +1216,7 @@ def analyze_cmd(
     liabilities: list[str] = []
     marginals: list[str] = []
 
-    # 1. Metabolic stability — Gleeson 2008 rules via thresholds
+    # 1. Metabolic stability -- Gleeson 2008 rules via thresholds
     metab = endpoints.get("metabolic_stability", {})
     metab_descs = metab.get("contributing_descriptors", {})
     metab_logp = metab_descs.get("logp", 0)
@@ -1246,7 +1246,7 @@ def analyze_cmd(
         metab_result["status"] = "acceptable"
     endpoint_results["metabolic_stability"] = metab_result
 
-    # 2. CYP inhibition — multi-rule binary per isoform, no single threshold
+    # 2. CYP inhibition -- multi-rule binary per isoform, no single threshold
     cyp = endpoints.get("cyp_inhibition", {})
     cyp_isoforms = cyp.get("isoforms", {})
     flagged_isoforms = [
@@ -1266,7 +1266,7 @@ def analyze_cmd(
         cyp_result["status"] = "acceptable"
     endpoint_results["cyp_inhibition"] = cyp_result
 
-    # 3. Permeability — Egan 2000 egg model via thresholds
+    # 3. Permeability -- Egan 2000 egg model via thresholds
     perm = endpoints.get("permeability", {})
     perm_descs = perm.get("contributing_descriptors", {})
     perm_tpsa = perm_descs.get("tpsa", 0)
@@ -1302,7 +1302,7 @@ def analyze_cmd(
         perm_result["status"] = "acceptable"
     endpoint_results["permeability"] = perm_result
 
-    # 4. hERG liability — Aronov 2005 pharmacophore via thresholds
+    # 4. hERG liability -- Aronov 2005 pharmacophore via thresholds
     herg = endpoints.get("herg_liability", {})
     herg_descs = herg.get("contributing_descriptors", {})
     herg_basic_n = herg_descs.get("has_basic_nitrogen", False)
@@ -1329,7 +1329,7 @@ def analyze_cmd(
         herg_result["status"] = "acceptable"
     endpoint_results["herg_liability"] = herg_result
 
-    # 5. Solubility — ESOL classification via thresholds
+    # 5. Solubility -- ESOL classification via thresholds
     sol = endpoints.get("solubility", {})
     sol_logs = sol.get("predicted_logS")
 
@@ -1379,7 +1379,7 @@ def analyze_cmd(
         )
 
     # --- conditional relay: prediction_not_measurement ---
-    # Fires only when verdict is "developable" — the over-read risk is
+    # Fires only when verdict is "developable" -- the over-read risk is
     # highest when the profile looks clean.
     if verdict == "developable":
         relays.append(
@@ -1389,7 +1389,7 @@ def analyze_cmd(
                 "number here is a rule-based prediction from molecular "
                 "descriptors, not an in vitro measurement. A clean predicted "
                 "ADMET profile does not substitute for in vitro ADMET studies "
-                "— it identifies which studies to prioritize, not which to skip.",
+                "-- it identifies which studies to prioritize, not which to skip.",
             )
         )
 
@@ -1414,7 +1414,7 @@ def analyze_cmd(
     # An agent reading the output must see an explicit negative for
     # conditional relays that did not fire, not silence.  Without this,
     # "correctly excluded by conditionality" is indistinguishable from
-    # "should have fired but didn't" — the gap WO-010's retro identified.
+    # "should have fired but didn't" -- the gap WO-010's retro identified.
     relay_dispositions: list[dict[str, str]] = []
 
     if verdict == "developable":
@@ -1433,7 +1433,7 @@ def analyze_cmd(
                 "condition": "verdict is developable",
                 "reason": (
                     f"verdict is {verdict}; the over-read risk this relay guards "
-                    "against — treating predictions as measurements — is highest "
+                    "against -- treating predictions as measurements -- is highest "
                     "when the profile looks clean, which this one does not"
                 ),
             }

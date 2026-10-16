@@ -3,7 +3,7 @@
 Reference for the YAML schema accepted by `pkde workorder create --from <file>`.
 
 > **Alias:** `wo` is a shorthand for `workorder`. Every command below works
-> identically with either name — e.g. `pkde wo create` and
+> identically with either name -- e.g. `pkde wo create` and
 > `pkde workorder create` are the same command.
 
 For the design rationale behind work orders, see
@@ -36,11 +36,11 @@ Missing any of them causes a `SchemaError` at creation time.
 
 The control-plane store validates these field types on every write:
 
-- **`context`** must be a `dict` — not a string or list.
-- **`dependencies`** must be a `list` — not a dict.
-- **`capabilities`** must be a `list` — not a dict.
-- **`deliverables`** must be a `dict` — not a list.
-- **`alert_policy`** must be a `dict` — not a list.
+- **`context`** must be a `dict` -- not a string or list.
+- **`dependencies`** must be a `list` -- not a dict.
+- **`capabilities`** must be a `list` -- not a dict.
+- **`deliverables`** must be a `dict` -- not a list.
+- **`alert_policy`** must be a `dict` -- not a list.
 
 Other fields (`decision_question`, `requested_role`, `stage`, `cycle`,
 `priority`, `resource_class`, `report_to`, `acceptance_criteria`) are checked
@@ -51,7 +51,7 @@ for presence but not for type at the store layer.
 ## 2. CLI-managed fields
 
 The following fields are set automatically by the CLI. **Do not include them in
-your YAML input** — they will be ignored if present.
+your YAML input** -- they will be ignored if present.
 
 | Field          | Set by            | Description |
 |----------------|-------------------|-------------|
@@ -103,7 +103,7 @@ Each arrow represents a legal transition.
 
 | From state                | Legal targets |
 |---------------------------|---------------|
-| *(initial — no state)*    | `proposed` |
+| *(initial -- no state)*    | `proposed` |
 | `proposed`                | `committed` |
 | `committed`               | `queued` |
 | `queued`                  | `in_progress`, `blocked`, `cancelled` |
@@ -121,7 +121,7 @@ Each arrow represents a legal transition.
 - `blocked`
 - `cancelled`
 
-The `validation_failed → in_progress` loop is the recovery path for mechanical
+The `validation_failed -> in_progress` loop is the recovery path for mechanical
 failures (missing sidecar, wrong path) without requiring a new revision.
 
 ---
@@ -146,7 +146,7 @@ arrow represents a legal transition.
 
 | From state             | Legal targets |
 |------------------------|---------------|
-| *(initial — no state)* | `queued` |
+| *(initial -- no state)* | `queued` |
 | `queued`               | `starting` |
 | `starting`             | `running` |
 | `running`              | `succeeded`, `failed`, `blocked`, `cancelled` |
@@ -160,7 +160,7 @@ arrow represents a legal transition.
 
 ### Transition mode
 
-All run transitions are explicit CLI invocations — no transition is automatic.
+All run transitions are explicit CLI invocations -- no transition is automatic.
 A new run is created in the `queued` state by `pkde run create <WO-ID>`, and
 every subsequent transition is performed with
 `pkde run transition <RUN-ID> <STATE>`.
@@ -174,7 +174,7 @@ every subsequent transition is performed with
 
 If you attempt an illegal transition, `pkde run transition` exits with code 9
 (`Refusal`) and reports the current state, the rejected target, and the set of
-legal targets — so you can discover the valid next states from the error message
+legal targets -- so you can discover the valid next states from the error message
 itself. This section documents the full graph upfront to remove the need to
 discover valid transitions by trial and error.
 
@@ -213,13 +213,13 @@ capabilities:
   - "statistical-analysis"
   - "python"
 
-# Artifact layers to produce. Must be a dict — NOT a list.
+# Artifact layers to produce. Must be a dict -- NOT a list.
 # Two separate checks apply at different points in the lifecycle:
 #   1. `workorder create` verifies this is a dict (type check).
 #   2. `validate check` requires specific keys: layer_1 and/or layer_0_classes
-#      (schema check) — arbitrary named keys will cause 5 of 8 checks to skip.
-# Values for layer_0_classes must be registered artifact classes —
-# see "Deliverables schema" (§8) for the current list.
+#      (schema check) -- arbitrary named keys will cause 5 of 8 checks to skip.
+# Values for layer_0_classes must be registered artifact classes --
+# see "Deliverables schema" (Section 8) for the current list.
 deliverables:
   layer_0_classes: ["structures", "docking"]
   layer_1: ["findings/structural-biology/wo-002-report.md"]
@@ -229,7 +229,7 @@ acceptance_criteria:
   - "Report includes p-values and confidence intervals"
   - "Analysis accounts for potential confounders"
 
-# Alert conditions during execution. Must be a dict — NOT a list.
+# Alert conditions during execution. Must be a dict -- NOT a list.
 # Each key is an alert name; value defines the condition.
 alert_policy:
   data_quality:
@@ -263,18 +263,18 @@ The `deliverables` field was written as a YAML list (sequence), but the schema
 requires a dict (mapping) with named keys.
 
 ```yaml
-# WRONG — list
+# WRONG -- list
 deliverables:
   - "correlation report"
   - "regression plot"
 
-# WRONG — dict but with arbitrary keys (passes `workorder create` type
+# WRONG -- dict but with arbitrary keys (passes `workorder create` type
 # check, but `validate check` will fail: no layer_1 or layer_0_classes)
 deliverables:
   correlation_report:
     description: "correlation report"
 
-# RIGHT — dict with the required layer keys
+# RIGHT -- dict with the required layer keys
 deliverables:
   layer_0_classes: ["structures", "docking"]
   layer_1: ["findings/structural-biology/wo-002-report.md"]
@@ -285,12 +285,12 @@ deliverables:
 Same issue as deliverables. Use named keys, not a list.
 
 ```yaml
-# WRONG — list
+# WRONG -- list
 alert_policy:
   - condition: "missing values exceed 10%"
   - condition: "execution exceeds 30 minutes"
 
-# RIGHT — dict with named keys
+# RIGHT -- dict with named keys
 alert_policy:
   data_quality:
     condition: "missing values exceed 10%"
@@ -341,7 +341,7 @@ When a work order is **committed** (`pkde workorder commit`), the CLI:
 3. Computes a `sha256` checksum for each artifact and stores it in the link.
 4. Creates a context snapshot record under `.pkde/control/contexts/`.
 
-<!-- NOTE: §8 numbering follows §7; update if sections are reordered. -->
+<!-- NOTE: Section 8 numbering follows Section 7; update if sections are reordered. -->
 
 ### Content size limit
 
@@ -377,7 +377,7 @@ Both may be present when a work order covers raw artifacts and a written report.
 
 ### Registered artifact classes
 
-Values in `layer_0_classes` must be registered artifact-class names — each
+Values in `layer_0_classes` must be registered artifact-class names -- each
 one corresponds to a subdirectory under `raw/` in the project. The
 authoritative list lives in `tools/pkde/core/context.py` (`ARTIFACT_DIRS`).
 
@@ -412,12 +412,12 @@ because no `raw/` subdirectory maps to that name.
 ### Common mistakes
 
 ```yaml
-# WRONG — invented key names (not recognized by validate check)
+# WRONG -- invented key names (not recognized by validate check)
 deliverables:
   layer1_path: "findings/report.md"
   required_layer0_classes: ["structures"]
 
-# WRONG — non-registered artifact class
+# WRONG -- non-registered artifact class
 deliverables:
   layer_0_classes: ["expression_or_gtex"]   # not a real class; use "expression" and/or "gtex"
 
@@ -429,7 +429,7 @@ deliverables:
 
 ---
 
-## 9. Create → commit workflow
+## 9. Create -> commit workflow
 
 A work order must be **created** (state: `proposed`) and then **committed**
 (state: `committed`) before it can be queued for execution. Committing freezes
@@ -440,11 +440,11 @@ the content fields and creates a context snapshot with artifact checksums.
 ```bash
 # Step 1: create the work order in proposed state.
 pkde workorder create --from wo-spec.yaml
-# → WO-003 created (revision 1, state: proposed)
+# -> WO-003 created (revision 1, state: proposed)
 
-# Step 2: commit it — freezes content, creates context snapshot.
+# Step 2: commit it -- freezes content, creates context snapshot.
 pkde workorder commit WO-003
-# → WO-003 committed (revision 1)
+# -> WO-003 committed (revision 1)
 ```
 
 Between create and commit you may update content fields with
@@ -459,10 +459,10 @@ When the YAML is already final and no intermediate edits are needed, pass
 
 ```bash
 pkde workorder create --from wo-spec.yaml --commit
-# → WO-003 created and committed (revision 1, state: committed)
+# -> WO-003 created and committed (revision 1, state: committed)
 ```
 
-This runs the full create validation followed by the full commit validation —
+This runs the full create validation followed by the full commit validation --
 no checks are weakened or skipped. The result is identical to running the two
 commands separately.
 
@@ -477,13 +477,13 @@ commands separately.
 
 ---
 
-## 10. Accept shortcut — mechanical auto-step to validated
+## 10. Accept shortcut -- mechanical auto-step to validated
 
 Getting a committed work order all the way to `scientifically_accepted`
-normally requires 5–6 separate CLI calls. Only the last transition
-(`mechanically_validated → scientifically_accepted`) is a genuine scientific
-judgment call. Everything before it — `committed → queued → in_progress →
-submitted → mechanically_validated` — is mechanical bookkeeping.
+normally requires 5-6 separate CLI calls. Only the last transition
+(`mechanically_validated -> scientifically_accepted`) is a genuine scientific
+judgment call. Everything before it -- `committed -> queued -> in_progress ->
+submitted -> mechanically_validated` -- is mechanical bookkeeping.
 
 `wo accept` automates the mechanical portion in a single invocation.
 
@@ -496,16 +496,16 @@ pkde wo accept <ID>
 ### What it does
 
 1. **Auto-steps** through every mechanical intermediate transition from the
-   WO's current state to `submitted`: `committed → queued → in_progress →
+   WO's current state to `submitted`: `committed -> queued -> in_progress ->
    submitted`. If the WO is already partway through (e.g. already
    `in_progress`), it walks forward from there.
 
-2. **Runs real mechanical validation** — the same 8-check `validate check`
-   logic — at the `submitted → mechanically_validated` boundary. This is not
+2. **Runs real mechanical validation** -- the same 8-check `validate check`
+   logic -- at the `submitted -> mechanically_validated` boundary. This is not
    a state flip; all 8 checks run with real pass/fail consequences.
 
 3. **Stops at `mechanically_validated`** if all checks pass. It does **not**
-   auto-transition to `scientifically_accepted` — that requires an explicit
+   auto-transition to `scientifically_accepted` -- that requires an explicit
    scientific judgment:
 
    ```bash
@@ -516,7 +516,7 @@ pkde wo accept <ID>
    failure output that `validate check` would produce, plus a remedy
    pointing at `override` or retry.
 
-5. **Preserves full audit granularity** — every intermediate transition is
+5. **Preserves full audit granularity** -- every intermediate transition is
    logged as a separate event in `events.ndjson`, identical to manual calls.
 
 ### Examples
@@ -524,9 +524,9 @@ pkde wo accept <ID>
 ```bash
 # Full chain from committed:
 pkde wo accept WO-003
-#   WO-003: committed → queued
-#   WO-003: queued → in_progress
-#   WO-003: in_progress → submitted
+#   WO-003: committed -> queued
+#   WO-003: queued -> in_progress
+#   WO-003: in_progress -> submitted
 #
 #   Running mechanical validation on WO-003...
 #
@@ -534,30 +534,30 @@ pkde wo accept WO-003
 #   report_headings           PASS
 #   ...
 #
-#   WO-003: submitted → mechanically_validated  [validation PASS]
+#   WO-003: submitted -> mechanically_validated  [validation PASS]
 #
 #   WO-003 is now mechanically_validated and ready for scientific acceptance.
 #     pkde workorder transition WO-003 scientifically_accepted
 
 # Starting partway through (already in_progress):
 pkde wo accept WO-003
-#   WO-003: in_progress → submitted
+#   WO-003: in_progress -> submitted
 #
 #   Running mechanical validation on WO-003...
 #   ...
 
-# Validation failure — stops with actionable output:
+# Validation failure -- stops with actionable output:
 pkde wo accept WO-003
-#   WO-003: committed → queued
-#   WO-003: queued → in_progress
-#   WO-003: in_progress → submitted
+#   WO-003: committed -> queued
+#   WO-003: queued -> in_progress
+#   WO-003: in_progress -> submitted
 #
 #   Running mechanical validation on WO-003...
 #
 #   report_headings           FAIL
 #   ...
 #
-#   WO-003: submitted → validation_failed  [validation FAIL]
+#   WO-003: submitted -> validation_failed  [validation FAIL]
 #
 #   Failed checks: report_headings
 #
@@ -568,14 +568,14 @@ pkde wo accept WO-003
 
 ### What it does NOT do
 
-- **Does not auto-transition to `scientifically_accepted`** — that is a
+- **Does not auto-transition to `scientifically_accepted`** -- that is a
   human judgment call.
-- **Does not bypass the #178 override guard** — `validation_failed →
+- **Does not bypass the #178 override guard** -- `validation_failed ->
   mechanically_validated` still requires `pkde workorder override`.
-- **Does not bypass the #237 submitted-bypass guard** — the real
-  `validate check` logic runs; the `submitted → mechanically_validated`
+- **Does not bypass the #237 submitted-bypass guard** -- the real
+  `validate check` logic runs; the `submitted -> mechanically_validated`
   transition is never a direct state flip.
-- **Does not handle `proposed` state** — the WO must be committed first
+- **Does not handle `proposed` state** -- the WO must be committed first
   (`pkde workorder commit <ID>`).
 
 ### Interaction with override and retry
@@ -617,9 +617,9 @@ foundational claim.
 **The fast-fail short-circuit rule.** The acceptance criteria in the template
 enforce a binary outcome:
 
-- **SUPPORTED** — the foundational claim holds. Proceed with the full
+- **SUPPORTED** -- the foundational claim holds. Proceed with the full
   validation cohort as planned.
-- **REFUTED** — the foundational claim fails. Skip the full cohort, pivot to
+- **REFUTED** -- the foundational claim fails. Skip the full cohort, pivot to
   the next candidate idea, and save the compute that would have been wasted on
   a doomed cohort.
 
@@ -631,24 +631,24 @@ full analysis cycle.
 
 ```
 1. pkde coscientist analyze tournament.json
-   → Verdict: leader-with-advisories
-   → Leader: GENE_X (3 contradicted claims)
+   -> Verdict: leader-with-advisories
+   -> Leader: GENE_X (3 contradicted claims)
 
 2. Copy the foundational-claim-check template, fill in GENE_X details:
    cp tools/templates/work-orders/foundational-claim-check.yaml \
       wo-gene-x-claim-check.yaml
-   # Edit wo-gene-x-claim-check.yaml — fill in all [PLACEHOLDER] values
+   # Edit wo-gene-x-claim-check.yaml -- fill in all [PLACEHOLDER] values
 
 3. pkde workorder create --from wo-gene-x-claim-check.yaml --commit
-   → WO-007 created and committed
+   -> WO-007 created and committed
 
 4. Execute WO-007 (single specialist, fast turnaround)
 
 5a. Outcome: SUPPORTED
-    → Dispatch full validation cohort (WO-008 through WO-012)
+    -> Dispatch full validation cohort (WO-008 through WO-012)
 
 5b. Outcome: REFUTED
-    → Skip full cohort, pivot to runner-up idea
+    -> Skip full cohort, pivot to runner-up idea
 ```
 
 **Template location:** `tools/templates/work-orders/foundational-claim-check.yaml`

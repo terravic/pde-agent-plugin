@@ -6,7 +6,7 @@ hypotheses, review budgets, and four-type objection resolution.
 This module provides validation for pre-mortem records and the
 dissent-preservation check that ensures unresolved objections survive
 gate-document generation.  It builds on #75's decision-record schema
-(``evidence.py``) without adding new required fields — resolution
+(``evidence.py``) without adding new required fields -- resolution
 types are encoded in the existing ``conditions`` list field.
 
 Resolution type encoding in ``conditions``
@@ -38,10 +38,10 @@ from .errors import SchemaError
 # ---------------------------------------------------------------------------
 
 RESOLUTION_TYPES = {
-    "accepted",  # Lead agrees — plan changes
-    "rebutted",  # Lead disagrees — cites evidence
+    "accepted",  # Lead agrees -- plan changes
+    "rebutted",  # Lead disagrees -- cites evidence
     "accepted_risk",  # Lead acknowledges risk but proceeds under policy
-    "unresolved",  # Neither accepted nor rebutted — follow-up assigned
+    "unresolved",  # Neither accepted nor rebutted -- follow-up assigned
 }
 
 # Prefix used in decision-record ``conditions`` to encode resolutions.
@@ -175,7 +175,7 @@ def validate_premortem(data: dict[str, Any]) -> list[str]:
                         )
                     ids_seen.add(str(hyp_id))
 
-    # Resolutions (optional — populated by the lead)
+    # Resolutions (optional -- populated by the lead)
     resolutions = data.get("resolutions")
     if resolutions is not None:
         if not isinstance(resolutions, list):
@@ -303,7 +303,7 @@ def decode_resolution_condition(condition: str) -> dict[str, str] | None:
     """Parse an objection-resolution condition string.
 
     Returns a dict with keys ``resolution_type``, ``objection_id``,
-    and optionally ``detail`` — or None if the string is not a
+    and optionally ``detail`` -- or None if the string is not a
     resolution condition.
     """
     m = _RESOLUTION_RE.match(condition)
@@ -355,7 +355,7 @@ def find_unresolved_objections(
     3. It has no resolution encoded in the decision record's conditions.
 
     Speculative hypotheses (no discriminating check) are always excluded
-    — they are recorded but never gate progress.
+    -- they are recorded but never gate progress.
 
     Returns a list of hypothesis dicts that are unresolved.
     """
@@ -381,7 +381,7 @@ def find_unresolved_objections(
         hyp_id = hyp.get("id")
         if hyp_id is None:
             continue
-        # Skip speculative hypotheses — they don't gate
+        # Skip speculative hypotheses -- they don't gate
         if is_speculative(hyp):
             continue
         # Check if resolved
@@ -437,7 +437,7 @@ def generate_gate_dissent_section(
     This function produces the markdown content that must appear in
     gate documents to preserve unresolved objections and dissent.
     The content is derived from the decision state, not editorially
-    curated — "presentation is derived from the decision, not its
+    curated -- "presentation is derived from the decision, not its
     authority."
 
     Parameters

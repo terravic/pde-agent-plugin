@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Gate — {{ title }}{% endblock %}
+{% block title %}Gate -- {{ title }}{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-  <a href="index.html">Home</a> &rsaquo;
-  <span>Gates</span> &rsaquo;
-  <span>{{ stage_name }}</span> &rsaquo;
+  <a href="index.html">Home</a> /
+  <span>Gates</span> /
+  <span>{{ stage_name }}</span> /
   <span>{{ title }}</span>
 </div>
 {% endblock %}
@@ -24,5 +24,5 @@
 {{ content | markdown }}
 </div>
 
-<p><a href="index.html">&larr; Back to index</a></p>
+<p><a href="index.html">Back to index</a></p>
 {% endblock %}

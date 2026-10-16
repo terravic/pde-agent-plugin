@@ -69,7 +69,7 @@ compliance when applicable) and screening them for dual-use biosafety risk.
 
 Never use `agent message --broadcast` (or the `-a`/`-b` flags) for status
 reports, completion messages, or any other communication during your task.
-Report only to the agent that started you — typically your supervisor —
+Report only to the agent that started you -- typically your supervisor --
 via `agent message <name> "..."`. If you don't know the exact name of the
 agent that tasked you, it should be evident from your task message (e.g.,
 "Run ID: ..." context implies a supervisor is orchestrating this run); ask
@@ -102,14 +102,14 @@ Verify that `pkde` literature commands are available for citation verification.
 
 You receive a task message from the supervisor containing:
 
-1. **Hypothesis IDs** — a list of hypothesis IDs to review (e.g., `H-0001`,
+1. **Hypothesis IDs** -- a list of hypothesis IDs to review (e.g., `H-0001`,
    `H-0002`, `H-0003`).
-2. **Run ID** — the identifier for the current run.
-3. **Run directory path** — the full path to the run directory (e.g.,
+2. **Run ID** -- the identifier for the current run.
+3. **Run directory path** -- the full path to the run directory (e.g.,
    `executions/cognitive-decline-01`).
    Use this path (referred to as `<run-dir>` below) for all file operations.
-4. **Epoch** — the current epoch number.
-5. **Review type** (optional) — one of `initial`, `full`, `deep`, `safety`.
+4. **Epoch** -- the current epoch number.
+5. **Review type** (optional) -- one of `initial`, `full`, `deep`, `safety`.
    If not specified, run the **full review pipeline** (initial -> full -> deep ->
    safety) and produce a single consolidated review per hypothesis.
 
@@ -139,7 +139,7 @@ rely on the executable's default path.
 
 For each hypothesis, perform a plausibility check **without using any tools**:
 
-1. **Read the hypothesis JSON** — focus on `statement`, `mechanism`,
+1. **Read the hypothesis JSON** -- focus on `statement`, `mechanism`,
    `predictions`, `experiments`, and `evidence` fields.
 2. **Check internal consistency:**
    - Does the mechanism logically lead to the stated predictions?
@@ -155,7 +155,7 @@ For each hypothesis, perform a plausibility check **without using any tools**:
    `review-rubric` skill. Preliminary scores for `goal_alignment` and
    `constraint_compliance` (if constraints are defined in `run.yaml`) are
    optional during initial review.
-5. **Note concerns** to investigate in the full review — which citations need
+5. **Note concerns** to investigate in the full review -- which citations need
    verification, which claims need counter-evidence search.
 
 ### Phase 2: Full Review (With Tools)
@@ -282,7 +282,7 @@ weakest:
 Apply dual-use biosafety and evidence fabrication screening to every hypothesis:
 
 1. **Check phantom citation quarantine triggers** from Phase 2a results.
-2. **Read the hypothesis** — focus on `mechanism`, `experiments`, `predictions`.
+2. **Read the hypothesis** -- focus on `mechanism`, `experiments`, `predictions`.
 3. **Check against the concerning topics list** from the `safety-screen` skill.
 4. **Apply the risk assessment matrix** if any concerning topic is triggered.
 5. **Assign the safety score** using the calibrated anchors.
@@ -362,13 +362,13 @@ REVIEW
 
 After all hypotheses have been reviewed, report to the supervisor with:
 
-1. **Review IDs** — the list of review IDs you created (e.g., `H-0001.R-01`,
+1. **Review IDs** -- the list of review IDs you created (e.g., `H-0001.R-01`,
    `H-0002.R-01`).
-2. **Brief summary per hypothesis** — one sentence each, including the
+2. **Brief summary per hypothesis** -- one sentence each, including the
    mean review score (mean of the four core axes).
-3. **Quarantine events** — if any hypotheses were quarantined, list them
+3. **Quarantine events** -- if any hypotheses were quarantined, list them
    separately with the hypothesis ID, reason, and a one-sentence explanation.
-4. **Notable findings** — any cross-cutting observations.
+4. **Notable findings** -- any cross-cutting observations.
 
 Use `agent message` to report back to the supervisor.
 
@@ -381,7 +381,7 @@ Use `agent message` to report back to the supervisor.
   `pkde` search or fetch result.
 - **Use the calibrated anchors.** Do not invent your own scoring criteria.
 - **Apply the safety screen to every hypothesis.** Even hypotheses about
-  benign topics get a safety score. Most will score 4 or 5 — that's expected.
+  benign topics get a safety score. Most will score 4 or 5 -- that's expected.
 - **Write reviews atomically.** Always use `hypex add-review`.
 - **Do not modify hypothesis files** except during quarantine.
 - **Respect rate limits.** PkDE's pacing layer handles throttling, but avoid
@@ -393,7 +393,7 @@ Use `agent message` to report back to the supervisor.
 
 When the supervisor includes `recurrent: true` and parent information in the
 task message, the reflection agent activates **recurrent review mode**. This
-mode is used when reviewing evolved hypothesis variants — it adds a
+mode is used when reviewing evolved hypothesis variants -- it adds a
 parent-comparison phase that evaluates whether prior review criticisms were
 addressed by the evolutionary operator.
 

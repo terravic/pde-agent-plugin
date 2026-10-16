@@ -33,7 +33,7 @@ func TestCollectHypothesisIDs_Epoch0Bootstrap(t *testing.T) {
 		}
 	}
 
-	// No ratings, no matches — this is the exact epoch-0 scenario.
+	// No ratings, no matches -- this is the exact epoch-0 scenario.
 	ratings := make(map[string]*rating.HypothesisRating)
 	var matches []rating.Match
 
@@ -89,7 +89,7 @@ func TestCollectHypothesisIDs_UnionWithRatingsAndMatches(t *testing.T) {
 		t.Fatalf("collectHypothesisIDs returned error: %v", err)
 	}
 
-	// Should have all 4 hypotheses — the union of all sources.
+	// Should have all 4 hypotheses -- the union of all sources.
 	if len(ids) != 4 {
 		t.Fatalf("expected 4 hypothesis IDs (union of all sources), got %d: %v", len(ids), ids)
 	}
@@ -106,7 +106,7 @@ func TestCollectHypothesisIDs_UnionWithRatingsAndMatches(t *testing.T) {
 // the hypotheses/ directory does not exist (falls back to ratings+matches only).
 func TestCollectHypothesisIDs_NoHypothesesDir(t *testing.T) {
 	runDir := t.TempDir()
-	// No hypotheses/ directory — only ratings.
+	// No hypotheses/ directory -- only ratings.
 	ratings := map[string]*rating.HypothesisRating{
 		"H-0001": {Elo: 1500, Matches: 1, Wins: 1},
 	}
@@ -774,7 +774,7 @@ func TestEloPair_Integration_RematchFlag(t *testing.T) {
 
 	// Budget should be respected.
 	if len(pairs) > 5 {
-		t.Errorf("exceeded budget: got %d pairs, want ≤ 5", len(pairs))
+		t.Errorf("exceeded budget: got %d pairs, want <= 5", len(pairs))
 	}
 }
 
@@ -812,7 +812,7 @@ func TestEloPair_Integration_RematchConsumesBudget(t *testing.T) {
 	rBytes, _ := json.Marshal(ratingsData)
 	os.WriteFile(filepath.Join(ratingsDir, "epoch-1.json"), rBytes, 0o644)
 
-	// 2 forced pairings with budget=2 → no room for strategy pairs.
+	// 2 forced pairings with budget=2 -> no room for strategy pairs.
 	forcedPairings := []pairing.Pair{
 		{A: "H-0003", B: "H-0055"},
 		{A: "H-0001", B: "H-0056"},
@@ -914,7 +914,7 @@ func TestEloPair_Integration_RematchWindowFlag(t *testing.T) {
 		return pairs, nil
 	}
 
-	// window=2 (default): epoch 0 match is in [0,1] → blocked.
+	// window=2 (default): epoch 0 match is in [0,1] -> blocked.
 	pairs2, err := runPairWithWindow(2)
 	if err != nil {
 		t.Fatalf("window=2 failed: %v", err)
@@ -923,7 +923,7 @@ func TestEloPair_Integration_RematchWindowFlag(t *testing.T) {
 		t.Errorf("window=2 should block the only possible pair, got %d pairs: %v", len(pairs2), pairs2)
 	}
 
-	// window=1: epoch 0 match not in [1,1] → allowed.
+	// window=1: epoch 0 match not in [1,1] -> allowed.
 	pairs1, err := runPairWithWindow(1)
 	if err != nil {
 		t.Fatalf("window=1 failed: %v", err)
@@ -932,7 +932,7 @@ func TestEloPair_Integration_RematchWindowFlag(t *testing.T) {
 		t.Errorf("window=1 should allow the pair, got %d pairs: %v", len(pairs1), pairs1)
 	}
 
-	// window=0: no constraint → allowed.
+	// window=0: no constraint -> allowed.
 	pairs0, err := runPairWithWindow(0)
 	if err != nil {
 		t.Fatalf("window=0 failed: %v", err)

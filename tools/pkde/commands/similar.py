@@ -1,4 +1,4 @@
-"""`pkde similar` — structure similarity and substructure search.
+"""`pkde similar` -- structure similarity and substructure search.
 
 Searches PubChem and/or ChEMBL for compounds similar to a query
 structure (Tanimoto similarity) or containing a query substructure.
@@ -437,9 +437,9 @@ def _build_artifact(
     """Build the structured pkde.similar.v1 artifact.
 
     ``search_status`` is one of:
-      - ``"completed"`` — all requested backends succeeded.
-      - ``"partial"`` — some backends succeeded, some failed.
-      - ``"failed"`` — all backends failed.
+      - ``"completed"`` -- all requested backends succeeded.
+      - ``"partial"`` -- some backends succeeded, some failed.
+      - ``"failed"`` -- all backends failed.
 
     When ``search_status`` is ``"failed"``, the artifact carries
     ``failure_reason`` and zero hits, and must NOT be interpreted as
@@ -488,7 +488,7 @@ def _build_artifact(
 
 
 # ---------------------------------------------------------------------------
-# Classification (phase 2 — extracted for testability)
+# Classification (phase 2 -- extracted for testability)
 # ---------------------------------------------------------------------------
 
 
@@ -504,7 +504,7 @@ def _classify_results(
     ``"indeterminate"``.
 
     A failed search (``search_status == "failed"``) always produces
-    ``"indeterminate"`` — a search that did not execute must NEVER be
+    ``"indeterminate"`` -- a search that did not execute must NEVER be
     indistinguishable from a clean novelty result (#84).
     """
     search_status = artifact.get("search_status", "completed")
@@ -513,7 +513,7 @@ def _classify_results(
     # Guarded relay emission.
     relays: list[dict[str, str]] = []
 
-    # -- Failed search → indeterminate --------------------------------
+    # -- Failed search -> indeterminate --------------------------------
     if search_status == "failed":
         failure_reason = artifact.get("failure_reason", "unknown")
         relays.append(
@@ -535,7 +535,7 @@ def _classify_results(
         )
         return "indeterminate", relays
 
-    # -- Partial search → fire search_incomplete relay ----------------
+    # -- Partial search -> fire search_incomplete relay ----------------
     if search_status == "partial":
         failure_reason = artifact.get("failure_reason", "one or more backends failed")
         relays.append(
@@ -575,7 +575,7 @@ def _classify_results(
             )
         )
 
-    # UNCONDITIONAL: fires on every analysis (justified — see plan doc).
+    # UNCONDITIONAL: fires on every analysis (justified -- see plan doc).
     relays.append(
         provenance.relay(
             "similar.database_coverage_limited",

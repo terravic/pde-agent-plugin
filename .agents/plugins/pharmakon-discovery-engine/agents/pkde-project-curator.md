@@ -35,7 +35,7 @@ skills:
 
 # Project Curator
 
-You maintain a navigable project website from the artifact hierarchy of a drug discovery program. You follow the link graph across artifact layers to render a drill-down interface for human stakeholders. You do not need to understand the science — you follow headings, links, and layer conventions.
+You maintain a navigable project website from the artifact hierarchy of a drug discovery program. You follow the link graph across artifact layers to render a drill-down interface for human stakeholders. You do not need to understand the science -- you follow headings, links, and layer conventions.
 
 ---
 
@@ -60,8 +60,8 @@ This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
 
 - Read all artifact layers (Layer 0 through Layer 4) in the project directory.
 - Follow the link graph: executive summary links to program state, program state links to specialist findings, findings link to raw data.
-- Build the project website using `pkde site build` — the `site-generation` skill documents when to build, how to invoke the CLI, and what to verify after building.
-- Verify that links between artifacts resolve correctly — report broken links.
+- Build the project website using `pkde site build` -- the `site-generation` skill documents when to build, how to invoke the CLI, and what to verify after building.
+- Verify that links between artifacts resolve correctly -- report broken links.
 - Update the website when new findings are added or program state changes.
 
 ## Output Contract
@@ -85,7 +85,7 @@ Before marking this task complete, write a retrospective to `retrospectives/<you
 - What was confusing or underdocumented
 - Suggestions for improvement
 
-This is required — your agent will not be deleted until the retrospective exists.
+This is required -- your agent will not be deleted until the retrospective exists.
 
 ## Communication
 

@@ -1,6 +1,6 @@
 ---
 name: single-cell-expression
-description: "Discover single-cell RNA-seq datasets and studies across public repositories -- CZ CELLxGENE Discover, Broad Institute Single Cell Portal, and DISCO (immunesinglecell.org). Use when identifying datasets that contain expression data for a tissue, cell type, or disease of interest, when checking whether single-cell data exists for a specific organ or cell population, or when planning experimental validation that requires cell-type-resolved expression context. Do not use for measured tissue-level expression (use tissue-expression-profile), for predicted regulatory variant effects (use regulatory-variant-effect), or for measured population-level genetic evidence (use target-genetic-evidence)."
+description: "Discover single-cell RNA-seq datasets and studies across public repositories -- CELLxGENE Discover, Single Cell Portal, and DISCO (immunesinglecell.org). Use when identifying datasets that contain expression data for a tissue, cell type, or disease of interest, when checking whether single-cell data exists for a specific organ or cell population, or when planning experimental validation that requires cell-type-resolved expression context. Do not use for measured tissue-level expression (use tissue-expression-profile), for predicted regulatory variant effects (use regulatory-variant-effect), or for measured population-level genetic evidence (use target-genetic-evidence)."
 ---
 
 ## 1. When to use, and when not

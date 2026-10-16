@@ -8,7 +8,7 @@ competition, and produce improved variants using evolutionary operators.
 
 Never use `agent message --broadcast` (or the `-a`/`-b` flags) for status
 reports, completion messages, or any other communication during your task.
-Report only to the agent that started you — typically your supervisor —
+Report only to the agent that started you -- typically your supervisor --
 via `agent message <name> "..."`. If you don't know the exact name of the
 agent that tasked you, it should be evident from your task message (e.g.,
 "Run ID: ..." context implies a supervisor is orchestrating this run); ask
@@ -34,16 +34,16 @@ the `hypex-tool-setup` skill if verification fails.
 
 You receive a task message from the supervisor containing:
 
-1. **Top-K hypothesis IDs** — the hypotheses selected for evolution (e.g.,
+1. **Top-K hypothesis IDs** -- the hypotheses selected for evolution (e.g.,
    `H-0012`, `H-0017`, `H-0023`).
-2. **Reviews** — reviewer feedback for each hypothesis, including criticisms
+2. **Reviews** -- reviewer feedback for each hypothesis, including criticisms
    and scores.
-3. **Match-loss rationales** — why each hypothesis lost specific tournament
+3. **Match-loss rationales** -- why each hypothesis lost specific tournament
    matches (which axis was weakest: evidence, novelty, testability, etc.).
-4. **Run ID** — the identifier for the current run (used with `--run` flag).
-5. **Run directory path** — the full path to the run directory.
-6. **Epoch** — the current epoch number.
-7. **Cluster memberships** (optional) — which hypotheses share a proximity
+4. **Run ID** -- the identifier for the current run (used with `--run` flag).
+5. **Run directory path** -- the full path to the run directory.
+6. **Epoch** -- the current epoch number.
+7. **Cluster memberships** (optional) -- which hypotheses share a proximity
    cluster, relevant for the `combine` operator.
 
 Set `<run-base>` to the parent directory of the supplied run directory. Pass
@@ -58,16 +58,16 @@ For each hypothesis in your assigned set:
 
 1. **Read the hypothesis** JSON file from the run's `hypotheses/` directory.
 2. **Read its reviews.** Identify the primary criticism:
-   - Weak evidence or unsupported claims? → candidate for **ground**
-   - Overcomplexity or untestable design? → candidate for **simplify**
-   - Low novelty or saturated literature base? → candidate for **oob**
+   - Weak evidence or unsupported claims? -> candidate for **ground**
+   - Overcomplexity or untestable design? -> candidate for **simplify**
+   - Low novelty or saturated literature base? -> candidate for **oob**
 3. **Read match-loss rationales.** Identify why it lost tournament matches:
-   - Lost on evidence quality? → **ground**
-   - Lost on testability? → **simplify**
-   - Lost on novelty? → **oob**
+   - Lost on evidence quality? -> **ground**
+   - Lost on testability? -> **simplify**
+   - Lost on novelty? -> **oob**
 4. **Check cluster membership.** Are there complementary hypotheses in the
    same cluster that could be combined?
-   - Two hypotheses with complementary strengths? → candidate for **combine**
+   - Two hypotheses with complementary strengths? -> candidate for **combine**
 
 Record your operator selection for each hypothesis with a one-sentence
 rationale before proceeding.
@@ -96,16 +96,16 @@ instructions in the `evolution-operators` skill. The key steps per operator:
 
 1. Identify sources of complexity (high-difficulty experiments, redundant
    predictions, multi-step mechanism chains).
-2. Reduce experimental complexity — replace `"high"` difficulty experiments
+2. Reduce experimental complexity -- replace `"high"` difficulty experiments
    with simpler alternatives, consolidate redundant experiments.
-3. Sharpen the mechanism — remove speculative intermediate steps.
-4. Tighten predictions — remove derivative or redundant predictions.
+3. Sharpen the mechanism -- remove speculative intermediate steps.
+4. Tighten predictions -- remove derivative or redundant predictions.
 5. Verify the simplified hypothesis is still falsifiable.
 
 #### Combine
 
 1. Read both parent hypotheses from the same proximity cluster.
-2. Identify complementary strengths — evidence, mechanism, experiments.
+2. Identify complementary strengths -- evidence, mechanism, experiments.
 3. **Synthesize**, do not concatenate. Build a unified mechanism that
    integrates both parents' insights.
 4. Design experiments that test the joint mechanism, not just each parent's
@@ -155,14 +155,14 @@ HYPO
 
 **Important rules for submission:**
 
-- **Do not set the `id` field** — it is assigned automatically by
+- **Do not set the `id` field** -- it is assigned automatically by
   `hypex add-hypothesis`.
-- **Do not set the `cluster` field** — it is assigned later by the proximity
+- **Do not set the `cluster` field** -- it is assigned later by the proximity
   agent.
 - **Set `status` to `"proposed"`** for all variants.
 - **Set the correct `lineage`:**
-  - `ground`, `simplify`, `oob` → one parent: `{"parents": ["H-NNNN"], "operator": "<op>"}`
-  - `combine` → two parents: `{"parents": ["H-NNNN", "H-MMMM"], "operator": "combine"}`
+  - `ground`, `simplify`, `oob` -> one parent: `{"parents": ["H-NNNN"], "operator": "<op>"}`
+  - `combine` -> two parents: `{"parents": ["H-NNNN", "H-MMMM"], "operator": "combine"}`
 - **Preserve the `focus_area`** from the parent hypothesis.
 - **Use the `--run` flag** with the run ID provided in your task message.
 - **Use `-` as the file argument** to read from stdin.
@@ -174,12 +174,12 @@ H-0055`). You will report these IDs to the supervisor.
 
 Before reporting completion, verify each variant:
 
-1. **Lineage is correct** — parents and operator match your intent.
-2. **Evidence is real** — every `lit_id` came from an actual PkDE search
+1. **Lineage is correct** -- parents and operator match your intent.
+2. **Evidence is real** -- every `lit_id` came from an actual PkDE search
    result.
 3. **The variant is stronger than the parent** on at least one axis (evidence
    quality, simplicity, novelty, testability).
-4. **Schema compliance** — `add-hypothesis` validates automatically, but
+4. **Schema compliance** -- `add-hypothesis` validates automatically, but
    verify you did not receive validation errors.
 
 If a variant is not clearly stronger than its parent, do not submit it. It is
@@ -211,13 +211,13 @@ Use `agent message` to report back to the supervisor.
 - **Never write hypothesis JSON files directly.** Always use
   `hypex add-hypothesis`.
 - **Variants compete against parents.** The Elo tournament enforces mandatory
-  rematches between parent and child — your variant must be genuinely
+  rematches between parent and child -- your variant must be genuinely
   stronger or it will lose.
 - **Respect rate limits.** The PkDE HTTP layer handles coordinated pacing, but
   avoid running dozens of searches in rapid succession. Be targeted in your
   queries.
 - **`combine` requires two parents from the same cluster.** Do not combine
-  hypotheses from different clusters — they are too dissimilar for meaningful
+  hypotheses from different clusters -- they are too dissimilar for meaningful
   synthesis.
 - **Do not evolve your own output.** You evolve hypotheses from previous
   epochs. If you produce a variant in this epoch, it will be eligible for

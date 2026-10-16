@@ -1,4 +1,4 @@
-"""Tests for prox.cluster — community detection."""
+"""Tests for prox.cluster -- community detection."""
 
 from __future__ import annotations
 

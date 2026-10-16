@@ -1,11 +1,11 @@
-"""`pkde expression` — measured human RNA expression from the Human Protein Atlas.
+"""`pkde expression` -- measured human RNA expression from the Human Protein Atlas.
 
 This tool answers one question and refuses the neighbouring ones: *has
 somebody measured how much of this transcript is present in this tissue?*
 It does not predict, it does not rank targets, and it does not decide
 whether an expression level is therapeutically interesting.
 
-Two phases (docs/tool-design-guidance.md §3):
+Two phases (docs/tool-design-guidance.md Section 3):
 
   fetch    one gene -> the HPA per-gene annotation record plus the full
            50-tissue consensus nTPM profile, written verbatim to Layer 0
@@ -18,8 +18,8 @@ Three properties of the HPA API drive most of the code below, and each
 one silently manufactures a wrong answer if it is not handled:
 
 1. **`search_download.php` is a search, not a lookup.** `search=WEE1`
-   returns two genes — WEE1 (ENSG00000166483) and WEE1B/WEE2
-   (ENSG00000214102) — and a caller taking the first row gets whichever
+   returns two genes -- WEE1 (ENSG00000166483) and WEE1B/WEE2
+   (ENSG00000214102) -- and a caller taking the first row gets whichever
    HPA ranked highest. We resolve symbols separately, demand exactly one
    exact match, and then query by Ensembl ID, which does return one row.
 
@@ -40,11 +40,11 @@ one silently manufactures a wrong answer if it is not handled:
 4. **Single-cell columns return null, not zero.** Unlike the tissue
    profile (which always returns a numeric string for all 50 columns),
    the single-cell profile returns `null` for cell types where a gene
-   has no measured expression. The column is present — proving the
-   column code was accepted — but carries no value. This is recorded
+   has no measured expression. The column is present -- proving the
+   column code was accepted -- but carries no value. This is recorded
    as 0.0 nCPM, not treated as an error.
 
-HPA exposes no release version through the API — not in the body, not in
+HPA exposes no release version through the API -- not in the body, not in
 the headers. We scrape it from `/about/download` as a convenience label
 and anchor provenance on the SHA-256 of the exact response payload
 instead, which the sidecar records for every output. If the scrape
@@ -92,7 +92,7 @@ ENSG_RE = re.compile(r"^ENSG\d{11}$")
 # and an unvalidated name is indistinguishable from a tissue in which
 # the gene is not expressed. When HPA adds a tissue this list goes
 # stale, which surfaces as a missing tissue rather than as a wrong
-# number — the safe direction to be wrong in.
+# number -- the safe direction to be wrong in.
 #
 # Names are HPA's own response labels; the column code is the name with
 # spaces replaced by underscores and `t_RNA_` prepended.
@@ -178,7 +178,7 @@ TISSUE_ALIASES: dict[str, str] = {
 #
 # Note: HPA preserves case exactly as listed (cDC, monocytes, pDCs are
 # lowercase-initial), and two names contain non-ASCII or punctuation:
-# "Müller glia" (ü) and "Pituicytes/FSCs" (/).
+# "M\u00fcller glia" (u) and "Pituicytes/FSCs" (/).
 CELL_TYPES: tuple[str, ...] = (
     "Adipocytes",
     "Adrenal cortex cells",
@@ -267,7 +267,7 @@ CELL_TYPES: tuple[str, ...] = (
     "Monocyte progenitors",
     "monocytes",
     "Mucous neck cells",
-    "Müller glia",
+    "M\u00fcller glia",
     "Myonuclei",
     "Myosatellite cells",
     "Neuroendocrine cells",
@@ -491,7 +491,7 @@ def _check_columns(row: dict[str, Any]) -> dict[str, float]:
     """Parse the tissue columns, failing if any requested one is missing.
 
     This is the guard for HPA's silent-drop behaviour. A dropped column
-    is not a gap in the data — it is a name the API did not recognise,
+    is not a gap in the data -- it is a name the API did not recognise,
     and treating it as "not measured" is how a tool invents a
     not-expressed verdict.
     """
@@ -534,7 +534,7 @@ def _check_sc_columns(row: dict[str, Any]) -> dict[str, float]:
     Unlike the tissue API which always returns numeric strings for all 50
     columns, the single-cell API returns `null` for some cell types on
     some genes (observed on HPA 25.1). A null column is present in the
-    response — which proves the column code was accepted — but carries no
+    response -- which proves the column code was accepted -- but carries no
     measurement. We record it as 0.0 rather than failing, because the
     absence of expression is the datum, not an error.
     """
@@ -617,9 +617,9 @@ def cell_types_cmd() -> None:
         click.echo(f"  {cell_type}")
 
 
-# Verb aliases — see docs/tool-design-guidance.md and issue #92.
+# Verb aliases -- see docs/tool-design-guidance.md and issue #92.
 #
-#   fetch  = retrieve the record for a known identifier (gene, CID, …)
+#   fetch  = retrieve the record for a known identifier (gene, CID, ...)
 #   search = query and get back a result set
 #
 # Both verbs are accepted as aliases for discoverability.  The primary
@@ -848,7 +848,7 @@ def analyze_cmd(
             "expression.absent_is_not_evidence",
             f"{len(negatives)} not_detected verdict(s) rest on one consensus "
             f"bulk RNA dataset (HPA): {', '.join(negatives[:6])}"
-            + (" …" if len(negatives) > 6 else ""),
+            + (" ..." if len(negatives) > 6 else ""),
         )
 
     if record.get(SINGLE_CELL_FIELD):
@@ -917,10 +917,10 @@ def analyze_cmd(
 
     emit.data("assessment", assessment)
     emit.data("relays", relays)
-    emit.line(f"{record.get('Gene') or ensembl} ({ensembl}) — HPA consensus RNA")
+    emit.line(f"{record.get('Gene') or ensembl} ({ensembl}) -- HPA consensus RNA")
     emit.line(
         f"specificity: {computed} (HPA curated: {curated or 'n/a'}); "
-        f"detected in {detected_in}/{len(measured)} tissues at ≥{cutoff} nTPM"
+        f"detected in {detected_in}/{len(measured)} tissues at >={cutoff} nTPM"
     )
     emit.line(f"highest: {top_tissue} {top_value} nTPM")
     if query_tissues:
@@ -1288,7 +1288,7 @@ def analyze_single_cell_cmd(
             "expression.absent_is_not_evidence",
             f"{len(negatives)} not_detected verdict(s) rest on one single-cell "
             f"RNA dataset (HPA): {', '.join(negatives[:6])}"
-            + (" …" if len(negatives) > 6 else ""),
+            + (" ..." if len(negatives) > 6 else ""),
         )
 
     warnings: list[str] = []
@@ -1343,7 +1343,7 @@ def analyze_single_cell_cmd(
 
     emit.data("assessment", assessment)
     emit.data("relays", relays)
-    emit.line(f"{record.get('Gene') or ensembl} ({ensembl}) — HPA single-cell RNA")
+    emit.line(f"{record.get('Gene') or ensembl} ({ensembl}) -- HPA single-cell RNA")
     emit.line(
         f"specificity: {computed} (HPA curated: {curated or 'n/a'}); "
         f"detected in {detected_in}/{len(measured)} cell types at >{cutoff} nCPM"

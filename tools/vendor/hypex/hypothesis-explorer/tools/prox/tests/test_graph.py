@@ -1,4 +1,4 @@
-"""Tests for prox.graph — cosine-similarity adjacency graph."""
+"""Tests for prox.graph -- cosine-similarity adjacency graph."""
 
 from __future__ import annotations
 
@@ -54,11 +54,11 @@ def test_build_graph_threshold_boundary() -> None:
     v2 = np.array([0.6, 0.8])  # cosine with v1 = 0.6
     mat = scipy.sparse.csr_matrix(np.vstack([v1, v2]))
 
-    # Threshold at 0.6 — should include
+    # Threshold at 0.6 -- should include
     graph = build_graph(mat, ["H-0001", "H-0002"], threshold=0.6)
     assert len(graph["nodes"]["H-0001"]["edges"]) == 1
 
-    # Threshold at 0.61 — should exclude
+    # Threshold at 0.61 -- should exclude
     graph = build_graph(mat, ["H-0001", "H-0002"], threshold=0.61)
     assert len(graph["nodes"]["H-0001"]["edges"]) == 0
 

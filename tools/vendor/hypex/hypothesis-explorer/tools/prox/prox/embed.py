@@ -63,7 +63,7 @@ def embed_tfidf(
 
 
 def run_embed(run_dir: Path, backend: str = "tfidf") -> None:
-    """End-to-end embed pipeline: load → extract → vectorise → save."""
+    """End-to-end embed pipeline: load -> extract -> vectorise -> save."""
     if backend != "tfidf":
         raise NotImplementedError(
             f"Backend '{backend}' is not implemented. "

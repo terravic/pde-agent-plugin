@@ -11,7 +11,7 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Independent scientific reviewer — re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject"
+description: "Independent scientific reviewer -- re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 

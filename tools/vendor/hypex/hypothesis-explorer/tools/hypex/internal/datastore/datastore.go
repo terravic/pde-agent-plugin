@@ -27,7 +27,7 @@ var RunSubdirs = []string{
 // stays within baseDir. Returns the cleaned absolute path or an error
 // if the path escapes.
 func ConfinePath(baseDir, untrusted string) (string, error) {
-	// Reject absolute untrusted paths outright — a run ID should never be
+	// Reject absolute untrusted paths outright -- a run ID should never be
 	// an absolute path regardless of how filepath.Join would handle it.
 	if filepath.IsAbs(untrusted) {
 		return "", fmt.Errorf("path %q escapes base directory %q", untrusted, baseDir)
@@ -79,7 +79,7 @@ func InitRun(baseDir, runID, runYAML string) error {
 
 // WriteFileAtomic writes data to a file using the temp-file-then-rename
 // pattern to ensure atomicity. The file is either fully written or not
-// present — never partially written.
+// present -- never partially written.
 func WriteFileAtomic(path string, data []byte) error {
 	dir := filepath.Dir(path)
 

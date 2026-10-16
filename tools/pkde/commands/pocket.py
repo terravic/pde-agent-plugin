@@ -1,4 +1,4 @@
-"""`pkde pocket` — ligand-binding-site detection with fpocket.
+"""`pkde pocket` -- ligand-binding-site detection with fpocket.
 
 Phase 1 (`run`) executes fpocket over a structure and writes what it
 produced: a parsed per-pocket record, and fpocket's own output tree
@@ -6,19 +6,19 @@ beside it so a structural biologist can dock into the pocket files
 without re-running anything. It makes no judgement.
 
 Phase 2 (`analyze`) reads that record, applies the `pocket` threshold
-set by name, and says whether there is a site worth pursuing — and, when
+set by name, and says whether there is a site worth pursuing -- and, when
 asked with `--near`, whether there is one at a particular interface,
 which is the question a protein-protein target actually poses.
 
 Two properties of the instrument shape everything here:
 
 * **The drug score is conformation-dependent, and by more than it looks.**
-  Not just model-versus-crystal: the CDK2 ATP site — a site with drugs on
-  the market — scores 0.939 in 1HCK, 0.293 in 2W1D and 0.172 in 1AQ1.
+  Not just model-versus-crystal: the CDK2 ATP site -- a site with drugs on
+  the market -- scores 0.939 in 1HCK, 0.293 in 2W1D and 0.172 in 1AQ1.
   One site, three crystal structures, a 0.77 spread across a 0.5 cutoff.
   So a sub-cutoff score is a fact about the coordinates it was computed
   on and nothing more. Every negative verdict here is named
-  `…-in-this-conformation` and leaves with a mandatory relay carrying
+  `...-in-this-conformation` and leaves with a mandatory relay carrying
   those three numbers, because the qualifier is the first thing lost when
   a result is summarised by someone who wanted a yes.
 * **Volume is a Monte Carlo estimate seeded from the clock.** It moves
@@ -40,7 +40,11 @@ from pathlib import Path
 from typing import Any
 
 import click
-import numpy as np
+
+try:
+    import numpy as np
+except ImportError:  # pragma: no cover
+    np = None  # type: ignore[assignment]
 
 from ..common import (
     AppState,
@@ -88,7 +92,7 @@ _STANDARD_AMINO_ACIDS: frozenset[str] = frozenset(
     }
 )
 
-#: Water residues — excluded from non-protein chain detection because
+#: Water residues -- excluded from non-protein chain detection because
 #: every crystal structure has them and they do not affect pocket scoring
 #: in a practically relevant way.
 _WATER_RESIDUES: frozenset[str] = frozenset({"HOH", "WAT", "DOD", "H2O"})
@@ -274,8 +278,8 @@ def _parse_residues_cif(text: str) -> list[dict[str, Any]]:
     fpocket writes CIF pocket files when the input is CIF.  The column
     order is declared by ``_atom_site.*`` header lines preceding the
     data rows, so we read the header to find ``label_comp_id`` (residue
-    name), ``auth_asym_id`` (chain — falls back to ``label_asym_id``),
-    and ``auth_seq_id`` (residue number — falls back to ``label_seq_id``).
+    name), ``auth_asym_id`` (chain -- falls back to ``label_asym_id``),
+    and ``auth_seq_id`` (residue number -- falls back to ``label_seq_id``).
     """
     lines = text.splitlines()
     # Collect column names from the _atom_site.* header block.
@@ -288,7 +292,7 @@ def _parse_residues_cif(text: str) -> list[dict[str, Any]]:
             in_atom_site = True
             columns.append(stripped.split(".")[1])
         elif in_atom_site:
-            # First non-header line after _atom_site block → data starts.
+            # First non-header line after _atom_site block -> data starts.
             data_start = i
             break
 
@@ -348,7 +352,7 @@ def _parse_residues(atm_file: Path) -> list[dict[str, Any]]:
 
     Dispatches to PDB or CIF parsing based on the detected structure
     format.  Uses :func:`detect_structure_format` (content-verified)
-    rather than trusting the file extension alone — a mislabelled
+    rather than trusting the file extension alone -- a mislabelled
     extension should not silently misparse.
 
     fpocket 4.x writes ``.cif`` pocket files when the input structure
@@ -549,6 +553,11 @@ def _run_geometric_pocket_detector(
     tools (`pkde pocket analyze`, `pkde docking prepare`, `pkde structure annotate-topology`)
     operate identically to an fpocket run.
     """
+    if np is None:
+        raise DependencyError(
+            "the 'numpy' package is required for geometric pocket detection",
+            remedy="install numpy into the tools environment (run `tools/install.sh`)",
+        )
     fmt, cif_header, atoms = _extract_atoms_for_geometric_pockets(structure_path)
     if not atoms:
         raise ArtifactError(
@@ -891,7 +900,7 @@ def _detect_non_protein_chains(structure_path: Path) -> tuple[bool, list[str]]:
     crystallographic waters).
 
     A chain is considered non-protein if it contains *no* standard
-    amino acid residues — i.e., it is entirely composed of ligands,
+    amino acid residues -- i.e., it is entirely composed of ligands,
     nucleic acids, ions, or other non-protein entities.
     """
     text = structure_path.read_text(encoding="utf-8", errors="replace")[:500_000]
@@ -935,7 +944,7 @@ def _detect_non_protein_chains(structure_path: Path) -> tuple[bool, list[str]]:
                     continue
                 chain_residues.setdefault(chain, set()).add(resname)
     else:
-        # PDB format — fixed-column layout.
+        # PDB format -- fixed-column layout.
         for line in text.splitlines():
             if not line.startswith(("ATOM  ", "HETATM")):
                 continue
@@ -950,10 +959,10 @@ def _detect_non_protein_chains(structure_path: Path) -> tuple[bool, list[str]]:
     for chain, residues in sorted(chain_residues.items()):
         non_water = residues - _WATER_RESIDUES
         if not non_water:
-            # Chain contains only water — not interesting.
+            # Chain contains only water -- not interesting.
             continue
         if not (non_water & _STANDARD_AMINO_ACIDS):
-            # No standard amino acids present → non-protein chain.
+            # No standard amino acids present -> non-protein chain.
             non_protein_chains.append(chain)
 
     return bool(non_protein_chains), non_protein_chains
@@ -1022,12 +1031,12 @@ def _detect_short_chains(
                 except (IndexError, ValueError):
                     continue
                 # Only count standard amino acid residues toward
-                # chain length — ligands and waters are not chain
+                # chain length -- ligands and waters are not chain
                 # residues for this purpose.
                 if resname in _STANDARD_AMINO_ACIDS:
                     chain_residues.setdefault(chain, set()).add((resname, resnum))
     else:
-        # PDB format — fixed-column layout.
+        # PDB format -- fixed-column layout.
         for line in text.splitlines():
             if not line.startswith(("ATOM  ", "HETATM")):
                 continue
@@ -1307,7 +1316,7 @@ def run(
                     empty_residue_pockets.append(entry["rank"])
                     entry["residues"] = []
 
-            # Every real pocket has lining residues — an empty list means the
+            # Every real pocket has lining residues -- an empty list means the
             # parser failed to extract them, not that the pocket is unlined.
             if empty_residue_pockets:
                 ranks = ", ".join(str(r) for r in empty_residue_pockets)
@@ -1423,7 +1432,7 @@ def run(
     # --- SAFETY-CRITICAL: peptide occlusion relay (#133 Item 2) ---
     # When short chains are retained AND any pocket scores below the
     # druggability threshold, fire a mandatory relay.  A 0.004 score on
-    # a druggable target kills programs — the fix makes it impossible
+    # a druggable target kills programs -- the fix makes it impossible
     # to report a confident low score without flagging potential
     # occlusion.
     if retained_short_chains and pockets:
@@ -1521,7 +1530,7 @@ def run(
 
 
 def _parse_near(spec: str) -> list[tuple[str, int]]:
-    """`A:145,A:146,B:12` → [("A",145), ("A",146), ("B",12)]."""
+    """`A:145,A:146,B:12` -> [("A",145), ("A",146), ("B",12)]."""
     residues: list[tuple[str, int]] = []
     for token in spec.replace(";", ",").split(","):
         token = token.strip()
@@ -1532,7 +1541,7 @@ def _parse_near(spec: str) -> list[tuple[str, int]]:
             raise UsageError(
                 f"{token!r} is not a residue selector",
                 detail="expected CHAIN:RESNUM, e.g. A:145",
-                remedy="pass --near A:145,A:146 — the chain is required because "
+                remedy="pass --near A:145,A:146 -- the chain is required because "
                 "residue numbering repeats across chains",
             )
         try:
@@ -1630,7 +1639,7 @@ def analyze(
             advisories.append(
                 "No detected pocket includes any of the requested residues. "
                 "fpocket finds cavities, so this is evidence of no cavity at "
-                "that site in this conformation — not of an undruggable protein."
+                "that site in this conformation -- not of an undruggable protein."
             )
 
     if best is None:
@@ -1693,7 +1702,7 @@ def analyze(
     # query answers about the site, so it is the site's score that must
     # carry the caveat.
     # Did the question asked come back negative? Not "is the best score
-    # low" — with --near the question is about the site, and a structure
+    # low" -- with --near the question is about the site, and a structure
     # can hold a superb pocket somewhere irrelevant. Answering the site
     # question from the global best is how "no cavity here" becomes "no
     # cavity" on the way to a write-up.
@@ -1705,7 +1714,7 @@ def analyze(
             # No pocket at the site is the most negative answer the site
             # question has, so it counts as negative rather than as
             # missing. It previously fell through and fired no relay at
-            # all — the one negative verdict with nothing attached, and
+            # all -- the one negative verdict with nothing attached, and
             # the one a flat protein-protein interface actually returns.
             reported_score = (
                 hits_here[0].get("druggability_score") or 0.0 if hits_here else 0.0
@@ -1742,7 +1751,7 @@ def analyze(
 
     # The positive verdict has the opposite exposure and needs its own
     # guard. A high score is the number a role with no affinity tool
-    # reaches for — template-builder's §8.6 substitution, and the CLI
+    # reaches for -- template-builder's Section 8.6 substitution, and the CLI
     # cannot see it happening, because `pocket analyze` is a legitimate
     # invocation whoever is asking. What the CLI can do is say, at the
     # moment the number is produced, what it is not. Conditional for the
@@ -1787,7 +1796,7 @@ def analyze(
                 "n_alpha_spheres": best.get("n_alpha_spheres"),
                 # Diffuseness. Large values mean the alpha spheres are
                 # spread over what may be several merged surface grooves
-                # rather than one cavity — the shape of pocket that
+                # rather than one cavity -- the shape of pocket that
                 # scores low without the site being poor.
                 "centre_of_mass_max_sphere_distance": best.get(
                     "centre_of_mass_max_sphere_distance"

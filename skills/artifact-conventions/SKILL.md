@@ -48,7 +48,7 @@ project-<name>/
     '-- program-summary.md
 ```
 
-## Layer 1 — Specialist Finding Format
+## Layer 1 -- Specialist Finding Format
 
 Every specialist report uses these headings:
 
@@ -62,7 +62,7 @@ Every specialist report uses these headings:
 
 ## Key Findings
 Narrative with inline references to raw data and source tags for numerical values:
-'Pocket volume is 420 Å³ {source: raw/structures/target-apo.analysis.json $.pocket_volume}
+'Pocket volume is 420 A^3 {source: raw/structures/target-apo.analysis.json $.pocket_volume}
 ([raw/structures/target-apo-af3.pdb]).'
 
 ## Implications
@@ -79,9 +79,9 @@ Model confidence metrics, experimental limitations, assumptions made.
 
 Every factual claim links to its supporting artifact. Three link directions:
 
-- **Vertical (deeper):** `[raw/structures/file.pdb]` — relative paths down to Layer 0 raw data.
-- **Lateral (peer findings):** `[findings/medicinal-chemistry/series-a-sar.md]` — cross-references to related specialist work at the same layer.
-- **Upward (program state):** `[program-state/active-series.md#series-a]` — anchoring into the orchestrator's decision surface.
+- **Vertical (deeper):** `[raw/structures/file.pdb]` -- relative paths down to Layer 0 raw data.
+- **Lateral (peer findings):** `[findings/medicinal-chemistry/series-a-sar.md]` -- cross-references to related specialist work at the same layer.
+- **Upward (program state):** `[program-state/active-series.md#series-a]` -- anchoring into the orchestrator's decision surface.
 
 **Path resolution differs between source tags and markdown links:**
 - Source tags (`{source: raw/...}`) resolve **project-root-relative**.
@@ -102,12 +102,12 @@ Locators are **required** on all numerical source tags. A tag without a locator 
 
 The locator identifies where in the artifact the value lives:
 
-- **JSONPath (RFC 9535 subset)** for `.json`, `.analysis.json`, and `.meta.json` files. Supported syntax: `$`, dot and bracket child selectors, single-index array access `[N]`, and slice notation `[start:end]`. Recursive descent (`..`) and filter expressions (`?()`) are not supported — source tags must resolve to exactly one scalar value.
+- **JSONPath (RFC 9535 subset)** for `.json`, `.analysis.json`, and `.meta.json` files. Supported syntax: `$`, dot and bracket child selectors, single-index array access `[N]`, and slice notation `[start:end]`. Recursive descent (`..`) and filter expressions (`?()`) are not supported -- source tags must resolve to exactly one scalar value.
   `{source: raw/structures/target-apo.analysis.json $.pocket_volume}`
 - **Line number** for non-JSON text or when field-level precision is unnecessary:
   `{source: raw/structures/target-apo.meta.json:14}`
 
-The locator must resolve to a **scalar value** (string, number, boolean, or null). Tags whose locators resolve to an object or array produce a format warning — the claimed value cannot be tolerance-compared against a non-scalar.
+The locator must resolve to a **scalar value** (string, number, boolean, or null). Tags whose locators resolve to an object or array produce a format warning -- the claimed value cannot be tolerance-compared against a non-scalar.
 
 Path and JSONPath locator are space-separated (not colon-separated) to avoid
 ambiguity with colons in file paths. Line-number locators use the `:N` suffix
@@ -116,7 +116,7 @@ convention.
 **Examples in context:**
 
 ```markdown
-Pocket volume is 420 Å³ {source: raw/structures/target-apo.analysis.json $.pocket_volume}
+Pocket volume is 420 A^3 {source: raw/structures/target-apo.analysis.json $.pocket_volume}
 ([raw/structures/target-apo-af3.pdb]).
 
 Conservation score is 0.94 {source: raw/genomics/tp53.analysis.json $.conservation_score},
@@ -143,12 +143,12 @@ A source tag binds to the **immediately preceding numerical value**. When a clau
 
 - General quantities from literature (covered by citation-resolution)
 - Counts or descriptions that are not derived from a specific tool output
-  (e.g., "three binding pockets were identified" — the artifact link suffices)
+  (e.g., "three binding pockets were identified" -- the artifact link suffices)
 
 **Bulk table citations:**
-When a table's values derive from a single artifact, use `{source-table: <path> <locator>}` on the line following the table. This asserts provenance for the table as a whole. The locator may resolve to an object or array. Per-cell `{source: ...}` tags are optional and additive — use them for values that warrant individual mechanical verification.
+When a table's values derive from a single artifact, use `{source-table: <path> <locator>}` on the line following the table. This asserts provenance for the table as a whole. The locator may resolve to an object or array. Per-cell `{source: ...}` tags are optional and additive -- use them for values that warrant individual mechanical verification.
 
-Source tags and path links coexist. A claim can carry both — the path link
+Source tags and path links coexist. A claim can carry both -- the path link
 points to the artifact, the source tag points to the specific value within it.
 The source tag is the one the finding-validator checks mechanically.
 
@@ -156,8 +156,8 @@ The source tag is the one the finding-validator checks mechanically.
 
 `.analysis.json` records carry a `written_by` field (from
 `$PKDE_AGENT_SLUG`). Since two records can now legitimately describe
-the same artifact — the specialist's original and a reviewer's
-re-analysis — anything citing an analysis should cite it by `written_by`
+the same artifact -- the specialist's original and a reviewer's
+re-analysis -- anything citing an analysis should cite it by `written_by`
 and path, not by path alone. A finding that says "the analysis shows..."
 without naming whose analysis is ambiguous when a reanalysis exists.
 
@@ -177,7 +177,7 @@ This ensures liabilities are not lost between specialist handoffs.
 ## The Layer 0 / Layer 1 Boundary
 
 **No tool ever writes under `findings/`.** Layer 0 (`raw/`) holds tool
-output — deterministic, reproducible, no judgment. Layer 1 (`findings/`)
+output -- deterministic, reproducible, no judgment. Layer 1 (`findings/`)
 holds specialist prose that adds judgment, interpretation, and
 cross-disciplinary implications. If a finding is a reformatted
 `.analysis.json` it has added no judgment and defeats the layer
@@ -186,7 +186,7 @@ produced it.
 
 ## Raw Data Conventions (Layer 0)
 
-- Tool outputs go to `raw/<category>/` — never inline large data in findings.
+- Tool outputs go to `raw/<category>/` -- never inline large data in findings.
 - Name files descriptively: `target-apo-af3.pdb`, not `output.pdb`.
 - Include the tool version and parameters in a sidecar `<filename>.meta.json` when available.
 - MCP tool responses should be summaries with pointers to full data on disk, not the full data itself (zero-bloat principle).
@@ -194,8 +194,8 @@ produced it.
 ### Independent re-analysis (`raw/reanalysis/`)
 
 When an agent re-runs a phase-2 `analyze` command over evidence it did
-not produce — a reviewer auditing a specialist's finding is the live
-case — the output goes under `raw/reanalysis/<date>-<agent>/`, **not**
+not produce -- a reviewer auditing a specialist's finding is the live
+case -- the output goes under `raw/reanalysis/<date>-<agent>/`, **not**
 beside the original artifact.
 
 The default `analyze` writes its `.analysis.json` beside the artifact
@@ -215,7 +215,7 @@ Run `pkde <tool> analyze --help` to confirm which shape a command
 uses. `$PKDE_AGENT_SLUG` is set in the agent environment. Use it in
 preference to a literal `<agent>` placeholder.
 
-This path is under `raw/` because the content is tool output —
+This path is under `raw/` because the content is tool output --
 deterministic, no judgment. It is named `reanalysis` rather than
 `review` or `audit` because the name describes the bytes, not the role
 of whoever produced them. Partitioned by `<date>-<agent>` because the
@@ -224,7 +224,7 @@ date alone is an attribute two independent auditors share.
 ## Review Reports (`findings/reviews/`)
 
 Reviewer prose goes under `findings/reviews/<finding-name>-review.md`.
-This directory holds **prose only** — no tool writes here. A review
+This directory holds **prose only** -- no tool writes here. A review
 report follows the same Layer 1 format as any specialist finding, but
 its vertical links point at both the original finding under review and
 the re-analysis artifacts under `raw/reanalysis/`.

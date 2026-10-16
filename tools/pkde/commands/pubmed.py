@@ -208,7 +208,7 @@ def _per_term_hit_counts(query: str) -> list[dict[str, Any]]:
 
     Returns a list of ``{"term": ..., "count": int}`` dicts, one per
     whitespace-delimited token.  Each request uses ``rettype=count`` so
-    no article data is fetched — only the total count field.  This lets
+    no article data is fetched -- only the total count field.  This lets
     the caller see which term(s) collapsed the combined result set.
     """
     # Split on whitespace; skip PubMed Boolean operators.
@@ -424,11 +424,11 @@ def search_cmd(
         emit.line("Per-term hit counts:")
         for entry in per_term_counts:
             count_str = f"{entry['count']:,}" if entry["count"] >= 0 else "error"
-            emit.line(f"  {entry['term']:<30s} → {count_str}")
+            emit.line(f"  {entry['term']:<30s} -> {count_str}")
         reason = artifact.get("zero_result_reason", "no_results")
         if reason == "no_results_query_may_be_overconstrained":
             emit.line(
-                "Individual terms have hits but the combination does not — "
+                "Individual terms have hits but the combination does not -- "
                 "the query may be overconstrained."
             )
     emit.flush()
@@ -671,7 +671,7 @@ def _parse_fulltext_xml(xml_bytes: bytes) -> dict[str, Any]:
             pmid = aid.text.strip()
             break
 
-    # Body sections — recursive walk so nested <sec> elements are captured
+    # Body sections -- recursive walk so nested <sec> elements are captured
     def _walk_sections(parent: ET.Element) -> list[dict[str, str]]:
         sections: list[dict[str, str]] = []
         for sec in parent.findall("sec"):
@@ -843,7 +843,7 @@ def fulltext_cmd(
         parameters={"pmcid": pmcid},
     )
     sidecar.note("source", "PubMed Central (NCBI/NLM)")
-    sidecar.note("licence", "NLM Terms of Service — PMC Open Access")
+    sidecar.note("licence", "NLM Terms of Service -- PMC Open Access")
     sidecar.note("n_sections", str(len(parsed["sections"])))
     sidecar.note("n_references", str(len(parsed["references"])))
 

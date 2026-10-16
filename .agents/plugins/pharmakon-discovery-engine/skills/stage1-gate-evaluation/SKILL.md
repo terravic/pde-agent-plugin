@@ -13,11 +13,11 @@ Use this skill when:
 
 Do not use this skill when:
 
-- No gate policy exists — use the existing judgment-based gate process
+- No gate policy exists -- use the existing judgment-based gate process
   from the lead template instead.
-- The concept is not yet in `active` state — it must be active to be
+- The concept is not yet in `active` state -- it must be active to be
   evaluated at a gate.
-- You need to create the policy itself — that is a separate task.
+- You need to create the policy itself -- that is a separate task.
 
 ## 2. Prerequisites
 
@@ -41,7 +41,7 @@ current revision.
 ### Step 2: Load the applicable policy
 
 Load the Stage 1 gate policy at the version specified in
-`program.yaml` → `gate_policies.stage_1`. If no version is specified,
+`program.yaml` -> `gate_policies.stage_1`. If no version is specified,
 check `.pkde/control/policies/` for the latest version with
 `stage: 1`.
 
@@ -55,14 +55,14 @@ applicability rules:
 - `applicability.indication` is null OR contains the concept's
   `disease_context.indication`
 
-Requirements that do not apply are skipped entirely — they do not
+Requirements that do not apply are skipped entirely -- they do not
 produce `not_assessed` records.
 
 ### Step 4: Match assessments to requirements
 
 For each applicable requirement, find assessment records with matching
 `evidence_type`. Apply the compatibility checks from the design
-(§3.1):
+(Section 3.1):
 
 1. **`evidence_type` must match exactly.** This is the primary key.
 2. **`units` must be compatible.** If both specify units and they
@@ -128,7 +128,7 @@ values (non-empty `unresolved` list in the snapshot):
 
 - The gate decision **must acknowledge the gap** explicitly.
 - An UNRESOLVED threshold that a `scientific_cutoff` requirement
-  depends on means that requirement **cannot be evaluated** — treat
+  depends on means that requirement **cannot be evaluated** -- treat
   it the same as a missing assessment for a hard constraint.
 - Record which thresholds are unresolved and why in the decision
   rationale.

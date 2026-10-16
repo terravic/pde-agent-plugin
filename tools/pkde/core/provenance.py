@@ -2,17 +2,17 @@
 
 Every phase-1 artifact gets `<name>.meta.json` beside it; every phase-2
 run emits `<name>.analysis.json` citing its source and the threshold set
-applied. See docs/tool-design-guidance.md §5.
+applied. See docs/tool-design-guidance.md Section 5.
 
 `warnings` on the sidecar is load-bearing: warnings that must reach the
 report are captured here so a reviewer can confirm the specialist
 relayed them.
 
 Some warnings are stronger than that. A warning carrying a `relay` code
-is a **mandatory relay** in the sense of skill-design-guidance §4.5: it
+is a **mandatory relay** in the sense of skill-design-guidance Section 4.5: it
 must reach the Layer 1 finding unchanged, because a report that omits it
 is wrong rather than merely incomplete. Isoform substitution is the
-model case — the numbers describe a different molecule than the one the
+model case -- the numbers describe a different molecule than the one the
 finding names.
 
 These carry a stable code (`afdb.partial_coverage`) as well as prose.
@@ -44,7 +44,7 @@ def _utc_now() -> str:
 
 #: Subset of volatile fields that are interesting when they change on
 #: an otherwise-agreeing record.  ``timestamp`` and ``written_by`` are
-#: excluded — they change on every re-run and carry no diagnostic value.
+#: excluded -- they change on every re-run and carry no diagnostic value.
 #: ``cli_modified_note`` is excluded because ``cli_modified`` already
 #: covers the condition.  ``work_order_id`` is excluded because cross-WO
 #: changes have their own protection mechanism.
@@ -56,7 +56,7 @@ _INTERESTING_VOLATILE_FIELDS = (
 )
 
 
-#: Provenance fields — excluded from the overwrite comparison so an
+#: Provenance fields -- excluded from the overwrite comparison so an
 #: idempotent re-run stays frictionless.  What matters is whether the
 #: *verdict* would change, not whether the clock moved, the commit
 #: advanced, or the interpreter was upgraded.
@@ -76,7 +76,7 @@ _VOLATILE_ANALYSIS_FIELDS = (
     "written_by",
     # cli_integrity is derived from `git describe --dirty --always`.
     # Without tags it is a bare commit SHA that changes on every commit
-    # to PkDE — a provenance stamp, not scientific content.
+    # to PkDE -- a provenance stamp, not scientific content.
     "cli_integrity",
     # cli_modified / cli_modified_note record whether the toolchain had
     # uncommitted changes.  Conditional: absent when clean, present when
@@ -89,7 +89,7 @@ _VOLATILE_ANALYSIS_FIELDS = (
     # capability_state records which optional backends were available.
     # A snapshot of deployment state, not of the verdict.
     "capability_state",
-    # work_order_id is an attribution field — it records *who requested*
+    # work_order_id is an attribution field -- it records *who requested*
     # the analysis, not what the analysis found.  Same rationale as
     # written_by: a reviewer in WO-B re-running a specialist's WO-A
     # analysis that produces identical science should not trigger exit-9.
@@ -149,15 +149,15 @@ def _work_order() -> str | None:
 # truncation and still calls the protein well ordered.
 # Shared vocabulary that currently lives above the CLI layer: reading
 # this dict by import drags in output, and output imports click. Anything
-# outside the venv that wants the registered codes — a checker, a doc
-# generator — therefore parses the literal out of this file instead
+# outside the venv that wants the registered codes -- a checker, a doc
+# generator -- therefore parses the literal out of this file instead
 # (tools/check_threshold_names.py, which exits 2 rather than passing if
 # the literal is not found here).
 #
 # The clean fix is to move this to a leaf module and re-export it. Not
 # done, deliberately: there is one such consumer, it is unblocked, and
 # the move would break its file assumption for no present gain. The
-# trigger to do it is a *second* out-of-tree reader — at that point the
+# trigger to do it is a *second* out-of-tree reader -- at that point the
 # parse-by-hand workaround stops being one file's quirk and becomes the
 # interface.
 RELAY_CODES: dict[str, str] = {
@@ -169,7 +169,7 @@ RELAY_CODES: dict[str, str] = {
     ),
     "afdb.partial_coverage": (
         "Scope every confidence claim to the modelled residue range, or "
-        "withhold it. Do not describe the protein — describe the fragment."
+        "withhold it. Do not describe the protein -- describe the fragment."
     ),
     "afdb.isoform_substituted": (
         "Name the isoform actually analysed wherever the finding names the "
@@ -188,7 +188,7 @@ RELAY_CODES: dict[str, str] = {
         "or as confirmation that this is the biologically relevant "
         "conformation. pLDDT is the model's confidence in its own prediction; "
         "a high score means the prediction is self-consistent, not that it "
-        "matches reality. Do not write 'the structure is accurate' — write "
+        "matches reality. Do not write 'the structure is accurate' -- write "
         "'the predicted fold is high-confidence.'"
     ),
     "afdb.model_is_not_docking_ready": (
@@ -228,7 +228,7 @@ RELAY_CODES: dict[str, str] = {
         "describes the shape, volume and hydrophobicity of a cavity with no "
         "ligand in it; affinity is a property of a pair. A role that lacks an "
         "affinity tool is the one most likely to carry this number in its "
-        "place — if that is why it is being read, the answer is that the "
+        "place -- if that is why it is being read, the answer is that the "
         "question is untooled, not that the pocket is 0.94."
     ),
     "fpocket.ligand_present_in_input": (
@@ -263,7 +263,7 @@ RELAY_CODES: dict[str, str] = {
     "coscientist.review_recommendation_available": (
         "Address the co-scientist review recommendation before proceeding "
         "with target selection. The tournament produced a structured "
-        "recommendation section — present it to the decision-maker and "
+        "recommendation section -- present it to the decision-maker and "
         "document whether the recommendation was followed, adapted, or "
         "rejected with rationale."
     ),
@@ -294,7 +294,7 @@ RELAY_CODES: dict[str, str] = {
         "pathogenicity claim. A large effect score means the model predicts "
         "this variant changes regulatory activity; it is not evidence of "
         "causality for a phenotype and not a clinical interpretation. Do "
-        "not write 'pathogenic' — write 'predicted large regulatory effect.'"
+        "not write 'pathogenic' -- write 'predicted large regulatory effect.'"
     ),
     "gene.unresolved_symbol": (
         "Do not query any backend for this symbol. An unresolved identifier "
@@ -320,16 +320,16 @@ RELAY_CODES: dict[str, str] = {
     "expression.absent_is_not_evidence": (
         "Write the negative as 'not detected above the cutoff in HPA bulk "
         "consensus', naming the dataset. Do not write that the gene is absent "
-        "from the tissue — one dataset cannot support that claim."
+        "from the tissue -- one dataset cannot support that claim."
     ),
     # Named for what the finding must do, not for what the tool lacks.
     # `single_cell_available_unused` was the first name and it read as
-    # "go and fetch it" — the one action nobody can take while
+    # "go and fetch it" -- the one action nobody can take while
     # single-cell mode is unbuilt. A relay whose instruction cannot be
     # followed gets quoted and dropped.
     "expression.tissue_resolution_only": (
         "Scope the claim to whole-tissue averages and say so. Do not infer "
-        "anything about a cell population from a tissue mean — HPA holds "
+        "anything about a cell population from a tissue mean -- HPA holds "
         "cell-resolved data for this gene that was not used, so the "
         "ecological fallacy here is live rather than hypothetical."
     ),
@@ -379,7 +379,7 @@ RELAY_CODES: dict[str, str] = {
         "tool established only that the record exists; it did not read it."
     ),
     "litref.ambiguous_name": (
-        "Stop and obtain a unique identifier — NCT, PMID or DOI — before the "
+        "Stop and obtain a unique identifier -- NCT, PMID or DOI -- before the "
         "claim proceeds. Do not choose among the candidates listed: they are "
         "listed because the tool refused to choose."
     ),
@@ -441,8 +441,8 @@ RELAY_CODES: dict[str, str] = {
     ),
     "assay.cytotoxicity_confound": (
         "Flag this compound's dose-response as potentially confounded by "
-        "cytotoxicity. A bell-shaped (non-monotonic) curve — where activity "
-        "increases then decreases at higher concentrations — is a hallmark "
+        "cytotoxicity. A bell-shaped (non-monotonic) curve -- where activity "
+        "increases then decreases at higher concentrations -- is a hallmark "
         "of cytotoxicity masking the primary pharmacological effect. Do not "
         "report the fitted IC50 without this caveat."
     ),
@@ -459,7 +459,7 @@ RELAY_CODES: dict[str, str] = {
     "selectivity.panel_incomplete": (
         "Scope the selectivity claim to the off-targets that were actually "
         "tested, and name them. A selectivity assessment over a narrow panel "
-        "is incomplete — testing 3 off-targets when a kinome-wide panel would "
+        "is incomplete -- testing 3 off-targets when a kinome-wide panel would "
         "be the real question. Do not generalise the selectivity claim beyond "
         "the tested panel."
     ),
@@ -503,13 +503,13 @@ RELAY_CODES: dict[str, str] = {
         "affinity or a potency. A Vina score describes a computed interaction "
         "energy for a pose in a rigid pocket; binding affinity is a thermodynamic "
         "property of a pair measured in solution. A role that lacks an affinity "
-        "assay tool is the one most likely to carry this number in its place — "
+        "assay tool is the one most likely to carry this number in its place -- "
         "if that is why it is being read, the answer is that the question is "
         "untooled, not that the score is -8.2."
     ),
     "docking.contact_is_not_binding_event": (
         "State that the reported contacts represent geometric proximity "
-        "within a static, computationally docked pose — not a confirmed "
+        "within a static, computationally docked pose -- not a confirmed "
         "binding interaction. No hydrogen-bond geometry, electrostatic "
         "complementarity, or reactive-orientation check was performed."
     ),
@@ -517,7 +517,7 @@ RELAY_CODES: dict[str, str] = {
         "Do not treat these predicted ADMET endpoints as measured values. Every "
         "number here is a rule-based prediction from molecular descriptors, not "
         "an in vitro measurement. A clean predicted ADMET profile does not "
-        "substitute for in vitro ADMET studies — it identifies which studies to "
+        "substitute for in vitro ADMET studies -- it identifies which studies to "
         "prioritize, not which to skip."
     ),
     "admet.herg_structural_flag": (
@@ -529,7 +529,7 @@ RELAY_CODES: dict[str, str] = {
     "mpo.minmax_cohort_relative": (
         "MPO scores computed with min-max normalization are relative to the "
         "specific cohort scored in this run. Do not compare scores across "
-        "different scoring runs or candidate sets — a compound's score "
+        "different scoring runs or candidate sets -- a compound's score "
         "changes when the cohort changes, even if its raw values do not. "
         "Use --scoring absolute with explicit bounds for "
         "cohort-independent scores."
@@ -537,7 +537,7 @@ RELAY_CODES: dict[str, str] = {
     "mmp.cliff_not_causation": (
         "Do not interpret a property cliff as evidence of a causal mechanism. "
         "A large property change across a single R-group transformation is a "
-        "correlation in this dataset — it flags a substitution worth a medicinal "
+        "correlation in this dataset -- it flags a substitution worth a medicinal "
         "chemist's attention, but it does not explain why the transformation "
         "matters mechanistically. The structural change may be incidental to "
         "the true driver."
@@ -551,7 +551,7 @@ RELAY_CODES: dict[str, str] = {
     "tox.genotox_weight_of_evidence": (
         "State that this genotoxicity assessment used ICH S2(R1) "
         "weight-of-evidence reasoning because the battery results were "
-        "mixed. Do not report the verdict as a clean negative — name "
+        "mixed. Do not report the verdict as a clean negative -- name "
         "the positive assay and the basis for the overall assessment."
     ),
     "tox.margin_indeterminate": (
@@ -587,15 +587,15 @@ RELAY_CODES: dict[str, str] = {
         "target that passes the composite threshold but fails on "
         "genetic_association alone is supported by non-genetic evidence "
         "(text-mining, expression correlation, etc.), not by GWAS or other "
-        "genetic studies. Do not describe this as a genetic association — "
+        "genetic studies. Do not describe this as a genetic association -- "
         "describe it as a composite association and name the dominant "
         "contributing data types."
     ),
     "clinvar.classification_is_curated": (
         "Do not describe ClinVar classifications as statistical associations or "
         "correlations. A ClinVar 'Pathogenic' call is a curated clinical "
-        "assertion — expert reviewers assessed that this variant causes the "
-        "named condition — not a p-value from a population study. However, "
+        "assertion -- expert reviewers assessed that this variant causes the "
+        "named condition -- not a p-value from a population study. However, "
         "variant-level pathogenicity does not imply the gene is a validated "
         "therapeutic target: pathogenicity describes what happens when the "
         "variant is present from conception, not what happens when the gene "
@@ -725,7 +725,7 @@ RELAY_CODES: dict[str, str] = {
         "not bulk or single-cell RNA-seq. Spatial transcriptomics captures gene "
         "expression with tissue coordinates but covers a limited set of tissues "
         "and studies. Absence from SpatialDB does not mean a gene lacks spatial "
-        "expression data — the database indexes published spatial transcriptomics "
+        "expression data -- the database indexes published spatial transcriptomics "
         "datasets, not all spatial experiments."
     ),
     "disignatlas.curated_signatures": (
@@ -748,7 +748,7 @@ RELAY_CODES: dict[str, str] = {
         "query. Late-stage clinical development may affect freedom to operate or "
         "competitive positioning. Name the specific trials, sponsors, and "
         "indications. Do not treat the presence of competitor trials as evidence "
-        "that the target is validated — a trial is a bet, not a result."
+        "that the target is validated -- a trial is a bet, not a result."
     ),
     "patent.fto_risk_identified": (
         "Patent landscape shows recent filings that may affect freedom to "
@@ -757,7 +757,7 @@ RELAY_CODES: dict[str, str] = {
     ),
     "differentiation.crowded_landscape": (
         "Competitive landscape shows significant activity. Existing "
-        "competitor activity is informational, not a go/no-go gate — "
+        "competitor activity is informational, not a go/no-go gate -- "
         "a crowded field with a genuinely differentiated angle should "
         "surface as 'differentiated despite crowding', not be rejected. "
         "State the coverage limits of the search."
@@ -947,9 +947,9 @@ def record_type_from_schema(schema: str) -> str:
 
     Examples::
 
-        pkde.tox-genotox-assessment.v1 → tox-genotox-assessment
-        pkde.pk-nca.v1 → pk-nca
-        pkde.tox-margins.v1 → tox-margins
+        pkde.tox-genotox-assessment.v1 -> tox-genotox-assessment
+        pkde.pk-nca.v1 -> pk-nca
+        pkde.tox-margins.v1 -> tox-margins
 
     Falls back to the full schema string if the format is unrecognised.
     """
@@ -1137,13 +1137,13 @@ def _normalize_source(source: str | Path) -> str:
 
     Handles four cases:
 
-    1. **Absolute path** — made relative to the project root.
-    2. **Bare filename** (no directory component, has a file extension) —
+    1. **Absolute path** -- made relative to the project root.
+    2. **Bare filename** (no directory component, has a file extension) --
        searched for in ``ARTIFACT_DIRS``; the first hit is stored as
        its project-relative path.
-    3. **Relative path with directory components** — validated against the
+    3. **Relative path with directory components** -- validated against the
        project root for containment and returned as-is.
-    4. **Non-path string** (accession, endpoint, query) — returned
+    4. **Non-path string** (accession, endpoint, query) -- returned
        unchanged.
 
     Raises :class:`ArtifactError` if the resolved path escapes the
@@ -1158,7 +1158,7 @@ def _normalize_source(source: str | Path) -> str:
 
     source_path = Path(source_str)
 
-    # Case 1: absolute path → make relative to project root.
+    # Case 1: absolute path -> make relative to project root.
     if source_path.is_absolute():
         resolved = source_path.resolve()
         if not resolved.is_relative_to(project_root):
@@ -1179,10 +1179,10 @@ def _normalize_source(source: str | Path) -> str:
                 candidate = project_root / rel_dir / source_str
                 if candidate.is_file():
                     return str(Path(rel_dir) / source_str)
-        # Not found in artifact dirs or not a filename — return as-is.
+        # Not found in artifact dirs or not a filename -- return as-is.
         return source_str
 
-    # Case 3: relative path with directory components — verify containment.
+    # Case 3: relative path with directory components -- verify containment.
     try:
         resolved = (project_root / source_path).resolve()
     except (ValueError, RuntimeError):
@@ -1220,7 +1220,7 @@ def write_analysis(
     * bare filenames are searched for in standard artifact directories;
     * paths that escape the project root raise :class:`ArtifactError`.
 
-    This makes every call site correct by construction — callers can
+    This makes every call site correct by construction -- callers can
     pass a ``Path`` object directly and the record will always contain a
     project-relative string like ``"raw/tox/compound.selectivity.json"``.
 
@@ -1308,7 +1308,7 @@ def _source_digest(source: str) -> str | None:
 
     `source` is a free-text provenance string on some commands (an
     accession, an endpoint) and a path on others. Hash it when it is a
-    file and stay quiet when it is not — a digest invented for a
+    file and stay quiet when it is not -- a digest invented for a
     non-file would be worse than no digest.
     """
     try:
@@ -1326,10 +1326,10 @@ def _comparable(record: dict[str, Any]) -> dict[str, Any]:
     Strips volatile fields and normalises fields whose notation may
     differ between old and new records without a substantive change:
 
-    * **source** — bare filenames written before #129 are resolved to
+    * **source** -- bare filenames written before #129 are resolved to
       project-relative paths via ``_normalize_source()``, matching the
       form that ``write_analysis()`` now stores.
-    * **record_type** — records written before #130 lack this field.
+    * **record_type** -- records written before #130 lack this field.
       Absence is treated as ``"analysis"`` so that old and new records
       compare equal when the science is unchanged.
     """
@@ -1374,7 +1374,7 @@ def _capability_upgrades(
     """Detect capabilities that improved between runs.
 
     Returns a list of ``(capability, old_status, new_status)`` tuples
-    where the new state represents a gain — i.e. the capability was
+    where the new state represents a gain -- i.e. the capability was
     previously ``"unavailable"`` and is now something else, or was absent
     and is now present.
     """
@@ -1398,7 +1398,7 @@ def _emit_volatile_stamp_warning(
     """Emit a NOTE to stderr listing volatile stamp differences.
 
     Called when ``_may_write`` determines that two records agree on
-    science but differ on provenance stamps.  Informational only — does
+    science but differ on provenance stamps.  Informational only -- does
     not affect exit code or rewrite behaviour.
     """
     lines: list[str] = [
@@ -1423,9 +1423,9 @@ def _emit_volatile_stamp_warning(
             for k in diff_keys:
                 ok = old_val.get(k, "absent")
                 nk = new_val.get(k, "absent")
-                lines.append(f'  {field}.{k}: "{ok}" → "{nk}"')
+                lines.append(f'  {field}.{k}: "{ok}" -> "{nk}"')
         else:
-            lines.append(f"  {field}: {old_repr} → {new_repr}")
+            lines.append(f"  {field}: {old_repr} -> {new_repr}")
 
     # Detect capability upgrades for the specific signal.
     old_cap = changes.get("capability_state", (None, None))[0]
@@ -1458,22 +1458,22 @@ def _may_write(
     Three outcomes, and the middle one is the reason this is a decision
     and not an assertion:
 
-    * nothing there, or `--overwrite` — write.
-    * a record that agrees — **keep the one already there**, return
+    * nothing there, or `--overwrite` -- write.
+    * a record that agrees -- **keep the one already there**, return
       False, and say so on stderr.
-    * anything else, including a file that cannot be read — refuse
+    * anything else, including a file that cannot be read -- refuse
       (exit 9).
 
     The middle case used to be a silent overwrite, because the guard
     answered "is this a conflict?" and its caller read the answer as
     "may I write?". Those two questions agree everywhere except on the
-    fields excluded from the comparison — so they diverged exactly where
+    fields excluded from the comparison -- so they diverged exactly where
     nobody was looking, and `written_by` is an excluded field. A
     reviewer who re-ran without `--out` and *agreed* with the specialist
     silently took authorship of the specialist's record, at exit 0. The
     disagreeing case was loud and the agreeing case was the common one.
     (Repro from template-builder; diagnosis from plan-review, whose
-    generalisation is now orchestration-design-guidance §8.0: a field
+    generalisation is now orchestration-design-guidance Section 8.0: a field
     excluded from an equality test is a field that can change without
     anyone noticing, so exclude it only if losing it costs nothing.)
 
@@ -1481,14 +1481,14 @@ def _may_write(
     the first author's name. Not writing keeps both the attribution and,
     just as usefully, the bytes: a reviewer's confirming run now leaves
     `raw/` untouched, so a checksum sweep over the evidence still reads
-    clean afterwards. That is why this is (a) — do not write — rather
+    clean afterwards. That is why this is (a) -- do not write -- rather
     than appending the confirming agent to the record. Appending would
     preserve more, but it would also mutate the artifact under audit,
     and an integrity sweep cannot tell a benign append from tampering.
 
     An unreadable or non-conforming file is treated as a conflict. It
     cannot be shown to agree, and "could not check" must not resolve to
-    "went ahead" — that is the shape of every fabrication this
+    "went ahead" -- that is the shape of every fabrication this
     architecture is built to prevent.
     """
     if _overwrite_allowed or not path.exists():
@@ -1513,7 +1513,7 @@ def _may_write(
             if previous and mine and previous != mine:
                 output.warn(
                     f"{path.name} already holds an identical record by {previous} "
-                    f"({when}); left as it is. Your run confirms it — cite "
+                    f"({when}); left as it is. Your run confirms it -- cite "
                     f"{previous}'s record, and pass --out if you need your own copy."
                 )
             else:

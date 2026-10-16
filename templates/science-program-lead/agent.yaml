@@ -11,7 +11,7 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Science Program Lead — user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates"
+description: "Science Program Lead -- user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 

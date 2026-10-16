@@ -1,4 +1,4 @@
-"""Tests for prox.dupes — near-duplicate detection."""
+"""Tests for prox.dupes -- near-duplicate detection."""
 
 from __future__ import annotations
 

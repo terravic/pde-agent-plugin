@@ -117,11 +117,11 @@ When combining results across the three tools:
 - GEO discovers datasets; DisigNAtlas provides pre-computed DEG results
   from those (and other) datasets. A gene found in DisigNAtlas with
   significant DE in a disease does not guarantee the underlying study is
-  high quality — check the data source, sample size, and study design.
+  high quality -- check the data source, sample size, and study design.
 - GEO and DisigNAtlas overlap: DisigNAtlas curates signatures from GEO
   (and ArrayExpress, TCGA). A study in GEO may or may not have been
   processed into DisigNAtlas. Absence from DisigNAtlas does not mean
-  the gene is not DE in GEO datasets — it means no curated signature
+  the gene is not DE in GEO datasets -- it means no curated signature
   exists.
 - SpatialDB is orthogonal: it covers spatial experiments, not bulk or
   single-cell. A gene with spatial expression data provides tissue
@@ -163,7 +163,7 @@ When combining results across the three tools:
   a disease-expression hypothesis. Identifying the right datasets
   enables follow-up with GEO2R or direct data analysis.
 - Spatial expression data contextualises where a gene is expressed
-  within tissue architecture — relevant for understanding target
+  within tissue architecture -- relevant for understanding target
   accessibility and mechanism of action.
 - DisigNAtlas log2FC values are study-specific. Comparing a log2FC of
   2.5 in one study to 1.8 in another is not meaningful without
@@ -211,7 +211,7 @@ proceed on an assumed result.
   the relevant tissue.
 - **Double-counting GEO and DisigNAtlas results.** DisigNAtlas curates
   signatures from GEO datasets. Finding a gene in both does not
-  constitute independent replication — both derive from the same
+  constitute independent replication -- both derive from the same
   underlying data.
 - **Treating SpatialDB records as expression values.** SpatialDB
   records confirm that a gene appeared in a spatial transcriptomics

@@ -1,4 +1,4 @@
-# Executive Program Summary — KRAS G12D Selective Inhibitor (`KRAS-G12D-Selective-Inhibitor`)
+# Executive Program Summary -- KRAS G12D Selective Inhibitor (`KRAS-G12D-Selective-Inhibitor`)
 
 ## Stage 2 Gate Readiness: **GO TO STAGE 3**
 

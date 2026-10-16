@@ -3,12 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="PkDE Scientific Evaluation Dashboard — {{ program.name }}">
-  <title>PkDE Evaluation Dashboard — {{ program.name }}</title>
+  <meta name="description" content="PkDE Scientific Evaluation Dashboard -- {{ program.name }}">
+  <title>PkDE Evaluation Dashboard -- {{ program.name }}</title>
   <!-- Typography: DM Sans, Instrument Serif, IBM Plex Mono -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=IBM+Plex+Mono:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <!-- Scientific & Math Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/3dmol@2.4.2/build/3Dmol-min.js"></script>
@@ -17,7 +14,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
   <style>
     :root {
-      --font-sans: 'DM Sans', 'Geist Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-sans: 'DM Sans', 'Geist Sans', system-ui, sans-serif;
       --font-serif: 'Instrument Serif', Georgia, serif;
       --font-mono: 'IBM Plex Mono', 'Geist Mono', monospace;
     }
@@ -1189,22 +1186,7 @@
       <div class="conn-badge" id="conn-badge">
         <span id="conn-text"></span>
       </div>
-      <button class="icon-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme">
-        <svg id="theme-icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg id="theme-icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
+      <button class="mini-btn" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme" aria-label="Toggle Theme"><span id="theme-toggle-label">Light</span></button>
     </div>
   </header>
 
@@ -1307,11 +1289,11 @@
 
   <script>
     /* =========================================================================
-     * 0. THEME & DATA VISUALIZATION PALETTE HELPERS (DESIGN.md Sections 3 & 5)
+     * 0. THEME & DATA VISUALIZATION PALETTE HELPERS
      * ========================================================================= */
     function getThemeTokens() {
       const isLight = document.documentElement.getAttribute('data-theme') === 'light';
-      // DESIGN.md Section 5: Dynamic Data Visualization & Color Palette
+      // Dynamic Data Visualization & Color Palette
       const viz = {
         teal: '#0D9488',     // Vibrant Teal: Primary data series, healthy nodes, structural bonds, baseline metrics
         amber: '#D97706',    // Energetic Amber: Secondary data series, warnings, dynamic connections, medium intensity
@@ -1612,7 +1594,7 @@
       const vp = document.getElementById('lineage-viewport');
       let svgParts = [];
 
-      // Draw cubic Bezier edges using semi-transparent node colors (DESIGN.md Section 5)
+      // Draw cubic Bezier edges using semi-transparent node colors
       for (const e of layout.edges) {
         const edgeCol = agentNodeColor(e.childAgent, theme);
         let d;
@@ -1628,7 +1610,7 @@
         );
       }
 
-      // Draw category/state-colored agent nodes from the DESIGN.md 5-color palette
+      // Draw category/state-colored agent nodes from the 5-color palette
       for (const n of layout.nodes) {
         const a = n.agent;
         const isSelected = a.id === selectedNodeId;
@@ -1641,7 +1623,7 @@
         const titleShort = (a.name || a.id).slice(0, 24);
         const woBadge = a.work_order_id ? `${a.work_order_id}${a.revision ? '-r' + a.revision : ''}` : (a.category || 'Agent');
         const skillsCount = (a.injected_skills || []).length;
-        const errorFlag = crit ? ' · FAIL' : (warn ? ' · WARN' : '');
+        const errorFlag = crit ? ' . FAIL' : (warn ? ' . WARN' : '');
 
         svgParts.push(`
           <g class="agent-node-group" transform="translate(0,0)" style="cursor:pointer" onclick="selectAgentNode('${escapeHtml(a.id)}')">
@@ -1650,7 +1632,7 @@
             <rect x="${n.px}" y="${n.py}" width="5" height="${NODE_H}" rx="3" fill="${nodeCol}" />
             <text x="${n.px + 14}" y="${n.py + 23}" fill="${theme.textPrimary}" font-family="DM Sans, sans-serif" font-size="11.5" font-weight="600">${escapeHtml(titleShort)}</text>
             <text x="${n.px + 14}" y="${n.py + 42}" fill="${nodeCol}" font-family="IBM Plex Mono, monospace" font-size="10" font-weight="600">${escapeHtml(woBadge)}${escapeHtml(errorFlag)}</text>
-            <text x="${n.px + 14}" y="${n.py + 58}" fill="${theme.textSecondary}" font-family="IBM Plex Mono, monospace" font-size="9.5">${skillsCount} skills${a.run_id ? ' · ' + escapeHtml(a.run_id) : ''}</text>
+            <text x="${n.px + 14}" y="${n.py + 58}" fill="${theme.textSecondary}" font-family="IBM Plex Mono, monospace" font-size="9.5">${skillsCount} skills${a.run_id ? ' . ' + escapeHtml(a.run_id) : ''}</text>
           </g>
         `);
       }
@@ -1777,7 +1759,7 @@
               ${corrBadge}
             </div>
             <div class="mono" style="color:var(--text-secondary);font-size:11px;margin-bottom:8px;">
-              ${escapeHtml(node.role)}${node.work_order_id ? ` · ${escapeHtml(node.work_order_id)}-r${escapeHtml(node.revision || 1)}` : ''}${node.run_id ? ` · ${escapeHtml(node.run_id)}` : ''}
+              ${escapeHtml(node.role)}${node.work_order_id ? ` . ${escapeHtml(node.work_order_id)}-r${escapeHtml(node.revision || 1)}` : ''}${node.run_id ? ` . ${escapeHtml(node.run_id)}` : ''}
             </div>
             ${failureBanner}
             <div style="font-size:11.5px;margin-bottom:10px;color:var(--text-secondary);">${escapeHtml(node.decision_question || node.description || '')}</div>
@@ -1842,7 +1824,7 @@
                 <div class="msg-item ${escapeHtml(m.level || 'info')}">
                   <div class="msg-meta">
                     <span class="msg-route">[${escapeHtml(m.tag || 'EVENT')}] ${escapeHtml(m.sender)} -&gt; ${escapeHtml(m.recipient)}</span>
-                    <span style="display:inline-flex;align-items:center;gap:6px;"><code>${escapeHtml(m.type)}</code> · ${escapeHtml(m.timestamp || '')} ${actionBtn}</span>
+                    <span style="display:inline-flex;align-items:center;gap:6px;"><code>${escapeHtml(m.type)}</code> . ${escapeHtml(m.timestamp || '')} ${actionBtn}</span>
                   </div>
                   <div style="color:var(--text-secondary);">${escapeHtml(m.summary)}</div>
                 </div>
@@ -2001,7 +1983,7 @@
       const decisions = tg.decisions || [];
       const gates = tg.gates || [];
       if (concepts.length || assessments.length || decisions.length || gates.length) {
-        html += `<div class="sci-section"><h3><span>Stage Gate Dossiers</span><code>concepts · assessments · decisions</code></h3>`;
+        html += `<div class="sci-section"><h3><span>Stage Gate Dossiers</span><code>concepts . assessments . decisions</code></h3>`;
 
         if (concepts.length > 0) {
           html += `
@@ -2118,7 +2100,7 @@
               ${crit}
             </div>
             <div class="mono" style="font-size:10.5px;color:var(--text-secondary);margin-top:3px;">
-              ${escapeHtml(f.discipline)}${f.work_order_id ? ` · ${escapeHtml(f.work_order_id)}-r${escapeHtml(f.revision)}` : ''}
+              ${escapeHtml(f.discipline)}${f.work_order_id ? ` . ${escapeHtml(f.work_order_id)}-r${escapeHtml(f.revision)}` : ''}
             </div>
           </div>
         `;
@@ -2240,7 +2222,7 @@
               ${crit}
             </div>
             <div class="mono" style="font-size:10.5px;color:var(--text-secondary);margin-top:2px;">
-              ${escapeHtml(a.artifact_class)} · ${escapeHtml(a.domain_studio || a.viewer_type)}
+              ${escapeHtml(a.artifact_class)} . ${escapeHtml(a.domain_studio || a.viewer_type)}
             </div>
           </div>
         `;
@@ -2659,7 +2641,7 @@
             return {
               status: it.status || 'acceptable',
               score: SCORE_MAP[it.status] || (typeof it.score === 'number' ? it.score : 2.5),
-              display: it.value !== undefined ? String(it.value) : '—'
+              display: it.value !== undefined ? String(it.value) : '--'
             };
           }
           if (typeof it === 'number') {
@@ -2673,7 +2655,7 @@
           return {
             status: st,
             score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
-            display: v !== undefined ? `${v} min` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '—')
+            display: v !== undefined ? `${v} min` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '--')
           };
         }
         if (e === 'cyp_inhibition') {
@@ -2683,7 +2665,7 @@
           return {
             status: st,
             score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
-            display: v !== undefined ? `${v} µM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '—')
+            display: v !== undefined ? `${v} uM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '--')
           };
         }
         if (e === 'permeability') {
@@ -2693,7 +2675,7 @@
           return {
             status: st,
             score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
-            display: v !== undefined ? `${v} × 10⁻⁶ cm/s` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '—')
+            display: v !== undefined ? `${v} x 10-^6 cm/s` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '--')
           };
         }
         if (e === 'herg_liability') {
@@ -2703,7 +2685,7 @@
           return {
             status: st,
             score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
-            display: v !== undefined ? `${v} µM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '—')
+            display: v !== undefined ? `${v} uM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '--')
           };
         }
         if (e === 'solubility') {
@@ -2713,10 +2695,10 @@
           return {
             status: st,
             score: ax !== undefined ? ax * 3.0 : (SCORE_MAP[st] || 2.5),
-            display: v !== undefined ? `${v} µM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '—')
+            display: v !== undefined ? `${v} uM` : (ax !== undefined ? `${(ax * 100).toFixed(0)}%` : '--')
           };
         }
-        return { status: 'acceptable', score: 2.5, display: '—' };
+        return { status: 'acceptable', score: 2.5, display: '--' };
       }
 
       const resolved = ENDPOINTS.map(e => ({ key: e, label: LABELS[e], ...resolveEndpoint(e) }));
@@ -2752,7 +2734,7 @@
         line: { color: theme.teal, width: 2.2 },
         marker: { size: 8, color: vertexColors.concat([vertexColors[0]]) }
       }], {
-        title: { text: 'ADMET Profile — ' + ((data && data.compound_id) || 'Lead') },
+        title: { text: 'ADMET Profile -- ' + ((data && data.compound_id) || 'Lead') },
         polar: {
           radialaxis: { visible: true, range: [0, 3.4], tickvals: [1, 2, 3], ticktext: ['1', '2', '3'] }
         },
@@ -2766,7 +2748,7 @@
           ${resolved.map(r => `<tr>
             <td>${escapeHtml(r.label)}</td>
             <td><strong>${escapeHtml(r.display)}</strong></td>
-            <td>${renderCriticalStatusBadge(r.status) || '<span style="color:var(--text-secondary);">—</span>'}</td>
+            <td>${renderCriticalStatusBadge(r.status) || '<span style="color:var(--text-secondary);">--</span>'}</td>
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -2833,7 +2815,7 @@
       renderPlotWithFallback(plotDiv, traces, {
         title: { text: 'Residue pLDDT Confidence' },
         xaxis: { title: 'Residue', range: [0, totalRes + 1] },
-        yaxis: { title: 'pLDDT (0–100)', range: [0, 100] },
+        yaxis: { title: 'pLDDT (0-100)', range: [0, 100] },
         margin: { t: 40, l: 55, r: 25, b: 40 }
       });
     }
@@ -2857,7 +2839,7 @@
         maxPAE = paeData.max_predicted_aligned_error || paeData.max_pae || 31.75;
       }
 
-      // DESIGN.md Section 5: High-contrast gradient scale from soft desaturated surface through Vibrant Teal (#0D9488) into Vivid Indigo (#4F46E5)
+      // High-contrast gradient scale from soft desaturated surface through Vibrant Teal (#0D9488) into Vivid Indigo (#4F46E5)
       const softBase = theme.isLight ? '#F5F5F4' : '#16171D';
       const colorscale = [
         [0.0, theme.indigo],
@@ -2873,9 +2855,9 @@
         invertHot: true,
         zmin: 0,
         zmax: maxPAE,
-        colorbar: { title: 'PAE (Å)' }
+        colorbar: { title: 'PAE (A)' }
       }], {
-        title: { text: 'Predicted Aligned Error — ' + name },
+        title: { text: 'Predicted Aligned Error -- ' + name },
         xaxis: { title: 'Scored Residue' },
         yaxis: { title: 'Aligned Residue', autorange: 'reversed' },
         margin: { t: 40, l: 60, r: 40, b: 40 }
@@ -2920,12 +2902,12 @@
               <tbody>
                 ${associations.map(a => {
                   const sc = typeof a.score === 'number' ? a.score : (typeof a.overall_score === 'number' ? a.overall_score : 0);
-                  const ga = a.genetic_association_score ?? a.gwas_score ?? '—';
-                  const som = a.somatic_mutation_score ?? a.literature_score ?? '—';
+                  const ga = a.genetic_association_score ?? a.gwas_score ?? '--';
+                  const som = a.somatic_mutation_score ?? a.literature_score ?? '--';
                   return `<tr>
                     <td><strong>${escapeHtml(a.disease_name || a.disease || a.name || 'Indication')}</strong></td>
-                    <td><code>${escapeHtml(a.disease_id || a.efo_id || '—')}</code></td>
-                    <td><strong>${sc ? sc.toFixed(3) : '—'}</strong></td>
+                    <td><code>${escapeHtml(a.disease_id || a.efo_id || '--')}</code></td>
+                    <td><strong>${sc ? sc.toFixed(3) : '--'}</strong></td>
                     <td>${typeof ga === 'number' ? ga.toFixed(3) : escapeHtml(String(ga))}</td>
                     <td>${typeof som === 'number' ? som.toFixed(3) : escapeHtml(String(som))}</td>
                   </tr>`;
@@ -2940,7 +2922,7 @@
         <div>
           <div class="metric-bento-grid">
             ${items.map(m => {
-              const num = typeof m.v === 'number' ? m.v.toFixed(3) : '—';
+              const num = typeof m.v === 'number' ? m.v.toFixed(3) : '--';
               return `<div class="metric-bento-item">
                 <div class="metric-bento-val">${escapeHtml(num)}</div>
                 <div class="metric-bento-label">${escapeHtml(m.label)} (${escapeHtml(sym)})</div>
@@ -2967,7 +2949,7 @@
             orientation: 'h',
             marker: { color: barColors }
           }], {
-            title: { text: 'Disease Association Score (0–1)' },
+            title: { text: 'Disease Association Score (0-1)' },
             xaxis: { title: 'Score', range: [0, 1.05] },
             margin: { t: 35, l: 180, r: 25, b: 35 }
           });
@@ -3014,7 +2996,7 @@
           )
         }
       }], {
-        title: { text: 'Tissue Expression (TPM) — ' + filename },
+        title: { text: 'Tissue Expression (TPM) -- ' + filename },
         xaxis: { title: 'Median TPM' },
         margin: { t: 40, l: 160, r: 25, b: 40 }
       });
@@ -3025,7 +3007,7 @@
       const pockets = Array.isArray(data) ? data : ((data && data.pockets) || [data]);
       box.innerHTML = `
         <table class="data-table">
-          <thead><tr><th>Pocket</th><th>Name</th><th>Druggability</th><th>Volume (Å³)</th><th>SASA (Å²)</th><th>Hydrophobicity</th><th>Residues</th></tr></thead>
+          <thead><tr><th>Pocket</th><th>Name</th><th>Druggability</th><th>Volume (A^3)</th><th>SASA (A^2)</th><th>Hydrophobicity</th><th>Residues</th></tr></thead>
           <tbody>
             ${pockets.map((p, idx) => {
               const pid = p.pocket_id || ('#' + (p.rank ?? (idx + 1)));
@@ -3034,15 +3016,15 @@
               const vol = p.volume_a3 ?? p.volume;
               const sasa = p.polar_sasa ?? p.total_sasa;
               const hydro = p.hydrophobicity_score;
-              const residues = Array.isArray(p.key_residues) ? p.key_residues.join(', ') : (p.n_alpha_spheres !== undefined ? `${p.n_alpha_spheres} spheres` : '—');
+              const residues = Array.isArray(p.key_residues) ? p.key_residues.join(', ') : (p.n_alpha_spheres !== undefined ? `${p.n_alpha_spheres} spheres` : '--');
               return `
                 <tr>
                   <td><code>${escapeHtml(String(pid))}</code></td>
                   <td><strong>${escapeHtml(String(pname))}</strong></td>
-                  <td><strong>${typeof drug === 'number' ? drug.toFixed(3) : '—'}</strong></td>
-                  <td>${typeof vol === 'number' ? vol.toFixed(1) : '—'}</td>
-                  <td>${typeof sasa === 'number' ? sasa.toFixed(1) : '—'}</td>
-                  <td>${typeof hydro === 'number' ? hydro.toFixed(1) : '—'}</td>
+                  <td><strong>${typeof drug === 'number' ? drug.toFixed(3) : '--'}</strong></td>
+                  <td>${typeof vol === 'number' ? vol.toFixed(1) : '--'}</td>
+                  <td>${typeof sasa === 'number' ? sasa.toFixed(1) : '--'}</td>
+                  <td>${typeof hydro === 'number' ? hydro.toFixed(1) : '--'}</td>
                   <td><code>${escapeHtml(String(residues))}</code></td>
                 </tr>
               `;
@@ -3079,12 +3061,12 @@
 
       if (poses.length > 0) {
         tblDiv.innerHTML = `<table class="data-table" style="margin-top:8px;">
-          <thead><tr><th>Pose</th><th>Affinity (kcal/mol)</th><th>RMSD l.b. (Å)</th><th>Salt-Bridge (Å)</th></tr></thead>
+          <thead><tr><th>Pose</th><th>Affinity (kcal/mol)</th><th>RMSD l.b. (A)</th><th>Salt-Bridge (A)</th></tr></thead>
           <tbody>
             ${poses.map((p, i) => {
               const aff = parseFloat(p.affinity_kcal_mol ?? p.affinity ?? p.binding_affinity ?? p.score ?? 0);
               const rmsd = p.rmsd_lb ?? p.rmsd ?? 0;
-              const sb = p.asp12_salt_bridge_a ?? '—';
+              const sb = p.asp12_salt_bridge_a ?? '--';
               return `<tr>
                 <td><strong>${escapeHtml(labels[i])}</strong></td>
                 <td><strong>${aff.toFixed(2)}</strong></td>
@@ -3116,7 +3098,7 @@
           residue: `${r.res_name || ''}${r.res_num || ''}`,
           interaction: r.interaction || 'contact',
           distance_a: r.min_distance ?? r.distance_a,
-          energy_kcal: r.energy_kcal ?? '—'
+          energy_kcal: r.energy_kcal ?? '--'
         }));
       } else {
         flatRows = contacts;
@@ -3143,19 +3125,19 @@
         zmax: 4.5,
         colorscale: colorscale
       }], {
-        title: { text: 'Residue Contact Distances (Å) — ' + ((data && data.ligand) || name) },
+        title: { text: 'Residue Contact Distances (A) -- ' + ((data && data.ligand) || name) },
         margin: { t: 40, l: 120, r: 30, b: 55 }
       });
 
       if (flatRows.length > 0) {
         tblDiv.innerHTML = `<table class="data-table" style="margin-top:8px;">
-          <thead><tr><th>Residue</th><th>Interaction</th><th>Distance (Å)</th><th>Energy (kcal/mol)</th></tr></thead>
+          <thead><tr><th>Residue</th><th>Interaction</th><th>Distance (A)</th><th>Energy (kcal/mol)</th></tr></thead>
           <tbody>
             ${flatRows.map(r => `<tr>
-              <td><code>${escapeHtml(String(r.residue || '—'))}</code></td>
+              <td><code>${escapeHtml(String(r.residue || '--'))}</code></td>
               <td>${escapeHtml(String(r.interaction || 'contact'))}</td>
-              <td><strong>${typeof r.distance_a === 'number' ? r.distance_a.toFixed(2) : escapeHtml(String(r.distance_a ?? '—'))}</strong></td>
-              <td>${typeof r.energy_kcal === 'number' ? r.energy_kcal.toFixed(2) : escapeHtml(String(r.energy_kcal ?? '—'))}</td>
+              <td><strong>${typeof r.distance_a === 'number' ? r.distance_a.toFixed(2) : escapeHtml(String(r.distance_a ?? '--'))}</strong></td>
+              <td>${typeof r.energy_kcal === 'number' ? r.energy_kcal.toFixed(2) : escapeHtml(String(r.energy_kcal ?? '--'))}</td>
             </tr>`).join('')}
           </tbody>
         </table>`;
@@ -3230,7 +3212,7 @@
         <div>
           ${fragments.length > 0 ? `
             <table class="data-table" style="margin-bottom:12px;">
-              <thead><tr><th>Fragment</th><th>Role</th><th>SMILES</th><th>MW (Da)</th><th>ΔpKd</th></tr></thead>
+              <thead><tr><th>Fragment</th><th>Role</th><th>SMILES</th><th>MW (Da)</th><th>Delta pKd</th></tr></thead>
               <tbody>
                 ${fragments.map(f => {
                   const dpkd = f.matched_pair_delta_pkd;
@@ -3238,8 +3220,8 @@
                     <td><code>${escapeHtml(f.fragment_id || f.id || 'FRAG')}</code></td>
                     <td>${escapeHtml(f.role || 'Substructure')}</td>
                     <td><code>${escapeHtml(f.smiles || '')}</code></td>
-                    <td>${typeof f.mw === 'number' ? f.mw.toFixed(1) : escapeHtml(String(f.mw ?? '—'))}</td>
-                    <td><strong>${typeof dpkd === 'number' ? (dpkd >= 0 ? '+' : '') + dpkd.toFixed(2) : escapeHtml(String(dpkd ?? '—'))}</strong></td>
+                    <td>${typeof f.mw === 'number' ? f.mw.toFixed(1) : escapeHtml(String(f.mw ?? '--'))}</td>
+                    <td><strong>${typeof dpkd === 'number' ? (dpkd >= 0 ? '+' : '') + dpkd.toFixed(2) : escapeHtml(String(dpkd ?? '--'))}</strong></td>
                   </tr>`;
                 }).join('')}
               </tbody>
@@ -3266,7 +3248,7 @@
                 ${cliffs.map(cl => `
                   <tr>
                     <td><code>${escapeHtml(cl.mol_a || cl.from || 'A')} -> ${escapeHtml(cl.mol_b || cl.to || 'B')}</code></td>
-                    <td><code>${escapeHtml(cl.smirks || cl.transformation || '—')}</code></td>
+                    <td><code>${escapeHtml(cl.smirks || cl.transformation || '--')}</code></td>
                     <td><strong>${escapeHtml(JSON.stringify(cl.delta || cl.property_change || cl))}</strong></td>
                   </tr>
                 `).join('')}
@@ -3289,7 +3271,7 @@
 
       const kpis = [
         { label: 'Cmax', val: nca.cmax ?? nca.Cmax, unit: nca.conc_unit || 'ng/mL' },
-        { label: 'AUC(0-inf)', val: nca.auc_inf ?? nca.auc_0_inf ?? nca.auc_last, unit: 'ng·h/mL' },
+        { label: 'AUC(0-inf)', val: nca.auc_inf ?? nca.auc_0_inf ?? nca.auc_last, unit: 'ng.h/mL' },
         { label: 'Half-Life', val: nca.t_half ?? nca.half_life_h, unit: 'h' },
         { label: 'Clearance', val: nca.cl ?? nca.clearance, unit: 'mL/min/kg' },
         { label: 'Vdss', val: nca.vdss ?? nca.vss, unit: 'L/kg' },
@@ -3324,7 +3306,7 @@
             line: { color: theme.teal, width: 2.2 },
             marker: { size: 7, color: theme.indigo }
           }], {
-            title: { text: 'Concentration–Time Profile' },
+            title: { text: 'Concentration-Time Profile' },
             xaxis: { title: 'Time (h)' },
             yaxis: { title: 'Concentration', type: 'log' },
             margin: { t: 35, l: 60, r: 25, b: 40 }
@@ -3382,8 +3364,8 @@
                   <tr>
                     <td><strong>${escapeHtml(e.target)}</strong></td>
                     <td><code>${escapeHtml(e.role)}</code></td>
-                    <td><strong>${typeof e.ic50 === 'number' && !isNaN(e.ic50) ? e.ic50.toFixed(2) : '—'}</strong></td>
-                    <td>${typeof e.fold === 'number' && !isNaN(e.fold) ? e.fold.toFixed(1) + 'x' : '—'}</td>
+                    <td><strong>${typeof e.ic50 === 'number' && !isNaN(e.ic50) ? e.ic50.toFixed(2) : '--'}</strong></td>
+                    <td>${typeof e.fold === 'number' && !isNaN(e.fold) ? e.fold.toFixed(1) + 'x' : '--'}</td>
                     <td>${renderCriticalStatusBadge(e.margin) || escapeHtml(e.margin)}</td>
                   </tr>
                 `).join('')}
@@ -3421,7 +3403,7 @@
             line: { color: theme.indigo, width: 2.2 },
             marker: { size: 7, color: theme.teal }
           }], {
-            title: { text: 'Dose–Response Curve' },
+            title: { text: 'Dose-Response Curve' },
             xaxis: { title: 'Concentration (nM)', type: 'log' },
             yaxis: { title: '% Response' },
             margin: { t: 35, l: 60, r: 25, b: 40 }
@@ -3444,15 +3426,15 @@
         <div>
           <div class="metric-bento-grid">
             <div class="metric-bento-item">
-              <div class="metric-bento-val">${ti !== undefined ? escapeHtml(String(ti)) + 'x' : '—'}</div>
+              <div class="metric-bento-val">${ti !== undefined ? escapeHtml(String(ti)) + 'x' : '--'}</div>
               <div class="metric-bento-label">Therapeutic Index</div>
             </div>
             <div class="metric-bento-item">
-              <div class="metric-bento-val">${hergMargin !== undefined ? escapeHtml(String(hergMargin)) + 'x' : '—'}</div>
+              <div class="metric-bento-val">${hergMargin !== undefined ? escapeHtml(String(hergMargin)) + 'x' : '--'}</div>
               <div class="metric-bento-label">hERG Margin</div>
             </div>
             <div class="metric-bento-item">
-              <div class="metric-bento-val">${noael !== undefined ? escapeHtml(String(noael)) + ' mg/kg' : '—'}</div>
+              <div class="metric-bento-val">${noael !== undefined ? escapeHtml(String(noael)) + ' mg/kg' : '--'}</div>
               <div class="metric-bento-label">NOAEL</div>
             </div>
           </div>
@@ -3461,13 +3443,13 @@
               <thead><tr><th>Assay</th><th>Result</th><th>Activation</th><th>Notes</th></tr></thead>
               <tbody>
                 ${genotox.map(g => {
-                  const res = String(g.result || g.status || '—');
+                  const res = String(g.result || g.status || '--');
                   const isPos = res.toLowerCase() === 'positive' || res.toLowerCase() === 'fail';
                   return `
                     <tr>
                       <td><strong>${escapeHtml(g.assay || g.name || 'Assay')}</strong></td>
                       <td>${isPos ? `<span class="badge-fail">${escapeHtml(res)}</span>` : escapeHtml(res)}</td>
-                      <td>${escapeHtml(g.s9 || g.activation || '±S9')}</td>
+                      <td>${escapeHtml(g.s9 || g.activation || '+/-S9')}</td>
                       <td>${escapeHtml(g.notes || g.detail || '')}</td>
                     </tr>
                   `;
@@ -3489,12 +3471,12 @@
       const propKeys = [
         { k: 'mw', alt: 'molecular_weight', label: 'MW (Da)', rule: '<= 500' },
         { k: 'clogp', alt: 'logp', label: 'cLogP', rule: '<= 5.0' },
-        { k: 'tpsa', alt: 'TPSA', label: 'TPSA (Å²)', rule: '<= 140' },
+        { k: 'tpsa', alt: 'TPSA', label: 'TPSA (A^2)', rule: '<= 140' },
         { k: 'hbd', alt: 'num_hbd', label: 'HBD', rule: '<= 5' },
         { k: 'hba', alt: 'num_hba', label: 'HBA', rule: '<= 10' },
         { k: 'rotatable_bonds', alt: 'rot_bonds', label: 'Rot. Bonds', rule: '<= 10' },
-        { k: 'qed', alt: 'QED', label: 'QED', rule: '0–1' },
-        { k: 'sa_score', alt: 'synthetic_accessibility', label: 'SA Score', rule: '1–10' }
+        { k: 'qed', alt: 'QED', label: 'QED', rule: '0-1' },
+        { k: 'sa_score', alt: 'synthetic_accessibility', label: 'SA Score', rule: '1-10' }
       ].map(pk => ({ ...pk, val: desc[pk.k] !== undefined ? desc[pk.k] : desc[pk.alt] }))
        .filter(pk => pk.val !== undefined);
 
@@ -3531,7 +3513,7 @@
                 ${hits.map(h => `
                   <tr>
                     <td><strong>${escapeHtml(h.id || h.chembl_id || h.cid || 'Analog')}</strong></td>
-                    <td><strong>${typeof h.tanimoto === 'number' ? h.tanimoto.toFixed(3) : escapeHtml(String(h.similarity ?? '—'))}</strong></td>
+                    <td><strong>${typeof h.tanimoto === 'number' ? h.tanimoto.toFixed(3) : escapeHtml(String(h.similarity ?? '--'))}</strong></td>
                     <td><code>${escapeHtml(h.smiles || '')}</code></td>
                   </tr>
                 `).join('')}
@@ -3564,7 +3546,7 @@
                 ${phenotypes.map(p => `
                   <tr>
                     <td><code>${escapeHtml(p.id || p.term_id || 'MP/HP')}</code></td>
-                    <td><strong>${escapeHtml(p.name || p.term || p.phenotype || '—')}</strong></td>
+                    <td><strong>${escapeHtml(p.name || p.term || p.phenotype || '--')}</strong></td>
                     <td>${escapeHtml(p.source || p.evidence || 'MGI / HPO')}</td>
                   </tr>
                 `).join('')}
@@ -3578,9 +3560,9 @@
                 ${degs.map(d => `
                   <tr>
                     <td><strong>${escapeHtml(d.accession || d.dataset_id || d.gene || d.id || 'Study')}</strong></td>
-                    <td>${escapeHtml(d.title || d.comparison || d.tissue || '—')}</td>
-                    <td>${escapeHtml(String(d.log2fc ?? d.n_samples ?? '—'))}</td>
-                    <td>${escapeHtml(String(d.padj ?? d.pvalue ?? '—'))}</td>
+                    <td>${escapeHtml(d.title || d.comparison || d.tissue || '--')}</td>
+                    <td>${escapeHtml(String(d.log2fc ?? d.n_samples ?? '--'))}</td>
+                    <td>${escapeHtml(String(d.padj ?? d.pvalue ?? '--'))}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -3638,9 +3620,9 @@
                   <tr>
                     <td><code>${escapeHtml(t.nct_id || t.id || 'NCT')}</code></td>
                     <td><strong>${escapeHtml(t.title || t.intervention || 'Trial')}</strong></td>
-                    <td>${escapeHtml(t.phase || '—')}</td>
-                    <td>${escapeHtml(t.status || '—')}</td>
-                    <td>${escapeHtml(t.sponsor || '—')}</td>
+                    <td>${escapeHtml(t.phase || '--')}</td>
+                    <td>${escapeHtml(t.status || '--')}</td>
+                    <td>${escapeHtml(t.sponsor || '--')}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -3653,9 +3635,9 @@
                 ${patents.map(p => `
                   <tr>
                     <td><code>${escapeHtml(p.patent_number || p.id || 'Patent')}</code></td>
-                    <td><strong>${escapeHtml(p.title || '—')}</strong></td>
-                    <td>${escapeHtml(p.assignee || '—')}</td>
-                    <td>${escapeHtml(p.date || p.publication_date || '—')}</td>
+                    <td><strong>${escapeHtml(p.title || '--')}</strong></td>
+                    <td>${escapeHtml(p.assignee || '--')}</td>
+                    <td>${escapeHtml(p.date || p.publication_date || '--')}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -3667,10 +3649,10 @@
               <tbody>
                 ${papers.map(p => `
                   <tr>
-                    <td><code>${escapeHtml(p.pmid || p.doi || p.id || '—')}</code></td>
-                    <td><strong>${escapeHtml(p.title || '—')}</strong></td>
-                    <td>${escapeHtml(p.year || p.journal || '—')}</td>
-                    <td>${p.resolved === false ? '<span class="badge-fail">UNRESOLVED</span>' : '—'}</td>
+                    <td><code>${escapeHtml(p.pmid || p.doi || p.id || '--')}</code></td>
+                    <td><strong>${escapeHtml(p.title || '--')}</strong></td>
+                    <td>${escapeHtml(p.year || p.journal || '--')}</td>
+                    <td>${p.resolved === false ? '<span class="badge-fail">UNRESOLVED</span>' : '--'}</td>
                   </tr>
                 `).join('')}
               </tbody>
@@ -3698,7 +3680,7 @@
       const theme = getThemeTokens();
       const atoms = [];
       const bonds = [];
-      // DESIGN.md Section 5: 5-color palette mapped to CPK elements & roles
+      // 5-color palette mapped to CPK elements & roles
       const CPK_COLORS = {
         C: theme.teal,
         N: theme.indigo,
@@ -3982,7 +3964,7 @@
 
         ctx.font = '400 10.5px IBM Plex Mono, monospace';
         ctx.fillStyle = theme.textSecondary;
-        ctx.fillText(`Structural Data Diagram (${atoms.length} atoms, ${bonds.length} bonds) — Drag to rotate · Scroll to zoom`, 12, h - 12);
+        ctx.fillText(`Structural Data Diagram (${atoms.length} atoms, ${bonds.length} bonds) -- Drag to rotate . Scroll to zoom`, 12, h - 12);
 
         if (state.hoverAtom) {
           const ha = state.hoverAtom;
@@ -4063,7 +4045,7 @@
             <button class="mini-btn active" onclick="set3DStyle('cartoon')">Cartoon</button>
             <button class="mini-btn" onclick="set3DStyle('stick')">Stick</button>
             <button class="mini-btn" onclick="set3DStyle('sphere')">Sphere</button>
-            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Canvas 3D' : 'Auto'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto'}</button>
           </div>
         `;
       }
@@ -4083,7 +4065,7 @@
       try {
         const viewer = $3Dmol.createViewer(mdiv, { backgroundColor: theme.surface });
         viewer.addModel(String(art.data || ''), fmt);
-        // DESIGN.md Section 5 palette mapped to pLDDT confidence
+        // palette mapped to pLDDT confidence
         const plddtColorFunc = function(atom) {
           const b = atom.b || 0;
           return b >= 90 ? 0x059669 : (b >= 70 ? 0x0D9488 : (b >= 50 ? 0xD97706 : 0xE11D48));
@@ -4141,7 +4123,7 @@
       if (ctrl) {
         ctrl.innerHTML = `
           <div style="display:flex;gap:6px;align-items:center;">
-            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Canvas 3D' : 'Auto'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto'}</button>
           </div>
         `;
       }
@@ -4214,7 +4196,7 @@
       if (ctrl) {
         ctrl.innerHTML = `
           <div style="display:flex;gap:6px;align-items:center;">
-            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Canvas 3D' : 'Auto'}</button>
+            <button class="mini-btn" onclick="toggle3DRenderEngine()">Renderer: ${window.__FORCE_SOFTWARE_3D__ ? 'Software 3D' : 'Auto'}</button>
           </div>
         `;
       }
@@ -4542,7 +4524,7 @@
           <div class="check-row" style="cursor:pointer;" onclick="setWorkspaceMode('split'); openArtifactByPath('${escapeHtml(a.rel_path)}');">
             <div>
               <strong>${escapeHtml(a.name)}</strong>
-              <div style="font-size:10px;color:var(--text-secondary);">${escapeHtml(a.artifact_class)} · ${escapeHtml(a.domain_studio || a.viewer_type)}</div>
+              <div style="font-size:10px;color:var(--text-secondary);">${escapeHtml(a.artifact_class)} . ${escapeHtml(a.domain_studio || a.viewer_type)}</div>
             </div>
             ${renderCriticalStatusBadge(a.verdict)}
           </div>
@@ -4684,12 +4666,8 @@
       const cur = html.getAttribute('data-theme');
       const next = cur === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', next);
-      const sun = document.getElementById('theme-icon-sun');
-      const moon = document.getElementById('theme-icon-moon');
-      if (sun && moon) {
-        sun.style.display = next === 'dark' ? 'block' : 'none';
-        moon.style.display = next === 'light' ? 'block' : 'none';
-      }
+      const lbl = document.getElementById('theme-toggle-label');
+      if (lbl) lbl.textContent = next === 'dark' ? 'Light' : 'Dark';
       renderAgentGraph();
       if (window.__ACTIVE_STUDIO_ART__) {
         mountEmbeddedViewer(window.__ACTIVE_STUDIO_ART__);

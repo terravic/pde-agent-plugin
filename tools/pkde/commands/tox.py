@@ -1,4 +1,4 @@
-"""pkde tox — preclinical toxicology data processing.
+"""pkde tox -- preclinical toxicology data processing.
 
 Phase A subcommands:
 
@@ -43,7 +43,7 @@ from ..core.schema_registry import suggest_match
 ARTIFACT_CLASS = "tox"
 
 # ---------------------------------------------------------------------------
-# Constants — the full set for all planned schemas, not just repeat-dose.
+# Constants -- the full set for all planned schemas, not just repeat-dose.
 # ---------------------------------------------------------------------------
 
 VALID_ROUTES = {"iv", "oral", "sc", "im", "ip", "dermal", "inhalation"}
@@ -78,7 +78,7 @@ VALID_AUC_UNITS = {
     "ug*h/mL",
     "nM*h",
     "uM*h",
-    # pk.py writes "conc_units * time_units" — accept that convention too
+    # pk.py writes "conc_units * time_units" -- accept that convention too
     "ng/mL * h",
     "ug/mL * h",
     "nM * h",
@@ -112,10 +112,10 @@ def _normalize_auc_units(units_str: str) -> str:
     Canonical form: compact tox-style (``"ng*h/mL"``, ``"nM*h"``).
     """
     s = units_str.strip()
-    # Strip whitespace around '*' — "ng/mL * h" → "ng/mL*h"
+    # Strip whitespace around '*' -- "ng/mL * h" -> "ng/mL*h"
     s = re.sub(r"\s*\*\s*", "*", s)
 
-    # Handle "conc/vol*time" → "conc*time/vol" (e.g. "ng/mL*h" → "ng*h/mL")
+    # Handle "conc/vol*time" -> "conc*time/vol" (e.g. "ng/mL*h" -> "ng*h/mL")
     m = re.match(r"^([A-Za-z]+)/([A-Za-z]+)\*([A-Za-z]+)$", s)
     if m:
         conc, vol, time = m.group(1), m.group(2), m.group(3)
@@ -150,7 +150,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             remedy="add a non-empty 'study_id' string to the input JSON",
         )
 
-    # species — any non-empty string accepted; sidecar notes non-standard
+    # species -- any non-empty string accepted; sidecar notes non-standard
     species = doc.get("species")
     if not species or not isinstance(species, str):
         raise SchemaError(
@@ -158,7 +158,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             remedy="add a non-empty 'species' string to the input JSON",
         )
 
-    # route — must be in VALID_ROUTES
+    # route -- must be in VALID_ROUTES
     route = doc.get("route")
     if not route or not isinstance(route, str):
         raise SchemaError(
@@ -174,7 +174,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             remedy=f"use one of: {', '.join(sorted(VALID_ROUTES))}",
         )
 
-    # duration_days — positive integer
+    # duration_days -- positive integer
     duration_days = doc.get("duration_days")
     if duration_days is None:
         raise SchemaError(
@@ -192,7 +192,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             remedy="provide a positive integer for study duration in days",
         )
 
-    # noael_mg_kg — positive number
+    # noael_mg_kg -- positive number
     noael = doc.get("noael_mg_kg")
     if noael is None:
         raise SchemaError(
@@ -210,7 +210,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             remedy="provide a positive number for the no-adverse-effect level",
         )
 
-    # noael_basis — non-empty string
+    # noael_basis -- non-empty string
     noael_basis = doc.get("noael_basis")
     if not noael_basis or not isinstance(noael_basis, str):
         raise SchemaError(
@@ -219,7 +219,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             "for the NOAEL determination",
         )
 
-    # --- dose_groups — non-empty array of dose group objects ---
+    # --- dose_groups -- non-empty array of dose group objects ---
 
     dose_groups = doc.get("dose_groups")
     if not isinstance(dose_groups, list) or not dose_groups:
@@ -233,7 +233,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
         if not isinstance(dg, dict):
             raise SchemaError(f"dose_groups[{i}] must be an object")
 
-        # dose_mg_kg — non-negative (0 for vehicle control)
+        # dose_mg_kg -- non-negative (0 for vehicle control)
         dose = dg.get("dose_mg_kg")
         if dose is None:
             raise SchemaError(
@@ -252,7 +252,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
             )
         dose_values.append(float(dose))
 
-        # n_animals — positive integer
+        # n_animals -- positive integer
         n = dg.get("n_animals")
         if n is None:
             raise SchemaError(
@@ -269,7 +269,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
                 f"dose_groups[{i}].n_animals must be positive, got {n}",
             )
 
-        # findings — array of finding objects (may be empty)
+        # findings -- array of finding objects (may be empty)
         findings = dg.get("findings")
         if not isinstance(findings, list):
             raise SchemaError(
@@ -279,7 +279,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
         for j, finding in enumerate(findings):
             _validate_finding(i, j, finding)
 
-        # mortality — optional, non-negative integer
+        # mortality -- optional, non-negative integer
         mortality = dg.get("mortality")
         if mortality is not None:
             if not isinstance(mortality, int) or isinstance(mortality, bool):
@@ -309,7 +309,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
 
     # --- Optional fields ---
 
-    # loael_mg_kg — positive, must be > noael_mg_kg
+    # loael_mg_kg -- positive, must be > noael_mg_kg
     loael = doc.get("loael_mg_kg")
     if loael is not None:
         if not isinstance(loael, (int, float)) or isinstance(loael, bool):
@@ -328,7 +328,7 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
                 remedy="check the NOAEL and LOAEL values",
             )
 
-    # glp_status — must be in VALID_GLP_STATUS when present
+    # glp_status -- must be in VALID_GLP_STATUS when present
     glp = doc.get("glp_status")
     if glp is not None:
         if not isinstance(glp, str):
@@ -344,14 +344,14 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
                 remedy=f"use one of: {', '.join(sorted(VALID_GLP_STATUS))}",
             )
 
-    # strain — string when present
+    # strain -- string when present
     strain = doc.get("strain")
     if strain is not None and not isinstance(strain, str):
         raise SchemaError(
             f"'strain' must be a string when present, got {type(strain).__name__}",
         )
 
-    # body_weight_kg — positive number when present
+    # body_weight_kg -- positive number when present
     bw = doc.get("body_weight_kg")
     if bw is not None:
         if not isinstance(bw, (int, float)) or isinstance(bw, bool):
@@ -363,14 +363,14 @@ def _validate_repeat_dose(doc: dict[str, Any]) -> None:
                 f"'body_weight_kg' must be positive, got {bw}",
             )
 
-    # notes — string when present
+    # notes -- string when present
     notes = doc.get("notes")
     if notes is not None and not isinstance(notes, str):
         raise SchemaError(
             f"'notes' must be a string when present, got {type(notes).__name__}",
         )
 
-    # noael_exposure — optional object with at least one of auc/cmax
+    # noael_exposure -- optional object with at least one of auc/cmax
     _validate_noael_exposure(doc.get("noael_exposure"))
 
 
@@ -379,7 +379,7 @@ def _validate_finding(dg_idx: int, f_idx: int, finding: Any) -> None:
     if not isinstance(finding, dict):
         raise SchemaError(f"dose_groups[{dg_idx}].findings[{f_idx}] must be an object")
 
-    # finding (description) — required, non-empty string
+    # finding (description) -- required, non-empty string
     fdesc = finding.get("finding")
     if not fdesc or not isinstance(fdesc, str):
         raise SchemaError(
@@ -388,7 +388,7 @@ def _validate_finding(dg_idx: int, f_idx: int, finding: Any) -> None:
             remedy="add a 'finding' description to each finding object",
         )
 
-    # organ_system — optional, must be in VALID_ORGAN_SYSTEMS
+    # organ_system -- optional, must be in VALID_ORGAN_SYSTEMS
     organ = finding.get("organ_system")
     if organ is not None:
         if not isinstance(organ, str):
@@ -404,7 +404,7 @@ def _validate_finding(dg_idx: int, f_idx: int, finding: Any) -> None:
                 remedy=f"use one of: {', '.join(sorted(VALID_ORGAN_SYSTEMS))}",
             )
 
-    # severity — optional, must be in VALID_SEVERITIES
+    # severity -- optional, must be in VALID_SEVERITIES
     severity = finding.get("severity")
     if severity is not None:
         if not isinstance(severity, str):
@@ -420,14 +420,14 @@ def _validate_finding(dg_idx: int, f_idx: int, finding: Any) -> None:
                 remedy=f"use one of: {', '.join(sorted(VALID_SEVERITIES))}",
             )
 
-    # incidence — optional string
+    # incidence -- optional string
     incidence = finding.get("incidence")
     if incidence is not None and not isinstance(incidence, str):
         raise SchemaError(
             f"dose_groups[{dg_idx}].findings[{f_idx}].incidence must be a string",
         )
 
-    # dose_related — optional boolean
+    # dose_related -- optional boolean
     dose_related = finding.get("dose_related")
     if dose_related is not None and not isinstance(dose_related, bool):
         raise SchemaError(
@@ -506,7 +506,7 @@ def _validate_noael_exposure(exposure: Any) -> None:
 
 
 # ---------------------------------------------------------------------------
-# Safety-pharm sub-object field specs (name → expected type)
+# Safety-pharm sub-object field specs (name -> expected type)
 # ---------------------------------------------------------------------------
 
 _CARDIOVASCULAR_FIELDS: dict[str, type] = {
@@ -586,7 +586,7 @@ def _validate_safety_pharm(doc: dict[str, Any]) -> None:
             '\'"schema": "pkde.tox-safety-pharm.v1"\'',
         )
 
-    # compound_id — required, non-empty string
+    # compound_id -- required, non-empty string
     compound_id = doc.get("compound_id")
     if not compound_id or not isinstance(compound_id, str):
         raise SchemaError(
@@ -594,7 +594,7 @@ def _validate_safety_pharm(doc: dict[str, Any]) -> None:
             remedy="add a non-empty 'compound_id' string to the input JSON",
         )
 
-    # herg_ic50 — required, positive number
+    # herg_ic50 -- required, positive number
     herg_ic50 = doc.get("herg_ic50")
     if herg_ic50 is None:
         raise SchemaError(
@@ -612,7 +612,7 @@ def _validate_safety_pharm(doc: dict[str, Any]) -> None:
             remedy="provide a positive number for the hERG IC50",
         )
 
-    # herg_ic50_units — required, must be in VALID_CONC_UNITS
+    # herg_ic50_units -- required, must be in VALID_CONC_UNITS
     herg_units = doc.get("herg_ic50_units")
     if not herg_units or not isinstance(herg_units, str):
         raise SchemaError(
@@ -633,7 +633,7 @@ def _validate_safety_pharm(doc: dict[str, Any]) -> None:
     _validate_sub_object(doc, "respiratory", _RESPIRATORY_FIELDS)
     _validate_sub_object(doc, "cns", _CNS_FIELDS)
 
-    # notes — optional string
+    # notes -- optional string
     notes = doc.get("notes")
     if notes is not None and not isinstance(notes, str):
         raise SchemaError(
@@ -660,7 +660,7 @@ def _validate_assay(idx: int, assay: Any) -> None:
     if not isinstance(assay, dict):
         raise SchemaError(f"assays[{idx}] must be an object")
 
-    # type — required, must be in VALID_GENOTOX_ASSAY_TYPES
+    # type -- required, must be in VALID_GENOTOX_ASSAY_TYPES
     atype = assay.get("type")
     if not atype or not isinstance(atype, str):
         raise SchemaError(
@@ -676,7 +676,7 @@ def _validate_assay(idx: int, assay: Any) -> None:
             remedy=f"use one of: {', '.join(sorted(VALID_GENOTOX_ASSAY_TYPES))}",
         )
 
-    # result — required, must be in VALID_GENOTOX_RESULTS
+    # result -- required, must be in VALID_GENOTOX_RESULTS
     result = assay.get("result")
     if not result or not isinstance(result, str):
         raise SchemaError(
@@ -692,7 +692,7 @@ def _validate_assay(idx: int, assay: Any) -> None:
             remedy=f"use one of: {', '.join(sorted(VALID_GENOTOX_RESULTS))}",
         )
 
-    # metabolic_activation — required, one of +S9, -S9, both
+    # metabolic_activation -- required, one of +S9, -S9, both
     ma = assay.get("metabolic_activation")
     if not ma or not isinstance(ma, str):
         raise SchemaError(
@@ -733,7 +733,7 @@ def _validate_genotox(doc: dict[str, Any]) -> None:
             remedy='ensure the input JSON contains \'"schema": "pkde.tox-genotox.v1"\'',
         )
 
-    # compound_id — required, non-empty string
+    # compound_id -- required, non-empty string
     compound_id = doc.get("compound_id")
     if not compound_id or not isinstance(compound_id, str):
         raise SchemaError(
@@ -741,7 +741,7 @@ def _validate_genotox(doc: dict[str, Any]) -> None:
             remedy="add a non-empty 'compound_id' string to the input JSON",
         )
 
-    # assays — required, non-empty array of assay-result objects
+    # assays -- required, non-empty array of assay-result objects
     assays = doc.get("assays")
     if not isinstance(assays, list) or not assays:
         raise SchemaError(
@@ -752,7 +752,7 @@ def _validate_genotox(doc: dict[str, Any]) -> None:
     for i, assay in enumerate(assays):
         _validate_assay(i, assay)
 
-    # battery_complete — required boolean
+    # battery_complete -- required boolean
     bc = doc.get("battery_complete")
     if bc is None:
         raise SchemaError(
@@ -792,7 +792,7 @@ def _validate_genotox(doc: dict[str, Any]) -> None:
                 "assay types to complete the ICH S2(R1) standard battery",
             )
 
-    # notes — optional string
+    # notes -- optional string
     notes = doc.get("notes")
     if notes is not None and not isinstance(notes, str):
         raise SchemaError(
@@ -916,7 +916,7 @@ def _ingest_genotox(
 
 
 # ---------------------------------------------------------------------------
-# Genotox battery scoring — ICH S2(R1) weight-of-evidence
+# Genotox battery scoring -- ICH S2(R1) weight-of-evidence
 # ---------------------------------------------------------------------------
 
 
@@ -924,11 +924,11 @@ def _classify_genotox_battery(assays: list[dict]) -> tuple[str, bool]:
     """Classify battery result. Returns (verdict, weight_of_evidence_needed).
 
     Verdicts:
-      "negative"          — all negative, no concern
-      "positive"          — all positive, genotoxic concern
-      "equivocal"         — mixed, in vitro positive only, in vivo negative
-      "concern"           — in vivo positive with in vitro negatives
-      "positive_concern"  — preponderance positive (2+ of 3)
+      "negative"          -- all negative, no concern
+      "positive"          -- all positive, genotoxic concern
+      "equivocal"         -- mixed, in vitro positive only, in vivo negative
+      "concern"           -- in vivo positive with in vitro negatives
+      "positive_concern"  -- preponderance positive (2+ of 3)
     """
     results = [a["result"] for a in assays]
 
@@ -944,7 +944,7 @@ def _classify_genotox_battery(assays: list[dict]) -> tuple[str, bool]:
     if n_negative == 0 and n_equivocal == 0:
         return "positive", False
 
-    # Mixed results — weight of evidence needed
+    # Mixed results -- weight of evidence needed
     in_vivo_positive = any(
         a["result"] == "positive" and a["type"] == "micronucleus_in_vivo"
         for a in assays
@@ -963,7 +963,7 @@ def _classify_genotox_battery(assays: list[dict]) -> tuple[str, bool]:
         return "equivocal", True
 
 
-# Schema dispatch table: schema tag → (validator, ingest helper)
+# Schema dispatch table: schema tag -> (validator, ingest helper)
 _INGEST_DISPATCH = {
     "pkde.tox-repeat-dose.v1": (_validate_repeat_dose, _ingest_repeat_dose),
     "pkde.tox-safety-pharm.v1": (_validate_safety_pharm, _ingest_safety_pharm),
@@ -1052,7 +1052,7 @@ def ingest_cmd(
 
 
 # ---------------------------------------------------------------------------
-# tox genotox — ICH S2(R1) weight-of-evidence assessment
+# tox genotox -- ICH S2(R1) weight-of-evidence assessment
 # ---------------------------------------------------------------------------
 
 
@@ -1223,12 +1223,12 @@ def genotox_cmd(
     # --- emit paths ---
     emit.path(artifact_path, role="artifact")
     emit.path(meta_path, role="sidecar")
-    emit.line(f"genotox assessment: {safe_id} — verdict: {verdict}")
+    emit.line(f"genotox assessment: {safe_id} -- verdict: {verdict}")
     emit.flush()
 
 
 # ---------------------------------------------------------------------------
-# tox margins — dose context and same-study detection (#137)
+# tox margins -- dose context and same-study detection (#137)
 # ---------------------------------------------------------------------------
 
 VALID_DOSE_CONTEXTS = {
@@ -1479,7 +1479,7 @@ def margins_cmd(
     pk_auc = pk_auc_0_inf if pk_auc_0_inf is not None else pk_auc_0_t
     pk_auc_label = "auc_0_inf" if pk_auc_0_inf is not None else "auc_0_t"
 
-    # --- 2b. Resolve dose context (Item 4 → Item 1 cascade) ---
+    # --- 2b. Resolve dose context (Item 4 -> Item 1 cascade) ---
     # Priority: PK artifact field > CLI option > None
     resolved_dose_context = pk_doc.get("dose_context") or dose_context
 
@@ -1678,7 +1678,7 @@ def margins_cmd(
         # Guard: pk_cmax must exist and be positive before hERG margin
         if pk_cmax is None:
             raise SchemaError(
-                "PK NCA artifact missing cmax parameter — "
+                "PK NCA artifact missing cmax parameter -- "
                 "cannot compute hERG safety margin",
                 remedy="ensure the PK NCA artifact was produced by `pkde pk nca`",
             )
@@ -1698,7 +1698,7 @@ def margins_cmd(
                 ),
                 remedy=(
                     "ensure both use the same concentration units "
-                    "— this tool does not perform unit conversion"
+                    "-- this tool does not perform unit conversion"
                 ),
             )
 
@@ -1774,7 +1774,7 @@ def margins_cmd(
     def _resolve_pk_sidecar(pk: Path) -> Path:
         """Resolve PK sidecar path using Path.with_suffix for robustness."""
         # Standard sidecar: replace the final .json with .meta.json
-        # e.g. study.pk-nca.json → study.pk-nca.meta.json
+        # e.g. study.pk-nca.json -> study.pk-nca.meta.json
         return pk.with_suffix(".meta.json")
 
     def _forward_pk_relays(pk: Path, label: str) -> None:
@@ -1792,7 +1792,7 @@ def margins_cmd(
                 import logging
 
                 logging.getLogger("pkde.tox").warning(
-                    "%s PK sidecar at %s exists but could not be read — "
+                    "%s PK sidecar at %s exists but could not be read -- "
                     "upstream relays may be missing",
                     label,
                     meta,
@@ -1801,7 +1801,7 @@ def margins_cmd(
             import logging
 
             logging.getLogger("pkde.tox").warning(
-                "%s PK sidecar not found at %s — upstream relays from "
+                "%s PK sidecar not found at %s -- upstream relays from "
                 "%s PK will be missing from the margins sidecar",
                 label,
                 meta,
@@ -1815,7 +1815,7 @@ def margins_cmd(
     sidecar.add_output(artifact_path)
     meta_path = sidecar.write(target_dir / f"{study_id}.tox-margins.meta.json")
 
-    # --- Emit (paths only — phase 1 convention) ---
+    # --- Emit (paths only -- phase 1 convention) ---
     emit.path(artifact_path, role="margins")
     emit.path(meta_path, role="sidecar")
     emit.line(f"margins: {study_id} ({species})")
@@ -1848,10 +1848,10 @@ def margins_cmd(
 
 
 # ---------------------------------------------------------------------------
-# tox analyze — Phase 2 threshold application
+# tox analyze -- Phase 2 threshold application
 # ---------------------------------------------------------------------------
 
-# Map schema tag → (analysis_type, file_suffix, meta_suffix)
+# Map schema tag -> (analysis_type, file_suffix, meta_suffix)
 _SCHEMA_MAP: dict[str, tuple[str, str, str]] = {
     "pkde.tox-margins.v1": (
         "margins",
@@ -1881,20 +1881,20 @@ def _analyze_margins(
 
     Handles three margin shapes:
 
-    1. **Indeterminate** — same-study detection fired and no clinical PK
+    1. **Indeterminate** -- same-study detection fired and no clinical PK
        was provided.  The verdict is ``indeterminate`` and no threshold
        is applied.
-    2. **Dual-margin** — ``clinical_ti`` present.  ICH M3(R2) thresholds
+    2. **Dual-margin** -- ``clinical_ti`` present.  ICH M3(R2) thresholds
        apply only to ``clinical_ti``; ``animal_margin`` is recorded but
        not graded.
-    3. **Single-margin** (legacy) — ``margins`` contains the TI values
+    3. **Single-margin** (legacy) -- ``margins`` contains the TI values
        and thresholds apply directly.
     """
     # --- Item 3: indeterminate verdict ---
     if doc.get("verdict") == "indeterminate":
         reason = doc.get(
             "verdict_reason",
-            "Therapeutic index could not be computed — inputs insufficient",
+            "Therapeutic index could not be computed -- inputs insufficient",
         )
         metrics["same_study_detected"] = doc.get("same_study_detected")
         assessment["ti"] = {
@@ -1909,7 +1909,7 @@ def _analyze_margins(
     ti_minimum = thresholds.get("ti_minimum")
 
     if margins is None:
-        # NOAEL exposure absent — cannot compute TI
+        # NOAEL exposure absent -- cannot compute TI
         note = doc.get(
             "margin_note",
             "NOAEL exposure data not available; therapeutic index cannot be computed",
@@ -1926,7 +1926,7 @@ def _analyze_margins(
     clinical_ti = doc.get("clinical_ti")
 
     if animal_margin is not None:
-        # Record animal margin as informational — no threshold applied
+        # Record animal margin as informational -- no threshold applied
         for key in ("ti_cmax", "ti_auc"):
             val = animal_margin.get(key)
             if val is not None:
@@ -2036,7 +2036,7 @@ def _analyze_genotox(
     verdict = doc.get("verdict", "unknown")
     metrics["genotox_verdict"] = verdict
 
-    # Map verdict to risk level — categorical, no threshold application
+    # Map verdict to risk level -- categorical, no threshold application
     verdict_map: dict[str, str] = {
         "negative": "acceptable",
         "equivocal": "flagged_equivocal",
@@ -2085,7 +2085,7 @@ def _analyze_safety_pharm(
             if present_keys:
                 metrics[f"{field}_fields_present"] = present_keys
 
-    # Verdict: recorded — the safety pharmacology data is present but
+    # Verdict: recorded -- the safety pharmacology data is present but
     # quantitative margin assessment requires running `tox margins`
     assessment["safety_pharm"] = {
         "status": "recorded",

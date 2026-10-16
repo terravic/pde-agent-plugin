@@ -11,7 +11,7 @@
 # limitations under the License.
 
 schema_version: "1"
-description: "Project curator — maintains a navigable website from the drug discovery project artifact hierarchy"
+description: "Project curator -- maintains a navigable website from the drug discovery project artifact hierarchy"
 agent_instructions: agents.md
 system_prompt: system-prompt.md
 

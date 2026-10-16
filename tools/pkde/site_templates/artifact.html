@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}Artifacts — {{ artifact_class }}{% endblock %}
+{% block title %}Artifacts -- {{ artifact_class }}{% endblock %}
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-  <a href="index.html">Home</a> &rsaquo;
-  <span>Raw Data</span> &rsaquo;
+  <a href="index.html">Home</a> /
+  <span>Raw Data</span> /
   <span>{{ artifact_class }}</span>
 </div>
 {% endblock %}
@@ -52,5 +52,5 @@
 <p>No work orders reference this artifact class.</p>
 {% endif %}
 
-<p><a href="index.html">&larr; Back to index</a></p>
+<p><a href="index.html">Back to index</a></p>
 {% endblock %}

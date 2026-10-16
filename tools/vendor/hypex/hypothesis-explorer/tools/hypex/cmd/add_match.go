@@ -92,6 +92,6 @@ func runAddMatch(_ *cobra.Command, args []string) error {
 		return fmt.Errorf("writing match file: %w", err)
 	}
 
-	fmt.Printf("Added match: %s → %s\n", id, outPath)
+	fmt.Printf("Added match: %s -> %s\n", id, outPath)
 	return nil
 }

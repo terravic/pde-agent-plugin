@@ -9,7 +9,7 @@ using the `elo` CLI.
 
 Never use `agent message --broadcast` (or the `-a`/`-b` flags) for status
 reports, completion messages, or any other communication during your task.
-Report only to the agent that started you — typically your supervisor —
+Report only to the agent that started you -- typically your supervisor --
 via `agent message <name> "..."`. If you don't know the exact name of the
 agent that tasked you, it should be evident from your task message (e.g.,
 "Run ID: ..." context implies a supervisor is orchestrating this run); ask
@@ -42,13 +42,13 @@ Verify that `elo` and `hypex` are available.
 
 You receive a task message from the supervisor containing:
 
-1. **Pairing list** (optional) — a JSON array of pairings, each with `a` and
+1. **Pairing list** (optional) -- a JSON array of pairings, each with `a` and
    `b` fields (hypothesis IDs). If not provided, you compute pairings yourself
    using `elo pair`.
-2. **Run directory** — path to the run directory (e.g.,
+2. **Run directory** -- path to the run directory (e.g.,
    `executions/cognitive-decline-01`).
-3. **Run ID** — the run identifier (e.g., `cognitive-decline-01`).
-4. **Epoch** — the current epoch number.
+3. **Run ID** -- the run identifier (e.g., `cognitive-decline-01`).
+4. **Epoch** -- the current epoch number.
 
 Set `<run-base>` to the parent directory of `<run-dir>`. Pass both
 `--run <run-id>` and `--run-dir <run-base>` to every `hypex` command; do not
@@ -92,7 +92,7 @@ ls <run-dir>/reviews/H-XXXX.R-*.json 2>/dev/null | sort | tail -1
 ls <run-dir>/reviews/H-YYYY.R-*.json 2>/dev/null | sort | tail -1
 ```
 
-Reviews are optional — if none exist, proceed without them.
+Reviews are optional -- if none exist, proceed without them.
 
 #### Step 2c: Check Current Ratings
 
@@ -108,7 +108,7 @@ unrated.
 #### Step 2d: Randomize Presentation Order
 
 **Randomly decide which hypothesis is presented first.** This prevents position
-bias — the tendency to favor whichever hypothesis is read and evaluated first.
+bias -- the tendency to favor whichever hypothesis is read and evaluated first.
 
 Use any random method. For example:
 
@@ -134,7 +134,7 @@ Apply the tier selection logic:
   - Both hypotheses are in the top quartile by rating, OR
   - The rating difference is <= 50 points.
 
-When in doubt, prefer Tier 2 — a more thorough evaluation is never wasted.
+When in doubt, prefer Tier 2 -- a more thorough evaluation is never wasted.
 
 #### Step 2f: Run the Match Protocol
 
@@ -201,7 +201,7 @@ For multi-turn debate matches, save the full debate transcript to
 
 **Only run `elo recompute` if the supervisor's task message does NOT say to
 skip it.** In most cases, the supervisor runs `elo recompute` itself after
-all ranking workers complete — to ensure ratings are computed from the
+all ranking workers complete -- to ensure ratings are computed from the
 complete match ledger.
 
 If instructed to recompute:
@@ -217,11 +217,11 @@ ratings to `<run-dir>/ratings/epoch-N.json`. The output is deterministic.
 
 Report to the supervisor with:
 
-1. **Match IDs** — the list of match IDs you created (e.g., M-0001, M-0002).
-2. **Match summaries** — for each match: contestants, tier, winner, margin.
-3. **Updated standings** (if you ran `elo recompute`) — run
+1. **Match IDs** -- the list of match IDs you created (e.g., M-0001, M-0002).
+2. **Match summaries** -- for each match: contestants, tier, winner, margin.
+3. **Updated standings** (if you ran `elo recompute`) -- run
    `elo standings --run-dir <run-dir>` and include the output.
-4. **Any issues** — if any pairings could not be completed (e.g., missing
+4. **Any issues** -- if any pairings could not be completed (e.g., missing
    hypothesis files), report them.
 
 Use `agent message` to report back to the supervisor.
@@ -248,7 +248,7 @@ Multiple tournament agents can run in parallel against different pairings.
 This is safe because:
 
 - Each match gets a unique M-ID from `hypex add-match` (filesystem-locked).
-- Each match record is a separate file — no two agents write the same file.
+- Each match record is a separate file -- no two agents write the same file.
 - Ratings are recomputed after all matches complete, not during.
 
 If you are one of several tournament agents, complete your assigned pairings

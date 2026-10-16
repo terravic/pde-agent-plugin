@@ -1,15 +1,15 @@
-"""`pkde site` — deterministic site build from accepted work-order deliverables.
+"""`pkde site` -- deterministic site build from accepted work-order deliverables.
 
 Builds a static HTML site from scientifically accepted work-order
 revisions.  The site reflects the artifact hierarchy:
 
-  Executive Summary (L4) → Program State (L2) → Findings (L1) → Raw Data (L0)
+  Executive Summary (L4) -> Program State (L2) -> Findings (L1) -> Raw Data (L0)
 
 Output is written atomically: a temporary directory is built first,
 then moved into the final location only on complete success.  A broken
 link or missing reference aborts the build and leaves no partial output.
 
-This is Phase 3 of issue #22 — control plane CLI.
+This is Phase 3 of issue #22 -- control plane CLI.
 """
 
 from __future__ import annotations
@@ -39,7 +39,7 @@ from ..core.errors import ArtifactError, Refusal, UsageError
 from ..core.paths import confine_path
 
 # ---------------------------------------------------------------------------
-# Viewer mapping — file extension to viewer HTML file
+# Viewer mapping -- file extension to viewer HTML file
 # ---------------------------------------------------------------------------
 
 # Ordered most-specific suffix first. Matching stops at the first hit.
@@ -74,8 +74,8 @@ def viewer_url_for(
     viewer's location in the output directory.
 
     When *bundled* is True (default), raw/ is copied into _site/ so
-    viewers reach artifacts via ``../raw/…``.  When False, the old
-    ``../../raw/…`` paths are used for an unbundled layout.
+    viewers reach artifacts via ``../raw/...``.  When False, the old
+    ``../../raw/...`` paths are used for an unbundled layout.
     """
     lower = filename.lower()
     prefix = ".." if bundled else "../.."
@@ -222,7 +222,7 @@ def _collect_artifact_classes(
         normalized = normalize_artifact_class(ac_name)
         rel_dir = ARTIFACT_DIRS.get(normalized)
         if rel_dir is None:
-            # Unknown artifact class — skip rather than using unsanitized fallback
+            # Unknown artifact class -- skip rather than using unsanitized fallback
             continue
         art_dir = project_root / rel_dir
 
@@ -514,7 +514,7 @@ def _validate_links(
                         {
                             "file": str(rel_path),
                             "link": target,
-                            "issue": "broken link — target does not exist",
+                            "issue": "broken link -- target does not exist",
                         }
                     )
 
@@ -595,7 +595,7 @@ def _build_nav_sections(
     # Findings grouped by discipline subdirectory
     if findings:
         # Parse discipline groups from source_path
-        # e.g. "findings/structural-biology/analysis.md" → "structural-biology"
+        # e.g. "findings/structural-biology/analysis.md" -> "structural-biology"
         grouped: dict[str, list[dict[str, Any]]] = {}
         ungrouped: list[dict[str, Any]] = []
         for f in findings:
@@ -621,7 +621,7 @@ def _build_nav_sections(
             display_name = discipline.replace("-", " ").replace("_", " ").title()
             findings_links.append(
                 {
-                    "label": f"— {display_name} —",
+                    "label": f"-- {display_name} --",
                     "url": "",
                     "active": False,
                     "is_group_header": True,
@@ -643,7 +643,7 @@ def _build_nav_sections(
             }
         )
 
-    # Operations section — per-work-order pages
+    # Operations section -- per-work-order pages
     if work_orders_with_pages:
         sections.append(
             {
@@ -690,7 +690,7 @@ def _build_nav_sections(
             }
         )
 
-    # Retrospectives section — only if retrospectives exist
+    # Retrospectives section -- only if retrospectives exist
     if has_retrospectives:
         sections.append(
             {
@@ -746,7 +746,7 @@ def _strip_leading_h1(text: str) -> str:
     markdown H1 before rendering eliminates the duplicate.
 
     Only the *first* line matching ``^# `` (single hash + space) is
-    removed; deeper headings (``##``, ``###``, …) are left untouched.
+    removed; deeper headings (``##``, ``###``, ...) are left untouched.
     """
     lines = text.split("\n")
     for i, line in enumerate(lines):
@@ -784,7 +784,7 @@ def _add_heading_ids(html: str) -> str:
     """Add ``id`` attributes to ``<h1>``-``<h6>`` elements.
 
     Generates stable, slugified IDs from heading text content.
-    Duplicate heading text receives ``-1``, ``-2``, … suffixes to keep
+    Duplicate heading text receives ``-1``, ``-2``, ... suffixes to keep
     IDs unique within the page.
 
     Headings that already carry an ``id=`` attribute are left unchanged.
@@ -826,16 +826,16 @@ _MD_HREF_RE = re.compile(r'href="([^"]*\.md(?:#[^"]*)?)"')
 def _rewrite_md_links(html: str) -> str:
     """Rewrite internal ``.md`` links to ``.html`` in rendered HTML.
 
-    Only relative links are rewritten — external URLs (``http://``,
+    Only relative links are rewritten -- external URLs (``http://``,
     ``https://``, ``//``) are left unchanged.  Fragment identifiers
     (``#section``) are preserved across the rewrite.
 
     Examples::
 
-        href="other-page.md"            → href="other-page.html"
-        href="other-page.md#section"    → href="other-page.html#section"
-        href="../dir/page.md"           → href="../dir/page.html"
-        href="https://example.com/f.md" → (unchanged)
+        href="other-page.md"            -> href="other-page.html"
+        href="other-page.md#section"    -> href="other-page.html#section"
+        href="../dir/page.md"           -> href="../dir/page.html"
+        href="https://example.com/f.md" -> (unchanged)
     """
 
     def _replace(match: re.Match) -> str:  # type: ignore[type-arg]
@@ -850,7 +850,7 @@ def _rewrite_md_links(html: str) -> str:
         else:
             path = url
             fragment = ""
-        # Rewrite .md → .html
+        # Rewrite .md -> .html
         if path.endswith(".md"):
             path = path[:-3] + ".html"
         return f'href="{path}{fragment}"'
@@ -859,10 +859,10 @@ def _rewrite_md_links(html: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# External URL sanitization (#170) — defense-in-depth Layer 1
+# External URL sanitization (#170) -- defense-in-depth Layer 1
 # ---------------------------------------------------------------------------
 
-# WHATWG URL Standard §4.2 — characters to strip for safe URL comparison.
+# WHATWG URL Standard Section 4.2 -- characters to strip for safe URL comparison.
 # Step 1: leading C0 control characters (U+0000-U+001F) and space (U+0020).
 _WHATWG_C0_SPACE_RE = re.compile(r"^[\x00-\x20]+")
 # Step 3: embedded tab (\t), newline (\n), and carriage return (\r).
@@ -870,7 +870,7 @@ _WHATWG_TAB_NL_RE = re.compile(r"[\x09\x0a\x0d]")
 
 
 def _whatwg_normalize_url(url: str) -> str:
-    """Normalize a URL per WHATWG URL Standard §4.2 for safe comparison.
+    """Normalize a URL per WHATWG URL Standard Section 4.2 for safe comparison.
 
     Step 1: Strip leading C0 control characters (U+0000-U+001F) and space.
     Step 3: Remove embedded tab (``\\t``), newline (``\\n``), and CR (``\\r``).
@@ -905,9 +905,9 @@ def _is_external_url(url: str) -> bool:
     from urllib.parse import urlsplit
 
     normalized = _whatwg_normalize_url(url)
-    # Normalize backslashes → forward slashes (WHATWG URL Standard §4.2).
+    # Normalize backslashes -> forward slashes (WHATWG URL Standard Section 4.2).
     normalized = normalized.replace("\\", "/")
-    # Protocol-relative URLs: //host/…
+    # Protocol-relative URLs: //host/...
     if normalized.startswith("//"):
         return True
     parsed = urlsplit(normalized)
@@ -928,10 +928,10 @@ def _sanitize_external_urls(html: str) -> tuple[str, list[str]]:
     no srcset). If reused for arbitrary HTML from other sources, additional
     attribute quoting patterns would need to be handled.
 
-    - External ``<img src>`` tags → visible placeholder
-    - ``data:`` URI ``<img>`` tags → visible placeholder
-    - Dangerous-scheme ``<a href>`` → href removed
-    - External ``<a href>`` → rel/target safety attributes added
+    - External ``<img src>`` tags -> visible placeholder
+    - ``data:`` URI ``<img>`` tags -> visible placeholder
+    - Dangerous-scheme ``<a href>`` -> href removed
+    - External ``<a href>`` -> rel/target safety attributes added
 
     Returns ``(sanitized_html, list_of_warning_strings)``.
     """
@@ -951,7 +951,7 @@ def _sanitize_external_urls(html: str) -> tuple[str, list[str]]:
             return (
                 f'<span class="blocked-image" '
                 f'title="External image blocked: {safe_url}">'
-                f"[external image removed — {safe_url}]</span>"
+                f"[external image removed -- {safe_url}]</span>"
             )
         if _whatwg_normalize_url(url.lower()).startswith(("data:",)):
             warnings.append(f"blocked data URI image: {url[:80]}")
@@ -1083,7 +1083,7 @@ def _render_site(
     # Copy KaTeX assets for math rendering.
     # KaTeX is npm-installed at provision time (install.sh); the dist/
     # directory under the npm package contains the files the site needs.
-    # The generated site remains fully self-contained — no CDN dependency.
+    # The generated site remains fully self-contained -- no CDN dependency.
     tools_home = os.environ.get("PKDE_TOOLS_HOME", "tools")
     katex_npm = Path(tools_home) / "npm" / "node_modules" / "katex" / "dist"
     if not katex_npm.is_dir():
@@ -1308,7 +1308,7 @@ def site() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Prerequisite check — all WOs must be accepted before site build
+# Prerequisite check -- all WOs must be accepted before site build
 # ---------------------------------------------------------------------------
 
 
@@ -1321,7 +1321,7 @@ def _check_all_accepted(project_root: Path, emit: Any) -> None:
     """
     all_records = controlstore.list_records(project_root, "work-order")
     if not all_records:
-        return  # No WOs at all — the existing "no accepted WOs" guard handles this.
+        return  # No WOs at all -- the existing "no accepted WOs" guard handles this.
 
     # Deduplicate to latest revision per ID.
     by_id: dict[str, dict[str, Any]] = {}
@@ -1338,7 +1338,7 @@ def _check_all_accepted(project_root: Path, emit: Any) -> None:
             not_accepted.append(wo)
 
     if not not_accepted:
-        return  # All accepted — proceed with build.
+        return  # All accepted -- proceed with build.
 
     # Build status table.
     lines = ["Work order status:"]
@@ -1426,7 +1426,7 @@ def build_cmd(
     emit = emitter(as_json, quiet)
     project = state.project()
 
-    # 0. Prerequisite check — all WOs must be scientifically_accepted.
+    # 0. Prerequisite check -- all WOs must be scientifically_accepted.
     _check_all_accepted(project.root, emit)
 
     # 1. Collect accepted work orders
@@ -1448,12 +1448,12 @@ def build_cmd(
     executive = _collect_executive(project.root)
     gates = _collect_gates(project.root)
 
-    # Retrospectives — only collected when explicitly opted-in via CLI flag
+    # Retrospectives -- only collected when explicitly opted-in via CLI flag
     retrospectives: list[dict[str, Any]] | None = None
     if retrospectives_dir is not None:
         retrospectives = _collect_retrospectives(Path(retrospectives_dir))
 
-    # 3. Validate links — abort if any are broken
+    # 3. Validate links -- abort if any are broken
     issues = _validate_links(project.root, work_orders)
     if issues:
         detail_parts = []
@@ -1523,7 +1523,7 @@ def build_cmd(
 
     # Check for security warnings from URL sanitization (#170)
     if _security_warnings:
-        # Clean up temp dir — build is refused
+        # Clean up temp dir -- build is refused
         shutil.rmtree(tmp_dir, ignore_errors=True)
         # Deduplicate warnings (index re-render can produce duplicates)
         unique_warnings = list(dict.fromkeys(_security_warnings))
@@ -1710,7 +1710,7 @@ def validate_cmd(
                     parts.append(f"{k}={v}")
                 emit.line(f"  {'; '.join(parts)}")
         else:
-            emit.line("No issues found — site is ready to build.")
+            emit.line("No issues found -- site is ready to build.")
         emit.flush()
 
     # Raise AFTER output in all modes

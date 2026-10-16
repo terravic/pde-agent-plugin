@@ -1,7 +1,7 @@
-"""Named, versioned thresholds — the numbers that decide things.
+"""Named, versioned thresholds -- the numbers that decide things.
 
 Thresholds live in code, never as prose and never as inline literals at
-a call site (docs/tool-design-guidance.md §7). Resolution is three
+a call site (docs/tool-design-guidance.md Section 7). Resolution is three
 levels, most specific wins:
 
   1. defaults declared here, carrying a version tag
@@ -19,7 +19,7 @@ unresolved threshold raises `ThresholdError`, which turns "invented
 cutoff" into "blocked task".
 
 This is intentional and should be treated as a legitimate terminal
-state (tool-design-guidance.md §7).  An UNRESOLVED threshold must only
+state (tool-design-guidance.md Section 7).  An UNRESOLVED threshold must only
 be resolved when a citable, peer-reviewed or authoritative source
 becomes available.  Do NOT fill in "reasonable-looking" numbers: a
 plausible guess behind a negative claim about a drug target is the
@@ -137,13 +137,13 @@ _declare(
         "analyze_plddt.py and analyze_pae.py module constants"
     ),
     values={
-        # pLDDT — fractions of residues, 0..1
+        # pLDDT -- fractions of residues, 0..1
         "plddt_confident": 0.7,
         "plddt_moderate": 0.4,
         "disorder_notable": 0.15,
         "disorder_mixed": 0.3,
         "disorder_mostly": 0.5,
-        # PAE — angstroms and residue counts
+        # PAE -- angstroms and residue counts
         "pae_domain_cutoff": 7.0,
         "pae_min_domain_size": 40,
         "pae_merge_cutoff": 15.0,
@@ -160,7 +160,7 @@ _declare(
     "1.0",
     provenance=(
         "AlphaFold 3 published confidence guidance (ipTM/pTM bands); "
-        "ranking_score formula per af3-toolkit notes.md §5"
+        "ranking_score formula per af3-toolkit notes.md Section 5"
     ),
     values={
         "iptm_confident": 0.8,
@@ -184,12 +184,12 @@ _declare(
     "1.0",
     provenance=(
         "Sequence identity bands: Rost, Protein Engineering 1999;12:85-94 "
-        "('Twilight zone of protein sequence alignments') — 30% identity as "
+        "('Twilight zone of protein sequence alignments') -- 30% identity as "
         "the boundary below which fold conservation becomes unreliable; "
         "Sander & Schneider, Proteins 1991;9:56-68 for the length-dependent "
         "identity curve. >50% band from Chothia & Lesk, EMBO J 1986;5:823-826 "
         "(structural similarity as a function of sequence identity). "
-        "Resolution bands: no single published cutoff exists; 2.5 Å and 3.5 Å "
+        "Resolution bands: no single published cutoff exists; 2.5 A and 3.5 A "
         "are operational boundaries widely used in structural biology practice "
         "(CCP4 data processing conventions). "
         "Coverage fraction: operational minimum, no external source."
@@ -236,7 +236,7 @@ _declare(
 # The list is therefore an exception report, not a census: it appears to
 # contain only the claims the verifier took issue with. A ratio computed
 # over it has a denominator of "claims already known to be disputed" and
-# is always ~1.0 — which is why v1.0's `max_inaccurate_fraction` was
+# is always ~1.0 -- which is why v1.0's `max_inaccurate_fraction` was
 # removed rather than retuned. We count contradicted claims instead and
 # relay this caveat into every analysis.
 COSCIENTIST_CLAIM_DENOMINATOR = (
@@ -248,7 +248,7 @@ COSCIENTIST_CLAIM_DENOMINATOR = (
 )
 
 # --- Hypothesis set (adopted / charter) ------------------------------------
-# Structural thresholds only — nothing about an adopted set licenses a
+# Structural thresholds only -- nothing about an adopted set licenses a
 # quality threshold.  The set validates that something was adopted; it
 # does not claim anything about the hypotheses' merit.
 _declare(
@@ -256,7 +256,7 @@ _declare(
     "1.0",
     provenance=(
         "Structural thresholds for hypothesis sets adopted from external "
-        "sources. No quality threshold — nothing about an adopted set "
+        "sources. No quality threshold -- nothing about an adopted set "
         "licenses one."
     ),
     values={
@@ -277,7 +277,7 @@ _declare(
         "structural defaults for reading a hypex ELO tournament; "
         "no external source claims these cutoffs. "
         "elo_decisive_gap, max_suspect_citations and min_safety_score "
-        "are UNRESOLVED — measure the distribution before filling them"
+        "are UNRESOLVED -- measure the distribution before filling them"
     ),
     values={
         # Below this a pairwise ranking is unsupported.
@@ -286,7 +286,7 @@ _declare(
         "min_win_rate": 0.5,
         # A count of phantom citations.
         "max_phantom_citations": 0,
-        # Deliberately not 50.0 — MarginMultiplier damping puts hypex
+        # Deliberately not 50.0 -- MarginMultiplier damping puts hypex
         # ELO on a different scale than Co-Scientist.
         "elo_decisive_gap": UNRESOLVED,
         # No corpus has been measured.
@@ -357,13 +357,13 @@ _declare(
 #
 # Using HPA's numbers rather than our own means a recomputed
 # classification can be checked against the curated label HPA ships in
-# the same record — `analyze` does exactly that and warns on
+# the same record -- `analyze` does exactly that and warns on
 # disagreement, which is a live check that this list has not drifted.
 #
 # low_confidence_ntpm is UNRESOLVED on purpose. A band around the
 # detection cutoff, inside which a value should not be read as a
-# confident call, is a real need — 1.0 nTPM and 50 nTPM are not the same
-# evidence for "expressed" — but HPA publishes no such band and we have
+# confident call, is a real need -- 1.0 nTPM and 50 nTPM are not the same
+# evidence for "expressed" -- but HPA publishes no such band and we have
 # no other citable source. Picking 2 or 3 because it looks sensible
 # would put an invented number behind a negative claim about a drug
 # target, which is the precise failure this pilot exists to catch.
@@ -453,7 +453,7 @@ _declare(
 # cutoffs for GTEx whole-blood data.
 #
 # All values are UNRESOLVED. This is the correct terminal state per
-# tool-design-guidance.md §7: "An unresolved threshold is a legitimate
+# tool-design-guidance.md Section 7: "An unresolved threshold is a legitimate
 # terminal state. Where a source publishes no cutoff for a quantity, the
 # tool must not supply one."
 #
@@ -465,7 +465,7 @@ _declare(
 #      unresolved status, making the absence of classification explicit
 #      and machine-readable rather than implicit.
 #
-# Cross-platform comparison — GTEx TPM vs HPA nTPM:
+# Cross-platform comparison -- GTEx TPM vs HPA nTPM:
 #   GTEx reports median TPM from bulk RNA-seq of 755 whole-blood samples
 #   (femoral/subclavian veins). HPA reports consensus nTPM (normalized
 #   Transcripts Per Million) from its own pipeline across ~50 tissues.
@@ -485,7 +485,7 @@ _declare(
         "thresholds for classifying GTEx whole-blood expression. The "
         "Human Protein Atlas (HPA) uses nTPM with its own cutoffs "
         "(nTPM >= 1 for 'detected'), but nTPM and TPM are not directly "
-        "comparable — different normalization, different tissue sets, "
+        "comparable -- different normalization, different tissue sets, "
         "different pipelines. All values are UNRESOLVED."
     ),
     values={
@@ -504,7 +504,7 @@ _declare(
 
 # --- Compound-registry identity resolution ---------------------------------
 # compreg makes no scientific judgment, so it has no scientific cutoff.
-# The ambiguity contract — more than one match is ambiguous — is
+# The ambiguity contract -- more than one match is ambiguous -- is
 # hardcoded rather than configurable, exactly as in litref.  The set is
 # declared empty so the analysis artifact carries a well-formed
 # threshold_set tag and program-level overrides can be added later if a
@@ -538,7 +538,7 @@ _declare(
 # --- Structure similarity search -------------------------------------------
 # ECFP/Morgan fingerprint standard practice for Tanimoto similarity.
 # 0.85 is a common cutoff for "similar compounds"; exact match is 1.0.
-# Novelty threshold is program-specific and left UNRESOLVED — "how
+# Novelty threshold is program-specific and left UNRESOLVED -- "how
 # similar is too similar?" is a decision that belongs in the program,
 # not in a default value.
 _declare(
@@ -559,7 +559,7 @@ _declare(
 # litref makes no scientific judgment, so it has no scientific cutoff.
 # The one number it needs is operational: how many matching records to
 # enumerate per query. It is declared here rather than inlined because
-# it changes what a reader may conclude — beyond the cap the match list
+# it changes what a reader may conclude -- beyond the cap the match list
 # stops being a census and becomes a sample, and `analyze` says so.
 #
 # 25 is a page size, not a finding. Ambiguity is decided from the
@@ -595,7 +595,7 @@ _declare(
 # gnomAD v2 figure, and the current documentation says o/e values are
 # higher in v4 and that "any `LOEUF` thresholds used on v2 will not give
 # an equivalent number of genes when applied to v4". Carrying 0.35
-# forward would misclassify genes near the boundary — any gene with
+# forward would misclassify genes near the boundary -- any gene with
 # LOEUF between 0.35 and 0.45 changes classification.
 #
 # pli_indeterminate_floor is the lower edge of gnomAD's documented
@@ -605,7 +605,7 @@ _declare(
 #
 # loeuf_unreliable_min_expected_lof is UNRESOLVED. A minimum expected-LoF
 # count below which LOEUF should be distrusted is a real and widely-used
-# idea, but gnomAD publishes no such number — it says instead that "it is
+# idea, but gnomAD publishes no such number -- it says instead that "it is
 # essential to take the 90% CI into consideration". `analyze` therefore
 # reports exp_lof and the full CI and declines to threshold on them.
 _declare(
@@ -629,7 +629,7 @@ _declare(
 # The drug score is Schmidtke & Barril's logistic model over pocket
 # descriptors, trained to separate druggable from non-druggable sites;
 # it returns a value in [0,1] and 0.5 is its decision boundary. The
-# borderline floor below it is ours and is labelled as such — the paper
+# borderline floor below it is ours and is labelled as such -- the paper
 # defines one boundary, not a band, and inventing a citation for the
 # second number would be worse than owning it.
 #
@@ -637,7 +637,7 @@ _declare(
 # pocket volume by Monte Carlo integration seeded from the clock and
 # offers no seed flag, so the same input gives different volumes on
 # different runs. Five runs over 1UYD on 2026-08-18 spanned 1415.9-1448.6
-# Å3, a 2.3% range; 0.05 is that rounded up. Two runs whose volumes
+# A3, a 2.3% range; 0.05 is that rounded up. Two runs whose volumes
 # differ by less than this have not disagreed about anything.
 #
 # Consecutive runs inside the same second return identical numbers,
@@ -674,7 +674,7 @@ _declare(
     provenance=(
         "Schmidtke & Barril, J Med Chem 2010;53(15):5858-67, 'Understanding "
         "and predicting druggability: a high-throughput method for detection "
-        "of drug binding sites' — the fpocket drug score and its 0.5 decision "
+        "of drug binding sites' -- the fpocket drug score and its 0.5 decision "
         "boundary. min_alpha_spheres is fpocket 4.2.2's own detection default "
         "(-i). borderline_dscore and volume_estimate_tolerance are local: see "
         "the module comment above for how each was arrived at."
@@ -682,14 +682,14 @@ _declare(
     values={
         # Drug score at or above which the model calls a pocket druggable.
         "druggable_dscore": 0.5,
-        # Below this, the model is not equivocal — it is saying no.
+        # Below this, the model is not equivocal -- it is saying no.
         "borderline_dscore": 0.2,
         # fpocket's own floor for calling a cluster of alpha spheres a
         # pocket at all. Restated here so an analysis can say whether a
         # pocket sits at the detection limit.
         "min_alpha_spheres": 15,
         # Heavy-atom distance within which a pocket residue counts as
-        # part of a named site. 5.0 Å is the common contact cutoff for
+        # part of a named site. 5.0 A is the common contact cutoff for
         # interface definitions; pocket membership here is by residue
         # identity, so this governs only the neighbourhood report.
         "contact_distance": 5.0,
@@ -702,14 +702,14 @@ _declare(
 # Lipinski Rule of Five (Lipinski et al., "Experimental and computational
 # approaches to estimate solubility and permeability in drug discovery and
 # development settings", Adv Drug Deliv Rev 2001;46:3-26): MW <= 500,
-# LogP ≤ 5, HBD ≤ 5, HBA ≤ 10.
+# LogP <= 5, HBD <= 5, HBA <= 10.
 #
 # Veber criteria (Veber et al., "Molecular properties that influence the
 # oral bioavailability of drug candidates", J Med Chem 2002;45:2615-23):
-# rotatable bonds ≤ 10, TPSA ≤ 140.
+# rotatable bonds <= 10, TPSA <= 140.
 #
 # One Lipinski violation is tolerated ("Rule of Five" admits one); two or
-# more is a red flag.  Veber criteria are stricter — any violation counts.
+# more is a red flag.  Veber criteria are stricter -- any violation counts.
 _declare(
     "compound-descriptors",
     "1.0",
@@ -753,7 +753,7 @@ _declare(
 # Operational defaults for weighting structural alert types.  PAINS
 # (Baell & Holloway, J Med Chem 2010) detect pan-assay interference and
 # warrant exclusion; Brenk (Brenk et al., ChemMedChem 2008) flag
-# undesirable substructures — a couple are tolerated in early-stage
+# undesirable substructures -- a couple are tolerated in early-stage
 # screening. Aggregators cause non-specific interference and warrant
 # exclusion like PAINS.
 _declare(
@@ -774,7 +774,7 @@ _declare(
 # --- assay activity (dose-response and activity cutoffs) -------------------
 # Activity cutoffs and curve-fitting quality thresholds are program-specific
 # and have no universal default in standard HTS literature.  All are declared
-# UNRESOLVED so the CLI refuses to substitute a plausible number — the
+# UNRESOLVED so the CLI refuses to substitute a plausible number -- the
 # operator must set them via .pkde/thresholds.yaml and record a
 # justification.
 _declare(
@@ -819,13 +819,13 @@ _declare(
 # hERG safety margin from ICH S7B, "The Non-Clinical Evaluation of the
 # Potential for Delayed Ventricular Repolarization (QT Interval
 # Prolongation) by Human Pharmaceuticals" (adopted 2005).  The guideline
-# recommends a ≥30-fold safety margin between the therapeutic free plasma
+# recommends a >=30-fold safety margin between the therapeutic free plasma
 # concentration and the IC50 for hERG channel inhibition.  This is the
 # widely accepted regulatory standard.
 #
-# All other off-target selectivity margins are UNRESOLVED — there are no
+# All other off-target selectivity margins are UNRESOLVED -- there are no
 # universally citable conventions.  This is correct per
-# tool-design-guidance.md §7 ("An unresolved threshold is a legitimate
+# tool-design-guidance.md Section 7 ("An unresolved threshold is a legitimate
 # terminal state").
 _declare(
     "selectivity-margins",
@@ -833,10 +833,10 @@ _declare(
     provenance=(
         "ICH S7B, 'The Non-Clinical Evaluation of the Potential for Delayed "
         "Ventricular Repolarization (QT Interval Prolongation) by Human "
-        "Pharmaceuticals' (adopted 2005): recommends a ≥30-fold safety margin "
+        "Pharmaceuticals' (adopted 2005): recommends a >=30-fold safety margin "
         "between the therapeutic free plasma concentration and the IC50 for "
         "hERG channel inhibition. herg_marginal is a local operational boundary "
-        "(herg_margin / 3), not a cited value — see pocket's borderline_dscore "
+        "(herg_margin / 3), not a cited value -- see pocket's borderline_dscore "
         "for precedent. No universally citable conventions exist for "
         "other off-target selectivity margins."
     ),
@@ -859,15 +859,15 @@ _declare(
         "Minimum pair count from Hussain & Rea, J Chem Inf Model 2010;50:339-348, "
         "who recommend caution with small pair counts but do not prescribe a specific "
         "minimum. cliff_absolute_delta is a per-property dict, not a universal "
-        "scalar, because a series file's properties dict is unconstrained — "
-        "potency (log-scale, deltas of 0-3), solubility (µg/mL, deltas of "
+        "scalar, because a series file's properties dict is unconstrained -- "
+        "potency (log-scale, deltas of 0-3), solubility (ug/mL, deltas of "
         "hundreds), and molecular weight (deltas of tens) cannot share one "
         "number. Potency-property thresholds (pic50, pki) are set to 1.0 log "
         "unit (10-fold potency difference), the conservative end of the 0.5-1.0 "
         "range cited in the activity-cliff literature: Stumpfe & Bajorath, "
         "J Med Chem 2012;55:2932-2942; Cruz-Monteagudo et al., Drug Discov "
         "Today 2014;19:1069-1080. Properties not in the dict are not evaluated "
-        "for cliffs — this is explicit in the analysis output, not silent. "
+        "for cliffs -- this is explicit in the analysis output, not silent. "
         "Override via .pkde/thresholds.yaml to add properties or adjust "
         "thresholds for a specific program."
     ),
@@ -884,7 +884,7 @@ _declare(
         # pic50 and pki (negative-log potency measures) use the activity-cliff
         # convention: 1.0 log unit = 10-fold potency difference (Stumpfe &
         # Bajorath 2012). Properties absent from this dict are not evaluated
-        # for cliffs and produce an explicit advisory — never a silent skip.
+        # for cliffs and produce an explicit advisory -- never a silent skip.
         #
         # Property names are matched case-insensitively: a series file using
         # "pIC50" or "PIC50" resolves against the "pic50" entry here.
@@ -920,27 +920,27 @@ _declare(
         # Scaling confidence: single-species vs multi-species
         "scaling_confidence_single": "low",
         "scaling_confidence_multi": "moderate",
-        # AUC extrapolation percentage limit — >20% is unreliable per FDA guidance
+        # AUC extrapolation percentage limit -- >20% is unreliable per FDA guidance
         "auc_extrapolation_limit": 20.0,
-        # DDI R-value cutoffs — 3-tier classification per FDA 2020 guidance.
+        # DDI R-value cutoffs -- 3-tier classification per FDA 2020 guidance.
         # No intermediate "no interaction" tier: the FDA guidance does not define
         # a lower bound below which R is considered noise.
         "ddi_r_possible_interaction": 1.25,
         "ddi_r_clinical_study": 2.0,
-        # Therapeutic exposure adequacy — program-specific, no universal default
+        # Therapeutic exposure adequacy -- program-specific, no universal default
         "therapeutic_exposure_adequacy": UNRESOLVED,
     },
 )
 
 # --- tox safety package (preclinical toxicology) ----------------------------
 # Therapeutic index (TI) convention: NOAEL exposure / efficacious exposure
-# must be ≥ 10-fold. This is a widely used preclinical safety margin
+# must be >= 10-fold. This is a widely used preclinical safety margin
 # convention referenced in ICH M3(R2) general guidance for starting dose
 # selection and safety margin assessment.
 #
-# hERG safety margin: the same ≥30-fold criterion as selectivity-margins,
+# hERG safety margin: the same >=30-fold criterion as selectivity-margins,
 # declared independently to avoid coupling the tox and selectivity tools
-# (see design doc OQ1). ICH S7B recommends ≥30-fold between therapeutic
+# (see design doc OQ1). ICH S7B recommends >=30-fold between therapeutic
 # free plasma Cmax and hERG IC50.
 #
 # hERG marginal: an operational boundary at hERG safety margin / 3,
@@ -949,15 +949,15 @@ _declare(
 # below the marginal threshold is elevated concern.
 #
 # noael_exposure_margin: a minimum acceptable NOAEL exposure in absolute
-# terms is entirely program-specific — no universal default exists. This
+# terms is entirely program-specific -- no universal default exists. This
 # is UNRESOLVED and must be set via .pkde/thresholds.yaml per program.
 _declare(
     "tox-safety-package",
     "1.0",
     provenance=(
         "ICH M3(R2) general guidance for therapeutic index convention "
-        "(≥10-fold safety margin between NOAEL exposure and therapeutic "
-        "exposure). ICH S7B for hERG safety margin (≥30-fold between "
+        "(>=10-fold safety margin between NOAEL exposure and therapeutic "
+        "exposure). ICH S7B for hERG safety margin (>=30-fold between "
         "therapeutic free plasma Cmax and hERG IC50, adopted 2005). "
         "herg_marginal is a local operational boundary (herg_safety_margin / 3), "
         "following the selectivity-margins precedent."
@@ -1097,7 +1097,7 @@ _declare(
         # roughly low-micromolar predicted affinity.
         "strong_binding_energy": -8.0,  # strong predicted binding
         "moderate_binding_energy": -6.0,  # moderate predicted binding
-        # No cited source for a "weak" cutoff exists — marked UNRESOLVED
+        # No cited source for a "weak" cutoff exists -- marked UNRESOLVED
         # per the project's unresolved threshold pattern.
         "weak_binding_energy": UNRESOLVED,
     },
@@ -1196,7 +1196,7 @@ _declare(
 
 # Warnings that must reach the report whenever these sets are applied.
 # The skill's interpretation contract names them; the sidecar is the
-# evidence they were emitted (tool-design-guidance §5).
+# evidence they were emitted (tool-design-guidance Section 5).
 MANDATORY_ADVISORIES: dict[str, list[str]] = {
     "alphagenome-variant-effect": [
         "Raw-score magnitude bands are rules of thumb derived primarily from "

@@ -3,8 +3,8 @@
 Every failure path in the CLI raises one of these. The top-level entry
 point renders them to stderr and exits with the code carried by the
 exception. Nothing in the CLI is permitted to return a plausible value
-when the underlying computation did not happen — see
-docs/tool-design-guidance.md §8.
+when the underlying computation did not happen -- see
+docs/tool-design-guidance.md Section 8.
 """
 
 from __future__ import annotations
@@ -100,7 +100,7 @@ class PhaseContractError(PkDEError):
     Not a caller error, and there is nothing an operator can do about it,
     which is why it stays on the generic code rather than taking one of
     the actionable ones. It exists to make the two-phase split
-    (tool-design-guidance §3) enforced rather than observed.
+    (tool-design-guidance Section 3) enforced rather than observed.
 
     The rule that `analyze` never touches the network was true because
     every author had so far written it that way, and it was verified once,
@@ -118,7 +118,7 @@ class Refusal(PkDEError):
 
     A refusal is neither an answer nor a failure, and conflating it with
     either loses the remedy. Three cases separated by what the caller
-    should do next (tool-design-guidance §8, "Refusal is its own exit
+    should do next (tool-design-guidance Section 8, "Refusal is its own exit
     code"):
 
       answer   exit 0    the analysis completed; act on it
@@ -132,7 +132,7 @@ class Refusal(PkDEError):
     by construction. It must not depend on which tool was asked, which
     is why this lives here rather than as a per-command exit constant.
     Before this existed, `litref analyze` on an ambiguous name and
-    `expression fetch` on an ambiguous symbol — the same outcome —
+    `expression fetch` on an ambiguous symbol -- the same outcome --
     exited 7 and 6 respectively, and 7 already meant "retry later",
     the opposite remedy.
 

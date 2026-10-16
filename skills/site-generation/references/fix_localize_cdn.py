@@ -31,7 +31,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 # ---------------------------------------------------------------------------
-# Configuration — CDN domains to localize
+# Configuration -- CDN domains to localize
 # ---------------------------------------------------------------------------
 
 CDN_DOMAINS: set[str] = {
@@ -94,7 +94,7 @@ def _url_to_vendor_path(url: str) -> str:
 def _download(url: str, dest: Path) -> bool:
     """Download *url* to *dest*.  Return True on success, False on failure."""
     if dest.exists() and dest.stat().st_size > 0:
-        return True  # already downloaded — idempotent skip
+        return True  # already downloaded -- idempotent skip
 
     dest.parent.mkdir(parents=True, exist_ok=True)
 
@@ -116,7 +116,7 @@ def _relative_path(from_file: Path, to_file: Path) -> str:
     try:
         return str(to_file.relative_to(from_file.parent))
     except ValueError:
-        # Different subtrees — walk via common ancestor.
+        # Different subtrees -- walk via common ancestor.
         from os.path import relpath
 
         return relpath(to_file, from_file.parent)
@@ -152,13 +152,13 @@ def _localize_css_urls(
         # Verify the destination stays within site_dir.
         resolved_dest = dest.resolve()
         if not resolved_dest.is_relative_to(site_dir.resolve()):
-            return m.group(0)  # skip — path escapes site_dir
+            return m.group(0)  # skip -- path escapes site_dir
         if _download(url, dest):
             manifest[url] = rel_vendor
             # Relative path from the CSS file to the downloaded resource.
             local_rel = _relative_path(css_vendor_path, dest)
             return f"url({quote}{local_rel}{quote})"
-        # Download failed — leave the original URL so the page still works
+        # Download failed -- leave the original URL so the page still works
         # online even if offline is broken for this resource.
         return m.group(0)
 
@@ -206,7 +206,7 @@ def _localize_html(
         # Verify the destination stays within site_dir.
         resolved_dest = dest.resolve()
         if not resolved_dest.is_relative_to(site_dir.resolve()):
-            return m.group(0)  # skip — path escapes site_dir
+            return m.group(0)  # skip -- path escapes site_dir
         if not _download(url, dest):
             return m.group(0)  # keep original on failure
 
@@ -261,7 +261,7 @@ def fix_localize_cdn(site_dir: Path) -> str:
 
     html_files = list(site_dir.rglob("*.html"))
     if not html_files:
-        return "skipped — no HTML files found"
+        return "skipped -- no HTML files found"
 
     # Detection guard: check whether any CDN references exist.
     has_cdn = False
@@ -278,7 +278,7 @@ def fix_localize_cdn(site_dir: Path) -> str:
             break
 
     if not has_cdn:
-        return "skipped — no CDN references found"
+        return "skipped -- no CDN references found"
 
     total_rewritten = 0
     files_changed = 0
@@ -296,9 +296,9 @@ def fix_localize_cdn(site_dir: Path) -> str:
     )
 
     if total_rewritten == 0:
-        return "skipped — CDN references found but all downloads failed"
+        return "skipped -- CDN references found but all downloads failed"
     return (
-        f"applied — localized {total_rewritten} reference(s) "
+        f"applied -- localized {total_rewritten} reference(s) "
         f"in {files_changed} file(s), manifest at vendor/manifest.json"
     )
 

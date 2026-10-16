@@ -9,11 +9,11 @@ Use this skill when you need measured tissue-level RNA expression data
 for a human gene. Entry points include:
 
 - Checking whether a drug target is expressed in the tissue of
-  interest — or whether it is not detected.
+  interest -- or whether it is not detected.
 - Establishing a gene's tissue specificity profile as part of target
   validation or selectivity arguments.
 - Looking for off-target expression in safety-relevant tissues.
-- Confirming that a gene is not detected in a tissue — with the caveat
+- Confirming that a gene is not detected in a tissue -- with the caveat
   that this is one dataset's cutoff, not proof of absence.
 
 **Do not use when:**
@@ -24,7 +24,7 @@ for a human gene. Entry points include:
   -> `protein-structure-confidence`.
 - You need genetic constraint or loss-of-function intolerance
   -> `target-genetic-evidence`.
-- You need cell-type-resolved expression — this tool returns
+- You need cell-type-resolved expression -- this tool returns
   tissue-level averages only. When HPA holds single-cell data, the
   relay says so but the tool cannot fetch it.
 
@@ -32,18 +32,18 @@ for a human gene. Entry points include:
 
 - **Gene input**: a gene symbol (e.g. `TP53`) or an Ensembl gene ID
   (e.g. `ENSG00000141510`). Symbols that match more than one HPA gene
-  are refused rather than resolved — the tool will not choose between
+  are refused rather than resolved -- the tool will not choose between
   WEE1 and WEE2.
 - **Tissue filter** (optional): one or more `--tissue` arguments for
   `analyze`. Omit for the full 50-tissue profile. Unknown tissue names
-  fail rather than resolving to nothing — HPA silently drops
+  fail rather than resolving to nothing -- HPA silently drops
   unrecognised column codes, and the tool guards against that.
 - **Tissue aliases**: plausible names that HPA does not accept are
   mapped automatically (e.g. `skin` -> `skin 1`, `stomach` ->
   `stomach 1`, `heart` -> `heart muscle`, `pituitary` ->
   `pituitary gland`). Run `pkde expression tissues` for the full
   list of 50 consensus tissues and their aliases.
-- **No authentication** needed — HPA is a public API (CC BY 4.0).
+- **No authentication** needed -- HPA is a public API (CC BY 4.0).
 - Run `pkde doctor` before first use. It ends with a verdict line:
   `STOP` means fix or report before running anything; `PROCEED` means
   work, and the grouped warnings tell you which commands would refuse,
@@ -80,9 +80,9 @@ paths only, `--out` to override the default output directory.
 `analyze` applies the `expression` threshold set and emits one verdict
 per tissue queried:
 
-- **expressed** — nTPM at or above the configured `expressed_ntpm`
+- **expressed** -- nTPM at or above the configured `expressed_ntpm`
   threshold.
-- **not_detected** — nTPM below the threshold. This is a measurement
+- **not_detected** -- nTPM below the threshold. This is a measurement
   below a cutoff in one consensus bulk RNA dataset, not proof that the
   gene is absent from the tissue.
 
@@ -90,23 +90,23 @@ per tissue queried:
 
 `analyze` also computes one overall specificity class:
 
-- **tissue enriched** — expression in one tissue is at least
+- **tissue enriched** -- expression in one tissue is at least
   `enriched_fold` times higher than in any other tissue.
-- **tissue enhanced** — expression in one tissue is at least
+- **tissue enhanced** -- expression in one tissue is at least
   `enriched_fold` times higher than the mean of all others.
-- **low tissue specificity** — detected but not concentrated in any
+- **low tissue specificity** -- detected but not concentrated in any
   single tissue.
-- **not detected** — below the expression cutoff in all 50 tissues.
+- **not detected** -- below the expression cutoff in all 50 tissues.
 
 The recomputed class is checked against HPA's own curated label shipped
 in the same record. A disagreement is reported in the analysis warnings
-— HPA's classifier uses the full expression matrix while this one uses
+-- HPA's classifier uses the full expression matrix while this one uses
 the 50 consensus tissues, so minor discrepancies are expected and are
 not errors.
 
 ### Unresolved threshold
 
-`low_confidence_ntpm` is **UNRESOLVED** — HPA publishes no near-threshold
+`low_confidence_ntpm` is **UNRESOLVED** -- HPA publishes no near-threshold
 confidence band. A gene sitting exactly at the cutoff is reported as
 `expressed` with no margin, and the analysis says so in its warnings.
 Do not invent a margin.
@@ -114,13 +114,13 @@ Do not invent a margin.
 ### Mandatory relays
 
 The following relay codes mark obligations on the finding. Each must be
-satisfied — not merely disclosed — in any Layer 1 finding.
+satisfied -- not merely disclosed -- in any Layer 1 finding.
 
-All four relays are **qualifiers** — the obligation is to scope the
+All four relays are **qualifiers** -- the obligation is to scope the
 result, not to stop reporting it. Three fire on conditions in the data
 (resolution limits, provenance gaps): `tissue_resolution_only`,
 `single_cell_unavailable`, and `release_version_unknown`. The fourth,
-`absent_is_not_evidence`, fires on the verdict itself — a not_detected
+`absent_is_not_evidence`, fires on the verdict itself -- a not_detected
 result is a legitimate answer, and the relay guards its most available
 wrong reading. An "expressed" verdict on a gene with single-cell data
 and a scraped release version may produce only `tissue_resolution_only`
@@ -136,9 +136,9 @@ HPA release version could not be scraped.
 
 | Relay code | Kind | Fires when | Obligation |
 |---|---|---|---|
-| `expression.tissue_resolution_only` | Qualifier | HPA holds single-cell RNA data for this gene (conditional; exactly one of this pair fires) | Scope the claim to whole-tissue averages and say so. Do not infer anything about a cell population from a tissue mean — HPA holds cell-resolved data for this gene that was not used, so the ecological fallacy is live rather than hypothetical. |
+| `expression.tissue_resolution_only` | Qualifier | HPA holds single-cell RNA data for this gene (conditional; exactly one of this pair fires) | Scope the claim to whole-tissue averages and say so. Do not infer anything about a cell population from a tissue mean -- HPA holds cell-resolved data for this gene that was not used, so the ecological fallacy is live rather than hypothetical. |
 | `expression.single_cell_unavailable` | Qualifier | HPA holds no single-cell data for this gene (conditional; exactly one of this pair fires) | State that no cell-resolved data exists, so the tissue-average verdict is the best obtainable and cannot be refined by fetching more. |
-| `expression.absent_is_not_evidence` | Qualifier | Any tissue has a not_detected verdict (conditional) | Write the negative as "not detected above the cutoff in HPA bulk consensus", naming the dataset. Do not write that the gene is absent from the tissue — one dataset cannot support that claim. |
+| `expression.absent_is_not_evidence` | Qualifier | Any tissue has a not_detected verdict (conditional) | Write the negative as "not detected above the cutoff in HPA bulk consensus", naming the dataset. Do not write that the gene is absent from the tissue -- one dataset cannot support that claim. |
 | `expression.release_version_unknown` | Qualifier | HPA release label could not be scraped (conditional) | Cite the artifact by its payload SHA-256, not by an HPA release number. Any version stated in the finding would be invented. |
 
 Check `mandatory_relays` in both the `.analysis.json` and the
@@ -150,7 +150,7 @@ When `tissue_resolution_only` fires, the tissue nTPM is a weighted
 average over all cell types in that tissue. A gene at 30 nTPM in
 testis may be expressed in a few cell types and absent from the rest.
 Inferring expression in a specific cell population from a tissue average
-is the ecological fallacy — and because HPA holds single-cell data for
+is the ecological fallacy -- and because HPA holds single-cell data for
 most genes, this gap is concrete rather than theoretical. The relay
 requires **scoping the claim to tissue level and refusing the
 cell-population inference**, not merely acknowledging the limitation.
@@ -181,7 +181,7 @@ This is the failure the tournament reviewer raised.
   tissue-enriched target in the disease tissue is more selective than
   one with low specificity.
 - Expression evidence complements but does not replace protein-level
-  evidence — a gene may be transcribed without producing functional
+  evidence -- a gene may be transcribed without producing functional
   protein.
 
 ### What this section produces
@@ -220,7 +220,7 @@ proceed on an assumed result.
   inference. This is the ecological fallacy the tournament reviewer
   raised.
 - **Reporting a tissue name HPA does not accept.** HPA silently
-  drops unrecognised column codes — `skin`, `stomach`, `endometrium`
+  drops unrecognised column codes -- `skin`, `stomach`, `endometrium`
   all return no column rather than an error. The CLI maps aliases
   and validates columns, but a finding that names the alias instead
   of HPA's label (e.g. "skin" instead of "skin 1") may confuse

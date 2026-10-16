@@ -64,11 +64,11 @@
       { key: 'rank', label: 'Rank', format: function(v) { return v; } },
       { key: 'score', label: 'Score', format: function(v) { return v.toFixed(3); }, badge: true },
       { key: 'druggability_score', label: 'Druggability', format: function(v) { return v.toFixed(3); }, badge: true },
-      { key: 'volume', label: 'Volume (Å³)', format: function(v) { return v.toFixed(1); } },
-      { key: 'total_sasa', label: 'Total SASA (Å²)', format: function(v) { return v.toFixed(1); } },
+      { key: 'volume', label: 'Volume (A^3)', format: function(v) { return v.toFixed(1); } },
+      { key: 'total_sasa', label: 'Total SASA (A^2)', format: function(v) { return v.toFixed(1); } },
       { key: 'n_alpha_spheres', label: 'Alpha Spheres', format: function(v) { return Math.round(v); } },
       { key: 'polar_sasa_proportion', label: 'Polar SASA %', format: function(v) {
-        return typeof v === 'number' ? (v * 100).toFixed(1) + '%' : '—';
+        return typeof v === 'number' ? (v * 100).toFixed(1) + '%' : '--';
       }}
     ];
 
@@ -113,7 +113,7 @@
           if (col.key === 'polar_sasa_proportion' && val === undefined) {
             val = (pocket.polar_sasa && pocket.total_sasa) ? pocket.polar_sasa / pocket.total_sasa : undefined;
           }
-          var formatted = (val !== undefined && val !== null) ? col.format(val) : '—';
+          var formatted = (val !== undefined && val !== null) ? col.format(val) : '--';
           var safeFormatted = escapeHtml(String(formatted));
 
           // Add color badge for score columns
@@ -148,7 +148,7 @@
       showError('No file specified. Use ?file=path/to/file');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
-      document.title = filePath.split('/').pop() + ' — Pockets Viewer';
+      document.title = filePath.split('/').pop() + ' -- Pockets Viewer';
 
       fetch(filePath)
         .then(function(r) {
