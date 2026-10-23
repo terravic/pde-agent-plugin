@@ -933,6 +933,76 @@ def _collect_retrospectives(project_root: Path) -> list[dict[str, Any]]:
     return retros
 
 
+def _detect_host_system_theme() -> dict[str, str]:
+    """Detect host OS platform (macOS, Linux, Windows) and light/dark system theme preference."""
+    plat = sys.platform
+    if plat == "darwin":
+        os_name = "macos"
+        try:
+            proc = subprocess.run(
+                ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                capture_output=True,
+                text=True,
+                timeout=0.5,
+                check=False,
+            )
+            theme = "dark" if proc.returncode == 0 and "dark" in proc.stdout.lower() else "light"
+            return {"os_platform": os_name, "system_theme": theme}
+        except Exception:
+            return {"os_platform": os_name, "system_theme": "unknown"}
+    if plat == "win32":
+        os_name = "windows"
+        try:
+            import winreg  # type: ignore[import-not-found]
+
+            with winreg.OpenKey(
+                winreg.HKEY_CURRENT_USER,
+                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+            ) as key:
+                val, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
+                return {"os_platform": os_name, "system_theme": "light" if int(val) == 1 else "dark"}
+        except Exception:
+            return {"os_platform": os_name, "system_theme": "unknown"}
+    if plat.startswith("linux"):
+        os_name = "linux"
+        gtk_env = os.environ.get("GTK_THEME", "").lower()
+        if "dark" in gtk_env:
+            return {"os_platform": os_name, "system_theme": "dark"}
+        if "light" in gtk_env:
+            return {"os_platform": os_name, "system_theme": "light"}
+        for key_name in ("color-scheme", "gtk-theme"):
+            try:
+                proc = subprocess.run(
+                    ["gsettings", "get", "org.gnome.desktop.interface", key_name],
+                    capture_output=True,
+                    text=True,
+                    timeout=0.5,
+                    check=False,
+                )
+                if proc.returncode == 0 and proc.stdout.strip():
+                    out = proc.stdout.strip().lower()
+                    if "dark" in out:
+                        return {"os_platform": os_name, "system_theme": "dark"}
+                    if "light" in out or "default" in out:
+                        return {"os_platform": os_name, "system_theme": "light"}
+            except Exception:
+                pass
+        try:
+            kde_cfg = Path.home() / ".config" / "kdeglobals"
+            if kde_cfg.is_file():
+                kde_txt = kde_cfg.read_text(encoding="utf-8", errors="ignore").lower()
+                for line in kde_txt.splitlines():
+                    if line.strip().startswith("colorscheme="):
+                        return {
+                            "os_platform": os_name,
+                            "system_theme": "dark" if "dark" in line else "light",
+                        }
+        except Exception:
+            pass
+        return {"os_platform": os_name, "system_theme": "unknown"}
+    return {"os_platform": plat, "system_theme": "unknown"}
+
+
 def _collect_environment_readiness(project_root: Path) -> dict[str, Any]:
     """Collect an offline, zero-network summary of PkDE binaries, libraries, and credentials."""
     import importlib.util
@@ -1005,10 +1075,14 @@ def _collect_environment_readiness(project_root: Path) -> dict[str, Any]:
         else project_root.name
     )
 
+    host_sys = _detect_host_system_theme()
+
     return {
         "cli_version": CLI_VERSION,
         "env_version": env_version[:16],
         "project_root": rel_root or ".",
+        "os_platform": host_sys["os_platform"],
+        "system_theme": host_sys["system_theme"],
         "binaries": binaries,
         "libraries": libraries,
         "credentials": credentials,

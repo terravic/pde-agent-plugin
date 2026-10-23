@@ -354,15 +354,65 @@ def test_dashboard_theme_and_palette_compliance(tmp_path: Path) -> None:
     assert "Interactive Relationship Node Map" in ui_only
     assert "Structural Data Diagram" in ui_only
 
-    # 5. Theme toggle button uses plain text label without decorative icons
-    btn_match = re.search(
-        r'<button[^>]*id="theme-toggle-btn"[^>]*>(.*?)</button>',
+    # 5. Three-icon Light / Dark / System theme selector uses icon-only buttons
+    selector_match = re.search(
+        r'<div[^>]*id="theme-selector"[^>]*>(.*?)</div>',
         ui_only,
         flags=re.DOTALL,
     )
-    assert btn_match is not None
-    assert "<svg" not in btn_match.group(1)
-    assert "theme-toggle-label" in btn_match.group(1)
+    assert selector_match is not None
+    for mode, btn_id in (
+        ("light", "theme-btn-light"),
+        ("dark", "theme-btn-dark"),
+        ("system", "theme-btn-system"),
+    ):
+        btn_match = re.search(
+            rf'<button[^>]*id="{btn_id}"[^>]*data-theme-mode="{mode}"[^>]*>(.*?)</button>',
+            selector_match.group(1),
+            flags=re.DOTALL,
+        )
+        assert btn_match is not None, f"Missing theme icon button {btn_id}"
+        inner = btn_match.group(1).strip()
+        assert "<svg" in inner, f"Expected SVG icon inside {btn_id}"
+        text_outside_svg = re.sub(r"<svg.*?</svg>", "", inner, flags=re.DOTALL).strip()
+        assert text_outside_svg == "", f"Expected icon-only button for {btn_id}, got text: {text_outside_svg!r}"
+
+    assert "setThemeMode" in ui_only
+    assert "resolveSystemTheme" in ui_only
 
 
+def test_host_system_theme_detection_across_platforms( monkeypatch ) -> None:
+    """Verify _detect_host_system_theme detects macOS, Linux, and Windows system themes."""
+    import subprocess
+    from types import SimpleNamespace
+    from pkde.commands.dashboard import _detect_host_system_theme
 
+    # 1. macOS (darwin) Dark mode
+    monkeypatch.setattr("sys.platform", "darwin")
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(returncode=0, stdout="Dark\n"),
+    )
+    assert _detect_host_system_theme() == {"os_platform": "macos", "system_theme": "dark"}
+
+    # 2. macOS (darwin) Light mode (AppleInterfaceStyle absent -> returncode 1)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(returncode=1, stdout=""),
+    )
+    assert _detect_host_system_theme() == {"os_platform": "macos", "system_theme": "light"}
+
+    # 3. Linux via GTK_THEME or gsettings
+    monkeypatch.setattr("sys.platform", "linux")
+    monkeypatch.setenv("GTK_THEME", "Adwaita:dark")
+    assert _detect_host_system_theme() == {"os_platform": "linux", "system_theme": "dark"}
+
+    monkeypatch.delenv("GTK_THEME", raising=False)
+    monkeypatch.setattr(
+        subprocess,
+        "run",
+        lambda *a, **kw: SimpleNamespace(returncode=0, stdout="'prefer-light'\n"),
+    )
+    assert _detect_host_system_theme() == {"os_platform": "linux", "system_theme": "light"}
