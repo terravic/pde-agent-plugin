@@ -99,4 +99,3 @@ Before completing a task, verify the generated dashboard against this checklist:
 3. Have all redundant ornamental UI elements, decorative gridlines, and purple-lavender gradients been stripped?
 4. Are the data visualizations (charts, graphs, matrices, 3D elements) colorful, lively, and highly readable, avoiding flat grayscales?
 5. Is the dashboard displaying the actual, processed user data rather than static fallback placeholders?
-

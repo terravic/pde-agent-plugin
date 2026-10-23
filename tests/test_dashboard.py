@@ -334,8 +334,8 @@ def test_dashboard_theme_and_palette_compliance(tmp_path: Path) -> None:
     ):
         assert viz_token in ui_only, f"Missing required visualization color {viz_token}"
 
-    # 3. Zero AI Slop Ban List: No Inter / Roboto fonts, no purple/lavender gradients, no decorative gridlines
-    for banned in (
+    # 3. Typography and surface styling constraints
+    for disallowed_token in (
         "Roboto",
         "'Inter'",
         "linear-gradient",
@@ -348,13 +348,13 @@ def test_dashboard_theme_and_palette_compliance(tmp_path: Path) -> None:
         "168, 85, 247",
         "Physics",
     ):
-        assert banned not in ui_only, f"Disallowed UI element found in UI code: {banned}"
+        assert disallowed_token not in ui_only, f"Disallowed UI element found in UI code: {disallowed_token}"
 
-    # 4. Clean component titles in dashboard layout
+    # 4. Component titles in dashboard layout
     assert "Interactive Relationship Node Map" in ui_only
     assert "Structural Data Diagram" in ui_only
 
-    # 5. Three-icon Light / Dark / System theme selector uses icon-only buttons
+    # 5. Three-icon Light / Dark / System theme selector buttons
     selector_match = re.search(
         r'<div[^>]*id="theme-selector"[^>]*>(.*?)</div>',
         ui_only,

@@ -127,7 +127,7 @@ While the skill automatically starts the background live server when prompted, y
 
 You can also open `dashboard.html` (located in the project root directory or inside `.pkde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pkde dashboard serve --host 0.0.0.0 --port 8765`. When connected to `http://0.0.0.0:8765`, the top bar displays `LIVE SSE (0.0.0.0)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect Plotly charts, expand accordions, and scroll through findings while new telemetry arrives.
 
-Inside `dashboard.html`, the top-bar mode switcher provides **4 synchronized views** (`Split` | `Agents` | `Discovery` | `Telemetry`) plus a persistent collapsible **Live Telemetry Console** at the bottom of `Split`, `Agents`, and `Discovery` views:
+Inside `dashboard.html`, the top bar includes a **Light / Dark / System** theme selector (which automatically detects and tracks the host operating system appearance preference on macOS, Linux, and Windows when `System` is selected) and a mode switcher providing **4 synchronized views** (`Split` | `Agents` | `Discovery` | `Telemetry`) plus a persistent collapsible **Live Telemetry Console** at the bottom of `Split`, `Agents`, and `Discovery` views:
 1. **Left Pane (`Split` & `Agents` Views -- Multi-Agent Lineage & Control Plane)**:
    - **Agent Forest**: An interactive diagram showing the `User Prompt` root, the `Science Program Lead`, and all specialist subagents, their live status (`running`, `in_progress`, `mechanically_validated`, `scientifically_accepted`), cursor-anchored zoom controls, and a node inspector drawer displaying frozen context snapshots, acceptance criteria, recent inter-agent communications, and the 10-check validation scorecard.
    - **Work Orders, Runs, Leases, and Event Stream**: Filterable tables and timelines tracking every task dispatch, resource lock, validation check, and review cycle.
@@ -329,6 +329,7 @@ All paths below are relative to the repository root (`./`):
 ./
 |-- SKILL.md                                     # Root skill entrypoint for agent harnesses
 |-- README.md                                    # Project documentation and user guide
+|-- DESIGN.md                                    # Dashboard visual, layout, and theme design specification
 |-- prd.md                                       # Product Requirements Document
 |-- LICENSE                                      # Apache 2.0 license
 |-- pyproject.toml                               # Python package configuration and dependencies
