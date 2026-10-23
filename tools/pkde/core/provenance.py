@@ -1125,9 +1125,17 @@ class Sidecar:
 def _get_project_root() -> Path | None:
     """Try to discover the project root. Returns None if unavailable."""
     try:
+        import click
         from .context import resolve_project
 
-        return resolve_project().root.resolve()
+        explicit = None
+        ctx = click.get_current_context(silent=True)
+        while ctx is not None:
+            if ctx.obj is not None and hasattr(ctx.obj, "project_override") and ctx.obj.project_override:
+                explicit = ctx.obj.project_override
+                break
+            ctx = ctx.parent
+        return resolve_project(explicit).root.resolve()
     except Exception:
         return None
 
