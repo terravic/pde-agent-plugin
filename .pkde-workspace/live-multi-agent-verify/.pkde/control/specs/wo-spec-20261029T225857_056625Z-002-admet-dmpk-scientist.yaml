@@ -1,0 +1,25 @@
+decision_question: What are the predicted ADMET endpoints and liabilities for Erlotinib
+  (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC)?
+requested_role: admet-dmpk-scientist
+stage: 1
+cycle: 1
+context:
+  content: What are the predicted ADMET endpoints and liabilities for Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC)?
+  artifact_links: []
+dependencies: []
+capabilities: []
+deliverables:
+  layer_0_classes:
+  - admet
+  layer_1:
+  - findings/dmpk/erlotinib-admet.md
+acceptance_criteria:
+- All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.
+- All mandatory relays in .analysis.json appear in the Layer 1 findings report.
+- All 10 mechanical validation checks pass via pkde validate check.
+alert_policy:
+  critical: halt_and_escalate
+  warning: document_in_findings
+priority: normal
+resource_class: standard
+report_to: discovery-lead

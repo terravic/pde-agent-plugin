@@ -56,12 +56,14 @@ except ImportError:  # pragma: no cover
                 required: list[str] = []
                 for p_name, param in sig.parameters.items():
                     ann = str(param.annotation)
-                    if "int" in ann:
-                        p_type = "integer"
-                    elif "bool" in ann:
-                        p_type = "boolean"
-                    elif "dict" in ann:
+                    if ann.startswith("list") or ann.startswith("List"):
+                        p_type = "array"
+                    elif ann.startswith("dict") or ann.startswith("Dict"):
                         p_type = "object"
+                    elif ann.startswith("int"):
+                        p_type = "integer"
+                    elif ann.startswith("bool"):
+                        p_type = "boolean"
                     else:
                         p_type = "string"
                     props[p_name] = {"type": p_type}
@@ -158,9 +160,11 @@ except ImportError:  # pragma: no cover
 
 from .tool_bridge import (
     pkde_bootstrap_session as _bootstrap_session,
+    pkde_dispatch_cohort as _dispatch_cohort,
     pkde_dispatch_workorder as _dispatch_workorder,
     pkde_exec as _exec,
     pkde_log_agent_message as _log_agent_message,
+    pkde_manage_cohort as _manage_cohort,
     pkde_render_dashboard as _render_dashboard,
     pkde_validate_and_gate as _validate_and_gate,
 )
@@ -170,8 +174,9 @@ mcp = MCPServer(
     instructions=(
         "Pharmakon Discovery Engine (PkDE) MCP server providing live session bootstrap "
         "(pkde_bootstrap_session), two-phase scientific CLI execution (pkde_exec), "
-        "multi-agent work-order dispatch (pkde_dispatch_workorder), inter-agent "
-        "communication logging (pkde_log_agent_message), 10-check mechanical "
+        "single and multi-persona cohort work-order dispatch (pkde_dispatch_workorder, "
+        "pkde_dispatch_cohort), multi-subagent lifecycle management (pkde_manage_cohort), "
+        "inter-agent communication logging (pkde_log_agent_message), 10-check mechanical "
         "validation gating (pkde_validate_and_gate), and the unified interactive "
         "scientific dashboard builder (pkde_render_dashboard)."
     ),
@@ -194,8 +199,12 @@ def pkde_bootstrap_session(
     host: str = "0.0.0.0",
     port: int = 8765,
     start_server: bool = True,
+    fresh: bool = False,
+    target: str | None = None,
+    indication: str | None = None,
+    modality: str | None = None,
 ) -> dict[str, Any]:
-    """Initialize a live PkDE discovery session from the user's prompt, record the active workspace, build the initial dashboard, and start the non-blocking live server on 0.0.0.0:8765."""
+    """Initialize a live PkDE discovery session from the user's prompt (optionally recording target, indication, and modality), record the active workspace, build the initial dashboard, and start the non-blocking live server on 0.0.0.0:8765. `fresh=True` clears prior raw/findings/control state in the workspace."""
     return _bootstrap_session(
         prompt=prompt,
         program_name=program_name,
@@ -204,6 +213,10 @@ def pkde_bootstrap_session(
         host=host,
         port=port,
         start_server=start_server,
+        fresh=fresh,
+        target=target,
+        indication=indication,
+        modality=modality,
     )
 
 
@@ -219,12 +232,18 @@ def pkde_exec(
     command: str,
     project_dir: str | None = None,
     auto_refresh_dashboard: bool = True,
+    work_order_id: str | None = None,
+    agent_role: str | None = None,
+    run_id: str | None = None,
 ) -> dict[str, Any]:
-    """Execute any `pkde` CLI command (e.g., 'doctor --json', 'genetics fetch TP53 --json', 'genetics analyze TP53 --json') and return structured JSON output."""
+    """Execute any `pkde` CLI command (e.g., 'doctor --json', 'genetics fetch TP53 --json', 'genetics analyze TP53 --json') with optional concurrent subagent attribution (`work_order_id`, `agent_role`, `run_id`) and return structured JSON output."""
     return _exec(
         command=command,
         project_dir=project_dir,
         auto_refresh_dashboard=auto_refresh_dashboard,
+        work_order_id=work_order_id,
+        agent_role=agent_role,
+        run_id=run_id,
     )
 
 
@@ -240,8 +259,53 @@ def pkde_dispatch_workorder(
     spec: dict[str, Any],
     project_dir: str | None = None,
 ) -> dict[str, Any]:
-    """Automate the 4-step Work Order intake ceremony: create and commit work order, freeze context snapshot, acquire resource lease, create and start run, and return the specialist dispatch brief."""
+    """Automate the 4-step Work Order intake ceremony: create and commit work order, freeze context snapshot, acquire resource lease, create and start run, and return the specialist dispatch brief and `subagent_invocation`."""
     return _dispatch_workorder(spec=spec, project_dir=project_dir)
+
+
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
+def pkde_dispatch_cohort(
+    specs: list[dict[str, Any]],
+    project_dir: str | None = None,
+) -> dict[str, Any]:
+    """Dispatch multiple Work Orders across multiple specialist personas with dependency and resource-lease wave scheduling, returning Wave 1 `subagent_invocations` ready for `invoke_subagent(Subagents=...)`."""
+    return _dispatch_cohort(specs=specs, project_dir=project_dir)
+
+
+@mcp.tool(
+    annotations=ToolAnnotations(
+        readOnlyHint=False,
+        destructiveHint=False,
+        idempotentHint=False,
+        openWorldHint=False,
+    )
+)
+def pkde_manage_cohort(
+    action: str = "status",
+    work_order_ids: str | None = None,
+    subagent_bindings: str | None = None,
+    project_dir: str | None = None,
+    work_order_id: str | None = None,
+    subagent_id: str | None = None,
+    run_id: str | None = None,
+) -> dict[str, Any]:
+    """Manage a multi-persona cohort of Work Orders and subagents. `action` is one of `'status'`, `'bind_subagent'` (pass `work_order_id` + `subagent_id` [+ optional `run_id`], or `subagent_bindings` as a JSON object `{"WO-NNN": "<conversation_id>"}`), `'advance_wave'`, `'validate_cohort'`, or `'renew_lease'` (pass `work_order_id`)."""
+    return _manage_cohort(
+        action=action,
+        work_order_ids=work_order_ids,
+        subagent_bindings=subagent_bindings,
+        project_dir=project_dir,
+        work_order_id=work_order_id,
+        subagent_id=subagent_id,
+        run_id=run_id,
+    )
 
 
 @mcp.tool(
@@ -282,7 +346,7 @@ def pkde_validate_and_gate(
     run_id: str | None = None,
     project_dir: str | None = None,
 ) -> dict[str, Any]:
-    """Run the 10-check mechanical validation gate on a work order (`pkde validate check`) and return PASSED, CORRECTION_REQUIRED (up to 2 cycles), or DATA_INTEGRITY_FAILURE."""
+    """Run the 10-check mechanical validation gate on a work order (`WO-NNN`, comma-separated IDs, or `'all'`) and return PASSED, CORRECTION_REQUIRED (up to 2 cycles), or DATA_INTEGRITY_FAILURE, automatically advancing any newly unblocked Wave 2+ work orders."""
     return _validate_and_gate(
         work_order_id=work_order_id,
         run_id=run_id,

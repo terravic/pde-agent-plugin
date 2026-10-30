@@ -1692,13 +1692,37 @@ def accept_all_cmd(
 # ---------------------------------------------------------------------------
 
 
+def _load_spec_or_cohort_arg(project_root: Path, raw_spec: str) -> Any:
+    import json as _json
+
+    cleaned = raw_spec.strip()
+    if cleaned.startswith("{") or cleaned.startswith("["):
+        try:
+            return _json.loads(cleaned)
+        except ValueError as exc:
+            raise SchemaError(
+                "invalid inline JSON passed to --spec/--specs",
+                detail=str(exc),
+            ) from exc
+    spec_path = _resolve_yaml_path(project_root, cleaned)
+    if not spec_path.is_file():
+        raise SchemaError(
+            f"YAML/JSON input file not found: {spec_path}",
+            remedy="provide a valid path to a work-order YAML/JSON file or inline JSON",
+        )
+    raw_text = spec_path.read_text(encoding="utf-8")
+    if yaml is not None:
+        return yaml.safe_load(raw_text)
+    return _json.loads(raw_text)
+
+
 @workorder.command("dispatch")
 @click.option(
     "--spec",
     "--from",
     "spec_input",
     required=True,
-    help="Path to JSON/YAML work order spec file or inline JSON string.",
+    help="Path to JSON/YAML work order spec file or inline JSON string (single object or cohort array).",
 )
 @output_options
 @pass_state
@@ -1711,43 +1735,215 @@ def dispatch_cmd(
     """Execute the 4-step Work Order intake ceremony and emit the specialist brief.
 
     CLI equivalent of the ``pkde_dispatch_workorder`` MCP tool and
-    ``scripts/dispatch_workorder.py``. Creates and commits the work order,
-    freezes its context snapshot, acquires any non-standard resource lease,
-    creates and starts the run record, and prints the dispatch bundle.
+    ``scripts/dispatch_workorder.py``. Accepts either a single work-order spec
+    or a list of work-order specs for multi-persona cohort dispatch.
     """
     import json as _json
     from pkde_plugin.tool_bridge import pkde_dispatch_workorder
 
     project = state.project()
-    raw_spec = spec_input.strip()
-    if raw_spec.startswith("{"):
-        try:
-            spec_data = _json.loads(raw_spec)
-        except ValueError as exc:
-            raise SchemaError(
-                "invalid inline JSON passed to --spec",
-                detail=str(exc),
-            ) from exc
-    else:
-        spec_path = _resolve_yaml_path(project.root, raw_spec)
-        spec_data = _load_yaml(spec_path)
+    spec_data = _load_spec_or_cohort_arg(project.root, spec_input)
 
     res = pkde_dispatch_workorder(spec=spec_data, project_dir=str(project.root))
     if as_json:
         click.echo(_json.dumps(res, indent=2))
     else:
         if res.get("ok"):
-            click.echo(
-                f"Dispatched {res.get('work_order_id')} (r{res.get('revision')}) "
-                f"run {res.get('run_id')} -> {res.get('subagent_name')}"
-            )
-            click.echo("")
-            click.echo(res.get("specialist_brief", ""))
+            if res.get("status") == "COHORT_DISPATCHED":
+                click.echo(
+                    f"Dispatched cohort: {res.get('dispatched_count')} active (Wave 1), "
+                    f"{res.get('queued_count')} queued (Wave 2+)"
+                )
+            else:
+                click.echo(
+                    f"Dispatched {res.get('work_order_id')} (r{res.get('revision')}) "
+                    f"run {res.get('run_id')} -> {res.get('subagent_name')}"
+                )
+                click.echo("")
+                click.echo(res.get("specialist_brief", ""))
         else:
             click.echo(
                 f"Dispatch failed ({res.get('status')}): {res.get('error') or res.get('remedy')}",
                 err=True,
             )
+    if not res.get("ok"):
+        raise SystemExit(1)
+
+
+@workorder.command("dispatch-cohort")
+@click.option(
+    "--specs",
+    "--spec",
+    "--from",
+    "specs_input",
+    required=True,
+    help="Path to JSON/YAML cohort spec file or inline JSON list of work order specs.",
+)
+@output_options
+@pass_state
+def dispatch_cohort_cmd(
+    state: AppState,
+    specs_input: str,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Dispatch a multi-persona cohort of Work Orders with dependency and lease wave scheduling."""
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_dispatch_cohort
+
+    project = state.project()
+    loaded = _load_spec_or_cohort_arg(project.root, specs_input)
+    if isinstance(loaded, dict) and isinstance(loaded.get("work_orders"), list):
+        specs_list = loaded["work_orders"]
+    elif isinstance(loaded, list):
+        specs_list = loaded
+    elif isinstance(loaded, dict):
+        specs_list = [loaded]
+    else:
+        raise SchemaError("Cohort specs must be a list of work-order mappings")
+
+    res = pkde_dispatch_cohort(specs=specs_list, project_dir=str(project.root))
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(
+            f"Cohort dispatch ({res.get('status')}): "
+            f"{res.get('dispatched_count', 0)} Wave-1 active, "
+            f"{res.get('queued_count', 0)} Wave-2+ queued"
+        )
+    if not res.get("ok"):
+        raise SystemExit(1)
+
+
+@workorder.command("cohort-status")
+@click.option(
+    "--wo-ids",
+    default=None,
+    help="Optional comma-separated work order IDs to filter.",
+)
+@output_options
+@pass_state
+def cohort_status_cmd(
+    state: AppState,
+    wo_ids: str | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Inspect all work orders, runs, bound subagent conversation IDs, and wave states."""
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_manage_cohort
+
+    project = state.project()
+    res = pkde_manage_cohort(
+        action="status",
+        work_order_ids=wo_ids,
+        project_dir=str(project.root),
+    )
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(f"Cohort status ({res.get('total_work_orders', 0)} work orders):")
+        for item in res.get("work_orders", []):
+            click.echo(
+                f"  {item['work_order_id']} (wave {item.get('wave', 1)}) "
+                f"[{item['state']}] -> {item['subagent_name']} "
+                f"(run={item.get('run_id')}, subagent_id={item.get('subagent_id')})"
+            )
+
+
+@workorder.command("bind-subagent")
+@click.argument("wo_id")
+@click.argument("conversation_id")
+@click.option(
+    "--run-id",
+    default=None,
+    help="Run ID to bind (must belong to the work order; default: latest run).",
+)
+@output_options
+@pass_state
+def bind_subagent_cmd(
+    state: AppState,
+    wo_id: str,
+    conversation_id: str,
+    run_id: str | None,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Bind a spawned subagent conversation ID to its Work Order and active Run record."""
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_manage_cohort
+
+    project = state.project()
+    res = pkde_manage_cohort(
+        action="bind_subagent",
+        work_order_id=wo_id,
+        subagent_id=conversation_id,
+        run_id=run_id,
+        project_dir=str(project.root),
+    )
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(
+            f"Bound {wo_id} -> subagent conversation {conversation_id} ({res.get('status')})"
+        )
+        for item in res.get("unmatched", []):
+            click.echo(f"  not bound: {item['work_order_id']}: {item['reason']}", err=True)
+    if not res.get("ok"):
+        raise SystemExit(1)
+
+
+@workorder.command("renew-lease")
+@click.argument("wo_id")
+@output_options
+@pass_state
+def renew_lease_cmd(
+    state: AppState,
+    wo_id: str,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Extend the TTL of every exclusive resource lease held by a Work Order."""
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_manage_cohort
+
+    project = state.project()
+    res = pkde_manage_cohort(
+        action="renew_lease",
+        work_order_id=wo_id,
+        project_dir=str(project.root),
+    )
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(f"Renew lease for {wo_id}: {res.get('status')}")
+    if not res.get("ok"):
+        raise SystemExit(1)
+
+
+@workorder.command("advance-wave")
+@output_options
+@pass_state
+def advance_wave_cmd(
+    state: AppState,
+    as_json: bool,
+    quiet: bool,
+) -> None:
+    """Promote queued Wave 2+ work orders whose dependencies and leases are now satisfied."""
+    import json as _json
+    from pkde_plugin.tool_bridge import pkde_manage_cohort
+
+    project = state.project()
+    res = pkde_manage_cohort(
+        action="advance_wave",
+        project_dir=str(project.root),
+    )
+    if as_json:
+        click.echo(_json.dumps(res, indent=2))
+    else:
+        click.echo(
+            f"Advance wave ({res.get('status')}): promoted {res.get('promoted_count', 0)} work order(s)"
+        )
     if not res.get("ok"):
         raise SystemExit(1)
 
@@ -1768,7 +1964,7 @@ def validate_and_gate_cmd(
     as_json: bool,
     quiet: bool,
 ) -> None:
-    """Run the 10-check validation gate and correction routing on a Work Order.
+    """Run the 10-check validation gate and correction routing on a Work Order or cohort ('all').
 
     CLI equivalent of the ``pkde_validate_and_gate`` MCP tool.
     """

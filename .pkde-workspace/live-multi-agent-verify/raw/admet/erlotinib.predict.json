@@ -1,0 +1,97 @@
+{
+  "tool": "admet",
+  "subcommand": "predict",
+  "canonical_smiles": "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1",
+  "fragment_notes": {},
+  "molecular_descriptors": {
+    "logp": 3.41,
+    "mw": 393.44,
+    "tpsa": 74.73,
+    "aromatic_rings": 3,
+    "rotatable_bonds": 10
+  },
+  "endpoints": {
+    "metabolic_stability": {
+      "endpoint": "metabolic_stability",
+      "predicted_class": "moderate",
+      "contributing_descriptors": {
+        "logp": 3.41,
+        "aromatic_rings": 3
+      },
+      "rules_applied": "Gleeson 2008: LogP > 4 AND aromatic rings >= 3 -> high; LogP 1-3 -> low; otherwise -> moderate",
+      "citation": "Gleeson, 'Generation of a Set of Simple, Interpretable ADMET Rules of Thumb', J Med Chem 2008;51:817-834"
+    },
+    "cyp_inhibition": {
+      "endpoint": "cyp_inhibition",
+      "isoforms": {
+        "CYP2D6": {
+          "flagged": false,
+          "triggering_features": [],
+          "citation": "Gleeson, 'Generation of a Set of Simple, Interpretable ADMET Rules of Thumb', J Med Chem 2008;51:817-834"
+        },
+        "CYP3A4": {
+          "flagged": false,
+          "triggering_features": [],
+          "citation": "General CYP3A4 risk rule: MW > 400 and LogP > 3 correlate with CYP3A4 inhibition risk"
+        },
+        "CYP2C9": {
+          "flagged": false,
+          "triggering_features": [],
+          "citation": "General CYP2C9 risk rule: acidic compounds with LogP > 2 correlate with CYP2C9 inhibition risk"
+        }
+      },
+      "any_flagged": false
+    },
+    "permeability": {
+      "endpoint": "permeability",
+      "predicted_class": "high",
+      "contributing_descriptors": {
+        "tpsa": 74.73,
+        "logp": 3.41,
+        "mw": 393.44
+      },
+      "rules_applied": "Egan 2000: TPSA <= 132 AND LogP in [-1, 6] -> high; TPSA > 150 -> low; MW > 500 -> low (override); otherwise -> moderate",
+      "citation": "Egan et al., 'Prediction of Drug Absorption Using Multivariate Statistics', J Med Chem 2000;43:3867-3877"
+    },
+    "herg_liability": {
+      "endpoint": "herg_liability",
+      "flagged": false,
+      "triggering_features": [],
+      "contributing_descriptors": {
+        "has_basic_nitrogen": true,
+        "logp": 3.41,
+        "aromatic_rings": 3
+      },
+      "limitations": "Rule-based hERG prediction has a documented false-negative rate. Absence of this flag is not evidence of hERG safety. Many hERG blockers do not match this pharmacophore pattern, and this prediction cannot substitute for a measured IC50 or patch-clamp result.",
+      "rules_applied": "Aronov 2005: basic nitrogen + LogP > 3.7 + >= 2 aromatic rings -> hERG liability flagged",
+      "citation": "Aronov, 'Predictive in silico modeling for hERG channel blockers', Drug Discov Today 2005;10:149-155"
+    },
+    "solubility": {
+      "endpoint": "solubility",
+      "predicted_logS": -4.176,
+      "predicted_class": "low",
+      "contributing_descriptors": {
+        "cLogP": 3.41,
+        "mw": 393.44,
+        "rotatable_bonds": 10,
+        "aromatic_proportion": 0.5517,
+        "aromatic_atoms": 16,
+        "heavy_atoms": 29
+      },
+      "equation_coefficients": {
+        "intercept": 0.16,
+        "cLogP": -0.63,
+        "MW": -0.0062,
+        "RB": 0.066,
+        "AP": -0.74
+      },
+      "classification_boundaries": {
+        "high": "> -1",
+        "moderate": "-1 to -3",
+        "low": "-3 to -5",
+        "insoluble": "< -5"
+      },
+      "citation": "Delaney, 'ESOL: Estimating Aqueous Solubility Directly from Molecular Structure', J Chem Inf Comput Sci 2004;44:1000-1009"
+    }
+  }
+}

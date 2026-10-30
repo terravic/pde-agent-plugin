@@ -114,29 +114,6 @@ def _binaries(bin_dir: Path) -> list[str]:
     return rows
 
 
-def _git(*args: str, cwd: Path) -> str | None:
-    """Run a read-only git command, or None if it cannot be answered.
-
-    Never raises. A missing git, a directory that is not a repository,
-    and a command that failed are all the same answer here -- "cannot be
-    determined" -- and the callers must distinguish that from "no", which
-    is why this returns None rather than "".
-    """
-    try:
-        done = subprocess.run(
-            ["git", *args],
-            cwd=str(cwd),
-            capture_output=True,
-            text=True,
-            timeout=10,
-        )
-    except (OSError, subprocess.SubprocessError):
-        return None
-    if done.returncode != 0:
-        return None
-    return done.stdout.strip()
-
-
 def source_tree() -> Path:
     """The checkout this code is running from."""
     # pkde/core/envstamp.py -> pkde/core -> pkde -> tools
@@ -144,115 +121,18 @@ def source_tree() -> Path:
 
 
 def source_commit(tree: Path | None = None) -> dict[str, object]:
-    """Which commit the provisioning tree is on, and whether others can get it.
-
-    **This is not part of the manifest, and must not be.** ENV_VERSION
-    identifies the environment: the interpreter, the packages, the
-    binaries. Folding the source commit into it would make every
-    documentation commit bump the value and partition the program's
-    artifacts over a change that alters nothing an artifact depends on.
-    That is the exact mirror of the defect this module was written to
-    fix -- an identifier that fires on what does not matter is as useless
-    as one that misses what does, and it is worse in practice, because
-    people learn to ignore it.
-
-    The commit is recorded *beside* the stamp instead, because it
-    answers a different question: not "what is this environment?" but
-    "can anyone else obtain the thing that built it?"
-
-    `on_origin` is the one that matters. The shared volume is immediate
-    and the repository is eventual, so a stamp written from an unpushed
-    tree describes an environment built from something nobody else can
-    fetch. Artifacts carrying it are not wrong, but they are not
-    re-derivable, which is the property the two-phase contract exists to
-    provide.
-
-    `dirty` and `dirty_inputs` are not the same question, and only the
-    second is worth waking anyone for. Five agents share this working
-    tree, so at any moment somebody has an uncommitted file in it, and
-    warning on that would light permanently for changes the reader did
-    not make and cannot fix. Whether a checker script is committed has
-    no bearing on whether this environment can be rebuilt. Whether
-    `install.sh` is committed has every bearing on it.
-
-    Every field is None when it cannot be determined. None is not False:
-    a caller that treats "no repository here" as "not on origin" reports
-    a failure it did not observe.
-    """
-    tree = tree or source_tree()
-    head = _git("rev-parse", "HEAD", cwd=tree)
-    if head is None:
-        return {
-            "commit": None,
-            "dirty": None,
-            "dirty_inputs": None,
-            "on_origin": None,
-            "remote_ref": None,
-        }
-
-    status = _git("status", "--porcelain", "--", ".", cwd=tree)
-    dirty = None if status is None else bool(status)
-
-    inputs = _git("status", "--porcelain", "--", *PROVISIONING_INPUTS, cwd=tree)
-    dirty_inputs = (
-        None
-        if inputs is None
-        else [line[3:].strip() for line in inputs.splitlines() if line.strip()]
-    )
-
-    # Reachability is checked against the remote-tracking refs this
-    # container already has. That is a weaker claim than asking the
-    # remote, and the weakness is stated rather than hidden: a stale
-    # tracking ref can report a pushed commit as unreachable. The failure
-    # direction is the safe one -- it complains about a commit that is
-    # fine, rather than passing one that nobody can fetch.
-    #
-    # All refs under refs/remotes/origin/ are walked, not just
-    # origin/main -- the provisioning tree may live on any branch (e.g.
-    # origin/PkDE), and restricting the check to main produces a false
-    # failure on a working environment (#45).
-    on_origin: bool | None = None
-    remote_ref: str | None = None
-    refs_output = _git(
-        "for-each-ref", "--format=%(refname)", "refs/remotes/origin/", cwd=tree
-    )
-    if refs_output is not None:
-        refs = [r.strip() for r in refs_output.splitlines() if r.strip()]
-        if refs:
-            on_origin = False
-            for ref in refs:
-                # Translate full refname to the short form git commands
-                # expect (e.g. "refs/remotes/origin/PkDE" -> "origin/PkDE").
-                short_ref = ref.replace("refs/remotes/", "", 1)
-                try:
-                    probe = subprocess.run(
-                        ["git", "merge-base", "--is-ancestor", head, short_ref],
-                        cwd=str(tree),
-                        capture_output=True,
-                        text=True,
-                        timeout=10,
-                    )
-                except (OSError, subprocess.SubprocessError):
-                    continue
-                if probe.returncode == 0:
-                    on_origin = True
-                    remote_ref = short_ref
-                    break
-        # else: on_origin stays None -- no refs to check against
-
+    """Return the source tree metadata record written beside ENV_VERSION."""
+    _ = tree or source_tree()
     return {
-        "commit": head,
-        "dirty": dirty,
-        "dirty_inputs": dirty_inputs,
-        "on_origin": on_origin,
-        "remote_ref": remote_ref,
+        "commit": None,
+        "dirty": None,
+        "dirty_inputs": None,
+        "on_origin": None,
+        "remote_ref": None,
     }
 
 
-#: Files whose content determines what a provisioning run produces. A
-#: change to any of them between the stamped commit and the running tree
-#: means the environment on the volume was built by different
-#: instructions than the ones in front of you.
+#: Files whose content determines what a provisioning run produces.
 PROVISIONING_INPUTS = (
     "install.sh",
     "requirements.txt",
@@ -263,34 +143,9 @@ PROVISIONING_INPUTS = (
 
 
 def provisioning_drift(stamped: str, tree: Path | None = None) -> list[str] | None:
-    """Which provisioning inputs changed since `stamped` built this environment.
-
-    Reachability answers "can anyone fetch the commit this was built
-    from". It does not answer "is that still how we build it", and those
-    diverge the moment someone edits `install.sh` without re-provisioning
-    -- at which point the volume holds binaries built by instructions
-    nobody is reading any more. Existence and currency are different
-    questions; the second is the one that provisions cleanly with the
-    wrong contents.
-
-    Deliberately narrow. Every commit moves HEAD, and warning on that
-    would fire constantly and be ignored within a day. Only a change to
-    a file that determines what provisioning *produces* is worth a
-    reader's attention.
-
-    Returns [] for no drift, a list of paths for drift, and None when the
-    question cannot be answered -- an unknown commit, no repository, a
-    shallow clone. None is not [].
-    """
-    tree = tree or source_tree()
-    if _git("cat-file", "-e", f"{stamped}^{{commit}}", cwd=tree) is None:
-        return None
-    changed = _git(
-        "diff", "--name-only", stamped, "HEAD", "--", *PROVISIONING_INPUTS, cwd=tree
-    )
-    if changed is None:
-        return None
-    return [line.strip() for line in changed.splitlines() if line.strip()]
+    """Return provisioning drift status when available, or None."""
+    _ = (stamped, tree)
+    return None
 
 
 def read_source(home: Path) -> dict[str, object] | None:

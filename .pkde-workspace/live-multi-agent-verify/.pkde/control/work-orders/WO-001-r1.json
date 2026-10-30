@@ -1,0 +1,41 @@
+{
+  "id": "WO-001",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "Does Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC) satisfy Lipinski/Veber drug-likeness and structural alert criteria?",
+  "requested_role": "medicinal-chemist",
+  "stage": 1,
+  "cycle": 1,
+  "context": {
+    "content": "Does Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC) satisfy Lipinski/Veber drug-likeness and structural alert criteria?",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-001-r1.json",
+    "snapshot_sha256": "759a871059784bfc328d80e65e53f14a12f5516ff3650b49009367e1a7fbe763"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "compounds"
+    ],
+    "layer_1": [
+      "findings/chemistry/erlotinib-profile.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pkde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-29T22:58:52Z",
+  "committed_at": "2026-10-29T22:58:52Z",
+  "subagent_id": "72b17cc5-4198-4270-a9a0-40f5e11a9610",
+  "conversation_id": "72b17cc5-4198-4270-a9a0-40f5e11a9610"
+}

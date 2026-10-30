@@ -40,7 +40,7 @@ Do not broaden or rewrite the decision question. Missing budgets use the
 ## Start of Session
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 pkde doctor --json
 ```
 

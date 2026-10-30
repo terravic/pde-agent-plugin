@@ -68,6 +68,10 @@ def test_workorder_lifecycle_correction_loop_and_lease_release(tmp_path: Path) -
             "decision_question": "Concurrent AF3 job should be blocked while lease is held.",
             "requested_role": "structural-biologist",
             "resource_class": "af3",
+            "deliverables": {
+                "layer_0_classes": ["structures"],
+                "layer_1": ["findings/structural-biology/braf-af3.md"],
+            },
         },
         project_dir=str(ws),
     )
@@ -251,6 +255,18 @@ async def test_mcp_server_exposes_all_6_tools_with_complete_boolean_annotations(
             "openWorldHint": True,
         },
         "pkde_dispatch_workorder": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pkde_dispatch_cohort": {
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": False,
+            "openWorldHint": False,
+        },
+        "pkde_manage_cohort": {
             "readOnlyHint": False,
             "destructiveHint": False,
             "idempotentHint": False,
@@ -504,7 +520,9 @@ list_resp = srv.mcp.handle_jsonrpc_message({"jsonrpc": "2.0", "id": 2, "method":
 tool_names = {t["name"] for t in list_resp["result"]["tools"]}
 assert "pkde_exec" in tool_names
 assert "pkde_dispatch_workorder" in tool_names
-assert len(tool_names) == 6
+assert "pkde_dispatch_cohort" in tool_names
+assert "pkde_manage_cohort" in tool_names
+assert len(tool_names) == 8
 """
     proc = subprocess.run(
         [sys.executable, "-c", script],

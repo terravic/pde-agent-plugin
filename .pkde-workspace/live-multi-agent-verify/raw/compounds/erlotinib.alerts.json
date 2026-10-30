@@ -1,0 +1,19 @@
+{
+  "tool": "compound",
+  "subcommand": "alerts",
+  "canonical_smiles": "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1",
+  "n_alerts": 2,
+  "pains_hits": [],
+  "brenk_hits": [
+    {
+      "pattern_name": "Aliphatic_long_chain",
+      "source": "Brenk"
+    },
+    {
+      "pattern_name": "triple_bond",
+      "source": "Brenk"
+    }
+  ],
+  "aggregator_hits": [],
+  "clean": false
+}

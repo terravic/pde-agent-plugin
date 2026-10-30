@@ -10,9 +10,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Differential & mutation verification tests proving real code execution (anti-echo suite).
+"""Differential and mutation verification tests for domain computation and SHA-256 provenance.
 
-Each test runs real tools against distinct inputs (or mutates an artifact byte)
+Each test runs domain tools against distinct inputs (or mutates an artifact byte)
 and verifies that the mathematical outputs change deterministically as dictated
 by chemistry, pharmacokinetics, 3D geometry, Elo math, and SHA-256 cryptography.
 """

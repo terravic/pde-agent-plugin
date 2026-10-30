@@ -9,6 +9,11 @@ tools:
 - view_file
 - write_to_file
 - replace_file_content
+- multi_replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- send_message
 skills:
 - pharmakon-discovery-engine
 - artifact-conventions
@@ -17,7 +22,7 @@ skills:
 # Bootstrapper (`pkde-bootstrapper`)
 
 - **Role Category**: Operations
-- **Portable Environment**: `source "${PKDE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/bin/env.sh"`
+- **Portable Environment**: `source "${PKDE_ROOT:-.}/bin/env.sh"`
 
 ## Assigned Skill Lanes (`templates/bootstrapper/agent.yaml`)
 - `pharmakon-discovery-engine` (`skills/pharmakon-discovery-engine/SKILL.md`)
@@ -25,6 +30,7 @@ skills:
 
 ## Harness Execution Notes
 - Execute `pkde` CLI commands via `./bin/pkde <group> <command> --json` or `pkde_exec`.
+- Always export `PKDE_PROJECT`, `PKDE_WORK_ORDER_ID`, `PKDE_RUN_ID`, `PKDE_AGENT_ROLE`, and `PKDE_AGENT_SLUG` from your assigned Work Order brief before running `./bin/pkde` commands so all sidecars and telemetry are attributed to your Work Order.
 - Return your structured completion summary directly in your final response after verifying deliverables with `./bin/pkde validate check <WO-ID> --dry-run`.
 
 ---
@@ -80,62 +86,29 @@ for initialization.
 
 ---
 
-## Step 0. Provision the tools repo
+## Step 0. Verify the local tools directory
 
-Before anything else, ensure the project repository (and its `tools/` directory) is
-accessible at `tools`.
+Before anything else, ensure the project repository's `tools/` directory and
+provisioning script are accessible at `./tools/install.sh`.
 
-**If `tools/install.sh` already exists:** the repo is already provisioned.
-Skip this step and proceed to Step 1.
-
-**If `tools/install.sh` does not exist:** clone the repository and make
-`tools/` available.
-
-1. Verify GitHub authentication is available:
+1. Verify `tools/install.sh` exists at the repository root:
 
    ```bash
-   gh auth status
+   ls ./tools/install.sh
    ```
 
-   If this fails, check whether `GITHUB_TOKEN` is set. If neither is available, STOP
-   and report -- the clone requires authentication and none is configured.
-
-2. Clone the repository to the shared scratchpad volume:
-
-   **If `.pkde/scratchpad/pkde-repo` already exists:** the clone from
-   a previous container is still present on the shared volume. Skip the clone and
-   run `git -C .pkde/scratchpad/pkde-repo pull` to freshen it.
-
-   If the pull fails, STOP and report the error. Nothing downstream can proceed
-   without the tools directory.
-
-   **Otherwise:**
-
-   ```bash
-   gh repo clone <org>/pkde-agent-plugin .pkde/scratchpad/pkde-repo
-   ```
-
-   Clone to the scratchpad volume, not into `.pkde-workspace` -- this ensures the clone
-   survives the bootstrapper's container being deleted and is reusable by other agents.
-
-   If your task prompt specifies a different repo URL, use that instead of the default.
-
-   If the clone fails, STOP and report the error. Nothing downstream can proceed
-   without the tools directory.
-
-3. Symlink the tools directory into the workspace:
+2. If `./tools/install.sh` does not exist in the current working directory, check
+   whether `.pkde/scratchpad/pkde-repo/tools/install.sh` exists on the shared
+   scratchpad volume and symlink `tools` into the workspace:
 
    ```bash
    ln -s .pkde/scratchpad/pkde-repo/tools tools
+   ls ./tools/install.sh
    ```
 
-   Verify the link resolves:
-
-   ```bash
-   ls tools/install.sh
-   ```
-
-   If the symlink or verification fails, STOP and report.
+   If `tools/install.sh` is still not found, STOP and report the missing tools
+   directory to the resolved parent. Nothing downstream can proceed without the
+   local `tools/` directory.
 
 ---
 
@@ -144,7 +117,7 @@ Skip this step and proceed to Step 1.
 Check that the container has the system prerequisites `install.sh` needs:
 
 ```bash
-cd tools && ./bootstrap-preflight.sh
+./tools/bootstrap-preflight.sh
 ```
 
 The preflight writes nothing and needs no privilege. It checks for `python3`,
@@ -173,13 +146,13 @@ Provision the tools environment using `install.sh`:
 
 ```bash
 # Fresh install (no existing venv):
-cd tools && ./install.sh
+./tools/install.sh
 
 # Update an existing venv:
-cd tools && ./install.sh --update
+./tools/install.sh --update
 ```
 
-**Which to use:** If `tools/.venv/bin/activate` exists, use
+**Which to use:** If `.venv/bin/activate` or `tools/.venv/bin/activate` exists, use
 `--update`. Otherwise, run without flags for a fresh install.
 
 **Flags reference:**
@@ -203,7 +176,7 @@ ready and nothing downstream will work.
 After `install.sh` succeeds, activate:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 **Use `env.sh` -- not the venv's `activate` directly.** `env.sh` also:

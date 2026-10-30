@@ -375,18 +375,33 @@ trigger: always_on
         )
         assigned_skills = role_info.get("skills", [])
 
+        is_orchestrator = role_name in (
+            "science-program-lead",
+            "research-operations-controller",
+            "hypex-supervisor",
+        )
+        agent_tools = [
+            "run_command",
+            "view_file",
+            "write_to_file",
+            "replace_file_content",
+            "multi_replace_file_content",
+            "list_dir",
+            "find_by_name",
+            "grep_search",
+        ]
+        if is_orchestrator:
+            agent_tools.extend(["invoke_subagent", "manage_subagents", "send_message"])
+        else:
+            agent_tools.append("send_message")
+
         frontmatter = {
             "name": subagent_name,
             "description": f"{role_info['display_name']} -- {description}",
-            "mainAgent": role_name in ("science-program-lead", "research-operations-controller"),
+            "mainAgent": is_orchestrator,
             "subagent": True,
             "model": "inherit",
-            "tools": [
-                "run_command",
-                "view_file",
-                "write_to_file",
-                "replace_file_content",
-            ],
+            "tools": agent_tools,
             "skills": assigned_skills,
         }
         fm_str = (
@@ -399,15 +414,22 @@ trigger: always_on
             f"- `{sk}` (`skills/{sk}/SKILL.md`)" for sk in assigned_skills
         )
 
+        orchestrator_notes = (
+            "- When multiple personas or work orders are needed, dispatch the cohort via `./bin/pkde workorder dispatch-cohort` (or `pkde_dispatch_cohort`) and launch all Wave 1 subagents concurrently in a single `invoke_subagent(Subagents=[...])` call.\n"
+            if is_orchestrator
+            else "- Always export `PKDE_PROJECT`, `PKDE_WORK_ORDER_ID`, `PKDE_RUN_ID`, `PKDE_AGENT_ROLE`, and `PKDE_AGENT_SLUG` from your assigned Work Order brief before running `./bin/pkde` commands so all sidecars and telemetry are attributed to your Work Order.\n"
+        )
+
         agent_md = (
             f"---\n{fm_str}\n---\n\n"
             f"# {role_info['display_name']} (`{subagent_name}`)\n\n"
             f"- **Role Category**: {role_info['category']}\n"
-            f"- **Portable Environment**: `source \"${{PKDE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}}/bin/env.sh\"`\n\n"
+            f"- **Portable Environment**: `source \"${{PKDE_ROOT:-.}}/bin/env.sh\"`\n\n"
             f"## Assigned Skill Lanes (`templates/{role_name}/agent.yaml`)\n"
             f"{skills_bullet_list}\n\n"
             f"## Harness Execution Notes\n"
             f"- Execute `pkde` CLI commands via `./bin/pkde <group> <command> --json` or `pkde_exec`.\n"
+            f"{orchestrator_notes}"
             f"- Return your structured completion summary directly in your final response after verifying deliverables with `./bin/pkde validate check <WO-ID> --dry-run`.\n\n"
             f"---\n\n"
             f"## System Prompt (`system-prompt.md`)\n\n"

@@ -1,7 +1,7 @@
 ---
 name: pkde-hypex-supervisor
 description: Hypex Supervisor -- Hypothesis-Explorer Supervisor - orchestrates PkDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph
-mainAgent: false
+mainAgent: true
 subagent: true
 model: inherit
 tools:
@@ -9,6 +9,13 @@ tools:
 - view_file
 - write_to_file
 - replace_file_content
+- multi_replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- invoke_subagent
+- manage_subagents
+- send_message
 skills:
 - artifact-conventions
 - hypothesis-run-corpus
@@ -19,7 +26,7 @@ skills:
 # Hypex Supervisor (`pkde-hypex-supervisor`)
 
 - **Role Category**: Hypex Graph
-- **Portable Environment**: `source "${PKDE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/bin/env.sh"`
+- **Portable Environment**: `source "${PKDE_ROOT:-.}/bin/env.sh"`
 
 ## Assigned Skill Lanes (`templates/hypex-supervisor/agent.yaml`)
 - `artifact-conventions` (`skills/artifact-conventions/SKILL.md`)
@@ -29,6 +36,7 @@ skills:
 
 ## Harness Execution Notes
 - Execute `pkde` CLI commands via `./bin/pkde <group> <command> --json` or `pkde_exec`.
+- When multiple personas or work orders are needed, dispatch the cohort via `./bin/pkde workorder dispatch-cohort` (or `pkde_dispatch_cohort`) and launch all Wave 1 subagents concurrently in a single `invoke_subagent(Subagents=[...])` call.
 - Return your structured completion summary directly in your final response after verifying deliverables with `./bin/pkde validate check <WO-ID> --dry-run`.
 
 ---
@@ -93,7 +101,7 @@ Do not broaden or rewrite the decision question. Missing budgets use the
 ## Start of Session
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 pkde doctor --json
 ```
 

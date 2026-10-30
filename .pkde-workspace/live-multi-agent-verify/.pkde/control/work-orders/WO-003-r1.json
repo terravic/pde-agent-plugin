@@ -1,0 +1,41 @@
+{
+  "id": "WO-003",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "What is the human genetic constraint (gnomAD pLI/LOEUF) and disease association profile for EGFR?",
+  "requested_role": "computational-biologist",
+  "stage": 1,
+  "cycle": 1,
+  "context": {
+    "content": "What is the human genetic constraint (gnomAD pLI/LOEUF) and disease association profile for EGFR?",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-003-r1.json",
+    "snapshot_sha256": "7c551855a18b53c524c702a67846d95b709fc3e8bb7b5dca4eeb8bd9a302a891"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "genetics"
+    ],
+    "layer_1": [
+      "findings/computational-biology/egfr-genetics.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pkde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-29T22:59:02Z",
+  "committed_at": "2026-10-29T22:59:02Z",
+  "subagent_id": "6fa5c41d-63f8-4045-a504-30ec1f8c3fd1",
+  "conversation_id": "6fa5c41d-63f8-4045-a504-30ec1f8c3fd1"
+}

@@ -24,7 +24,7 @@ real operational noise in this project.
 Activate the tools environment:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 This puts `pkde`, `hypex`, `elo`, and `prox` on PATH and sets `PKDE_TOOLS_HOME`.

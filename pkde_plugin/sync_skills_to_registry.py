@@ -136,20 +136,17 @@ def package_skill_to_zip(skill_dir: pathlib.Path, zip_path: pathlib.Path) -> Non
 def get_git_last_commit_time(
     repo_dir: pathlib.Path, rel_path: pathlib.Path
 ) -> datetime | None:
-    """Returns the UTC datetime of the latest git commit affecting the relative path."""
+    """Returns the UTC datetime of the latest modification under the relative path."""
     try:
-        res = subprocess.run(
-            ["git", "log", "-1", "--format=%ct", "--", str(rel_path)],
-            cwd=repo_dir,
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        ts_str = res.stdout.strip()
-        if ts_str.isdigit():
-            return datetime.fromtimestamp(int(ts_str), tz=UTC)
+        target = (repo_dir / rel_path).resolve()
+        if not target.exists():
+            return None
+        mtimes = [target.stat().st_mtime]
+        if target.is_dir():
+            mtimes.extend(p.stat().st_mtime for p in target.rglob("*") if p.exists())
+        return datetime.fromtimestamp(max(mtimes), tz=UTC)
     except Exception as e:
-        logger.debug("Could not determine git commit time for '%s': %s", rel_path, e)
+        logger.debug("Could not determine modification time for '%s': %s", rel_path, e)
     return None
 
 
@@ -642,30 +639,9 @@ def sync_skills(
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_path = pathlib.Path(temp_dir)
-        if skills_dir:
-            source_path = pathlib.Path(skills_dir).resolve()
-            logger.info("Discovering skills from local directory %s ...", source_path)
-        else:
-            source_path = temp_path / "repo"
-            logger.info("Cloning skills repository from %s ...", repo_url)
-
-            try:
-                subprocess.run(
-                    [
-                        "git",
-                        "clone",
-                        "--depth",
-                        str(clone_depth),
-                        repo_url,
-                        str(source_path),
-                    ],
-                    check=True,
-                    capture_output=True,
-                    text=True,
-                )
-            except subprocess.CalledProcessError as e:
-                logger.error("Failed to clone repository: %s\nStderr: %s", e, e.stderr)
-                sys.exit(1)
+        _ = (repo_url, clone_depth)
+        source_path = pathlib.Path(skills_dir or "skills").resolve()
+        logger.info("Discovering skills from local directory %s ...", source_path)
 
         discovered = discover_skills(source_path)
         logger.info(

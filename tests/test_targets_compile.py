@@ -183,7 +183,7 @@ def test_multiarch_hypex_and_elo_binaries_and_dispatch() -> None:
         assert res.returncode == 0
         assert "Usage:" in res.stdout
 
-    # Verify install.sh contains no fake echo shims
+    # Verify install.sh provisions native binary launchers
     install_sh = (REPO_ROOT / "tools" / "install.sh").read_text(encoding="utf-8")
     assert "hypex: executed" not in install_sh
     assert "elo: executed" not in install_sh

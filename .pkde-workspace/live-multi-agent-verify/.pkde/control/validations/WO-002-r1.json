@@ -1,0 +1,822 @@
+{
+  "work_order_id": "WO-002",
+  "work_order_revision": 1,
+  "run_id": "RUN-002",
+  "validated_at": "2026-10-29T23:04:22Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "admet"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-002-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 13
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 1
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 1
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 0,
+        "codes_addressed": 0,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "passed": true,
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "issues": [],
+      "detail": {
+        "program_yaml": ".pkde/program.yaml",
+        "sidecars_checked": 1,
+        "cli_versions_seen": [
+          "0.3.0"
+        ],
+        "env_versions_seen": [
+          "sha256:1b23e3ee0e9a6def329ecff6620d945e1cf31f09b290231ca93383cb9443fb97"
+        ],
+        "active_cli_version": "0.3.0"
+      }
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 76
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.assessment.verdict}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 6,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.n_liabilities}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 6,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.n_marginals}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 6,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.predicted_logS}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 6,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.176",
+          "actual_value": "-4.176",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.mw}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.tpsa}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "74.73",
+          "actual_value": "74.73",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.rotatable_bonds}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.permeability_mw_max}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "500.0",
+          "actual_value": "500.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.permeability_logp_min}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-1.0",
+          "actual_value": "-1.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.permeability_logp_max}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "6.0",
+          "actual_value": "6.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.metabolic_aromatic_rings_high}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.metabolic_logp_high}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "4.0",
+          "actual_value": "4.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.metabolic_logp_low}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.predicted_logS}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.176",
+          "actual_value": "-4.176",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.solubility_moderate}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-3.0",
+          "actual_value": "-3.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.solubility_low}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-5.0",
+          "actual_value": "-5.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.aromatic_proportion}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5517",
+          "actual_value": "0.5517",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.aromatic_atoms}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "16.0",
+          "actual_value": "16",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.heavy_atoms}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "29.0",
+          "actual_value": "29",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.tpsa}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "74.73",
+          "actual_value": "74.73",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.permeability_tpsa_high}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "132.0",
+          "actual_value": "132.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.cyp_inhibition.n_flagged}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.cyp_inhibition.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.has_basic_nitrogen}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.herg_min_aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.herg_logp_min}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.7",
+          "actual_value": "3.7",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.threshold_set}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.written_by}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.canonical_smiles}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.assessment.verdict}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.n_liabilities}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.n_marginals}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 16,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.metabolic_stability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.metabolic_stability.contributing_descriptors.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.metabolic_stability.contributing_descriptors.aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.cyp_inhibition.any_flagged}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 22,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.cyp_inhibition.n_flagged}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 22,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.cyp_inhibition.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 22,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 23,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.permeability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 23,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.permeability.contributing_descriptors.tpsa}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 23,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "74.73",
+          "actual_value": "74.73",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.permeability.contributing_descriptors.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 23,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.permeability.contributing_descriptors.mw}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 23,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.flagged}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.herg_liability.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.herg_liability.contributing_descriptors.has_basic_nitrogen}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.herg_liability.contributing_descriptors.logp}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.herg_logp_min}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.7",
+          "actual_value": "3.7",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.herg_liability.contributing_descriptors.aromatic_rings}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 24,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.predicted_class}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.predicted_logS}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.176",
+          "actual_value": "-4.176",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results.solubility.status}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.cLogP}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.mw}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.rotatable_bonds}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.contributing_descriptors.aromatic_proportion}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5517",
+          "actual_value": "0.5517",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.predicted_logS}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 29,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.176",
+          "actual_value": "-4.176",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.endpoints.solubility.predicted_logS}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 35,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-4.176",
+          "actual_value": "-4.176",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.predict.json $.molecular_descriptors.mw}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 41,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/admet/erlotinib.analysis.json $.thresholds_applied.herg_logp_min}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.7",
+          "actual_value": "3.7",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source-table: raw/admet/erlotinib.analysis.json $.metrics.endpoint_results}",
+          "file": "findings/dmpk/erlotinib-admet.md",
+          "line": 26,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "table tag locator resolves"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

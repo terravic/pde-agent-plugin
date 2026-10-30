@@ -13,7 +13,10 @@ def _resolve_repo_root() -> Path:
     for parent in here.parents:
         if (parent / "pkde_plugin").is_dir() and (parent / "tools" / "pkde").is_dir():
             return parent
-    return here.parents[1]
+    raise SystemExit(
+        f"pkde_runner.py: cannot locate the PkDE repository root above {here} "
+        "(expected sibling 'pkde_plugin/' and 'tools/pkde/' directories)"
+    )
 
 
 REPO_ROOT = _resolve_repo_root()

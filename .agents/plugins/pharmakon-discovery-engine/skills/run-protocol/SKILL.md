@@ -27,7 +27,7 @@ that advances to the next state.
 |---|---|---|
 | INIT | Set up run directory, decompose goal, initialize budgets | None |
 | GENERATE | Explore focus areas, produce hypotheses | 2-3 `hypex-generation` |
-| REVIEW | Score and critique all hypotheses | 1-2 `hypex-reflection` |
+| REVIEW | Score and evaluate all hypotheses | 1-2 `hypex-reflection` |
 | DEDUP | Cluster hypotheses, merge duplicates | 1 `hypex-proximity` |
 | TOURNAMENT | Pairwise Elo-rated matches | 1-3 `hypex-tournament` |
 | EVOLVE | Apply evolutionary operators to top-K hypotheses | 1 `hypex-evolution` |

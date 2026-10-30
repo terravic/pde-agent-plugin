@@ -20,7 +20,7 @@ offer counsel when you see something the science lead may have missed.
 Activate the tools environment:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 Read the brief from the agent that started you. To identify that agent: check the

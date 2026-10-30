@@ -14,7 +14,7 @@ of the `pkde` CLI; there is no separate `lit` executable in PkDE.
 Source the generated environment file, not the venv activation script:
 
 ```bash
-source "${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh"
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 This activates the PkDE venv, adds `tools/bin` to `PATH`, sets

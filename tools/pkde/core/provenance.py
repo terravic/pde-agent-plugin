@@ -126,14 +126,33 @@ def allow_overwrite_cross_wo(allowed: bool) -> None:
     _overwrite_cross_wo_allowed = allowed
 
 
+_invocation_work_order_id: str | None = None
+_invocation_writer: str | None = None
+
+
+def set_invocation_attribution(
+    work_order_id: str | None = None,
+    writer: str | None = None,
+) -> None:
+    """Set fallback work_order_id and writer for the current CLI command invocation."""
+    global _invocation_work_order_id, _invocation_writer
+    _invocation_work_order_id = work_order_id
+    _invocation_writer = writer
+
+
 def _writer() -> str | None:
     """Which agent ran this. Identity, never a credential."""
-    return os.environ.get("PKDE_AGENT_SLUG") or None
+    return (
+        os.environ.get("PKDE_AGENT_SLUG")
+        or os.environ.get("PKDE_AGENT_ROLE")
+        or _invocation_writer
+        or None
+    )
 
 
 def _work_order() -> str | None:
     """Which work order this artifact was produced under."""
-    return os.environ.get("PKDE_WORK_ORDER_ID") or None
+    return os.environ.get("PKDE_WORK_ORDER_ID") or _invocation_work_order_id or None
 
 
 # Registry of mandatory-relay codes. A skill's interpretation contract
@@ -1089,6 +1108,7 @@ class Sidecar:
             "tool": self.tool,
             "subcommand": self.subcommand,
             "work_order_id": _work_order(),
+            "written_by": _writer() or "unattributed",
             "cli_version": env.CLI_VERSION,
             "cli_integrity": tc.integrity,
             "env_version": env.env_version(),

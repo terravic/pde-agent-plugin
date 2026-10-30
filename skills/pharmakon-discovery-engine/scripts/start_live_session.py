@@ -13,7 +13,10 @@ def _resolve_repo_root() -> Path:
     for parent in here.parents:
         if (parent / "pkde_plugin").is_dir() and (parent / "tools" / "pkde").is_dir():
             return parent
-    return here.parents[1]
+    raise SystemExit(
+        f"start_live_session.py: cannot locate the PkDE repository root above {here} "
+        "(expected sibling 'pkde_plugin/' and 'tools/pkde/' directories)"
+    )
 
 
 REPO_ROOT = _resolve_repo_root()
@@ -43,6 +46,14 @@ def main() -> int:
         type=int,
         default=None,
         help="Optional initial stage number (0-4).",
+    )
+    parser.add_argument("--target", default=None, help="Optional target gene/protein symbol.")
+    parser.add_argument("--indication", default=None, help="Optional disease indication.")
+    parser.add_argument("--modality", default=None, help="Optional therapeutic modality.")
+    parser.add_argument(
+        "--fresh",
+        action="store_true",
+        help="Clear prior raw/, findings/, and control-plane state in the workspace first.",
     )
     parser.add_argument(
         "--project",
@@ -75,6 +86,10 @@ def main() -> int:
         host=args.host,
         port=args.port,
         start_server=not args.no_serve,
+        fresh=args.fresh,
+        target=args.target,
+        indication=args.indication,
+        modality=args.modality,
     )
     print(json.dumps(res, indent=2))
     return 0 if res.get("ok") else 1

@@ -1,0 +1,8 @@
+name: EGFR-Erlotinib-MultiAgent-Verify
+user_prompt: Execute live multi-persona, multi-work-order verification of Erlotinib
+  across Medicinal Chemistry, ADMET/DMPK, and Computational Biology
+target: ''
+indication: ''
+modality: ''
+stage: '1'
+updated_at: '2026-10-29T22:58:51Z'

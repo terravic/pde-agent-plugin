@@ -1,0 +1,40 @@
+{
+  "tool": "genetics",
+  "subcommand": "fetch",
+  "work_order_id": "WO-003",
+  "written_by": "pkde-computational-biologist-wo-003",
+  "cli_version": "0.3.0",
+  "cli_integrity": "165d3bc-dirty",
+  "env_version": "sha256:1b23e3ee0e9a6def329ecff6620d945e1cf31f09b290231ca93383cb9443fb97",
+  "interpreter": "py3.13-x86_64",
+  "endpoint": "https://gnomad.broadinstitute.org/api",
+  "parameters": {
+    "query_symbol": "EGFR",
+    "resolved_symbol": "EGFR",
+    "resolved_gene_id": "ENSG00000146648",
+    "reference_genome": "GRCh38",
+    "gene_resolution": {
+      "input": "EGFR",
+      "resolved": true,
+      "canonical_symbol": "EGFR",
+      "hgnc_id": "HGNC:3236",
+      "ensembl_id": null,
+      "source": "official"
+    }
+  },
+  "timestamp": "2026-10-29T23:00:07Z",
+  "completed": "2026-10-29T23:00:07Z",
+  "outputs": [
+    {
+      "path": "EGFR.gnomad-constraint.json",
+      "sha256": "6249d5a82694cb1026ac01ff298bf4ee953ff5fd58ad75f831cbe42ac5f911a5",
+      "bytes": 680
+    }
+  ],
+  "warnings": [],
+  "mandatory_relays": [],
+  "cli_modified": true,
+  "cli_modified_note": "PkDE source has uncommitted modifications. Artifacts may not be reproducible under the declared cli_version.",
+  "source": "gnomAD",
+  "constraint_flags": []
+}

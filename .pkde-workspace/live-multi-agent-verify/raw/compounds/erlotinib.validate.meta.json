@@ -1,0 +1,29 @@
+{
+  "tool": "compound",
+  "subcommand": "validate",
+  "work_order_id": "WO-001",
+  "written_by": "pkde-medicinal-chemist-wo-001",
+  "cli_version": "0.3.0",
+  "cli_integrity": "165d3bc-dirty",
+  "env_version": "sha256:1b23e3ee0e9a6def329ecff6620d945e1cf31f09b290231ca93383cb9443fb97",
+  "interpreter": "py3.13-x86_64",
+  "endpoint": null,
+  "parameters": {
+    "input_smiles": "COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC",
+    "canonical_smiles": "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1"
+  },
+  "timestamp": "2026-10-29T23:00:01Z",
+  "completed": "2026-10-29T23:00:01Z",
+  "outputs": [
+    {
+      "path": "erlotinib.validate.json",
+      "sha256": "6f67b3d0d1c3803d802da41b568ca765516987f76e20ef34c54cc084034ffe5a",
+      "bytes": 250
+    }
+  ],
+  "warnings": [],
+  "mandatory_relays": [],
+  "cli_modified": true,
+  "cli_modified_note": "PkDE source has uncommitted modifications. Artifacts may not be reproducible under the declared cli_version.",
+  "compound_name": "erlotinib"
+}

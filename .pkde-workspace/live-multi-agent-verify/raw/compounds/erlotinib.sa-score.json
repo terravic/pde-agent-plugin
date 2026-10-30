@@ -1,0 +1,7 @@
+{
+  "tool": "compound",
+  "subcommand": "sa-score",
+  "canonical_smiles": "C#Cc1cccc(Nc2ncnc3cc(OCCOC)c(OCCOC)cc23)c1",
+  "sa_score": 2.48,
+  "rdkit_version": "2026.03.6"
+}

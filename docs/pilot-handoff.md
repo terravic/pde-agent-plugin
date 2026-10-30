@@ -198,42 +198,33 @@ confirms. The practical instructions that follow:
 
 ## 7. Open items
 
-The tracker is the list; `gh issue list` is authoritative and this paragraph is not. At
-handoff the open set covers: relay coverage gaps and taxonomy (#1, #2, #3, #5, #15),
+At handoff the open set covers: relay coverage gaps and taxonomy (#1, #2, #3, #5, #15),
 deferred tool capabilities (#14), unresolved thresholds (#12), bootstrap packaging (#13),
 the environment-cost stamp being blind to build-machine cost (#18), stage-gate threshold
-provenance (#16), two design decisions needing architecture review (#4, #6), a shared-checkout commit
-hazard (#11), a documentation-reader calibration point (#8), and a agent-runtime messaging bug
-that belongs upstream (#17).
+provenance (#16), two design decisions needing architecture review (#4, #6), a shared-workspace
+write hazard (#11), a documentation-reader calibration point (#8), and an agent-runtime messaging
+issue (#17).
 
-**Two things about the tracker itself:**
+**Two notes on item attribution:**
 
-1. **The owner names in the issue bodies point at agents that no longer exist.** We wrote
-   them as a convention because the whole team shared one GitHub token and the tracker
-   could not attribute otherwise. They are reliable as *attribution* -- who found it -- and
-   are not assignments. Do not route work by them.
-2. **#4 and #6 need architecture review, not the crew.** They are design decisions, not defects.
+1. **The owner names in item records point at agents from the pilot run.** They were written
+   as an attribution convention -- who found the issue -- and are not active assignments.
+   Do not route work by them.
+2. **#4 and #6 need architecture review, not specialist execution.** They are design decisions, not defects.
 
 ---
 
 ## 8. Hazards in the working environment
 
-Practical, cost us time, and none of them are obvious:
+Practical operational notes from the first pilot:
 
-- **The workspace may be a shared checkout** (`PKDE_WORKSPACE_MODE=shared-plain`). Stage
-  explicit paths, never `git add -A`, and commit with `git commit --only <paths>`.
-- **`git commit --only <paths>` takes those paths from the working tree, not the index.**
-  A partially staged file commits whole. Pre-commit review is `git diff -- <paths>`, not
-  `git diff --cached`. This is issue #11.
-- **Backticks in a `agent message` body are shell command substitution.** If the command
-  fails, words vanish; if it succeeds, its stdout is spliced into the message. The send
-  reports success either way. The danger is inverse to the noise: the silent mode is the
-  one that inserts plausible text. Issue #17, upstream in agent-runtime.
-- **`gh issue comment --edit-last` appended a second comment instead of editing**, and
-  returned a URL that made it look like an edit. Verify with `gh issue view --json
-  comments`, not with the exit code.
-- **Clean and pushed are different claims.** Two final commits sat local in a shared tree
-  under a report of "tree clean". Check `git status -sb` for the ahead marker.
+- **The workspace may be shared across concurrent specialist runs.** Write only to the
+  deliverable paths and `raw/` subdirectories assigned in your Work Order brief.
+- **Exclusive resource classes (`af3`, `hypex-supervisor`) require a held lease.**
+  Always verify or renew the lease before starting long-running computations.
+- **Backticks in an `agent message` body can be interpreted as shell command substitution
+  when passed unquoted on the command line.** Quote or escape message summaries when
+  logging inter-agent communications.
 
 ---
 

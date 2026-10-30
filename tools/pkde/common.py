@@ -156,6 +156,66 @@ EXEMPT_PHASE_TWO_GROUPS: frozenset[str] = frozenset(
 )
 
 
+def _resolve_active_work_order_attribution(
+    project_root: Path,
+    role: str,
+) -> tuple[str | None, str | None, str | None]:
+    """Resolve (work_order_id, run_id, agent_slug) from environment or active in_progress WO."""
+    env_wo = (os.environ.get("PKDE_WORK_ORDER_ID") or "").strip() or None
+    env_run = (os.environ.get("PKDE_RUN_ID") or "").strip() or None
+    env_slug = (os.environ.get("PKDE_AGENT_SLUG") or "").strip() or None
+
+    wo_id = env_wo
+    if wo_id is None and (project_root / ".pkde" / "control").is_dir():
+        try:
+            records = controlstore.list_records(project_root, "work-order")
+            latest_by_id: dict[str, dict[str, Any]] = {}
+            for r in records:
+                wid = str(r.get("id") or "")
+                if not wid:
+                    continue
+                if wid not in latest_by_id or int(r.get("revision", 0)) >= int(
+                    latest_by_id[wid].get("revision", 0)
+                ):
+                    latest_by_id[wid] = r
+            in_prog = [
+                r
+                for r in latest_by_id.values()
+                if r.get("state") == "in_progress"
+            ]
+            role_matches = [
+                r for r in in_prog if r.get("requested_role") == role
+            ]
+            if len(role_matches) == 1:
+                wo_id = str(role_matches[0]["id"])
+            elif len(role_matches) == 0 and len(in_prog) == 1:
+                wo_id = str(in_prog[0]["id"])
+        except Exception:
+            wo_id = None
+
+    run_id = env_run
+    if run_id is None and wo_id is not None and (project_root / ".pkde" / "control").is_dir():
+        try:
+            runs = controlstore.list_records(
+                project_root,
+                "run",
+                lambda r: r.get("work_order_id") == wo_id and r.get("state") == "in_progress",
+            )
+            if runs:
+                latest_run = max(runs, key=lambda r: str(r.get("id", "")))
+                run_id = str(latest_run.get("id") or "") or None
+        except Exception:
+            run_id = None
+
+    agent_slug = env_slug
+    if agent_slug is None and wo_id is not None:
+        agent_slug = f"pkde-{role}-{wo_id.lower()}"
+    elif agent_slug is None and os.environ.get("PKDE_AGENT_ROLE"):
+        agent_slug = f"pkde-{role}"
+
+    return wo_id, run_id, agent_slug
+
+
 def enforce_phase_two(group: click.Group) -> None:
     """Apply the phase-2 contract and passive telemetry to domain commands.
 
@@ -212,6 +272,9 @@ def enforce_phase_two(group: click.Group) -> None:
                 )
 
             project_root: Path | None = None
+            wo_id: str | None = None
+            run_id: str | None = None
+            agent_slug: str | None = None
             phase = "phase2" if _is_p2 else "phase1"
             actor = os.environ.get("PKDE_AGENT_ROLE") or _TOOL_ROLE_MAP.get(
                 _group, "computational-biologist"
@@ -224,6 +287,13 @@ def enforce_phase_two(group: click.Group) -> None:
                     cand_root = state.project().root
                     if (cand_root / ".pkde").is_dir():
                         project_root = cand_root
+                        wo_id, run_id, agent_slug = _resolve_active_work_order_attribution(
+                            project_root, actor
+                        )
+                        provenance.set_invocation_attribution(
+                            work_order_id=wo_id,
+                            writer=agent_slug,
+                        )
                         arg_preview: list[str] = []
                         for k, v in kwargs.items():
                             if (
@@ -233,6 +303,18 @@ def enforce_phase_two(group: click.Group) -> None:
                             ):
                                 continue
                             arg_preview.append(str(v)[:60])
+                        ev_detail: dict[str, Any] = {
+                            "tool": _group,
+                            "subcommand": _name,
+                            "phase": phase,
+                            "args": arg_preview[:3],
+                        }
+                        if wo_id:
+                            ev_detail["work_order_id"] = wo_id
+                        if run_id:
+                            ev_detail["run_id"] = run_id
+                        if agent_slug:
+                            ev_detail["agent_slug"] = agent_slug
                         controlstore.append_event(
                             project_root,
                             {
@@ -241,12 +323,7 @@ def enforce_phase_two(group: click.Group) -> None:
                                 "from_state": "idle",
                                 "to_state": "running",
                                 "actor": actor,
-                                "detail": {
-                                    "tool": _group,
-                                    "subcommand": _name,
-                                    "phase": phase,
-                                    "args": arg_preview[:3],
-                                },
+                                "detail": ev_detail,
                             },
                         )
             except Exception:
@@ -256,6 +333,18 @@ def enforce_phase_two(group: click.Group) -> None:
                 res = _original(*args, **kwargs)
                 if project_root is not None:
                     try:
+                        done_detail: dict[str, Any] = {
+                            "tool": _group,
+                            "subcommand": _name,
+                            "phase": phase,
+                            "duration_ms": int((time.monotonic() - t0) * 1000),
+                        }
+                        if wo_id:
+                            done_detail["work_order_id"] = wo_id
+                        if run_id:
+                            done_detail["run_id"] = run_id
+                        if agent_slug:
+                            done_detail["agent_slug"] = agent_slug
                         controlstore.append_event(
                             project_root,
                             {
@@ -264,12 +353,7 @@ def enforce_phase_two(group: click.Group) -> None:
                                 "from_state": "running",
                                 "to_state": "succeeded",
                                 "actor": actor,
-                                "detail": {
-                                    "tool": _group,
-                                    "subcommand": _name,
-                                    "phase": phase,
-                                    "duration_ms": int((time.monotonic() - t0) * 1000),
-                                },
+                                "detail": done_detail,
                             },
                         )
                     except Exception:
@@ -278,6 +362,19 @@ def enforce_phase_two(group: click.Group) -> None:
             except Exception as exc:
                 if project_root is not None:
                     try:
+                        fail_detail: dict[str, Any] = {
+                            "tool": _group,
+                            "subcommand": _name,
+                            "phase": phase,
+                            "exit_code": int(getattr(exc, "exit_code", 1)),
+                            "duration_ms": int((time.monotonic() - t0) * 1000),
+                        }
+                        if wo_id:
+                            fail_detail["work_order_id"] = wo_id
+                        if run_id:
+                            fail_detail["run_id"] = run_id
+                        if agent_slug:
+                            fail_detail["agent_slug"] = agent_slug
                         controlstore.append_event(
                             project_root,
                             {
@@ -286,18 +383,14 @@ def enforce_phase_two(group: click.Group) -> None:
                                 "from_state": "running",
                                 "to_state": "failed",
                                 "actor": actor,
-                                "detail": {
-                                    "tool": _group,
-                                    "subcommand": _name,
-                                    "phase": phase,
-                                    "exit_code": int(getattr(exc, "exit_code", 1)),
-                                    "duration_ms": int((time.monotonic() - t0) * 1000),
-                                },
+                                "detail": fail_detail,
                             },
                         )
                     except Exception:
                         pass
                 raise
+            finally:
+                provenance.set_invocation_attribution(None, None)
 
         guarded._phase_two_guarded = True  # type: ignore[attr-defined]
         command.callback = guarded

@@ -9,6 +9,11 @@ tools:
 - view_file
 - write_to_file
 - replace_file_content
+- multi_replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- send_message
 skills:
 - compound-property-profile
 - admet-property-prediction
@@ -21,7 +26,7 @@ skills:
 # Admet Dmpk Scientist (`pkde-admet-dmpk-scientist`)
 
 - **Role Category**: Specialist
-- **Portable Environment**: `source "${PKDE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/bin/env.sh"`
+- **Portable Environment**: `source "${PKDE_ROOT:-.}/bin/env.sh"`
 
 ## Assigned Skill Lanes (`templates/admet-dmpk-scientist/agent.yaml`)
 - `compound-property-profile` (`skills/compound-property-profile/SKILL.md`)
@@ -33,6 +38,7 @@ skills:
 
 ## Harness Execution Notes
 - Execute `pkde` CLI commands via `./bin/pkde <group> <command> --json` or `pkde_exec`.
+- Always export `PKDE_PROJECT`, `PKDE_WORK_ORDER_ID`, `PKDE_RUN_ID`, `PKDE_AGENT_ROLE`, and `PKDE_AGENT_SLUG` from your assigned Work Order brief before running `./bin/pkde` commands so all sidecars and telemetry are attributed to your Work Order.
 - Return your structured completion summary directly in your final response after verifying deliverables with `./bin/pkde validate check <WO-ID> --dry-run`.
 
 ---
@@ -56,7 +62,7 @@ You receive ADMET and pharmacokinetics tasks from the Research Operations Contro
 Activate the tools environment:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all

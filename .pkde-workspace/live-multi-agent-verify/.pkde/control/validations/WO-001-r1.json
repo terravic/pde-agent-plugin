@@ -1,0 +1,520 @@
+{
+  "work_order_id": "WO-001",
+  "work_order_revision": 1,
+  "run_id": "RUN-001",
+  "validated_at": "2026-10-29T23:04:08Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "compounds"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-001-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 12
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 4
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 1
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 1,
+        "codes_addressed": 1,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "passed": true,
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "issues": [],
+      "detail": {
+        "program_yaml": ".pkde/program.yaml",
+        "sidecars_checked": 4,
+        "cli_versions_seen": [
+          "0.3.0"
+        ],
+        "env_versions_seen": [
+          "sha256:1b23e3ee0e9a6def329ecff6620d945e1cf31f09b290231ca93383cb9443fb97"
+        ],
+        "active_cli_version": "0.3.0"
+      }
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 41
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.assessment.verdict}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 5,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.molecular_weight}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 5,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.molecular_weight}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.logp}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.tpsa}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "74.73",
+          "actual_value": "74.73",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.hba}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "7.0",
+          "actual_value": "7",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.hbd}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1.0",
+          "actual_value": "1",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.aromatic_rings}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.0",
+          "actual_value": "3",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.heavy_atom_count}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 8,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "29.0",
+          "actual_value": "29",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.n_lipinski_violations}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.n_veber_violations}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 9,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.pains_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.aggregator_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.brenk_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_brenk_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.n_alert_violations}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 10,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.0",
+          "actual_value": "0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.sa_score}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.48",
+          "actual_value": "2.48",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_sa_score}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 11,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "6.0",
+          "actual_value": "6.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.assessment.verdict}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "locator resolves (no numerical claim to compare)"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.molecular_weight}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "393.44",
+          "actual_value": "393.44",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_mw}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "500.0",
+          "actual_value": "500",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.logp}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "3.41",
+          "actual_value": "3.41",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_logp}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "5.0",
+          "actual_value": "5",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.tpsa}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "74.73",
+          "actual_value": "74.73",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_tpsa}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "140.0",
+          "actual_value": "140",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.hba}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "7.0",
+          "actual_value": "7",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_hba}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.hbd}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1.0",
+          "actual_value": "1",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_hbd}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "5.0",
+          "actual_value": "5",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 18,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.sa_score}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 22,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.48",
+          "actual_value": "2.48",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_sa_score}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 22,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "6.0",
+          "actual_value": "6.0",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.metrics.brenk_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.analysis.json $.thresholds_applied.max_brenk_hits}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 25,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.0",
+          "actual_value": "2",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/compounds/erlotinib.descriptors.json $.descriptors.rotatable_bonds}",
+          "file": "findings/chemistry/erlotinib-profile.md",
+          "line": 30,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "10.0",
+          "actual_value": "10",
+          "detail": "values match within tolerance"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

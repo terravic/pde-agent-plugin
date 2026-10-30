@@ -7,7 +7,7 @@ You receive regulatory science tasks from the Research Operations Controller, di
 Activate the tools environment, then check what is available:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all

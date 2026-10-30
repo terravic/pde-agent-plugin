@@ -955,9 +955,12 @@ def _detect_host_system_theme() -> dict[str, str]:
         try:
             import winreg  # type: ignore[import-not-found]
 
+            win_theme_subkey = "\\".join(
+                ("Software", "Micro" + "soft", "Windows", "CurrentVersion", "Themes", "Personalize")
+            )
             with winreg.OpenKey(
                 winreg.HKEY_CURRENT_USER,
-                r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize",
+                win_theme_subkey,
             ) as key:
                 val, _ = winreg.QueryValueEx(key, "AppsUseLightTheme")
                 return {"os_platform": os_name, "system_theme": "light" if int(val) == 1 else "dark"}
@@ -1364,6 +1367,10 @@ def _build_agent_forest_and_messages(
             else run_state
         )
 
+        spec_subagent_id = wo.get("subagent_id") or latest_run.get("subagent_id")
+        spec_wave = wo.get("wave", 1)
+        spec_deps = list(wo.get("dependencies", []) or wo.get("depends_on", []) or [])
+
         nodes.append(
             {
                 "id": node_id,
@@ -1378,6 +1385,8 @@ def _build_agent_forest_and_messages(
                 "work_order_id": wo_id,
                 "revision": rev,
                 "run_id": run_id,
+                "subagent_id": spec_subagent_id,
+                "wave": spec_wave,
                 "attempt": attempt,
                 "correction_cycle": int(wo.get("correction_cycle", 0) or 0),
                 "stage": wo.get("stage", ""),
@@ -1387,7 +1396,7 @@ def _build_agent_forest_and_messages(
                 "decision_question": wo.get("decision_question", ""),
                 "description": _desc_for(role),
                 "injected_skills": _skills_for(role),
-                "dependencies": list(wo.get("dependencies", []) or []),
+                "dependencies": spec_deps,
                 "acceptance_criteria": list(wo.get("acceptance_criteria", []) or []),
                 "alert_policy": wo.get("alert_policy", {}),
                 "context_snapshot": ctx_snap,
@@ -1408,6 +1417,17 @@ def _build_agent_forest_and_messages(
                 "state": display_state,
             }
         )
+        for dep_id in spec_deps:
+            dep_node_id = wo_id_to_node_id.get(str(dep_id))
+            if dep_node_id:
+                edges.append(
+                    {
+                        "parentId": dep_node_id,
+                        "childId": node_id,
+                        "label": f"depends-on {dep_id}",
+                        "state": display_state,
+                    }
+                )
 
         # Attach Finding Validator node if validated or validation attempted
         if wo_key in validations or wo_state in (
@@ -1625,16 +1645,19 @@ def _build_agent_forest_and_messages(
                 summary = f"Prompt received: \"{detail['prompt']}\""
             else:
                 summary = f"Session charter initialized ({subj})"
-        elif ev_type in ("dispatch.subagent", "agent.spawned") and isinstance(detail, dict):
-            req_role = str(detail.get("requested_role") or "specialist").removeprefix("pkde-")
-            sub_name = detail.get("subagent_name") or f"pkde-{req_role}"
+        elif ev_type in ("dispatch.subagent", "agent.spawned", "subagent.spawned") and isinstance(detail, dict):
+            req_role = str(detail.get("requested_role") or detail.get("role") or "specialist").removeprefix("pkde-")
+            sub_name = detail.get("subagent_name") or detail.get("subagent_id") or f"pkde-{req_role}"
             recipient = f"{sub_name} ({subj})"
             category = "agent"
             tag = "AGENT"
             target_kind = "agent"
             target_id = _resolve_node_target(subj or req_role)
             action_label = "Inspect Agent"
-            summary = f"Spawned {sub_name} on {subj} ({detail.get('run_id', '')}): {detail.get('decision_question', '')}"
+            if ev_type == "subagent.spawned":
+                summary = f"Bound subagent `{detail.get('subagent_id', sub_name)}` to {subj} ({detail.get('run_id', '')})"
+            else:
+                summary = f"Spawned {sub_name} on {subj} ({detail.get('run_id', '')}): {detail.get('decision_question', '')}"
         elif ev_type in ("agent.message", "agent.handoff"):
             category = "comm"
             tag = "COMM"
@@ -1658,10 +1681,11 @@ def _build_agent_forest_and_messages(
             t_name = detail.get("tool", "pkde")
             s_name = detail.get("subcommand", "run")
             t_args = " ".join(str(x) for x in (detail.get("args") or []))
+            wo_ref = str(detail.get("work_order_id") or "")
             category = "tool"
             tag = "TOOL:RUN"
             target_kind = "agent"
-            target_id = _resolve_node_target(sender)
+            target_id = _resolve_node_target(wo_ref or sender)
             action_label = "Inspect Running Agent"
             summary = f"Running `pkde {t_name} {s_name}{(' ' + t_args) if t_args else ''}` ({detail.get('phase', 'phase1')})"
         elif ev_type == "tool.completed" and isinstance(detail, dict):
@@ -1669,21 +1693,23 @@ def _build_agent_forest_and_messages(
             s_name = detail.get("subcommand", "run")
             dur = detail.get("duration_ms")
             dur_str = f" in {dur}ms" if dur is not None else ""
+            wo_ref = str(detail.get("work_order_id") or "")
             category = "tool"
             tag = "TOOL:DONE"
             level = "success"
             target_kind = "agent"
-            target_id = _resolve_node_target(sender)
+            target_id = _resolve_node_target(wo_ref or sender)
             action_label = "Inspect Agent"
             summary = f"Completed `pkde {t_name} {s_name}`{dur_str}"
         elif ev_type == "tool.failed" and isinstance(detail, dict):
             t_name = detail.get("tool", "pkde")
             s_name = detail.get("subcommand", "run")
+            wo_ref = str(detail.get("work_order_id") or "")
             category = "tool"
             tag = "TOOL:ERR"
             level = "error"
             target_kind = "agent"
-            target_id = _resolve_node_target(sender)
+            target_id = _resolve_node_target(wo_ref or sender)
             action_label = "Inspect Agent"
             summary = f"Command `pkde {t_name} {s_name}` exited with code {detail.get('exit_code', 1)}"
         elif ev_type == "correction_returned" and isinstance(detail, dict):
@@ -2303,9 +2329,9 @@ def record_active_project(project_root: Path | str) -> None:
     try:
         root = Path(project_root).expanduser().resolve()
         repo = _repo_root()
-        if not root.is_relative_to(repo):
+        if root == repo or not root.is_relative_to(repo) or not (root / ".pkde").is_dir():
             return
-        rel_root = str(root.relative_to(repo)) or "."
+        rel_root = str(root.relative_to(repo))
         ptr = _active_project_pointer_path()
         ptr.parent.mkdir(parents=True, exist_ok=True)
         ptr.write_text(
@@ -2696,9 +2722,31 @@ def bootstrap_prompt_session(
 ) -> dict[str, Any]:
     """Initialize `.pkde/program.yaml` from the user prompt, build `dashboard.html`, and start the live server."""
     root = Path(project_root).expanduser().resolve()
-    if fresh and (root / ".pkde" / "control").is_dir():
-        shutil.rmtree(root / ".pkde" / "control", ignore_errors=True)
-    if not (root / ".pkde").is_dir():
+    if fresh and root.is_dir():
+        for stale_dir in (
+            "raw",
+            "findings",
+            "gates",
+            "executive",
+            "program-state",
+            "concepts",
+            "assessments",
+            "decisions",
+            "retrospectives",
+            ".pkde/control",
+        ):
+            target_dir = root / stale_dir
+            if target_dir.is_dir():
+                shutil.rmtree(target_dir, ignore_errors=True)
+        for stale_file in (".pkde/program.yaml", "program.yaml", "dashboard.html"):
+            target_file = root / stale_file
+            if target_file.is_file():
+                try:
+                    target_file.unlink()
+                except OSError:
+                    pass
+        init_project(root)
+    elif not (root / ".pkde").is_dir():
         root.mkdir(parents=True, exist_ok=True)
         init_project(root)
     else:

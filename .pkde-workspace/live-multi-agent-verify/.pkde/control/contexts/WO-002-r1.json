@@ -1,0 +1,8 @@
+{
+  "work_order_id": "WO-002",
+  "revision": 1,
+  "artifact_links": [],
+  "content": "What are the predicted ADMET endpoints and liabilities for Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC)?",
+  "content_sha256": "bb9c389faa3e4c910ff20835fd5f4078d59a573b9eb5979fd4cdc7df07104d3e",
+  "created_at": "2026-10-29T22:58:57Z"
+}

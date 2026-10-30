@@ -1,0 +1,15 @@
+{
+  "run_id": "RUN-003",
+  "work_order_id": "WO-003",
+  "work_order_revision": 1,
+  "state": "succeeded",
+  "attempt": 1,
+  "created_at": "2026-10-29T22:59:05Z",
+  "started_at": "2026-10-29T22:59:06Z",
+  "completed_at": "2026-10-29T23:04:35Z",
+  "result": "succeeded",
+  "failure_class": null,
+  "failure_detail": null,
+  "subagent_id": "6fa5c41d-63f8-4045-a504-30ec1f8c3fd1",
+  "conversation_id": "6fa5c41d-63f8-4045-a504-30ec1f8c3fd1"
+}

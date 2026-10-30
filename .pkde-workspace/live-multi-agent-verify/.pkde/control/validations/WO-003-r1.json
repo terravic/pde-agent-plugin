@@ -1,0 +1,692 @@
+{
+  "work_order_id": "WO-003",
+  "work_order_revision": 1,
+  "run_id": "RUN-003",
+  "validated_at": "2026-10-29T23:04:33Z",
+  "cli_version": "0.3.0",
+  "result": "pass",
+  "checks": [
+    {
+      "name": "deliverables_exist",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "layer_1_count": 1,
+        "layer_0_classes": [
+          "genetics"
+        ]
+      }
+    },
+    {
+      "name": "report_headings",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "reference": "WO-003-r1"
+      }
+    },
+    {
+      "name": "paths_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "links_checked": 8
+      }
+    },
+    {
+      "name": "provenance_valid",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "artifacts_checked": 1
+      }
+    },
+    {
+      "name": "analysis_citations",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "analyses_checked": 1
+      }
+    },
+    {
+      "name": "relay_coverage",
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "detail": {
+        "codes_checked": 1,
+        "codes_addressed": 1,
+        "codes_not_addressed": 0,
+        "unaddressed": []
+      }
+    },
+    {
+      "name": "version_policy",
+      "passed": true,
+      "result": "pass",
+      "status": "ok",
+      "kind": "COMPLETENESS",
+      "issues": [],
+      "detail": {
+        "program_yaml": ".pkde/program.yaml",
+        "sidecars_checked": 1,
+        "cli_versions_seen": [
+          "0.3.0"
+        ],
+        "env_versions_seen": [
+          "sha256:1b23e3ee0e9a6def329ecff6620d945e1cf31f09b290231ca93383cb9443fb97"
+        ],
+        "active_cli_version": "0.3.0"
+      }
+    },
+    {
+      "name": "findings_integrity",
+      "result": "pass",
+      "status": "ok",
+      "kind": "CONVENTION",
+      "detail": "no misplaced sidecars found under findings/"
+    },
+    {
+      "name": "source_tags_resolve",
+      "result": "pass",
+      "status": "ok",
+      "kind": "DATA_INTEGRITY",
+      "detail": {
+        "tags_checked": 58
+      },
+      "sub_findings": [
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.loeuf_constrained}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.45",
+          "actual_value": "0.45",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 7,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.pli_indeterminate_floor}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.1",
+          "actual_value": "0.1",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.lof_intolerant_pli}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 12,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.9",
+          "actual_value": "0.9",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.obs_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "58.0",
+          "actual_value": "58",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.exp_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "143.0114",
+          "actual_value": "143.0113916880763",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.lof_z}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "6.0305",
+          "actual_value": "6.0305419233765525",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.4056",
+          "actual_value": "0.40556209764397255",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[0]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3284",
+          "actual_value": "0.32835946231540825",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[1]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_percentile}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "18.0",
+          "actual_value": "18",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.loeuf_constrained}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.45",
+          "actual_value": "0.45",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[0]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 13,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3284",
+          "actual_value": "0.32835946231540825",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.obs_mis}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1307.0",
+          "actual_value": "1307",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.exp_mis}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1579.001",
+          "actual_value": "1579.0010426019326",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_mis}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.8277",
+          "actual_value": "0.8277385288145727",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.oe_mis_lower}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.7911",
+          "actual_value": "0.7910607030504374",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.oe_mis_upper}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.8664",
+          "actual_value": "0.8664030422808197",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.mis_z}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "2.9194",
+          "actual_value": "2.919355815974126",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.obs_syn}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "613.0",
+          "actual_value": "613",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.exp_syn}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "594.4428",
+          "actual_value": "594.4427707156876",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.oe_syn}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "1.0312",
+          "actual_value": "1.0312178567870716",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.json $.data.gene.gnomad_constraint.syn_z}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 14,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "-0.4541",
+          "actual_value": "-0.4541417771506835",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.pli_indeterminate_floor}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.1",
+          "actual_value": "0.1",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.lof_intolerant_pli}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.9",
+          "actual_value": "0.9",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.4056",
+          "actual_value": "0.40556209764397255",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[0]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3284",
+          "actual_value": "0.32835946231540825",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[1]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 21,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 29,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 30,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.loeuf_constrained}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 30,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.45",
+          "actual_value": "0.45",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 31,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.4056",
+          "actual_value": "0.40556209764397255",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.loeuf_constrained}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 31,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.45",
+          "actual_value": "0.45",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[0]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 32,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3284",
+          "actual_value": "0.32835946231540825",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[1]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 33,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_percentile}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 34,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "18.0",
+          "actual_value": "18",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.obs_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 35,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "58.0",
+          "actual_value": "58",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.exp_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 36,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "143.0114",
+          "actual_value": "143.0113916880763",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_mis}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 37,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.8277",
+          "actual_value": "0.8277385288145727",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.loeuf}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.thresholds_applied.loeuf_constrained}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.45",
+          "actual_value": "0.45",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.4056",
+          "actual_value": "0.40556209764397255",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.obs_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "58.0",
+          "actual_value": "58",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.exp_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 42,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "143.0114",
+          "actual_value": "143.0113916880763",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_percentile}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 43,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "18.0",
+          "actual_value": "18",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_mis}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 48,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.8277",
+          "actual_value": "0.8277385288145727",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.exp_lof}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 52,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "143.0114",
+          "actual_value": "143.0113916880763",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[0]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 52,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3284",
+          "actual_value": "0.32835946231540825",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.oe_lof_ci90[1]}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 52,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.5047",
+          "actual_value": "0.504692914125459",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics.pLI}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 52,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "claimed_value": "0.3891",
+          "actual_value": "0.3890693445792952",
+          "detail": "values match within tolerance"
+        },
+        {
+          "tag": "{source-table: raw/genomics/EGFR.gnomad-constraint.analysis.json $.metrics}",
+          "file": "findings/computational-biology/egfr-genetics.md",
+          "line": 38,
+          "status": "ok",
+          "kind": "DATA_INTEGRITY",
+          "detail": "table tag locator resolves"
+        }
+      ]
+    },
+    {
+      "name": "unrecognized_json",
+      "result": "pass",
+      "status": "ok",
+      "kind": "unrecognized_record_type",
+      "detail": "no unrecognized JSON files found"
+    }
+  ]
+}

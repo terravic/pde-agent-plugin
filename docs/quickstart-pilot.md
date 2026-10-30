@@ -77,7 +77,7 @@ Installs the Python venv, pip dependencies, and non-pip binaries (AutoDock Vina,
 fpocket). Then activates via:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 > `env.sh` -- not the venv's `activate` directly. `env.sh` also adds provisioned
@@ -143,7 +143,7 @@ After bootstrap completes, expect:
 ### Check environment health
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 pkde doctor
 ```
 

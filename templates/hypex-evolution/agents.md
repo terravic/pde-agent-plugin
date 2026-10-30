@@ -23,7 +23,7 @@ real operational noise in this project.
 Activate and verify the PkDE-provisioned environment:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 pkde doctor --json
 ```
 

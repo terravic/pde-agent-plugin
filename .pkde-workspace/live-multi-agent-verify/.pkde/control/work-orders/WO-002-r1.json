@@ -1,0 +1,41 @@
+{
+  "id": "WO-002",
+  "revision": 1,
+  "state": "mechanically_validated",
+  "decision_question": "What are the predicted ADMET endpoints and liabilities for Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC)?",
+  "requested_role": "admet-dmpk-scientist",
+  "stage": 1,
+  "cycle": 1,
+  "context": {
+    "content": "What are the predicted ADMET endpoints and liabilities for Erlotinib (COCCOc1cc2ncnc(Nc3cccc(C#C)c3)c2cc1OCCOC)?",
+    "artifact_links": [],
+    "snapshot": "contexts/WO-002-r1.json",
+    "snapshot_sha256": "ad4e9bcda73363285ce1cb8080ec68893e94821ef436848e4a47b158c7be2761"
+  },
+  "dependencies": [],
+  "capabilities": [],
+  "deliverables": {
+    "layer_0_classes": [
+      "admet"
+    ],
+    "layer_1": [
+      "findings/dmpk/erlotinib-admet.md"
+    ]
+  },
+  "acceptance_criteria": [
+    "All Layer 0 artifacts have valid .meta.json and .analysis.json sidecars.",
+    "All mandatory relays in .analysis.json appear in the Layer 1 findings report.",
+    "All 10 mechanical validation checks pass via pkde validate check."
+  ],
+  "alert_policy": {
+    "critical": "halt_and_escalate",
+    "warning": "document_in_findings"
+  },
+  "priority": "normal",
+  "resource_class": "standard",
+  "report_to": "discovery-lead",
+  "created_at": "2026-10-29T22:58:57Z",
+  "committed_at": "2026-10-29T22:58:57Z",
+  "subagent_id": "243860ac-aa9c-4913-9f1b-cf9e844339fe",
+  "conversation_id": "243860ac-aa9c-4913-9f1b-cf9e844339fe"
+}

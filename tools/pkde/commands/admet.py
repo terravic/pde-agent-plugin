@@ -1005,7 +1005,7 @@ def topical_cmd(
     The Potts-Guy equation:
       log Kp = -2.72 + 0.71 * logP - 0.0061 * MW
 
-    Where Kp is in cm/hr.  This is the gold-standard QSPR for skin
+    Where Kp is in cm/hr.  This is the standard reference QSPR for skin
     permeability (Potts & Guy, Pharm Res 1992;9:663-669).
 
     \b

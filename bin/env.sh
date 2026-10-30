@@ -18,8 +18,22 @@ else
 fi
 export PKDE_NO_DIRTY_WARNING=1
 if [ -z "${PKDE_PROJECT:-}" ]; then
-  if [ -d "$PKDE_ROOT/.pkde-workspace/.pkde" ] && [ -d "$PKDE_ROOT/.pkde-workspace/raw" ] && [ -n "$(ls -A "$PKDE_ROOT/.pkde-workspace/raw" 2>/dev/null)" ]; then
-    export PKDE_PROJECT="$PKDE_ROOT/.pkde-workspace"
+  _ACTIVE_PTR="$PKDE_ROOT/.pkde-workspace/active-project.json"
+  _RESOLVED_PROJ=""
+  if [ -f "$_ACTIVE_PTR" ]; then
+    _REL_ROOT=$("$PKDE_PYTHON" -c 'import json,sys; d=json.load(open(sys.argv[1])); print(d.get("project_root","").strip())' "$_ACTIVE_PTR" 2>/dev/null || true)
+    if [ -n "$_REL_ROOT" ] && [ "$_REL_ROOT" != "." ]; then
+      case "$_REL_ROOT" in
+        /*) _CAND="$_REL_ROOT" ;;
+        *)  _CAND="$PKDE_ROOT/$_REL_ROOT" ;;
+      esac
+      if [ -d "$_CAND/.pkde" ]; then
+        _RESOLVED_PROJ="$_CAND"
+      fi
+    fi
+  fi
+  if [ -n "$_RESOLVED_PROJ" ]; then
+    export PKDE_PROJECT="$_RESOLVED_PROJ"
   else
     export PKDE_PROJECT="$PKDE_ROOT/.pkde-workspace/default-program"
     if [ ! -d "$PKDE_PROJECT/.pkde" ]; then
@@ -27,4 +41,5 @@ if [ -z "${PKDE_PROJECT:-}" ]; then
       "$PKDE_PYTHON" -m pkde.cli init "$PKDE_PROJECT" >/dev/null 2>&1 || true
     fi
   fi
+  unset _ACTIVE_PTR _RESOLVED_PROJ _REL_ROOT _CAND
 fi

@@ -111,6 +111,21 @@ def _check_deliverables_schema(
                 f"Keys found: {known_keys}"
             ),
         }
+    if has_layer_1 and not has_layer_0 and deliverables.get("synthesis_only") is not True:
+        # A findings report with no declared Layer 0 evidence would skip
+        # provenance_valid, analysis_citations, relay_coverage and
+        # unrecognized_json -- i.e. prose could pass the gate unbacked.
+        return {
+            "name": "deliverables_schema",
+            "result": "fail",
+            "status": "fail",
+            "kind": "COMPLETENESS",
+            "detail": (
+                "deliverables declare a layer_1 report but no layer_0 evidence classes; "
+                "declare layer_0_classes, or set synthesis_only: true for review/synthesis "
+                "work orders that cite upstream Layer 0 artifacts"
+            ),
+        }
     return None
 
 
@@ -1336,34 +1351,211 @@ def _check_relay_coverage(
     return result
 
 
+def _load_program_policy(project_root: Path) -> tuple[Path | None, dict[str, Any]]:
+    """Locate and parse program.yaml or .pkde/program.yaml for version policy."""
+    for rel in ("program.yaml", ".pkde/program.yaml"):
+        cand = project_root / rel
+        if cand.is_file():
+            raw = cand.read_text(encoding="utf-8", errors="replace")
+            try:
+                import yaml as _yaml
+
+                if _yaml is not None:
+                    parsed = _yaml.safe_load(raw)
+                    if isinstance(parsed, dict):
+                        return cand, parsed
+            except Exception:
+                pass
+            # Fallback simple key: value parser when PyYAML is unavailable
+            fallback: dict[str, Any] = {}
+            for line in raw.splitlines():
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#") or ":" not in stripped:
+                    continue
+                k, v = stripped.split(":", 1)
+                val = v.strip().strip('"').strip("'")
+                if val.lower() in ("true", "false"):
+                    fallback[k.strip()] = val.lower() == "true"
+                else:
+                    fallback[k.strip()] = val
+            return cand, fallback
+    return None, {}
+
+
 def _check_version_policy(
     project_root: Path,
+    deliverables: dict[str, Any] | list[str] | None = None,
+    wo_id: str | None = None,
 ) -> dict[str, Any]:
-    """Check 7 -- verify version policy compliance.
+    """Check 7 -- verify version policy compliance across program.yaml and Layer 0 sidecars.
 
-    Today program.yaml does not exist, so skip is the expected result.
-    When program.yaml is added (deferred to a future program.yaml /
-    exemption-scope-configuration issue), this check will read version
-    requirements and verify cli_version/env_version in sidecars.
+    Reads version requirements from ``program.yaml`` or ``.pkde/program.yaml``
+    (``version_policy.required_cli_version``, ``version_policy.required_env_version``,
+    ``version_policy.enforce_uniform_env``, or top-level equivalents) and verifies
+    ``cli_version`` / ``env_version`` across all scoped provenance sidecars.
     """
-    program_yaml = project_root / "program.yaml"
-    if not program_yaml.is_file():
+    prog_path, prog_data = _load_program_policy(project_root)
+    policy_block = prog_data.get("version_policy")
+    if not isinstance(policy_block, dict):
+        policy_block = {}
+
+    required_cli = (
+        policy_block.get("required_cli_version")
+        or prog_data.get("required_cli_version")
+    )
+    required_env = (
+        policy_block.get("required_env_version")
+        or prog_data.get("required_env_version")
+    )
+    enforce_uniform = bool(
+        policy_block.get(
+            "enforce_uniform_env",
+            prog_data.get("enforce_uniform_env", False),
+        )
+    )
+
+    if isinstance(deliverables, dict):
+        layer_0_classes = deliverables.get("layer_0_classes", [])
+    elif isinstance(deliverables, list):
+        layer_0_classes = []
+        for p in deliverables:
+            parts = Path(str(p)).parts
+            if len(parts) >= 2 and parts[0] == "raw" and parts[1] not in layer_0_classes:
+                layer_0_classes.append(parts[1])
+    else:
+        layer_0_classes = []
+
+    candidate_dirs: list[Path] = []
+    if isinstance(layer_0_classes, list) and layer_0_classes:
+        for artifact_class in layer_0_classes:
+            normalized = normalize_artifact_class(artifact_class)
+            rel_dir = ARTIFACT_DIRS.get(normalized) or f"raw/{artifact_class}"
+            if rel_dir:
+                d = project_root / rel_dir
+                if d.is_dir() and d not in candidate_dirs:
+                    candidate_dirs.append(d)
+    elif (project_root / "raw").is_dir():
+        for sub in sorted((project_root / "raw").iterdir()):
+            if sub.is_dir():
+                candidate_dirs.append(sub)
+
+    if prog_path is None and not candidate_dirs:
         return {
             "name": "version_policy",
+            "passed": True,
             "result": "skip",
             "status": "skip",
             "kind": None,
-            "detail": "program.yaml not present -- check deferred to a future program.yaml configuration issue",
+            "issues": [],
+            "detail": "Neither program.yaml nor Layer 0 sidecar directories present",
         }
 
-    # Future: read version requirements and check against sidecars.
-    # For now, this is a placeholder for when program.yaml exists.
+    root_resolved = project_root.resolve()
+    sidecars_checked = 0
+    cli_versions_seen: set[str] = set()
+    env_versions_seen: set[str] = set()
+    issues: list[dict[str, str]] = []
+
+    for art_dir in candidate_dirs:
+        for child in sorted(art_dir.iterdir()):
+            if not child.is_file() or not _is_sidecar(child.name):
+                continue
+            if not child.resolve().is_relative_to(root_resolved):
+                continue
+            try:
+                data = read_json(child, "provenance sidecar")
+            except ArtifactError:
+                continue
+            if not isinstance(data, dict):
+                continue
+            sidecar_wo = data.get("work_order_id") or data.get("work_order")
+            if wo_id is not None and sidecar_wo is not None and sidecar_wo != wo_id:
+                continue
+
+            sidecars_checked += 1
+            rel_sidecar = str(child.relative_to(project_root))
+            cli_ver = str(data.get("cli_version") or "").strip()
+            env_ver = str(data.get("env_version") or "").strip()
+
+            if cli_ver:
+                cli_versions_seen.add(cli_ver)
+            else:
+                issues.append(
+                    {
+                        "sidecar": rel_sidecar,
+                        "issue": "missing cli_version in provenance sidecar",
+                    }
+                )
+            if env_ver:
+                env_versions_seen.add(env_ver)
+
+            if required_cli and cli_ver and cli_ver != str(required_cli):
+                issues.append(
+                    {
+                        "sidecar": rel_sidecar,
+                        "issue": f"cli_version {cli_ver!r} does not match required_cli_version {required_cli!r}",
+                    }
+                )
+            if required_env and env_ver != str(required_env):
+                issues.append(
+                    {
+                        "sidecar": rel_sidecar,
+                        "issue": f"env_version {env_ver!r} does not match required_env_version {required_env!r}",
+                    }
+                )
+
+    if enforce_uniform:
+        if len(cli_versions_seen) > 1:
+            issues.append(
+                {
+                    "sidecar": "work_order_cohort",
+                    "issue": f"multiple cli_version values detected across sidecars: {sorted(cli_versions_seen)}",
+                }
+            )
+        if len(env_versions_seen) > 1:
+            issues.append(
+                {
+                    "sidecar": "work_order_cohort",
+                    "issue": f"multiple env_version values detected across sidecars: {sorted(env_versions_seen)}",
+                }
+            )
+
+    detail: dict[str, Any] = {
+        "program_yaml": (
+            str(prog_path.relative_to(project_root)) if prog_path is not None else None
+        ),
+        "sidecars_checked": sidecars_checked,
+        "cli_versions_seen": sorted(cli_versions_seen),
+        "env_versions_seen": sorted(env_versions_seen),
+        "active_cli_version": CLI_VERSION,
+    }
+    if required_cli:
+        detail["required_cli_version"] = str(required_cli)
+    if required_env:
+        detail["required_env_version"] = str(required_env)
+
+    issue_strings = [f"{item['sidecar']}: {item['issue']}" for item in issues]
+
+    if issues:
+        detail["issues"] = issues
+        return {
+            "name": "version_policy",
+            "passed": False,
+            "result": "fail",
+            "status": "fail",
+            "kind": "DATA_INTEGRITY",
+            "issues": issue_strings,
+            "detail": detail,
+        }
+
     return {
         "name": "version_policy",
+        "passed": True,
         "result": "pass",
         "status": "ok",
         "kind": "COMPLETENESS",
-        "detail": "program.yaml present; version policy check not yet implemented",
+        "issues": [],
+        "detail": detail,
     }
 
 
@@ -2150,7 +2342,7 @@ def _run_all_checks(
             _check_provenance_valid(project_root, deliverables, wo_id=wo_id),
             _check_analysis_citations(project_root, deliverables, wo_id=wo_id),
             _check_relay_coverage(project_root, deliverables, wo_id=wo_id),
-            _check_version_policy(project_root),
+            _check_version_policy(project_root, deliverables, wo_id=wo_id),
             _check_findings_integrity(project_root),
             _check_source_tags_resolve(project_root, deliverables),
             _check_unrecognized_json(project_root, deliverables, wo_id=wo_id),

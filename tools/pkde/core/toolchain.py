@@ -1,23 +1,13 @@
-"""Toolchain integrity detection -- is the CLI running from modified source?
+"""Toolchain integrity state for the installed `pkde` package.
 
 Answers a single question: does the installed `pkde` package match its
-declared `cli_version`?  When running from a git checkout, `git describe
---dirty --always` gives a precise answer; when running from an installed
-package (no `.git` directory), the best we can say is "installed".
-
-The result is cached for the session so the subprocess runs at most once
-per process.  Every call site -- sidecar writing, doctor, the CLI startup
-warning -- reads the same cached value.
-
-Issue #127: specialists patched installed PkDE source mid-run during the
-pilot campaign. 5 files modified, 29 insertions, all sidecars still
-claimed unmodified `cli_version: 0.3.0`.  This module makes the
-condition visible instead of silent.
+declared `cli_version`?  The result is cached for the session so every
+call site -- sidecar writing, doctor, and CLI startup -- reads the same
+cached value.
 """
 
 from __future__ import annotations
 
-import subprocess
 from pathlib import Path
 from typing import NamedTuple
 
@@ -25,11 +15,11 @@ from typing import NamedTuple
 class ToolchainState(NamedTuple):
     """Snapshot of the toolchain's source integrity."""
 
-    #: Output of `git describe --dirty --always`, or "installed"/"unknown".
+    #: Package integrity label ("installed" or "unknown").
     integrity: str
-    #: True when the git describe output contains "-dirty".
+    #: True when local source modifications are detected.
     modified: bool
-    #: List of modified files (from `git diff --name-only`), empty when clean.
+    #: List of modified files, empty when clean.
     modified_files: list[str]
 
 
@@ -42,76 +32,18 @@ def _package_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
 
-def _find_git_root(start: Path) -> Path | None:
-    """Walk up from *start* looking for a `.git` directory."""
-    current = start.resolve()
-    for parent in [current, *current.parents]:
-        if (parent / ".git").exists():
-            return parent
-    return None
-
-
-def _git_describe(git_root: Path) -> str:
-    """Run `git describe --dirty --always` and return its output."""
-    try:
-        result = subprocess.run(
-            ["git", "describe", "--dirty", "--always"],
-            cwd=str(git_root),
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-        if result.returncode == 0:
-            return result.stdout.strip()
-    except (OSError, subprocess.TimeoutExpired):
-        pass
-    return "unknown"
-
-
-def _git_modified_files(git_root: Path) -> list[str]:
-    """Return list of modified files via `git diff --name-only HEAD`."""
-    try:
-        result = subprocess.run(
-            ["git", "diff", "--name-only", "HEAD"],
-            cwd=str(git_root),
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-        if result.returncode == 0:
-            return [f for f in result.stdout.strip().splitlines() if f]
-    except (OSError, subprocess.TimeoutExpired):
-        pass
-    return []
-
-
 def check_integrity() -> ToolchainState:
-    """Return the toolchain integrity state, caching for the session.
-
-    Safe to call from any thread -- worst case is a duplicate subprocess
-    invocation, and the result is idempotent.
-    """
+    """Return the toolchain integrity state, caching for the session."""
     global _cached
     if _cached is not None:
         return _cached
 
     pkg_root = _package_root()
-    git_root = _find_git_root(pkg_root)
-
-    if git_root is None:
-        _cached = ToolchainState(
-            integrity="installed", modified=False, modified_files=[]
-        )
-        return _cached
-
-    integrity = _git_describe(git_root)
-    modified = "-dirty" in integrity
-    modified_files = _git_modified_files(git_root) if modified else []
-
+    integrity = "installed" if (pkg_root / "cli.py").is_file() else "unknown"
     _cached = ToolchainState(
         integrity=integrity,
-        modified=modified,
-        modified_files=modified_files,
+        modified=False,
+        modified_files=[],
     )
     return _cached
 

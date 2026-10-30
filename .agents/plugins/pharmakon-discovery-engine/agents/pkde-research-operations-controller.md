@@ -9,6 +9,13 @@ tools:
 - view_file
 - write_to_file
 - replace_file_content
+- multi_replace_file_content
+- list_dir
+- find_by_name
+- grep_search
+- invoke_subagent
+- manage_subagents
+- send_message
 skills:
 - pharmakon-discovery-engine
 - pkde-dashboard
@@ -19,7 +26,7 @@ skills:
 # Research Operations Controller (`pkde-research-operations-controller`)
 
 - **Role Category**: Orchestrator
-- **Portable Environment**: `source "${PKDE_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null || pwd)}/bin/env.sh"`
+- **Portable Environment**: `source "${PKDE_ROOT:-.}/bin/env.sh"`
 
 ## Assigned Skill Lanes (`templates/research-operations-controller/agent.yaml`)
 - `pharmakon-discovery-engine` (`skills/pharmakon-discovery-engine/SKILL.md`)
@@ -29,6 +36,7 @@ skills:
 
 ## Harness Execution Notes
 - Execute `pkde` CLI commands via `./bin/pkde <group> <command> --json` or `pkde_exec`.
+- When multiple personas or work orders are needed, dispatch the cohort via `./bin/pkde workorder dispatch-cohort` (or `pkde_dispatch_cohort`) and launch all Wave 1 subagents concurrently in a single `invoke_subagent(Subagents=[...])` call.
 - Return your structured completion summary directly in your final response after verifying deliverables with `./bin/pkde validate check <WO-ID> --dry-run`.
 
 ---
@@ -195,7 +203,7 @@ not run again.
 Activate the tools environment:
 
 ```bash
-source ${PKDE_ROOT:-$(git rev-parse --show-toplevel)}/bin/env.sh
+source "${PKDE_ROOT:-.}/bin/env.sh"
 ```
 
 This puts `pkde` on PATH and sets `PKDE_TOOLS_HOME`. Without it, all
