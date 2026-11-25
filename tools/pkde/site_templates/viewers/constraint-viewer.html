@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>Constraint Viewer</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 0; color: #1a1a2e; background: #fff; }
@@ -27,6 +28,7 @@
     .interpretation p { font-size: 13px; color: #1e3a5f; line-height: 1.6; margin: 0; }
     h1 { font-size: 1.25rem; margin: 0; padding: 1rem 1.5rem; }
     .filename { color: #555; font-size: 0.9rem; padding: 0 1.5rem 0.5rem; }
+      button:focus-visible, a:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible { outline: 2px solid #1B5E8A; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -49,6 +51,18 @@
     function showError(msg) {
       document.getElementById('error').style.display = 'block';
       document.getElementById('error').textContent = msg;
+    }
+
+    function isSafeRelativeFile(p) {
+      if (!p || typeof p !== 'string') return false;
+      var trimmed = p.trim();
+      if (!trimmed || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return false;
+      try {
+        var resolved = new URL(trimmed, window.location.href);
+        return resolved.origin === window.location.origin && resolved.protocol === window.location.protocol;
+      } catch (e) {
+        return false;
+      }
     }
 
     function escapeHtml(str) {
@@ -94,6 +108,8 @@
 
     if (!filePath) {
       showError('No file specified. Use ?file=path/to/file');
+    } else if (!isSafeRelativeFile(filePath)) {
+      showError('Invalid file path: only relative same-origin paths are allowed.');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
       document.title = filePath.split('/').pop() + ' -- Constraint Viewer';

@@ -4,14 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="PkDE Scientific Evaluation Dashboard -- EGFR-Erlotinib-MultiAgent-Verify">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>PkDE Evaluation Dashboard -- EGFR-Erlotinib-MultiAgent-Verify</title>
-  <!-- Typography: DM Sans, Instrument Serif, IBM Plex Mono -->
-  <!-- Scientific & Math Libraries -->
-  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/3dmol@2.4.2/build/3Dmol-min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+  <!-- Typography: DM Sans, Instrument Serif, IBM Plex Mono (local system stack; zero external font requests) -->
   <style>
     :root {
       --font-sans: 'DM Sans', 'Geist Sans', system-ui, sans-serif;
@@ -27,6 +22,7 @@
       --bg-elevated: #0D0E11;
       --border-color: #292A30;
       --border-subtle: #292A30;
+      --control-border: #767884;
       --text-primary: #ECE8E2;
       --text-secondary: #9A9895;
       --text-muted: #9A9895;
@@ -46,18 +42,46 @@
       --bg-elevated: #FAFAF9;
       --border-color: #E7E5E4;
       --border-subtle: #E7E5E4;
+      --control-border: #787774;
       --text-primary: #1C1917;
-      --text-secondary: #787774;
-      --text-muted: #787774;
+      --text-secondary: #575653;
+      --text-muted: #575653;
       --accent-primary: #1C1917;
-      --accent-secondary: #787774;
+      --accent-secondary: #575653;
       --status-critical: #DC2626;
-      --status-warning: #D97706;
+      --status-warning: #B45309;
       --status-critical-bg: rgba(220, 38, 38, 0.08);
-      --status-warning-bg: rgba(217, 119, 6, 0.08);
+      --status-warning-bg: rgba(180, 83, 9, 0.08);
     }
 
     * { box-sizing: border-box; }
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    summary:focus-visible,
+    [tabindex="0"]:focus-visible {
+      outline: 2px solid var(--text-primary);
+      outline-offset: 2px;
+    }
+    .pane-heading {
+      margin: 0;
+      font-size: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      display: inline;
+    }
     html, body {
       margin: 0;
       padding: 0;
@@ -1017,7 +1041,7 @@
     }
     .tele-search {
       background: var(--bg-elevated);
-      border: 1px solid var(--border-color);
+      border: 1px solid var(--control-border);
       color: var(--text-primary);
       border-radius: 6px;
       padding: 3px 8px;
@@ -1176,7 +1200,7 @@
 </head>
 <body data-mode="split">
   <!-- Embedded Single-File PkDE Bundle -->
-  <script id="pkde-bundle-data" type="application/json">{"program": {"name": "EGFR-Erlotinib-MultiAgent-Verify", "user_prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "project_root": ".pkde-workspace", "cli_version": "0.3.0", "generated_at": "2026-10-29T22:57:57Z", "summary_metrics": {"n_agents": 4, "n_roles_available": 22, "n_work_orders": 0, "n_runs": 0, "n_validated": 0, "validation_pass_rate": 100.0, "total_checks_passed": 0, "total_checks_run": 0, "n_artifacts": 0, "n_findings": 0, "n_relays": 0, "n_relays_addressed": 0, "n_active_leases": 0, "n_concepts": 0, "n_assessments": 0, "n_decisions": 0, "n_retrospectives": 0}, "standalone_mode": false}, "agent_system": {"roles_catalog": {"admet-dmpk-scientist": {"role": "admet-dmpk-scientist", "display_name": "Admet Dmpk Scientist", "description": "ADMET/DMPK scientist for pharmacokinetic profiling, metabolite identification, and drug-drug interaction prediction", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "bioactivity-landscape", "in-vivo-pk-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "bootstrapper": {"role": "bootstrapper", "display_name": "Bootstrapper", "description": "Short-lived agent that provisions the PkDE tools environment, runs doctor verification, and reports readiness", "category": "Operations", "skills": ["pharmakon-discovery-engine", "artifact-conventions"], "harness_config": "default"}, "computational-biologist": {"role": "computational-biologist", "display_name": "Computational Biologist", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "category": "Specialist", "skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "harness_config": "default"}, "computational-chemist": {"role": "computational-chemist", "display_name": "Computational Chemist", "description": "Computational chemist for virtual screening, molecular docking, cheminformatics, and QSAR modeling", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "compound-property-profile", "binding-mode-analysis", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "experimental-biologist": {"role": "experimental-biologist", "display_name": "Experimental Biologist", "description": "Experimental biologist for assay design, high-throughput screening, CRISPR validation, and cellular pharmacology", "category": "Specialist", "skills": ["citation-resolution", "bioactivity-landscape", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "finding-validator": {"role": "finding-validator", "display_name": "Finding Validator", "description": "Mechanical finding validator -- checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "category": "Quality Gate", "skills": ["artifact-conventions"], "harness_config": "default"}, "head-of-discovery": {"role": "head-of-discovery", "display_name": "Head Of Discovery", "description": "Head of Discovery -- persistent strategic advisor that monitors program trajectory and optionally counsels the Science Program Lead; holds no decision authority, blocks nothing, gates nothing", "category": "Advisory", "skills": ["artifact-conventions"], "harness_config": "default"}, "hypex-evolution": {"role": "hypex-evolution", "display_name": "Hypex Evolution", "description": "Hypothesis Evolution Agent - refines and combines tournament hypotheses using explicit lineage-preserving operators", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "evolution-operators", "hypothesis-schema", "hypex-tool-setup"], "harness_config": "default"}, "hypex-generation": {"role": "hypex-generation", "display_name": "Hypex Generation", "description": "Hypothesis Generation Agent -- explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "hypothesis-schema", "debate-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-meta-review": {"role": "hypex-meta-review", "display_name": "Hypex Meta Review", "description": "Hypothesis Meta-Review Agent - synthesizes reviews into epoch steering and the final PkDE research report", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "meta-review-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-proximity": {"role": "hypex-proximity", "display_name": "Hypex Proximity", "description": "Hypothesis Proximity Agent - clusters hypotheses and adjudicates near-duplicate candidates", "category": "Hypex Graph", "skills": ["artifact-conventions", "proximity-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-reflection": {"role": "hypex-reflection", "display_name": "Hypex Reflection", "description": "Hypothesis Reflection Agent -- reviews hypotheses on correctness, novelty, testability, safety, goal alignment, and constraint compliance; screens for dual-use biosafety risk", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "review-rubric", "safety-screen", "hypex-tool-setup"], "harness_config": "default"}, "hypex-supervisor": {"role": "hypex-supervisor", "display_name": "Hypex Supervisor", "description": "Hypothesis-Explorer Supervisor - orchestrates PkDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph", "category": "Hypex Graph", "skills": ["artifact-conventions", "hypothesis-run-corpus", "run-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-tournament": {"role": "hypex-tournament", "display_name": "Hypex Tournament", "description": "Hypothesis Tournament Agent -- runs pairwise tournament matches between hypotheses, writes match records, and triggers Elo rating recomputation", "category": "Hypex Graph", "skills": ["artifact-conventions", "elo-tournament", "debate-protocol", "review-rubric", "hypex-tool-setup"], "harness_config": "default"}, "medicinal-chemist": {"role": "medicinal-chemist", "display_name": "Medicinal Chemist", "description": "Medicinal chemist for SAR analysis, analog design, scaffold optimization, and drug-likeness assessment", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "preclinical-toxicologist": {"role": "preclinical-toxicologist", "display_name": "Preclinical Toxicologist", "description": "Preclinical toxicologist for safety pharmacology, toxicology study design, and therapeutic index assessment", "category": "Specialist", "skills": ["tissue-expression-profile", "target-genetic-evidence", "preclinical-safety-assessment", "compound-property-profile", "admet-property-prediction", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "project-curator": {"role": "project-curator", "display_name": "Project Curator", "description": "Project curator -- maintains a navigable website from the drug discovery project artifact hierarchy", "category": "Presentation", "skills": ["artifact-conventions", "site-generation", "pkde-dashboard"], "harness_config": "default"}, "regulatory-scientist": {"role": "regulatory-scientist", "display_name": "Regulatory Scientist", "description": "Regulatory scientist for IND dossier assembly, eCTD compliance, and FDA/EMA regulatory strategy", "category": "Specialist", "skills": ["citation-resolution", "preclinical-safety-assessment", "in-vivo-pk-analysis", "compound-property-profile", "artifact-conventions"], "harness_config": "default"}, "research-operations-controller": {"role": "research-operations-controller", "display_name": "Research Operations Controller", "description": "Research Operations Controller -- executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "site-generation"], "harness_config": "default"}, "science-program-lead": {"role": "science-program-lead", "display_name": "Science Program Lead", "description": "Science Program Lead -- user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "harness_config": "default"}, "scientific-reviewer": {"role": "scientific-reviewer", "display_name": "Scientific Reviewer", "description": "Independent scientific reviewer -- re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject", "category": "Quality Gate", "skills": ["citation-resolution", "tournament-corpus", "citation-verification", "artifact-conventions"], "harness_config": "default"}, "structural-biologist": {"role": "structural-biologist", "display_name": "Structural Biologist", "description": "Structural biologist for protein structure analysis, druggability assessment, and binding mode interpretation", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "binding-mode-analysis", "artifact-conventions"], "harness_config": "default"}}, "all_10_checks": [{"name": "deliverables_exist", "kind": "COMPLETENESS"}, {"name": "report_headings", "kind": "FORMAT"}, {"name": "paths_resolve", "kind": "COMPLETENESS"}, {"name": "provenance_valid", "kind": "DATA_INTEGRITY"}, {"name": "analysis_citations", "kind": "DATA_INTEGRITY"}, {"name": "relay_coverage", "kind": "COMPLETENESS"}, {"name": "version_policy", "kind": "CONSISTENCY"}, {"name": "findings_integrity", "kind": "DATA_INTEGRITY"}, {"name": "source_tags_resolve", "kind": "DATA_INTEGRITY"}, {"name": "unrecognized_json", "kind": "COMPLETENESS"}], "nodes": [{"id": "user", "name": "Scientist / User", "role": "user", "category": "User", "parentId": null, "ancestry": [], "state": "active", "wo_state": "active", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Prompt: Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "description": "Principal Investigator / Interactive User Session", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard"], "validation": null, "deliverables": [".pkde/program.yaml"]}, {"id": "science-program-lead", "name": "Science Program Lead", "role": "science-program-lead", "category": "Orchestrator", "parentId": "user", "ancestry": ["user"], "state": "running", "wo_state": "running", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Active Charter (EGFR-Erlotinib-MultiAgent-Verify): Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "description": "Science Program Lead -- user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "validation": null, "deliverables": ["program-state/decision-log.md", "program-state/liability-tracker.md", "program-state/active-series.md", "program-state/open-questions.md", "executive/program-summary.md"]}, {"id": "research-operations-controller", "name": "Research Ops Controller", "role": "research-operations-controller", "category": "Orchestrator", "parentId": "science-program-lead", "ancestry": ["user", "science-program-lead"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Commit work orders, freeze context snapshots, manage single-flight resource leases, and enforce 10-check mechanical validation.", "description": "Research Operations Controller -- executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "site-generation"], "validation": null, "deliverables": [".pkde/control/events.ndjson"]}, {"id": "project-curator-dashboard", "name": "Project Curator (Dashboard)", "role": "project-curator", "category": "Presentation", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "succeeded", "wo_state": "published", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Compile Unified Multi-Agent Graph + 20 PkDE Scientific Viewers into Interactive Dashboard.", "description": "Project curator -- maintains a navigable website from the drug discovery project artifact hierarchy", "injected_skills": ["artifact-conventions", "site-generation", "pkde-dashboard"], "validation": null, "deliverables": ["dashboard.html"]}], "edges": [{"parentId": "user", "childId": "science-program-lead", "label": "charter", "state": "running"}, {"parentId": "science-program-lead", "childId": "research-operations-controller", "label": "cohort-dispatch", "state": "idle"}, {"parentId": "research-operations-controller", "childId": "project-curator-dashboard", "label": "dashboard-build", "state": "succeeded"}], "work_orders": [], "contexts": [], "runs": [], "validations": [], "leases": [], "events": [{"type": "prompt.received", "subject_id": "science-program-lead", "from_state": "idle", "to_state": "running", "actor": "user", "detail": {"prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\""}, "timestamp": "2026-10-29T22:57:56Z"}], "messages": [{"id": "ev-0-2026-10-29T22:57:56Z", "timestamp": "2026-10-29T22:57:56Z", "sender": "user", "recipient": "science-program-lead", "type": "prompt.received", "category": "prompt", "tag": "PROMPT", "level": "info", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\"", "detail": {"prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\""}, "target_kind": "overview", "target_id": "charter", "action_label": "View Charter"}, {"id": "pstate-0-program-state/active-series.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/active-series.md` (Active Series)", "detail": {"source_file": "program-state/active-series.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-1-program-state/decision-log.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/decision-log.md` (Decision Log)", "detail": {"source_file": "program-state/decision-log.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-2-program-state/liability-tracker.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/liability-tracker.md` (Liability Tracker)", "detail": {"source_file": "program-state/liability-tracker.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-3-program-state/open-questions.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/open-questions.md` (Open Questions)", "detail": {"source_file": "program-state/open-questions.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "exec-executive/program-summary.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "executive", "type": "executive.updated", "category": "finding", "tag": "EXEC", "level": "success", "summary": "Layer 4 Executive Summary updated: `executive/program-summary.md` (Program Summary)", "detail": {"source_path": "executive/program-summary.md"}, "target_kind": "overview", "target_id": "executive", "action_label": "View Executive Summary"}], "retrospectives": [], "environment": {"cli_version": "0.3.0", "env_version": "sha256:1b23e3ee0", "project_root": ".pkde-workspace", "os_platform": "linux", "system_theme": "light", "binaries": [{"name": "pkde", "description": "Primary PkDE CLI Engine", "status": "ready"}, {"name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, {"name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, {"name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, {"name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, {"name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}], "libraries": [{"name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, {"name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, {"name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, {"name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, {"name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, {"name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}], "credentials": [{"name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, {"name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, {"name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}], "cli_binaries": {"pkde": {"available": true, "name": "pkde", "description": "Primary PkDE CLI Engine", "status": "ready"}, "hypex": {"available": true, "name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, "elo": {"available": true, "name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, "prox": {"available": true, "name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, "fpocket": {"available": false, "name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, "vina": {"available": false, "name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}}, "python_libraries": {"rdkit": {"available": true, "name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, "gemmi": {"available": true, "name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, "biopython": {"available": true, "name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, "scipy": {"available": true, "name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, "jsonpath_ng": {"available": true, "name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, "mcp": {"available": true, "name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}}, "api_credentials": {"ALPHAGENOME_API_KEY": {"configured": false, "name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, "NCBI_API_KEY": {"configured": false, "name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, "CLOUD_APPLICATION_CREDENTIALS": {"configured": false, "name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}}, "bootstrap_ready": true}}, "science": {"executive": {"title": "Program Summary", "source_path": "executive/program-summary.md", "raw_markdown": "# Program Summary\n\nHigh-level program status and executive overview.\n", "html": "<h1>Program Summary<\/h1>\n<p>High-level program status and executive overview.<\/p>\n"}, "program_state": [{"name": "active-series.md", "stem": "active-series", "title": "Active Series", "source_file": "program-state/active-series.md", "raw_markdown": "# Active Series\n\nTrack active chemical series under investigation.\n", "html": "<h1>Active Series<\/h1>\n<p>Track active chemical series under investigation.<\/p>\n"}, {"name": "decision-log.md", "stem": "decision-log", "title": "Decision Log", "source_file": "program-state/decision-log.md", "raw_markdown": "# Decision Log\n\nChronological record of key program decisions.\n", "html": "<h1>Decision Log<\/h1>\n<p>Chronological record of key program decisions.<\/p>\n"}, {"name": "liability-tracker.md", "stem": "liability-tracker", "title": "Liability Tracker", "source_file": "program-state/liability-tracker.md", "raw_markdown": "# Liability Tracker\n\nRecord identified liabilities and their mitigation status.\n", "html": "<h1>Liability Tracker<\/h1>\n<p>Record identified liabilities and their mitigation status.<\/p>\n"}, {"name": "open-questions.md", "stem": "open-questions", "title": "Open Questions", "source_file": "program-state/open-questions.md", "raw_markdown": "# Open Questions\n\nOutstanding questions requiring resolution.\n", "html": "<h1>Open Questions<\/h1>\n<p>Outstanding questions requiring resolution.<\/p>\n"}], "triage_and_gates": {"concepts": [], "assessments": [], "decisions": [], "gates": []}, "findings": [], "mandatory_relays": [], "artifacts": [], "artifacts_by_class": {}}}</script>
+  <script id="pkde-bundle-data" type="application/json">{"program": {"name": "EGFR-Erlotinib-MultiAgent-Verify", "user_prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "project_root": ".pkde-workspace", "cli_version": "0.3.0", "generated_at": "2026-11-25T18:14:42Z", "summary_metrics": {"n_agents": 4, "n_roles_available": 22, "n_work_orders": 0, "n_runs": 0, "n_validated": 0, "validation_pass_rate": 100.0, "total_checks_passed": 0, "total_checks_run": 0, "n_artifacts": 0, "n_findings": 0, "n_relays": 0, "n_relays_addressed": 0, "n_active_leases": 0, "n_concepts": 0, "n_assessments": 0, "n_decisions": 0, "n_retrospectives": 0}, "standalone_mode": true}, "agent_system": {"roles_catalog": {"admet-dmpk-scientist": {"role": "admet-dmpk-scientist", "display_name": "Admet Dmpk Scientist", "description": "ADMET/DMPK scientist for pharmacokinetic profiling, metabolite identification, and drug-drug interaction prediction", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "bioactivity-landscape", "in-vivo-pk-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "bootstrapper": {"role": "bootstrapper", "display_name": "Bootstrapper", "description": "Short-lived agent that provisions the PkDE tools environment, runs doctor verification, and reports readiness", "category": "Operations", "skills": ["pharmakon-discovery-engine", "artifact-conventions"], "harness_config": "default"}, "computational-biologist": {"role": "computational-biologist", "display_name": "Computational Biologist", "description": "Computational biologist for genomic target identification, variant interpretation, and multi-omic disease target scoring", "category": "Specialist", "skills": ["regulatory-variant-effect", "tournament-corpus", "target-genetic-evidence", "tissue-expression-profile", "artifact-conventions"], "harness_config": "default"}, "computational-chemist": {"role": "computational-chemist", "display_name": "Computational Chemist", "description": "Computational chemist for virtual screening, molecular docking, cheminformatics, and QSAR modeling", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "compound-property-profile", "binding-mode-analysis", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "experimental-biologist": {"role": "experimental-biologist", "display_name": "Experimental Biologist", "description": "Experimental biologist for assay design, high-throughput screening, CRISPR validation, and cellular pharmacology", "category": "Specialist", "skills": ["citation-resolution", "bioactivity-landscape", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "finding-validator": {"role": "finding-validator", "display_name": "Finding Validator", "description": "Mechanical finding validator -- checks artifact contract, provenance, source tags, and relay codes before the science lead sees a finding", "category": "Quality Gate", "skills": ["artifact-conventions"], "harness_config": "default"}, "head-of-discovery": {"role": "head-of-discovery", "display_name": "Head Of Discovery", "description": "Head of Discovery -- persistent strategic advisor that monitors program trajectory and optionally counsels the Science Program Lead; holds no decision authority, blocks nothing, gates nothing", "category": "Advisory", "skills": ["artifact-conventions"], "harness_config": "default"}, "hypex-evolution": {"role": "hypex-evolution", "display_name": "Hypex Evolution", "description": "Hypothesis Evolution Agent - refines and combines tournament hypotheses using explicit lineage-preserving operators", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "evolution-operators", "hypothesis-schema", "hypex-tool-setup"], "harness_config": "default"}, "hypex-generation": {"role": "hypex-generation", "display_name": "Hypex Generation", "description": "Hypothesis Generation Agent -- explores scientific literature within an assigned focus area and produces falsifiable hypotheses for the hypothesis-exploration tournament", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "hypothesis-schema", "debate-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-meta-review": {"role": "hypex-meta-review", "display_name": "Hypex Meta Review", "description": "Hypothesis Meta-Review Agent - synthesizes reviews into epoch steering and the final PkDE research report", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "meta-review-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-proximity": {"role": "hypex-proximity", "display_name": "Hypex Proximity", "description": "Hypothesis Proximity Agent - clusters hypotheses and adjudicates near-duplicate candidates", "category": "Hypex Graph", "skills": ["artifact-conventions", "proximity-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-reflection": {"role": "hypex-reflection", "display_name": "Hypex Reflection", "description": "Hypothesis Reflection Agent -- reviews hypotheses on correctness, novelty, testability, safety, goal alignment, and constraint compliance; screens for dual-use biosafety risk", "category": "Hypex Graph", "skills": ["artifact-conventions", "literature-search", "citation-resolution", "citation-verification", "review-rubric", "safety-screen", "hypex-tool-setup"], "harness_config": "default"}, "hypex-supervisor": {"role": "hypex-supervisor", "display_name": "Hypex Supervisor", "description": "Hypothesis-Explorer Supervisor - orchestrates PkDE's multi-epoch generation, review, proximity, tournament, evolution, and meta-review subgraph", "category": "Hypex Graph", "skills": ["artifact-conventions", "hypothesis-run-corpus", "run-protocol", "hypex-tool-setup"], "harness_config": "default"}, "hypex-tournament": {"role": "hypex-tournament", "display_name": "Hypex Tournament", "description": "Hypothesis Tournament Agent -- runs pairwise tournament matches between hypotheses, writes match records, and triggers Elo rating recomputation", "category": "Hypex Graph", "skills": ["artifact-conventions", "elo-tournament", "debate-protocol", "review-rubric", "hypex-tool-setup"], "harness_config": "default"}, "medicinal-chemist": {"role": "medicinal-chemist", "display_name": "Medicinal Chemist", "description": "Medicinal chemist for SAR analysis, analog design, scaffold optimization, and drug-likeness assessment", "category": "Specialist", "skills": ["compound-property-profile", "admet-property-prediction", "sar-series-analysis", "structure-similarity-search", "artifact-conventions"], "harness_config": "default"}, "preclinical-toxicologist": {"role": "preclinical-toxicologist", "display_name": "Preclinical Toxicologist", "description": "Preclinical toxicologist for safety pharmacology, toxicology study design, and therapeutic index assessment", "category": "Specialist", "skills": ["tissue-expression-profile", "target-genetic-evidence", "preclinical-safety-assessment", "compound-property-profile", "admet-property-prediction", "in-vivo-pk-analysis", "artifact-conventions"], "harness_config": "default"}, "project-curator": {"role": "project-curator", "display_name": "Project Curator", "description": "Project curator -- maintains a navigable website from the drug discovery project artifact hierarchy", "category": "Presentation", "skills": ["artifact-conventions", "site-generation", "pkde-dashboard"], "harness_config": "default"}, "regulatory-scientist": {"role": "regulatory-scientist", "display_name": "Regulatory Scientist", "description": "Regulatory scientist for IND dossier assembly, eCTD compliance, and FDA/EMA regulatory strategy", "category": "Specialist", "skills": ["citation-resolution", "preclinical-safety-assessment", "in-vivo-pk-analysis", "compound-property-profile", "artifact-conventions"], "harness_config": "default"}, "research-operations-controller": {"role": "research-operations-controller", "display_name": "Research Operations Controller", "description": "Research Operations Controller -- executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "site-generation"], "harness_config": "default"}, "science-program-lead": {"role": "science-program-lead", "display_name": "Science Program Lead", "description": "Science Program Lead -- user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "category": "Orchestrator", "skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "harness_config": "default"}, "scientific-reviewer": {"role": "scientific-reviewer", "display_name": "Scientific Reviewer", "description": "Independent scientific reviewer -- re-runs deterministic analysis against stored Layer 0 artifacts, audits Layer 1 claims and mandatory relays, and recommends accept/revise/reject", "category": "Quality Gate", "skills": ["citation-resolution", "tournament-corpus", "citation-verification", "artifact-conventions"], "harness_config": "default"}, "structural-biologist": {"role": "structural-biologist", "display_name": "Structural Biologist", "description": "Structural biologist for protein structure analysis, druggability assessment, and binding mode interpretation", "category": "Specialist", "skills": ["protein-structure-confidence", "pocket-druggability", "binding-mode-analysis", "artifact-conventions"], "harness_config": "default"}}, "all_10_checks": [{"name": "deliverables_exist", "kind": "COMPLETENESS"}, {"name": "report_headings", "kind": "FORMAT"}, {"name": "paths_resolve", "kind": "COMPLETENESS"}, {"name": "provenance_valid", "kind": "DATA_INTEGRITY"}, {"name": "analysis_citations", "kind": "DATA_INTEGRITY"}, {"name": "relay_coverage", "kind": "COMPLETENESS"}, {"name": "version_policy", "kind": "CONSISTENCY"}, {"name": "findings_integrity", "kind": "DATA_INTEGRITY"}, {"name": "source_tags_resolve", "kind": "DATA_INTEGRITY"}, {"name": "unrecognized_json", "kind": "COMPLETENESS"}], "nodes": [{"id": "user", "name": "Scientist / User", "role": "user", "category": "User", "parentId": null, "ancestry": [], "state": "active", "wo_state": "active", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Prompt: Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "description": "Principal Investigator / Interactive User Session", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard"], "validation": null, "deliverables": [".pkde/program.yaml"]}, {"id": "science-program-lead", "name": "Science Program Lead", "role": "science-program-lead", "category": "Orchestrator", "parentId": "user", "ancestry": ["user"], "state": "running", "wo_state": "running", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Active Charter (EGFR-Erlotinib-MultiAgent-Verify): Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "description": "Science Program Lead -- user-facing orchestrator and sole owner of scientific direction; sets decision questions, accepts or rejects findings, maintains Layer 2 program state, and authorizes stage gates", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "program-state-management", "hypothesis-entry", "stage1-gate-evaluation"], "validation": null, "deliverables": ["program-state/decision-log.md", "program-state/liability-tracker.md", "program-state/active-series.md", "program-state/open-questions.md", "executive/program-summary.md"]}, {"id": "research-operations-controller", "name": "Research Ops Controller", "role": "research-operations-controller", "category": "Orchestrator", "parentId": "science-program-lead", "ancestry": ["user", "science-program-lead"], "state": "idle", "wo_state": "idle", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Commit work orders, freeze context snapshots, manage single-flight resource leases, and enforce 10-check mechanical validation.", "description": "Research Operations Controller -- executes approved work orders, supervises specialist runs and retries, performs mechanical artifact validation, and publishes the presentation layer; holds no scientific authority", "injected_skills": ["pharmakon-discovery-engine", "pkde-dashboard", "artifact-conventions", "site-generation"], "validation": null, "deliverables": [".pkde/control/events.ndjson"]}, {"id": "project-curator-dashboard", "name": "Project Curator (Dashboard)", "role": "project-curator", "category": "Presentation", "parentId": "research-operations-controller", "ancestry": ["user", "science-program-lead", "research-operations-controller"], "state": "succeeded", "wo_state": "published", "work_order_id": null, "revision": null, "run_id": null, "attempt": 1, "decision_question": "Compile Unified Multi-Agent Graph + 20 PkDE Scientific Viewers into Interactive Dashboard.", "description": "Project curator -- maintains a navigable website from the drug discovery project artifact hierarchy", "injected_skills": ["artifact-conventions", "site-generation", "pkde-dashboard"], "validation": null, "deliverables": ["dashboard.html"]}], "edges": [{"parentId": "user", "childId": "science-program-lead", "label": "charter", "state": "running"}, {"parentId": "science-program-lead", "childId": "research-operations-controller", "label": "cohort-dispatch", "state": "idle"}, {"parentId": "research-operations-controller", "childId": "project-curator-dashboard", "label": "dashboard-build", "state": "succeeded"}], "work_orders": [], "contexts": [], "runs": [], "validations": [], "leases": [], "events": [{"type": "prompt.received", "subject_id": "science-program-lead", "from_state": "idle", "to_state": "running", "actor": "user", "detail": {"prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\""}, "timestamp": "2026-10-29T22:57:56Z"}], "messages": [{"id": "ev-0-2026-10-29T22:57:56Z", "timestamp": "2026-10-29T22:57:56Z", "sender": "user", "recipient": "science-program-lead", "type": "prompt.received", "category": "prompt", "tag": "PROMPT", "level": "info", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\"", "detail": {"prompt": "Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology", "target": "", "indication": "", "modality": "", "stage": "1", "summary": "User prompt received by Science Program Lead: \"Execute live multi-persona, multi-work-order verification of Erlotinib across Medicinal Chemistry, ADMET/DMPK, and Preclinical Toxicology\""}, "target_kind": "overview", "target_id": "charter", "action_label": "View Charter"}, {"id": "pstate-0-program-state/active-series.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/active-series.md` (Active Series)", "detail": {"source_file": "program-state/active-series.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-1-program-state/decision-log.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/decision-log.md` (Decision Log)", "detail": {"source_file": "program-state/decision-log.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-2-program-state/liability-tracker.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/liability-tracker.md` (Liability Tracker)", "detail": {"source_file": "program-state/liability-tracker.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "pstate-3-program-state/open-questions.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "program-state", "type": "state.updated", "category": "finding", "tag": "STATE", "level": "info", "summary": "Layer 2 Program State updated: `program-state/open-questions.md` (Open Questions)", "detail": {"source_file": "program-state/open-questions.md"}, "target_kind": "overview", "target_id": "program-state", "action_label": "View Program State"}, {"id": "exec-executive/program-summary.md", "timestamp": "2026-10-29T22:57:56Z", "sender": "science-program-lead", "recipient": "executive", "type": "executive.updated", "category": "finding", "tag": "EXEC", "level": "success", "summary": "Layer 4 Executive Summary updated: `executive/program-summary.md` (Program Summary)", "detail": {"source_path": "executive/program-summary.md"}, "target_kind": "overview", "target_id": "executive", "action_label": "View Executive Summary"}], "retrospectives": [], "environment": {"cli_version": "0.3.0", "env_version": "sha256:1b23e3ee0", "project_root": ".pkde-workspace", "os_platform": "linux", "system_theme": "light", "binaries": [{"name": "pkde", "description": "Primary PkDE CLI Engine", "status": "ready"}, {"name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, {"name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, {"name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, {"name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, {"name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}], "libraries": [{"name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, {"name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, {"name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, {"name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, {"name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, {"name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}], "credentials": [{"name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, {"name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, {"name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}], "cli_binaries": {"pkde": {"available": true, "name": "pkde", "description": "Primary PkDE CLI Engine", "status": "ready"}, "hypex": {"available": true, "name": "hypex", "description": "Hypex Hypothesis Store", "status": "ready"}, "elo": {"available": true, "name": "elo", "description": "Pairwise ELO Rating Engine", "status": "ready"}, "prox": {"available": true, "name": "prox", "description": "Proximity Clustering CLI", "status": "ready"}, "fpocket": {"available": false, "name": "fpocket", "description": "Alpha-Sphere Pocket Detector", "status": "optional_missing"}, "vina": {"available": false, "name": "vina", "description": "AutoDock Vina Docking Engine", "status": "optional_missing"}}, "python_libraries": {"rdkit": {"available": true, "name": "rdkit", "label": "RDKit Cheminformatics", "status": "ready"}, "gemmi": {"available": true, "name": "gemmi", "label": "Gemmi Crystallography / mmCIF", "status": "ready"}, "biopython": {"available": true, "name": "biopython", "label": "BioPython Sequence & Structure", "status": "ready"}, "scipy": {"available": true, "name": "scipy", "label": "SciPy Curve Fitting & Stats", "status": "ready"}, "jsonpath_ng": {"available": true, "name": "jsonpath_ng", "label": "JSONPath RFC 9535 Verifier", "status": "ready"}, "mcp": {"available": true, "name": "mcp", "label": "Model Context Protocol SDK", "status": "ready"}}, "api_credentials": {"ALPHAGENOME_API_KEY": {"configured": false, "name": "ALPHAGENOME_API_KEY", "label": "AlphaGenome ISM API Key", "status": "public_or_adc_fallback"}, "NCBI_API_KEY": {"configured": false, "name": "NCBI_API_KEY", "label": "NCBI E-utilities Rate-Limit Key", "status": "public_or_adc_fallback"}, "CLOUD_APPLICATION_CREDENTIALS": {"configured": false, "name": "CLOUD_APPLICATION_CREDENTIALS", "label": "Cloud / AF3 Endpoint Credentials", "status": "public_or_adc_fallback"}}, "bootstrap_ready": true}}, "science": {"executive": {"title": "Program Summary", "source_path": "executive/program-summary.md", "raw_markdown": "# Program Summary\n\nHigh-level program status and executive overview.\n", "html": "<h1>Program Summary<\/h1>\n<p>High-level program status and executive overview.<\/p>\n"}, "program_state": [{"name": "active-series.md", "stem": "active-series", "title": "Active Series", "source_file": "program-state/active-series.md", "raw_markdown": "# Active Series\n\nTrack active chemical series under investigation.\n", "html": "<h1>Active Series<\/h1>\n<p>Track active chemical series under investigation.<\/p>\n"}, {"name": "decision-log.md", "stem": "decision-log", "title": "Decision Log", "source_file": "program-state/decision-log.md", "raw_markdown": "# Decision Log\n\nChronological record of key program decisions.\n", "html": "<h1>Decision Log<\/h1>\n<p>Chronological record of key program decisions.<\/p>\n"}, {"name": "liability-tracker.md", "stem": "liability-tracker", "title": "Liability Tracker", "source_file": "program-state/liability-tracker.md", "raw_markdown": "# Liability Tracker\n\nRecord identified liabilities and their mitigation status.\n", "html": "<h1>Liability Tracker<\/h1>\n<p>Record identified liabilities and their mitigation status.<\/p>\n"}, {"name": "open-questions.md", "stem": "open-questions", "title": "Open Questions", "source_file": "program-state/open-questions.md", "raw_markdown": "# Open Questions\n\nOutstanding questions requiring resolution.\n", "html": "<h1>Open Questions<\/h1>\n<p>Outstanding questions requiring resolution.<\/p>\n"}], "triage_and_gates": {"concepts": [], "assessments": [], "decisions": [], "gates": []}, "findings": [], "mandatory_relays": [], "artifacts": [], "artifacts_by_class": {}}}</script>
   <script>
     window.__PKDE_BUNDLE__ = JSON.parse(document.getElementById('pkde-bundle-data').textContent);
   </script>
@@ -1216,23 +1240,23 @@
     </div>
 
     <div class="topbar-controls">
-      <div class="mode-switcher" role="group" aria-label="View Mode">
-        <button class="mode-btn active" id="mode-btn-split" data-mode="split" onclick="setWorkspaceMode('split')">Split</button>
-        <button class="mode-btn" id="mode-btn-agentic" data-mode="agentic" onclick="setWorkspaceMode('agentic')">Agents</button>
-        <button class="mode-btn" id="mode-btn-science" data-mode="science" onclick="setWorkspaceMode('science')">Discovery <span class="badge-counter" id="badge-discovery-new">0</span></button>
-        <button class="mode-btn" id="mode-btn-telemetry" data-mode="telemetry" onclick="setWorkspaceMode('telemetry')">Telemetry <span class="badge-counter" id="badge-telemetry-new">0</span></button>
-      </div>
-      <div class="conn-badge" id="conn-badge">
+      <nav class="mode-switcher" aria-label="View Mode">
+        <button type="button" class="mode-btn active" id="mode-btn-split" data-mode="split" onclick="setWorkspaceMode('split')">Split</button>
+        <button type="button" class="mode-btn" id="mode-btn-agentic" data-mode="agentic" onclick="setWorkspaceMode('agentic')">Agents</button>
+        <button type="button" class="mode-btn" id="mode-btn-science" data-mode="science" onclick="setWorkspaceMode('science')">Discovery <span class="badge-counter" id="badge-discovery-new">0</span></button>
+        <button type="button" class="mode-btn" id="mode-btn-telemetry" data-mode="telemetry" onclick="setWorkspaceMode('telemetry')">Telemetry <span class="badge-counter" id="badge-telemetry-new">0</span></button>
+      </nav>
+      <div class="conn-badge" id="conn-badge" role="status" aria-live="polite">
         <span id="conn-text"></span>
       </div>
       <div class="theme-switcher" id="theme-selector" role="group" aria-label="Theme Mode">
-        <button class="theme-icon-btn" id="theme-btn-light" data-theme-mode="light" onclick="setThemeMode('light')" title="Light Theme" aria-label="Light Theme" aria-pressed="false">
+        <button type="button" class="theme-icon-btn" id="theme-btn-light" data-theme-mode="light" onclick="setThemeMode('light')" title="Light Theme" aria-label="Light Theme" aria-pressed="false">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="4"/><line x1="12" y1="20" x2="12" y2="22"/><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"/><line x1="2" y1="12" x2="4" y2="12"/><line x1="20" y1="12" x2="22" y2="12"/><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"/></svg>
         </button>
-        <button class="theme-icon-btn active" id="theme-btn-dark" data-theme-mode="dark" onclick="setThemeMode('dark')" title="Dark Theme" aria-label="Dark Theme" aria-pressed="true">
+        <button type="button" class="theme-icon-btn active" id="theme-btn-dark" data-theme-mode="dark" onclick="setThemeMode('dark')" title="Dark Theme" aria-label="Dark Theme" aria-pressed="true">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
-        <button class="theme-icon-btn" id="theme-btn-system" data-theme-mode="system" onclick="setThemeMode('system')" title="System Theme" aria-label="System Theme" aria-pressed="false">
+        <button type="button" class="theme-icon-btn" id="theme-btn-system" data-theme-mode="system" onclick="setThemeMode('system')" title="System Theme" aria-label="System Theme" aria-pressed="false">
           <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
         </button>
       </div>
@@ -1242,36 +1266,37 @@
   <!-- Main Workspace -->
   <main class="workspace" id="main-workspace">
     <!-- LEFT PANE: Interactive Relationship Node Map & Inspector -->
-    <section class="left-pane">
+    <section class="left-pane" aria-labelledby="heading-node-map">
       <div class="pane-header">
         <div class="pane-title">
-          <span>Interactive Relationship Node Map</span>
+          <h2 class="pane-heading" id="heading-node-map">Interactive Relationship Node Map</h2>
           <span id="graph-node-count" class="mono" style="color:var(--text-secondary);font-weight:400;font-size:11px;"></span>
         </div>
         <div class="toolbar-group">
-          <button class="mini-btn" id="btn-orient" onclick="toggleOrientation()" title="Transpose Orientation (t)">Transpose</button>
-          <button class="mini-btn" id="btn-zoom-in" onclick="zoomGraph(1.2)" title="Zoom In">+</button>
-          <button class="mini-btn" id="btn-zoom-out" onclick="zoomGraph(0.83)" title="Zoom Out">-</button>
-          <button class="mini-btn" id="btn-fit-graph" onclick="fitGraphToScreen()" title="Fit to Screen (f)">Fit</button>
+          <button type="button" class="mini-btn" id="btn-orient" onclick="toggleOrientation()" title="Transpose Orientation (t)">Transpose</button>
+          <button type="button" class="mini-btn" id="btn-zoom-in" onclick="zoomGraph(1.2)" title="Zoom In" aria-label="Zoom In">+</button>
+          <button type="button" class="mini-btn" id="btn-zoom-out" onclick="zoomGraph(0.83)" title="Zoom Out" aria-label="Zoom Out">-</button>
+          <button type="button" class="mini-btn" id="btn-fit-graph" onclick="fitGraphToScreen()" title="Fit to Screen (f)">Fit</button>
         </div>
       </div>
 
       <!-- Interactive SVG Node Map -->
       <div class="graph-stage" id="graph-stage">
         <div class="lease-overlay" id="lease-overlay"></div>
-        <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg">
+        <svg id="lineage-svg" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Agent lineage graph">
           <g id="lineage-viewport"></g>
         </svg>
       </div>
 
       <!-- Bottom Dock -->
       <div class="agent-bottom-dock">
-        <div class="subtab-bar">
-          <button class="subtab-btn active" id="tab-btn-inspector" data-dock="inspector" onclick="switchDockTab('inspector')">Inspector</button>
-          <button class="subtab-btn" id="tab-btn-messages" data-dock="messages" onclick="switchDockTab('messages')">Events (<span id="msg-count">0</span>)</button>
-          <button class="subtab-btn" id="tab-btn-roles" data-dock="roles" onclick="switchDockTab('roles')">Roles</button>
-          <button class="subtab-btn" id="tab-btn-retros" data-dock="retros" onclick="switchDockTab('retros')">System (<span id="retro-count">0</span>)</button>
-        </div>
+        <h3 class="sr-only">Agent Inspector and Control Plane</h3>
+        <nav class="subtab-bar" aria-label="Agent Inspector Tabs">
+          <button type="button" class="subtab-btn active" id="tab-btn-inspector" data-dock="inspector" onclick="switchDockTab('inspector')">Inspector</button>
+          <button type="button" class="subtab-btn" id="tab-btn-messages" data-dock="messages" onclick="switchDockTab('messages')">Events (<span id="msg-count">0</span>)</button>
+          <button type="button" class="subtab-btn" id="tab-btn-roles" data-dock="roles" onclick="switchDockTab('roles')">Roles</button>
+          <button type="button" class="subtab-btn" id="tab-btn-retros" data-dock="retros" onclick="switchDockTab('retros')">System (<span id="retro-count">0</span>)</button>
+        </nav>
         <div class="dock-body" id="dock-inspector"></div>
         <div class="dock-body" id="dock-messages" style="display:none;"></div>
         <div class="dock-body" id="dock-roles" style="display:none;"></div>
@@ -1280,12 +1305,13 @@
     </section>
 
     <!-- RIGHT PANE: Scientific Output & Viewers -->
-    <section class="right-pane">
-      <div class="sci-tabs">
-        <button class="sci-tab active" id="scitab-btn-overview" data-scitab="overview" onclick="switchSciTab('overview')">Overview</button>
-        <button class="sci-tab" id="scitab-btn-findings" data-scitab="findings" onclick="switchSciTab('findings')">Findings</button>
-        <button class="sci-tab" id="scitab-btn-studio" data-scitab="studio" onclick="switchSciTab('studio')">Data Studio</button>
-      </div>
+    <section class="right-pane" aria-labelledby="heading-discovery-pane">
+      <h2 class="sr-only" id="heading-discovery-pane">Discovery Output and Studios</h2>
+      <nav class="sci-tabs" aria-label="Discovery Views">
+        <button type="button" class="sci-tab active" id="scitab-btn-overview" data-scitab="overview" onclick="switchSciTab('overview')">Overview</button>
+        <button type="button" class="sci-tab" id="scitab-btn-findings" data-scitab="findings" onclick="switchSciTab('findings')">Findings</button>
+        <button type="button" class="sci-tab" id="scitab-btn-studio" data-scitab="studio" onclick="switchSciTab('studio')">Data Studio</button>
+      </nav>
 
       <!-- Tab 1: Overview -->
       <div class="sci-content" id="scitab-overview"></div>
@@ -1298,16 +1324,16 @@
     </section>
 
     <!-- FOURTH VIEW: Full-Screen Telemetry -->
-    <section class="telemetry-view" id="telemetry-view">
+    <section class="telemetry-view" id="telemetry-view" aria-labelledby="heading-telemetry-view">
       <div class="tele-full-left">
         <div class="pane-header">
           <div class="pane-title">
-            <span>Telemetry Log</span>
+            <h2 class="pane-heading" id="heading-telemetry-view">Telemetry Log</h2>
             <span id="tele-full-count" class="mono" style="color:var(--text-secondary);font-weight:400;font-size:11px;">(0)</span>
           </div>
           <div class="toolbar-group">
-            <span class="tele-pause-pill" id="tele-full-pause-pill" onclick="resumeTelemetryStream()">PAUSED</span>
-            <input type="text" class="tele-search" id="tele-full-search" placeholder="Filter events..." oninput="setTelemetrySearch(this.value)">
+            <button type="button" class="tele-pause-pill" id="tele-full-pause-pill" onclick="resumeTelemetryStream()">[PAUSED] Resume</button>
+            <input type="text" class="tele-search" id="tele-full-search" aria-label="Filter telemetry events" placeholder="Filter events..." oninput="setTelemetrySearch(this.value)">
           </div>
         </div>
         <div class="subtab-bar" id="tele-full-filters"></div>
@@ -1322,15 +1348,15 @@
     <div class="tele-bar">
       <div class="tele-bar-left">
         <span class="tele-title">Telemetry (<span id="tele-drawer-count">0</span>)</span>
-        <div class="tele-ticker-preview" id="tele-ticker-preview" onclick="setTelemetryDrawerState('console')">No events recorded.</div>
+        <button type="button" class="tele-ticker-preview" id="tele-ticker-preview" onclick="setTelemetryDrawerState('console')">No events recorded.</button>
         <div class="tele-filters" id="tele-drawer-filters"></div>
-        <span class="tele-pause-pill" id="tele-drawer-pause-pill" onclick="resumeTelemetryStream()">PAUSED</span>
+        <button type="button" class="tele-pause-pill" id="tele-drawer-pause-pill" onclick="resumeTelemetryStream()">[PAUSED] Resume</button>
       </div>
       <div class="toolbar-group">
-        <input type="text" class="tele-search" id="tele-drawer-search" placeholder="Filter..." oninput="setTelemetrySearch(this.value)">
-        <button class="mini-btn" id="btn-tele-ticker" onclick="setTelemetryDrawerState('ticker')">Ticker</button>
-        <button class="mini-btn active" id="btn-tele-console" onclick="setTelemetryDrawerState('console')">Console</button>
-        <button class="mini-btn" id="btn-tele-full" onclick="setWorkspaceMode('telemetry')">Full View</button>
+        <input type="text" class="tele-search" id="tele-drawer-search" aria-label="Filter live telemetry" placeholder="Filter..." oninput="setTelemetrySearch(this.value)">
+        <button type="button" class="mini-btn" id="btn-tele-ticker" onclick="setTelemetryDrawerState('ticker')">Ticker</button>
+        <button type="button" class="mini-btn active" id="btn-tele-console" onclick="setTelemetryDrawerState('console')">Console</button>
+        <button type="button" class="mini-btn" id="btn-tele-full" onclick="setWorkspaceMode('telemetry')">Full View</button>
       </div>
     </div>
     <div class="tele-drawer-body" id="tele-drawer-stream"></div>
@@ -1360,16 +1386,16 @@
           surface: '#FFFFFF',
           border: '#E7E5E4',
           textPrimary: '#1C1917',
-          textSecondary: '#787774',
+          textSecondary: '#575653',
           seriesPrimary: '#0D9488',
           seriesSecondary: '#4F46E5',
           seriesTertiary: '#059669',
           seriesWarning: '#D97706',
           seriesDanger: '#E11D48',
-          seriesMuted: '#787774',
+          seriesMuted: '#575653',
           fillAlpha: 'rgba(13, 148, 136, 0.22)',
-          critical: '#E11D48',
-          warning: '#D97706',
+          critical: '#DC2626',
+          warning: '#B45309',
           monoScale: ['#0D9488', '#4F46E5', '#059669', '#D97706', '#E11D48']
         });
       }
@@ -1405,10 +1431,10 @@
 
     function renderCriticalStatusBadge(st, customLabel) {
       if (isCriticalState(st)) {
-        return `<span class="status-alert critical">${escapeHtml(customLabel || st)}</span>`;
+        return `<span class="status-alert critical">[ERROR] ${escapeHtml(customLabel || st)}</span>`;
       }
       if (isWarningState(st)) {
-        return `<span class="status-alert warning">${escapeHtml(customLabel || st)}</span>`;
+        return `<span class="status-alert warning">[WARN] ${escapeHtml(customLabel || st)}</span>`;
       }
       return '';
     }
@@ -1672,10 +1698,10 @@
         const titleShort = (a.name || a.id).slice(0, 24);
         const woBadge = a.work_order_id ? `${a.work_order_id}${a.revision ? '-r' + a.revision : ''}` : (a.category || 'Agent');
         const skillsCount = (a.injected_skills || []).length;
-        const errorFlag = crit ? ' . FAIL' : (warn ? ' . WARN' : '');
+        const errorFlag = crit ? ' [ERROR]' : (warn ? ' [WARN]' : '');
 
         svgParts.push(`
-          <g class="agent-node-group" transform="translate(0,0)" style="cursor:pointer" onclick="selectAgentNode('${escapeHtml(a.id)}')">
+          <g class="agent-node-group" transform="translate(0,0)" style="cursor:pointer" role="button" tabindex="0" aria-label="${escapeHtml(a.name || a.id)}" data-pkde-action="select-agent" data-pkde-arg="${escapeHtml(a.id)}">
             <rect x="${n.px}" y="${n.py}" width="${NODE_W}" height="${NODE_H}" rx="6"
                   fill="${theme.surface}" stroke="${strokeCol}" stroke-opacity="${strokeOp}" stroke-width="${strokeW}" />
             <rect x="${n.px}" y="${n.py}" width="5" height="${NODE_H}" rx="3" fill="${nodeCol}" />
@@ -1728,8 +1754,8 @@
         const isFail = res === 'fail';
         const isWarn = res === 'pass_with_warnings' || res === 'warn';
         const statusIndicator = isFail
-          ? `<span class="badge-fail">FAIL</span>`
-          : (isWarn ? `<span class="badge-warn">WARN</span>` : `<span class="text-subtle-meta">${escapeHtml(chk.kind)}</span>`);
+          ? `<span class="badge-fail">[FAIL]</span>`
+          : (isWarn ? `<span class="badge-warn">[WARN]</span>` : `<span class="text-subtle-meta">${escapeHtml(chk.kind)}</span>`);
         return `
           <div class="check-row">
             <span>${idx + 1}. <code>${escapeHtml(chk.name)}</code></span>
@@ -1741,15 +1767,18 @@
       const delivHtml = (node.deliverables || []).map(d => {
         const isFinding = d.startsWith('findings/') && d.endsWith('.md');
         const isRaw = d.startsWith('raw/');
-        const clickAttr = isFinding
-          ? `onclick="openFindingByPath('${escapeHtml(d)}')" style="cursor:pointer;text-decoration:underline;"`
-          : (isRaw ? `onclick="openArtifactByPath('${escapeHtml(d)}')" style="cursor:pointer;text-decoration:underline;"` : '');
-        return `<div ${clickAttr} class="mono" style="font-size:11px;padding:2px 0;">${escapeHtml(d)}</div>`;
+        if (isFinding) {
+          return `<div class="mono" role="button" tabindex="0" data-pkde-action="open-finding" data-pkde-arg="${escapeHtml(d)}" style="font-size:11px;padding:2px 0;cursor:pointer;text-decoration:underline;">${escapeHtml(d)}</div>`;
+        }
+        if (isRaw) {
+          return `<div class="mono" role="button" tabindex="0" data-pkde-action="open-artifact" data-pkde-arg="${escapeHtml(d)}" style="font-size:11px;padding:2px 0;cursor:pointer;text-decoration:underline;">${escapeHtml(d)}</div>`;
+        }
+        return `<div class="mono" style="font-size:11px;padding:2px 0;">${escapeHtml(d)}</div>`;
       }).join('') || '<div style="color:var(--text-muted)">None</div>';
 
       const failureBanner = (node.failure_class || node.failure_detail)
         ? `<div style="margin:6px 0;padding:6px 8px;border-radius:6px;background:var(--status-critical-bg);border:1px solid var(--status-critical);font-size:11px;color:var(--status-critical);">
-             <strong>Failure:</strong> <code>${escapeHtml(node.failure_class || 'error')}</code> ${escapeHtml(node.failure_detail || '')}
+             <strong>[ERROR] Failure:</strong> <code>${escapeHtml(node.failure_class || 'error')}</code> ${escapeHtml(node.failure_detail || '')}
            </div>`
         : '';
 
@@ -1787,7 +1816,7 @@
           <h4>Recent Communications (${nodeMsgs.length})</h4>
           <div style="display:flex;flex-direction:column;gap:4px;">
             ${nodeMsgs.map(m => `
-              <div style="font-size:10.5px;padding:4px 0;border-bottom:1px solid var(--border-color);cursor:pointer;" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')">
+              <div role="button" tabindex="0" style="font-size:10.5px;padding:4px 0;border-bottom:1px solid var(--border-color);cursor:pointer;" data-pkde-action="nav-telemetry" data-pkde-arg="${escapeHtml(m.id || '')}">
                 <span class="mono" style="font-weight:600;">${escapeHtml(m.sender)} -&gt; ${escapeHtml(m.recipient)}</span>: ${escapeHtml(m.summary)}
               </div>
             `).join('')}
@@ -1796,7 +1825,7 @@
       ` : '';
 
       const critBadge = renderCriticalStatusBadge(node.state);
-      const corrBadge = node.correction_cycle ? `<span class="status-alert warning">Retries: ${escapeHtml(node.correction_cycle)}</span>` : '';
+      const corrBadge = node.correction_cycle ? `<span class="status-alert warning">[WARN] Retries: ${escapeHtml(node.correction_cycle)}</span>` : '';
 
       container.innerHTML = `
         <div class="bento-split">
@@ -1820,7 +1849,7 @@
             ${recentCommsHtml}
           </div>
           <div class="bento-cell">
-            <h4>10-Check Validation Matrix ${val && val.result === 'fail' ? '<span class="status-alert critical">FAIL</span>' : ''}</h4>
+            <h4>10-Check Validation Matrix ${val && val.result === 'fail' ? '<span class="status-alert critical">[FAIL]</span>' : ''}</h4>
             <div class="checks-list">${checksHtml}</div>
           </div>
         </div>
@@ -1855,7 +1884,7 @@
         { id: 'tools', label: 'Tools' },
         { id: 'validation', label: 'Gates' },
         { id: 'leases', label: 'Leases' }
-      ].map(f => `<button class="mini-btn ${currentMsgFilter === f.id ? 'active' : ''}" onclick="setMsgFilter('${f.id}')">${escapeHtml(f.label)}</button>`).join(' ');
+      ].map(f => `<button type="button" class="mini-btn ${currentMsgFilter === f.id ? 'active' : ''}" data-pkde-action="msg-filter" data-pkde-arg="${escapeHtml(f.id)}">${escapeHtml(f.label)}</button>`).join(' ');
 
       if (messages.length === 0) {
         msgContainer.innerHTML = '<div style="padding:14px;color:var(--text-secondary)">No events recorded.</div>';
@@ -1867,7 +1896,7 @@
           <div class="msg-list">
             ${filtered.slice().reverse().map(m => {
               const actionBtn = m.action_label
-                ? `<button class="mini-btn" style="padding:1px 6px;font-size:10px;" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')">${escapeHtml(m.action_label)}</button>`
+                ? `<button type="button" class="mini-btn" style="padding:1px 6px;font-size:10px;" data-pkde-action="nav-telemetry" data-pkde-arg="${escapeHtml(m.id || '')}">${escapeHtml(m.action_label)}</button>`
                 : '';
               return `
                 <div class="msg-item ${escapeHtml(m.level || 'info')}">
@@ -1990,7 +2019,7 @@
       } else if (!prog.user_prompt && ((prog.summary_metrics && prog.summary_metrics.n_artifacts) || 0) === 0) {
         html += `
           <div class="sci-section">
-            <h3><span>Session Standby</span><code>0.0.0.0:8765</code></h3>
+            <h3><span>Session Standby</span><code>127.0.0.1:8765</code></h3>
             <div style="font-size:12px;color:var(--text-secondary);">Awaiting session data.</div>
           </div>
         `;
@@ -2143,7 +2172,7 @@
       return findings.map(f => {
         const crit = renderCriticalStatusBadge(f.state);
         return `
-          <div class="finding-nav-item ${f.id === activeId ? 'active' : ''}" onclick="selectFinding('${escapeHtml(f.id)}')">
+          <div class="finding-nav-item ${f.id === activeId ? 'active' : ''}" role="button" tabindex="0" data-pkde-action="select-finding" data-pkde-arg="${escapeHtml(f.id)}">
             <div style="font-weight:600;font-size:12px;display:flex;justify-content:space-between;align-items:center;gap:6px;">
               <span>${escapeHtml(f.title)}</span>
               ${crit}
@@ -2216,9 +2245,18 @@
       }
 
       el.querySelectorAll('.pkde-source-badge').forEach(badge => {
+        badge.setAttribute('role', 'button');
+        badge.setAttribute('tabindex', '0');
         badge.addEventListener('click', () => {
           const sp = badge.getAttribute('data-source-path');
           if (sp) openArtifactByPath(sp);
+        });
+        badge.addEventListener('keydown', (ev) => {
+          if (ev.key === 'Enter' || ev.key === ' ') {
+            ev.preventDefault();
+            const sp = badge.getAttribute('data-source-path');
+            if (sp) openArtifactByPath(sp);
+          }
         });
       });
 
@@ -2265,7 +2303,7 @@
       return artifacts.map(a => {
         const crit = renderCriticalStatusBadge(a.verdict);
         return `
-          <div class="artifact-item ${a.id === activeId ? 'active' : ''}" onclick="selectStudioArtifact('${escapeHtml(a.id)}')">
+          <div class="artifact-item ${a.id === activeId ? 'active' : ''}" role="button" tabindex="0" data-pkde-action="select-artifact" data-pkde-arg="${escapeHtml(a.id)}">
             <div style="font-weight:600;word-break:break-all;display:flex;justify-content:space-between;align-items:center;gap:6px;">
               <span>${escapeHtml(a.name)}</span>
               ${crit}
@@ -4455,7 +4493,7 @@
         { id: 'gates', label: `Gates (${counts.gates})` }
       ];
       return items.map(it =>
-        `<button class="mini-btn ${currentTeleCategory === it.id ? 'active' : ''}" onclick="setTelemetryFilter('${it.id}')">${escapeHtml(it.label)}</button>`
+        `<button type="button" class="mini-btn ${currentTeleCategory === it.id ? 'active' : ''}" data-pkde-action="tele-filter" data-pkde-arg="${escapeHtml(it.id)}">${escapeHtml(it.label)}</button>`
       ).join('');
     }
 
@@ -4467,12 +4505,13 @@
         const tag = m.tag || 'AGENT';
         const tagCls = _teleTagClass(tag, m.level);
         const lvlCls = m.level ? `level-${escapeHtml(m.level)}` : '';
+        const lvlPrefix = m.level === 'error' ? '[ERROR] ' : (m.level === 'warn' ? '[WARN] ' : '');
         const timeStr = _formatTeleTime(m.timestamp);
         const actLabel = m.action_label || 'Inspect';
         return `
-          <div class="tele-row ${lvlCls}" onclick="navigateTelemetryEvent('${escapeHtml(m.id || '')}')">
+          <div class="tele-row ${lvlCls}" role="button" tabindex="0" data-pkde-action="nav-telemetry" data-pkde-arg="${escapeHtml(m.id || '')}">
             <span class="tele-time">${escapeHtml(timeStr)}</span>
-            <span class="tele-tag ${tagCls}">${escapeHtml(tag)}</span>
+            <span class="tele-tag ${tagCls}">${escapeHtml(lvlPrefix + tag)}</span>
             <span class="tele-route">${escapeHtml(m.sender || 'system')} -&gt; ${escapeHtml(m.recipient || 'pkde')}</span>
             <span class="tele-summary">${escapeHtml(m.summary || '')}</span>
             <span class="tele-action">${escapeHtml(actLabel)}</span>
@@ -4546,7 +4585,7 @@
       if (!boardEl) return;
 
       const activeAgentsHtml = nodes.map(n => `
-        <div class="check-row" style="cursor:pointer;" onclick="setWorkspaceMode('split'); selectAgentNode('${escapeHtml(n.id)}');">
+        <div class="check-row" role="button" tabindex="0" style="cursor:pointer;" data-pkde-action="split-agent" data-pkde-arg="${escapeHtml(n.id)}">
           <div>
             <strong style="color:var(--text-primary);">${escapeHtml(n.name)}</strong>
             <div style="font-size:10px;color:var(--text-secondary);">${escapeHtml(n.work_order_id ? n.work_order_id + '-r' + (n.revision || 1) : n.role)}</div>
@@ -4558,7 +4597,7 @@
       const recentFindingsHtml = findings.length === 0
         ? `<div style="color:var(--text-secondary);font-size:11.5px;">No findings recorded.</div>`
         : findings.slice().reverse().slice(0, 6).map(f => `
-          <div class="check-row" style="cursor:pointer;" onclick="setWorkspaceMode('split'); openFindingByPath('${escapeHtml(f.source_path)}');">
+          <div class="check-row" role="button" tabindex="0" style="cursor:pointer;" data-pkde-action="split-finding" data-pkde-arg="${escapeHtml(f.source_path)}">
             <div>
               <strong>${escapeHtml(f.title)}</strong>
               <div style="font-size:10px;color:var(--text-secondary);">${escapeHtml(f.source_path)}</div>
@@ -4570,7 +4609,7 @@
       const recentArtifactsHtml = artifacts.length === 0
         ? `<div style="color:var(--text-secondary);font-size:11.5px;">No artifacts recorded.</div>`
         : artifacts.slice().reverse().slice(0, 8).map(a => `
-          <div class="check-row" style="cursor:pointer;" onclick="setWorkspaceMode('split'); openArtifactByPath('${escapeHtml(a.rel_path)}');">
+          <div class="check-row" role="button" tabindex="0" style="cursor:pointer;" data-pkde-action="split-artifact" data-pkde-arg="${escapeHtml(a.rel_path)}">
             <div>
               <strong>${escapeHtml(a.name)}</strong>
               <div style="font-size:10px;color:var(--text-secondary);">${escapeHtml(a.artifact_class)} . ${escapeHtml(a.domain_studio || a.viewer_type)}</div>
@@ -4939,6 +4978,43 @@
         e.preventDefault();
         zoomGraph(e.deltaY < 0 ? 1.1 : 0.9, e.clientX, e.clientY);
       }, { passive: false });
+
+      function _dispatchPkdeAction(el) {
+        if (!el) return;
+        const action = el.getAttribute('data-pkde-action');
+        const arg = el.getAttribute('data-pkde-arg') || '';
+        if (action === 'select-agent') selectAgentNode(arg);
+        else if (action === 'open-finding') openFindingByPath(arg);
+        else if (action === 'open-artifact') openArtifactByPath(arg);
+        else if (action === 'nav-telemetry') navigateTelemetryEvent(arg);
+        else if (action === 'msg-filter') setMsgFilter(arg);
+        else if (action === 'select-finding') selectFinding(arg);
+        else if (action === 'select-artifact') selectStudioArtifact(arg);
+        else if (action === 'tele-filter') setTelemetryFilter(arg);
+        else if (action === 'split-agent') { setWorkspaceMode('split'); selectAgentNode(arg); }
+        else if (action === 'split-finding') { setWorkspaceMode('split'); openFindingByPath(arg); }
+        else if (action === 'split-artifact') { setWorkspaceMode('split'); openArtifactByPath(arg); }
+      }
+
+      document.addEventListener('click', (e) => {
+        const target = e.target && typeof e.target.closest === 'function'
+          ? e.target.closest('[data-pkde-action]')
+          : null;
+        if (target) {
+          _dispatchPkdeAction(target);
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const target = e.target && typeof e.target.closest === 'function'
+          ? e.target.closest('[data-pkde-action]')
+          : null;
+        if (target && target.tagName !== 'BUTTON' && target.tagName !== 'A') {
+          e.preventDefault();
+          _dispatchPkdeAction(target);
+        }
+      });
 
       window.addEventListener('keydown', (e) => {
         if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target && e.target.tagName) || '')) return;

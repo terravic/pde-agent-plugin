@@ -112,4 +112,6 @@ dashboards/*.html
 .coverage
 .coverage.*
 htmlcov/
-
+**/dashboard-server.json
+.pkde/scratchpad/
+.pkde-workspace/**/.pkde/scratchpad/

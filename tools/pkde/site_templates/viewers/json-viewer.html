@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>JSON Viewer</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.12.0/styles/github.min.css">
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 0; color: #1a1a2e; }
     .error { color: #c0392b; padding: 1rem; background: #fdf2f0; border-radius: 4px; margin: 1rem; }
@@ -50,6 +50,7 @@
     .view-tree { display: none; }
     .mode-tree .view-raw { display: none; }
     .mode-tree .view-tree { display: block; }
+      button:focus-visible, a:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible { outline: 2px solid #1B5E8A; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -67,7 +68,6 @@
   </div>
   <div id="error" class="error" style="display:none"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@highlightjs/cdn-assets@11.12.0/highlight.min.js"></script>
   <script>
     var jsonString = '';
 
@@ -77,6 +77,18 @@
     function showError(msg) {
       document.getElementById('error').style.display = 'block';
       document.getElementById('error').textContent = msg;
+    }
+
+    function isSafeRelativeFile(p) {
+      if (!p || typeof p !== 'string') return false;
+      var trimmed = p.trim();
+      if (!trimmed || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return false;
+      try {
+        var resolved = new URL(trimmed, window.location.href);
+        return resolved.origin === window.location.origin && resolved.protocol === window.location.protocol;
+      } catch (e) {
+        return false;
+      }
     }
 
     function setMode(mode) {
@@ -131,7 +143,7 @@
         return '<span class="tree-bracket">' + open + close + '</span>' + (isLast ? '' : ',');
       }
 
-      var html = '<span class="tree-toggle" onclick="this.parentElement.classList.toggle(\'tree-collapsed\')">v</span>';
+      var html = '<span class="tree-toggle" role="button" tabindex="0" aria-label="Toggle node" onclick="this.parentElement.classList.toggle(\'tree-collapsed\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.parentElement.classList.toggle(\'tree-collapsed\');}">v</span>';
       html += '<span class="tree-bracket">' + open + '</span> ';
       html += '<span class="tree-count">' + count + ' ' + (isArray ? 'items' : 'keys') + '</span>';
       html += '<div class="tree-children">';
@@ -149,6 +161,8 @@
 
     if (!filePath) {
       showError('No file specified. Use ?file=path/to/file');
+    } else if (!isSafeRelativeFile(filePath)) {
+      showError('Invalid file path: only relative same-origin paths are allowed.');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
       document.title = filePath.split('/').pop() + ' -- JSON Viewer';
@@ -180,7 +194,7 @@
           code.textContent = formatted;
           pre.appendChild(code);
           document.getElementById('raw-view').appendChild(pre);
-          hljs.highlightElement(code);
+          if (window.hljs && typeof window.hljs.highlightElement === 'function') { window.hljs.highlightElement(code); }
 
           // Tree view (only if JSON parsed successfully)
           if (parsed !== null) {

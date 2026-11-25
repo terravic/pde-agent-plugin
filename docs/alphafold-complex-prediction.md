@@ -390,7 +390,7 @@ variables if needed:
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `PKDE_AF3_PROJECT` | `pharma-oss-factory` | Cloud project ID. |
+| `PKDE_AF3_PROJECT` | *(required)* `<your-cloud-project-id>` | Cloud project ID. |
 | `PKDE_AF3_REGION` | `us-central1` | Cloud region. |
 | `PKDE_AF3_ENDPOINT_NAME` | `AlphaFold 3 Dedicated Endpoint` | Endpoint display name. |
 

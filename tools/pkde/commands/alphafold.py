@@ -693,7 +693,7 @@ def analyze(
 # Phase 1 -- AlphaFold 3 on dedicated endpoint
 # ---------------------------------------------------------------------------
 
-AF3_PROJECT = os.environ.get("PKDE_AF3_PROJECT", "pharma-oss-factory")
+AF3_PROJECT = os.environ.get("PKDE_AF3_PROJECT", "").strip()
 AF3_REGION = os.environ.get("PKDE_AF3_REGION", "us-central1")
 AF3_DISPLAY_NAME = os.environ.get(
     "PKDE_AF3_ENDPOINT_NAME", "AlphaFold 3 Dedicated Endpoint"
@@ -1087,6 +1087,12 @@ def predict(
     target_dir = project.artifact_dir(ARTIFACT_CLASS, out)
     job = payload["name"]
     stem = f"AF3-{job}"
+
+    if not AF3_PROJECT:
+        raise UsageError(
+            "PKDE_AF3_PROJECT is not configured; cannot target AlphaFold 3 endpoint",
+            remedy="set PKDE_AF3_PROJECT to your cloud project ID before running `pkde alphafold predict`",
+        )
 
     aiplatform.init(project=AF3_PROJECT, location=AF3_REGION)
     matches = aiplatform.Endpoint.list(filter=f'display_name="{AF3_DISPLAY_NAME}"')

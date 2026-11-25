@@ -1,6 +1,6 @@
 # Pharmakon Discovery Engine (`PkDE` -- `pkde-agent-plugin`)
 
-Pharmakon Discovery Engine (`PkDE`, `pkde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pkde-engine` / `pkde_plugin.mcp_server`) exposing 6 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pkde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
+Pharmakon Discovery Engine (`PkDE`, `pkde-agent-plugin`) is a multi-agent pre-clinical drug discovery and target evaluation plugin package. It provides 43 domain and governance skills, 22 specialist subagent role definitions, a built-in Model Context Protocol (MCP) server (`pkde-engine` / `pkde_plugin.mcp_server`) exposing 8 annotated orchestration and execution tools, a deterministic two-phase command-line engine (`bin/pkde`), a 4-layer cryptographic provenance system, a 10-check mechanical validation gate, and an offline-isolated interactive HTML dashboard (`dashboard.html`) with 20 scientific visualization studios.
 
 ![Pharmakon Discovery Engine Skill Workflow and Dashboard Overview](assets/pkde-skill-overview.png)
 
@@ -16,14 +16,14 @@ When you use this repository inside an AI agent harness, you can watch the entir
 
 1. **Step 1 -- Enter Your Prompt in the Agent Harness Chat**:
    Type your scientific question or campaign goal in plain English directly into the chat prompt of your agent harness (for example, evaluating a gene target, profiling a compound SMILES, or running a multi-disciplinary target nomination review). The agent harness automatically activates the root skill (`SKILL.md` / `skills/pharmakon-discovery-engine/SKILL.md`).
-2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://0.0.0.0:8765`) & Preflight Check**:
+2. **Step 2 -- Automatic Live Dashboard Bootstrap (`http://127.0.0.1:8765`) & Preflight Check**:
    As its very first action -- before running long scientific computations or spawning specialist subagents -- the skill executes `./.venv/bin/python scripts/start_live_session.py --prompt "<your prompt>"` (or `./bin/pkde dashboard start --prompt "<your prompt>"`) followed by `./bin/pkde doctor --json`. Within roughly one second, this:
    - Initializes the active workspace (`.pkde-workspace/` by default) with your prompt, target, indication, modality, and stage recorded in `.pkde-workspace/.pkde/program.yaml` and `.pkde-workspace/.pkde/control/events.ndjson`.
    - Verifies local tool readiness and external scientific API reachability (`execution_mode`: `full`, `degraded_offline`, or `blocked`).
    - Builds the initial `dashboard.html` showing the `User Prompt` root node connected to the `Science Program Lead` orchestrator.
-   - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to `http://0.0.0.0:8765` (`http://127.0.0.1:8765` locally) and prints the live URL in the chat response.
-3. **Step 3 -- Open `http://0.0.0.0:8765` in Your Browser and Watch Real-Time Progress**:
-   Open `http://0.0.0.0:8765` (or `http://127.0.0.1:8765` on the same machine) right away. Even when your agent harness UI displays `"Thinking..."` while specialist subagents and CLI tools are running in the background, the browser dashboard self-updates every 0.5 seconds via SSE without freezing your cursor, 3D camera, charts, or scroll position:
+   - Starts a non-blocking background HTTP + Server-Sent Events (SSE) server bound to loopback `http://127.0.0.1:8765` by default (opt in to all interfaces via `--host 0.0.0.0` or `PKDE_DASHBOARD_HOST=0.0.0.0` for container port forwarding) and prints the live URL in the chat response.
+3. **Step 3 -- Open `http://127.0.0.1:8765` in Your Browser and Watch Real-Time Progress**:
+   Open `http://127.0.0.1:8765` right away. Even when your agent harness UI displays `"Thinking..."` while specialist subagents and CLI tools are running in the background, the browser dashboard self-updates every 0.5 seconds via SSE without freezing your cursor, 3D camera, charts, or scroll position:
    - **In the `Split` and `Agents` Views**: Watch new specialist subagents (`computational-biologist`, `structural-biologist`, `medicinal-chemist`, `admet-dmpk-scientist`, `finding-validator`, `scientific-reviewer`, etc.) appear in the **Agent Lineage Forest** as Work Orders (`WO-001`, `WO-002`, ...) are dispatched, see their status badges transition from `running` to `mechanically_validated` and `scientifically_accepted`, and inspect inter-agent messages.
    - **In the `Split` and `Discovery` Views**: Watch the **20 Scientific Studios** (3D protein structures, binding pockets, docking poses, ADMET radar plots, gnomAD constraint, tissue expression, hypothesis ELO tournaments) and **Layer 1-4 Markdown Reports** populate automatically as each Phase 1 + Phase 2 tool pair finishes.
    - **In the `Live Telemetry Console` (Bottom Terminal Drawer & 4th `Telemetry` View)**: Watch a live terminal stream of every event (`PROMPT`, `WO`, `RUN`, `AGENT:MSG`, `TOOL:RUN`, `TOOL:DONE`, `PHASE 1`, `PHASE 2`, `FINDING`, `10-CHECK`), hover or scroll up to automatically pause auto-scrolling, and click any one-liner event to jump directly to the corresponding Agent node, Discovery Studio, or Finding report.
@@ -38,7 +38,7 @@ Evaluate EGFR as a therapeutic target for non-small cell lung cancer. Check huma
 ```
 
 **What the system does:**
-- Bootstraps the live session on `http://0.0.0.0:8765` with target `EGFR` and indication `NSCLC`.
+- Bootstraps the live session on `http://127.0.0.1:8765` with target `EGFR` and indication `NSCLC`.
 - Queries human genetics databases (gnomAD, Open Targets, ClinVar, GWAS Catalog) to verify disease links and loss-of-function constraint.
 - Queries the Human Protein Atlas and GTEx to measure RNA expression across 50 human tissues.
 - Retrieves 3D protein structures from the AlphaFold Database and evaluates per-residue structural confidence.
@@ -106,13 +106,14 @@ Run our proprietary CNS blood-brain barrier scoring script (examples/byoa/propri
 - Computes SHA-256 cryptographic hashes of both your private input file and your algorithm file in the `.meta.json` provenance sidecar (proving which version of your algorithm produced the numbers without copying your source code into reports).
 - Runs offline Phase 2 evaluation (`pkde custom analyze`) to classify each candidate (`PASS`, `WARN`, `FAIL`) and attaches mandatory external-algorithm and threshold caveats.
 
-### Managing and Navigating the Live Interactive Dashboard (`http://0.0.0.0:8765`)
+### Managing and Navigating the Live Interactive Dashboard (`http://127.0.0.1:8765`)
 
 While the skill automatically starts the background live server when prompted, you can also start, check, or stop the server or log custom inter-agent messages manually at any time:
 
 ```bash
-# Start or update the non-blocking background server on 0.0.0.0:8765
-./bin/pkde dashboard start --prompt "Evaluate EGFR in NSCLC" --host 0.0.0.0 --port 8765
+# Start or update the non-blocking background server on 127.0.0.1:8765 (loopback default;
+# pass --host 0.0.0.0 or set PKDE_DASHBOARD_HOST=0.0.0.0 to bind all interfaces in containers)
+./bin/pkde dashboard start --prompt "Evaluate EGFR in NSCLC" --host 127.0.0.1 --port 8765
 
 # Check whether the background server is listening and which workspace it is tracking
 ./bin/pkde dashboard status
@@ -125,7 +126,7 @@ While the skill automatically starts the background live server when prompted, y
 ./bin/pkde dashboard stop
 ```
 
-You can also open `dashboard.html` (located in the project root directory or inside `.pkde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pkde dashboard serve --host 0.0.0.0 --port 8765`. When connected to `http://0.0.0.0:8765`, the top bar displays `LIVE SSE (0.0.0.0)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect Plotly charts, expand accordions, and scroll through findings while new telemetry arrives.
+You can also open `dashboard.html` (located in the project root directory or inside `.pkde-workspace/dashboard.html`) directly as a standalone offline file, or run the server in the foreground via `./bin/pkde dashboard serve --host 127.0.0.1 --port 8765`. When connected to `http://127.0.0.1:8765`, the top bar displays `LIVE SSE (127.0.0.1)` and uses differential DOM updates (`requestAnimationFrame` coalescing + subsystem signature diffing) so you can freely rotate 3D protein structures, inspect charts, expand accordions, and scroll through findings while new telemetry arrives.
 
 Inside `dashboard.html`, the top bar includes a **Light / Dark / System** theme selector (which automatically detects and tracks the host operating system appearance preference on macOS, Linux, and Windows when `System` is selected) and a mode switcher providing **4 synchronized views** (`Split` | `Agents` | `Discovery` | `Telemetry`) plus a persistent collapsible **Live Telemetry Console** at the bottom of `Split`, `Agents`, and `Discovery` views:
 1. **Left Pane (`Split` & `Agents` Views -- Multi-Agent Lineage & Control Plane)**:
@@ -180,11 +181,13 @@ Every tool registered on `pkde-engine` declares explicit boolean values (`true` 
 
 | MCP Tool Name | Parameters | Purpose & Return Value | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
 | :--- | :--- | :--- | :---: | :---: | :---: | :---: |
-| **`pkde_bootstrap_session`** | `prompt: str`, `program_name?: str`, `stage?: int`, `project_dir?: str`, `host: str = "0.0.0.0"`, `port: int = 8765`, `start_server: bool = True` | Initializes `.pkde/program.yaml` from the user's prompt, logs `prompt.received`, builds the initial `dashboard.html`, and starts/verifies the live HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
-| **`pkde_exec`** | `command: str`, `project_dir?: str`, `auto_refresh_dashboard: bool = True` | Executes any `pkde` CLI command (e.g., `"doctor --json"`, `"genetics fetch EGFR --json"`, `"genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json"`), parses JSON stdout/stderr, and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
-| **`pkde_dispatch_workorder`** | `spec: dict[str, Any]`, `project_dir?: str` | Automates the 4-step Work Order intake ceremony: writes the spec YAML, creates and commits `WO-###`, freezes the context snapshot (`CTX-*`), acquires any non-standard resource lease, starts `RUN-###`, and returns the `specialist_brief`. | `false` | `false` | `false` | `false` |
+| **`pkde_bootstrap_session`** | `prompt: str`, `program_name?: str`, `stage?: int`, `project_dir?: str`, `host: str = "127.0.0.1"`, `port: int = 8765`, `start_server: bool = True`, `fresh: bool = False`, `target?: str`, `indication?: str`, `modality?: str` | Initializes `.pkde/program.yaml` from the user's prompt, logs `prompt.received`, builds the initial `dashboard.html`, and starts/verifies the live HTTP+SSE dashboard server on `127.0.0.1:8765`. | `false` | `false` | `false` | `false` |
+| **`pkde_exec`** | `command: str`, `project_dir?: str`, `auto_refresh_dashboard: bool = True`, `work_order_id?: str`, `agent_role?: str`, `run_id?: str` | Executes any `pkde` CLI command (e.g., `"doctor --json"`, `"genetics fetch EGFR --json"`, `"genetics analyze raw/genetics/EGFR.gnomad-constraint.json --json"`), parses JSON stdout/stderr, and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
+| **`pkde_dispatch_workorder`** | `spec: dict[str, Any]`, `project_dir?: str` | Automates the 4-step Work Order intake ceremony: writes the spec YAML, creates and commits `WO-###`, freezes the context snapshot (`CTX-*`), acquires any non-standard resource lease, starts `RUN-###`, and returns the `specialist_brief` and `subagent_invocation`. | `false` | `false` | `false` | `false` |
+| **`pkde_dispatch_cohort`** | `specs: list[dict[str, Any]]`, `project_dir?: str` | Dispatches multiple Work Orders across multiple specialist personas with dependency and resource-lease wave scheduling, returning Wave 1 `subagent_invocations` ready for parallel subagent execution. | `false` | `false` | `false` | `false` |
+| **`pkde_manage_cohort`** | `action: str = "status"`, `work_order_ids?: str`, `subagent_bindings?: str`, `project_dir?: str`, `work_order_id?: str`, `subagent_id?: str`, `run_id?: str` | Manages a multi-persona cohort (`status`, `bind_subagent`, `advance_wave`, `validate_cohort`, `renew_lease`) across active Work Orders and subagent runs. | `false` | `false` | `false` | `false` |
 | **`pkde_log_agent_message`** | `from_agent: str`, `to_agent: str`, `summary: str`, `work_order_id?: str`, `project_dir?: str` | Appends an explicit `agent.message` inter-agent communication event to `.pkde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
-| **`pkde_validate_and_gate`** | `work_order_id: str`, `run_id?: str`, `project_dir?: str` | Transitions the work order to `submitted`, runs the 10-check mechanical validator (`pkde validate check`), and routes to `PASSED` (releases leases), `CORRECTION_REQUIRED` (up to 2 in-place retry cycles with `correction_prompt`), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
+| **`pkde_validate_and_gate`** | `work_order_id: str`, `run_id?: str`, `project_dir?: str` | Transitions the work order to `submitted`, runs the 10-check mechanical validator (`pkde validate check`), and routes to `PASSED` (releases leases and advances newly unblocked waves), `CORRECTION_REQUIRED` (up to 2 in-place retry cycles), or `DATA_INTEGRITY_FAILURE` (immediate halt). | `false` | `false` | `false` | `false` |
 | **`pkde_render_dashboard`** | `project_dir?: str`, `output_path?: str` | Deterministically builds the self-contained interactive `dashboard.html` from the workspace's Layer 0-4 artifacts and control-plane records and returns summary metrics. | `false` | `false` | `true` | `false` |
 
 ### 3. End-to-End MCP Tool Call Workflow
@@ -192,7 +195,7 @@ Every tool registered on `pkde-engine` declares explicit boolean values (`true` 
 Below is a typical sequence of MCP tool calls made by an agent harness during a discovery session:
 
 ```python
-# 1. Bootstrap the live session and start the real-time dashboard on http://0.0.0.0:8765
+# 1. Bootstrap the live session and start the real-time dashboard on http://127.0.0.1:8765
 pkde_bootstrap_session(
     prompt="Evaluate EGFR target genetics and pocket druggability in NSCLC",
     program_name="EGFR-NSCLC",
@@ -260,14 +263,14 @@ The repository maintains canonical authoring templates in `skills/` and `templat
 When you submit a prompt in the agent harness, execution flows through four layers without bogging down the LLM with manual telemetry calls:
 
 1. **Session Bootstrap & Preflight Readiness (`scripts/start_live_session.py` & `./bin/pkde doctor --json`)**:
-   The primary skill agent runs `scripts/start_live_session.py` (or `pkde_bootstrap_session` via MCP / `./bin/pkde dashboard start`), which initializes `.pkde-workspace/` (or a custom `--project <dir>`), writes `.pkde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `0.0.0.0:8765`. It also runs `./bin/pkde doctor --json` to check local toolchain readiness and external scientific API reachability (`execution_mode`: `full`, `degraded_offline`, or `blocked`).
+   The primary skill agent runs `scripts/start_live_session.py` (or `pkde_bootstrap_session` via MCP / `./bin/pkde dashboard start`), which initializes `.pkde-workspace/` (or a custom `--project <dir>`), writes `.pkde-workspace/active-project.json` so the live server tracks the active workspace, and ensures the background HTTP/SSE server is listening on `127.0.0.1:8765` (loopback default; override with `--host` or `PKDE_DASHBOARD_HOST`). It also runs `./bin/pkde doctor --json` to check local toolchain readiness and external scientific API reachability (`execution_mode`: `full`, `degraded_offline`, or `blocked`).
 2. **Work-Order Dispatch & Subagent Invocation (`./bin/pkde workorder dispatch` or `scripts/dispatch_workorder.py`)**:
    For multi-domain tasks, the `Science Program Lead` creates a tracked Work Order (`WO-001`, `WO-002`, ...), freezes a context snapshot (`CTX-*`), acquires a resource lease, and invokes the matching specialist subagent (`pkde-<role-name>`) in the agent harness. After the specialist completes its report, `./bin/pkde workorder validate-and-gate` (or `pkde_validate_and_gate`) runs the 10-check validation gate.
 3. **Deterministic Two-Phase CLI Execution (`./bin/pkde` -> `.venv` + `tools/pkde/` & `tools/bin/arch/`)**:
    Each specialist subagent executes `./bin/pkde <domain> <phase1-cmd>` followed immediately by `./bin/pkde <domain> analyze`. The `./bin/pkde` and `./bin/env.sh` wrappers prefer `$PKDE_ROOT/.venv/bin/python` with hermetic `PYTHONPATH` isolation (`$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex`) and dispatch to `tools/pkde/cli.py` and `tools/pkde/commands/<domain>.py`. For hypothesis tournaments, `bin/hypex` and `bin/elo` detect the host OS and CPU architecture (`uname -s` / `uname -m`) and execute the corresponding prebuilt static binary in `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/`.
 4. **Zero-Overhead Passive Telemetry Capture (`tools/pkde/common.py` & `tools/pkde/commands/dashboard.py`)**:
    - **CLI Hook**: Every non-exempt domain command is wrapped by `enforce_phase_two()` in `tools/pkde/common.py`, which automatically appends `tool.started` (`TOOL:RUN`), `tool.completed` (`TOOL:DONE`), and `tool.failed` (`TOOL:ERR`) events (with duration and argument previews) into `.pkde-workspace/.pkde/control/events.ndjson`.
-   - **Filesystem Watcher**: The background server on `0.0.0.0:8765` computes a fast mtime+size signature over `.pkde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser and synchronizes `dashboard.html` via a sandbox-safe writer (`_safe_write_html`).
+   - **Filesystem Watcher**: The background server on `127.0.0.1:8765` computes a fast mtime+size signature over `.pkde/control/`, `raw/`, `findings/`, `program-state/`, and `executive/` every `0.5s`. Whenever a CLI tool writes a new file or event, the server pushes an updated bundle over `/api/stream` (SSE) to the browser (with same-origin checks and strict CSP/security headers) and synchronizes `dashboard.html` via a sandbox-safe writer (`_safe_write_html`).
 
 ### 3. Where Output Artifacts, Control State, and Dashboard Files Are Stored (`.pkde-workspace/`)
 
@@ -280,10 +283,10 @@ By default, all runtime state and scientific outputs are stored in `.pkde-worksp
 |-- .pkde/                                        # Control plane, configuration, and telemetry store
 |   |-- program.yaml                             # Active user prompt, program name, target, indication, stage
 |   |-- thresholds.yaml                          # Frozen scientific decision thresholds for Phase 2 analysis
-|   |-- scratchpad/                              # Ephemeral specialist working notes
+|   |-- scratchpad/                              # Ephemeral specialist working notes (gitignored)
 |   '-- control/
 |       |-- events.ndjson                        # Append-only chronological telemetry log (prompts, WOs, runs, CLI tools, messages)
-|       |-- dashboard-server.json                # Background HTTP/SSE server PID, host (0.0.0.0), port (8765), and URL state
+|       |-- dashboard-server.json                # Runtime HTTP/SSE server PID, host (127.0.0.1), port (8765), and URL state (gitignored)
 |       |-- work-orders/                         # YAML records for dispatched Work Orders (WO-001.yaml, ...)
 |       |-- runs/                                # Execution run records and retry lineage (RUN-001.yaml, ...)
 |       |-- contexts/                            # Frozen input context snapshots (CTX-001.json, ...)
@@ -331,6 +334,7 @@ All paths below are relative to the repository root (`./`):
 |-- README.md                                    # Project documentation and user guide
 |-- DESIGN.md                                    # Dashboard visual, layout, and theme design specification
 |-- prd.md                                       # Product Requirements Document
+|-- SECURITY_AUDIT.md                            # Security, accessibility, and provenance audit report
 |-- LICENSE                                      # Apache 2.0 license
 |-- pyproject.toml                               # Python package configuration and dependencies
 |-- uv.lock                                      # Deterministic dependency lockfile
@@ -346,7 +350,7 @@ All paths below are relative to the repository root (`./`):
 |   |-- elo                                      # Multi-architecture Pairwise ELO rating & pairing launcher
 |   '-- prox                                     # Hypothesis semantic clustering and deduplication CLI
 |-- scripts/
-|   |-- start_live_session.py                    # Top-level prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
+|   |-- start_live_session.py                    # Top-level prompt-to-dashboard bootstrap & 127.0.0.1:8765 server starter
 |   |-- dispatch_workorder.py                    # Top-level atomic work-order intake and specialist brief generator
 |   '-- pkde_runner.py                           # Top-level portable CLI execution wrapper
 |-- references/
@@ -367,7 +371,7 @@ All paths below are relative to the repository root (`./`):
 |   |-- pharmakon-discovery-engine/
 |   |   |-- SKILL.md                             # Primary orchestrator skill instructions
 |   |   |-- scripts/
-|   |   |   |-- start_live_session.py            # Prompt-to-dashboard bootstrap & 0.0.0.0:8765 server starter
+|   |   |   |-- start_live_session.py            # Prompt-to-dashboard bootstrap & 127.0.0.1:8765 server starter
 |   |   |   |-- dispatch_workorder.py            # Atomic work-order intake and specialist brief generator
 |   |   |   '-- pkde_runner.py                   # Portable CLI execution wrapper
 |   |   '-- references/
@@ -480,7 +484,8 @@ All paths below are relative to the repository root (`./`):
 |   |-- quickstart-pilot.md                      # Campaign initialization and operations guide
 |   |-- pilot-handoff.md                         # Operational calibration notes
 |   |-- hypex-integration.md                     # Hypothesis exploration subsystem integration notes
-|   '-- code-of-conduct.md                       # Contributor code of conduct
+|   |-- code-of-conduct.md                       # Contributor code of conduct
+|   '-- legal/                                   # Draft policy templates (privacy, terms, refunds, cookies)
 |-- .pkde-workspace/                              # Reference pre-clinical campaign workspace (Layer 0-4 artifacts)
 |-- .agents/
 |   |-- plugins.json                             # Agent harness plugin registry manifest
@@ -492,8 +497,11 @@ All paths below are relative to the repository root (`./`):
     |-- _fixture_workspace.py                    # End-to-end reference campaign builder
     |-- test_custom_byoa.py                      # BYOA, private data ingestion, and extension loader tests
     |-- test_dashboard.py                        # Dashboard and 20 scientific studio integration tests
+    |-- test_multi_agent_cohort_and_no_stubs.py  # Multi-persona cohort dispatch and non-stub execution tests
     |-- test_pocket_geometric.py                 # Built-in geometric pocket detector fallback and docking grid tests
     |-- test_real_execution_anti_echo.py         # Differential math, scaling, binary, and SHA-256 tamper verification tests
+    |-- test_security_and_a11y.py                # Security headers, XSS, CSP, input validation, and WCAG 2.2 AA tests
+    |-- test_skill_contract.py                   # Skill parity and packaging contract verification tests
     |-- test_targets_compile.py                  # Plugin and skill bundle compilation tests
     '-- test_tool_bridge.py                      # Two-phase tool bridge and MCP server tests
 ```
@@ -613,8 +621,8 @@ source ./bin/env.sh
 ```
 
 > **Cross-Platform 3D & Plot Rendering Note (Ubuntu Linux & macOS):**
-> - **Desktop Browsers (macOS & Linux):** Uses hardware-accelerated WebGL (`3Dmol.js`) for 3D molecular studios and `Plotly.js` for 2D scientific charts automatically.
-> - **Headless or Embedded Linux Webviews (X11 / Wayland / Restricted CSP):** If hardware WebGL is disabled in the embedded webview or external CDN scripts are restricted by Content Security Policy, `dashboard.html` automatically falls back to its built-in **Interactive Software 3D Projection Engine** (supporting drag-to-rotate, scroll-to-zoom, residue/atom hover inspection, and `Cartoon` / `Stick` / `Sphere` styles) and **Inline SVG Chart Renderer**. You can also manually switch between `Auto (WebGL/Software)` and `Software 3D` at any time using the **Engine** button in the 3D studio toolbar.
+> - **Offline-Isolated Rendering (Zero External CDN Requests):** `dashboard.html` and the 14 static site viewers enforce a strict Content Security Policy with zero external CDN `<script>` or `<link>` requests.
+> - **Interactive Software 3D & Inline SVG Renderers:** On macOS, Linux, and restricted headless/embedded webviews, `dashboard.html` renders molecular structures using its built-in **Interactive Software 3D Projection Engine** (supporting drag-to-rotate, scroll-to-zoom, residue/atom hover inspection, and `Cartoon` / `Stick` / `Sphere` styles) and plots charts with its built-in **Inline SVG Chart Renderer** (while automatically supporting locally vendored WebGL/Plotly assets when explicitly loaded). You can switch between `Auto` and `Software 3D` at any time using the **Engine** button in the 3D studio toolbar.
 
 ### 2. Two-Phase CLI Examples
 

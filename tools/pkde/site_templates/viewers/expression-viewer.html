@@ -2,15 +2,90 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>Expression Viewer</title>
-  <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist-min@2.35.2/plotly.min.js"></script>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; color: #1a1a1a; }
     .error { color: #c0392b; padding: 1rem; background: #fdf2f0; border-radius: 4px; }
     .filename { color: #555; font-size: 0.9rem; margin-bottom: 1rem; }
     h1 { color: #2c3e50; font-size: 1.3rem; }
     #viewer-container { width: 100%; }
+      button:focus-visible, a:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible { outline: 2px solid #1B5E8A; outline-offset: 2px; }
   </style>
+  <script>
+    /* Offline zero-CDN Plotly fallback renderer (inline SVG / tabular summary) */
+    window.Plotly = window.Plotly || {
+      newPlot: function(target, traces, layout) {
+        var el = typeof target === 'string' ? document.getElementById(target) : target;
+        if (!el) return;
+        function _esc(s) {
+          return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+        var t0 = (traces && traces[0]) || {};
+        var title = (layout && layout.title && (typeof layout.title === 'string' ? layout.title : layout.title.text)) || 'Data Plot';
+        if (t0.type === 'bar' && Array.isArray(t0.x) && Array.isArray(t0.y)) {
+          var isH = t0.orientation === 'h';
+          var labels = isH ? t0.y : t0.x;
+          var vals = isH ? t0.x : t0.y;
+          var maxV = Math.max.apply(null, vals.map(function(v){ return Math.abs(Number(v) || 0); }).concat([1]));
+          var rows = labels.map(function(lbl, idx) {
+            var v = Number(vals[idx]) || 0;
+            var pct = Math.min(100, Math.round((Math.abs(v) / maxV) * 100));
+            return '<tr><td style="padding:4px 8px;border-bottom:1px solid #e2e8f0;">' + _esc(lbl) +
+              '</td><td style="padding:4px 8px;border-bottom:1px solid #e2e8f0;width:55%;">' +
+              '<div style="background:#0D9488;height:12px;border-radius:3px;width:' + pct + '%;"></div></td>' +
+              '<td style="padding:4px 8px;border-bottom:1px solid #e2e8f0;font-family:monospace;text-align:right;">' + _esc(v.toFixed(2)) + '</td></tr>';
+          }).join('');
+          el.innerHTML = '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px;">' +
+            '<div style="font-weight:600;margin-bottom:8px;">' + _esc(title) + '</div>' +
+            '<table style="width:100%;border-collapse:collapse;font-size:12px;">' + rows + '</table></div>';
+          return;
+        }
+        if (t0.type === 'scatterpolar' && Array.isArray(t0.r) && Array.isArray(t0.theta)) {
+          var items = t0.theta.slice(0, Math.max(0, t0.theta.length - 1));
+          var rVals = t0.r.slice(0, items.length);
+          var pRows = items.map(function(th, i) {
+            return '<tr><td style="padding:4px 8px;border-bottom:1px solid #e2e8f0;">' + _esc(th) +
+              '</td><td style="padding:4px 8px;border-bottom:1px solid #e2e8f0;font-family:monospace;">' + _esc(rVals[i]) + '</td></tr>';
+          }).join('');
+          el.innerHTML = '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px;">' +
+            '<div style="font-weight:600;margin-bottom:8px;">' + _esc(title) + '</div>' +
+            '<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr><th style="text-align:left;padding:4px 8px;">Endpoint</th><th style="text-align:left;padding:4px 8px;">Score</th></tr></thead><tbody>' + pRows + '</tbody></table></div>';
+          return;
+        }
+        if (t0.type === 'heatmap' && Array.isArray(t0.z)) {
+          var nRows = t0.z.length;
+          var nCols = (t0.z[0] && t0.z[0].length) || 0;
+          var flat = [];
+          t0.z.forEach(function(row){ if (Array.isArray(row)) row.forEach(function(v){ if (typeof v === 'number' && !isNaN(v)) flat.push(v); }); });
+          var minVal = flat.length ? Math.min.apply(null, flat).toFixed(2) : '--';
+          var maxVal = flat.length ? Math.max.apply(null, flat).toFixed(2) : '--';
+          el.innerHTML = '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px;font-size:13px;">' +
+            '<div style="font-weight:600;margin-bottom:6px;">' + _esc(title) + '</div>' +
+            '<div style="color:#475569;font-family:monospace;">Matrix: ' + nRows + ' x ' + nCols + ' | Min: ' + _esc(minVal) + ' | Max: ' + _esc(maxVal) + '</div></div>';
+          return;
+        }
+        if (Array.isArray(t0.y) && t0.y.length > 0) {
+          var ys = t0.y.map(Number).filter(function(v){ return !isNaN(v); });
+          var yMin = Math.min.apply(null, ys), yMax = Math.max.apply(null, ys);
+          var span = (yMax - yMin) || 1;
+          var step = Math.max(1, Math.floor(ys.length / 240));
+          var pts = [];
+          for (var i = 0; i < ys.length; i += step) {
+            var px = (40 + (i / Math.max(1, ys.length - 1)) * 540).toFixed(1);
+            var py = (180 - ((ys[i] - yMin) / span) * 140).toFixed(1);
+            pts.push(px + ',' + py);
+          }
+          el.innerHTML = '<div style="border:1px solid #e2e8f0;border-radius:6px;padding:12px;">' +
+            '<div style="font-weight:600;margin-bottom:6px;">' + _esc(title) + ' (' + ys.length + ' points)</div>' +
+            '<svg viewBox="0 0 600 210" style="width:100%;max-height:240px;" role="img" aria-label="' + _esc(title) + '">' +
+            '<polyline fill="none" stroke="#0D9488" stroke-width="2" points="' + pts.join(' ') + '" /></svg></div>';
+          return;
+        }
+        el.textContent = title + ' (offline tabular view)';
+      }
+    };
+  </script>
 </head>
 <body>
   <h1>Tissue Expression</h1>
@@ -24,6 +99,18 @@
     function showError(msg) {
       document.getElementById('error').style.display = 'block';
       document.getElementById('error').textContent = msg;
+    }
+
+    function isSafeRelativeFile(p) {
+      if (!p || typeof p !== 'string') return false;
+      var trimmed = p.trim();
+      if (!trimmed || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return false;
+      try {
+        var resolved = new URL(trimmed, window.location.href);
+        return resolved.origin === window.location.origin && resolved.protocol === window.location.protocol;
+      } catch (e) {
+        return false;
+      }
     }
 
     function escapeHtml(str) {
@@ -43,6 +130,8 @@
 
     if (!filePath) {
       showError('No file specified. Use ?file=path/to/file.tissue.json');
+    } else if (!isSafeRelativeFile(filePath)) {
+      showError('Invalid file path: only relative same-origin paths are allowed.');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
 

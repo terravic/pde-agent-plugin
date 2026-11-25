@@ -16,10 +16,10 @@ The **Pharmakon Discovery Engine (`pharmakon-discovery-engine`)** skill provides
    ```bash
    source ./bin/env.sh
    ```
-2. **Step 0 -- Immediate Prompt-to-Dashboard Bootstrap (`0.0.0.0:8765`) & Preflight Readiness Gate**:
+2. **Step 0 -- Immediate Prompt-to-Dashboard Bootstrap (`127.0.0.1:8765`) & Preflight Readiness Gate**:
    As the **very first action** upon receiving a user prompt:
    ```bash
-   ./bin/pkde dashboard start --prompt "<user prompt>" --host 0.0.0.0 --port 8765 --json
+   ./bin/pkde dashboard start --prompt "<user prompt>" --host 127.0.0.1 --port 8765 --json
    # Or via the bundled helper script (available at both ./scripts/ and skills/pharmakon-discovery-engine/scripts/):
    ./.venv/bin/python scripts/start_live_session.py --prompt "<user prompt>"
    # Run preflight environment & network readiness check:
@@ -53,7 +53,7 @@ The **Pharmakon Discovery Engine (`pharmakon-discovery-engine`)** skill provides
 
 Use **Mode 1** when the user asks a focused, single-domain scientific question about a target, gene, protein structure, compound SMILES, SAR series, ADMET liability, or Stage 0 triage scorecard.
 
-1. **Step 0 -- Bootstrap Live Dashboard Session (`0.0.0.0:8765`) & Preflight Check**:
+1. **Step 0 -- Bootstrap Live Dashboard Session (`127.0.0.1:8765`) & Preflight Check**:
    Run `./bin/pkde dashboard start --prompt "<user prompt>" --json` and `./bin/pkde doctor --json` (confirm `execution_mode` supports the required tools).
 2. **Two-Phase Domain Tool Execution**:
    Run Phase 1 followed immediately by Phase 2 (`analyze`), or spin up the matching specialist subagent (`pkde-<role>`):
@@ -71,7 +71,7 @@ Use **Mode 1** when the user asks a focused, single-domain scientific question a
 3. **Surface Mandatory Relays**:
    Inspect the generated `.analysis.json` sidecar and include all `mandatory_relays` codes verbatim (`**Relay: \`<code>\`**`) in your response and findings report.
 4. **Verify `dashboard.html` Update**:
-   Every CLI execution automatically refreshes `dashboard.html` and pushes a live SSE update to `http://0.0.0.0:8765`; you may also run `./bin/pkde dashboard build --standalone --json` (or `pkde_render_dashboard()`) at the end of the turn to confirm the final snapshot.
+   Every CLI execution automatically refreshes `dashboard.html` and pushes a live SSE update to `http://127.0.0.1:8765`; you may also run `./bin/pkde dashboard build --standalone --json` (or `pkde_render_dashboard()`) at the end of the turn to confirm the final snapshot.
 
 ---
 
@@ -79,7 +79,7 @@ Use **Mode 1** when the user asks a focused, single-domain scientific question a
 
 Use **Mode 2** whenever the scientific task spans multiple disciplines (e.g., target genetics + 3D structure/pockets + medicinal chemistry/ADMET + molecular docking + preclinical safety, or a multi-agent Hypex tournament). In this mode, the skill acts as the **Science Program Lead & Research Operations Controller** and spins up multiple specialist subagents in parallel:
 
-1. **Step 0 -- Bootstrap Live Dashboard Session (`0.0.0.0:8765`), Doctor Preflight & Charter**:
+1. **Step 0 -- Bootstrap Live Dashboard Session (`127.0.0.1:8765`), Doctor Preflight & Charter**:
    - Run `./bin/pkde dashboard start --prompt "<user prompt>" --name "<Program Name>" [--target <GENE>] [--indication "<disease>"] [--modality <modality>] --stage 1 --json` and `./bin/pkde doctor --json`.
    - **Check `execution_mode`**: If `"degraded_offline"` and the campaign requires online fetches without local input files, halt immediately and report `ENVIRONMENT_BLOCKED` before creating Work Orders.
    - Otherwise, record the program charter in `program-state/decision-log.md` (`DEC-001`).
@@ -205,7 +205,7 @@ Use **Mode 3** whenever the user supplies proprietary/custom datasets (`.csv`, `
 
 Available both at the repository root (`./scripts/`, `./references/`) and inside `skills/pharmakon-discovery-engine/`:
 
-- `scripts/start_live_session.py`: Bootstraps a live PkDE session from the user prompt (`--prompt`, optional `--program-name`, `--stage`, `--target`, `--indication`, `--modality`, `--fresh`) and ensures the non-blocking background server on `0.0.0.0:8765` is running.
+- `scripts/start_live_session.py`: Bootstraps a live PkDE session from the user prompt (`--prompt`, optional `--program-name`, `--stage`, `--target`, `--indication`, `--modality`, `--fresh`) and ensures the non-blocking background server on `127.0.0.1:8765` is running.
 - `scripts/pkde_runner.py`: Portable CLI wrapper that executes any `pkde` command with automatic environment discovery and dashboard refresh.
 - `scripts/dispatch_workorder.py`: CLI helper for single or cohort Work Order dispatch (`--specs`/`--spec`/`--from`, inline JSON object or array, `{"work_orders": [...]}`, or a JSON/YAML path). Equivalent to `./bin/pkde workorder dispatch` / `dispatch-cohort`, and applies the same spec validation.
 - `references/role-skill-matrix.md`: Complete mapping of all 22 PkDE roles (`pkde-<role>`) to their categories, domain tools, and injected skill lanes.

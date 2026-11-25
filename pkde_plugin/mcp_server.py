@@ -12,11 +12,13 @@
 
 """Stdio MCP Server for the Pharmakon Discovery Engine (`pkde-engine`).
 
-Exposes the 6 portable tool bridge functions as MCP tools for any MCP-compatible
+Exposes the 8 portable tool bridge functions as MCP tools for any MCP-compatible
 agent harness:
 - ``pkde_bootstrap_session``
 - ``pkde_exec``
 - ``pkde_dispatch_workorder``
+- ``pkde_dispatch_cohort``
+- ``pkde_manage_cohort``
 - ``pkde_log_agent_message``
 - ``pkde_validate_and_gate``
 - ``pkde_render_dashboard``
@@ -110,14 +112,66 @@ except ImportError:  # pragma: no cover
                 }
             if method == "tools/call":
                 t_name = params.get("name", "")
-                t_args = params.get("arguments") or {}
+                t_args = params.get("arguments")
+                if t_args is None:
+                    t_args = {}
+                if not isinstance(t_args, dict):
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "error": {"code": -32602, "message": "Invalid params: arguments must be a JSON object"},
+                    }
                 if t_name not in self._tools:
                     return {
                         "jsonrpc": "2.0",
                         "id": msg_id,
                         "error": {"code": -32601, "message": f"Unknown tool: {t_name}"},
                     }
-                fn, _ = self._tools[t_name]
+                fn, schema = self._tools[t_name]
+                input_schema = schema.get("inputSchema") or {}
+                allowed_props: dict[str, Any] = input_schema.get("properties") or {}
+                required_props: list[str] = input_schema.get("required") or []
+                unknown_keys = sorted(k for k in t_args if k not in allowed_props)
+                if unknown_keys:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "error": {
+                            "code": -32602,
+                            "message": f"Invalid params: unexpected argument(s): {', '.join(unknown_keys)}",
+                        },
+                    }
+                missing_keys = [k for k in required_props if k not in t_args]
+                if missing_keys:
+                    return {
+                        "jsonrpc": "2.0",
+                        "id": msg_id,
+                        "error": {
+                            "code": -32602,
+                            "message": f"Invalid params: missing required argument(s): {', '.join(missing_keys)}",
+                        },
+                    }
+                for arg_k, arg_v in t_args.items():
+                    if arg_v is None:
+                        continue
+                    expected_t = (allowed_props.get(arg_k) or {}).get("type")
+                    type_ok = (
+                        (expected_t == "string" and isinstance(arg_v, str))
+                        or (expected_t == "integer" and isinstance(arg_v, int) and not isinstance(arg_v, bool))
+                        or (expected_t == "boolean" and isinstance(arg_v, bool))
+                        or (expected_t == "array" and isinstance(arg_v, list))
+                        or (expected_t == "object" and isinstance(arg_v, dict))
+                        or expected_t is None
+                    )
+                    if not type_ok:
+                        return {
+                            "jsonrpc": "2.0",
+                            "id": msg_id,
+                            "error": {
+                                "code": -32602,
+                                "message": f"Invalid params: argument {arg_k!r} must have type {expected_t}",
+                            },
+                        }
                 try:
                     res = fn(**t_args)
                     return {
@@ -196,7 +250,7 @@ def pkde_bootstrap_session(
     program_name: str | None = None,
     stage: int | None = None,
     project_dir: str | None = None,
-    host: str = "0.0.0.0",
+    host: str = "127.0.0.1",
     port: int = 8765,
     start_server: bool = True,
     fresh: bool = False,
@@ -204,7 +258,7 @@ def pkde_bootstrap_session(
     indication: str | None = None,
     modality: str | None = None,
 ) -> dict[str, Any]:
-    """Initialize a live PkDE discovery session from the user's prompt (optionally recording target, indication, and modality), record the active workspace, build the initial dashboard, and start the non-blocking live server on 0.0.0.0:8765. `fresh=True` clears prior raw/findings/control state in the workspace."""
+    """Initialize a live PkDE discovery session from the user's prompt (optionally recording target, indication, and modality), record the active workspace, build the initial dashboard, and start the non-blocking live server on 127.0.0.1:8765 (override with host or PKDE_DASHBOARD_HOST). `fresh=True` clears prior raw/findings/control state in the workspace."""
     return _bootstrap_session(
         prompt=prompt,
         program_name=program_name,

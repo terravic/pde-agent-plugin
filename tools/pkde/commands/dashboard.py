@@ -129,6 +129,51 @@ def _fallback_markdown_to_html(md_text: str) -> str:
             lines_out.append(f"<p>{ln}</p>")
     return "\n".join(lines_out)
 
+
+_DASHBOARD_DANGEROUS_SCHEMES = ("javascript:", "data:", "vbscript:", "blob:")
+_DASHBOARD_IMG_RE = re.compile(r"<img\b([^>]*)>", re.IGNORECASE)
+_DASHBOARD_LINK_RE = re.compile(r"<a\b([^>]*)>", re.IGNORECASE)
+_DASHBOARD_ATTR_SRC_RE = re.compile(r"""\bsrc\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
+_DASHBOARD_ATTR_HREF_RE = re.compile(r"""\bhref\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))""", re.IGNORECASE)
+
+
+def _sanitize_dashboard_html(rendered_html: str) -> str:
+    """Neutralize dangerous link schemes and external/data image tags in rendered Markdown HTML."""
+
+    def _replace_img(match: re.Match[str]) -> str:
+        attrs = match.group(1)
+        src_m = _DASHBOARD_ATTR_SRC_RE.search(attrs)
+        if not src_m:
+            return match.group(0)
+        raw_url = html_mod.unescape(src_m.group(1) or src_m.group(2) or src_m.group(3) or "").strip()
+        lower = raw_url.lower()
+        if lower.startswith(("http://", "https://", "//")):
+            return (
+                f'<span class="status-alert warning" '
+                f'title="External image blocked: {html_mod.escape(raw_url, quote=True)}">'
+                f'[EXTERNAL IMAGE BLOCKED]</span>'
+            )
+        if lower.startswith(_DASHBOARD_DANGEROUS_SCHEMES):
+            return '<span class="status-alert warning">[DATA URI IMAGE BLOCKED]</span>'
+        return match.group(0)
+
+    def _replace_link(match: re.Match[str]) -> str:
+        attrs = match.group(1)
+        href_m = _DASHBOARD_ATTR_HREF_RE.search(attrs)
+        if not href_m:
+            return match.group(0)
+        raw_url = html_mod.unescape(href_m.group(1) or href_m.group(2) or href_m.group(3) or "").strip()
+        normalized = re.sub(r"[\x00-\x20]+", "", raw_url).lower()
+        if normalized.startswith(_DASHBOARD_DANGEROUS_SCHEMES):
+            stripped_attrs = _DASHBOARD_ATTR_HREF_RE.sub("", attrs).strip()
+            prefix = f"{stripped_attrs} " if stripped_attrs else ""
+            return f'<a {prefix}class="status-alert critical" title="Blocked unsafe link scheme">'
+        return match.group(0)
+
+    out = _DASHBOARD_IMG_RE.sub(_replace_img, rendered_html)
+    out = _DASHBOARD_LINK_RE.sub(_replace_link, out)
+    return out
+
 from ..common import (
     AppState,
     PkDEGroup,
@@ -498,10 +543,14 @@ def _render_markdown_with_annotations(
             source_citations.append(sf)
 
     if mistune is not None:
-        md_renderer = mistune.create_markdown(plugins=["table", "strikethrough"])
+        md_renderer = mistune.create_markdown(
+            escape=True, plugins=["table", "strikethrough"]
+        )
         rendered_html = str(md_renderer(md_text))
     else:
         rendered_html = _fallback_markdown_to_html(md_text)
+
+    rendered_html = _sanitize_dashboard_html(rendered_html)
 
     # Replace **Relay: `<code>`** in rendered HTML with styled relay callout pill
     rendered_html = re.sub(
@@ -2346,6 +2395,80 @@ def record_active_project(project_root: Path | str) -> None:
         pass
 
 
+def _default_dashboard_host() -> str:
+    return os.environ.get("PKDE_DASHBOARD_HOST", "127.0.0.1").strip() or "127.0.0.1"
+
+
+_DASHBOARD_HTTP_CSP = (
+    "default-src 'self'; "
+    "script-src 'self' 'unsafe-inline'; "
+    "style-src 'self' 'unsafe-inline'; "
+    "img-src 'self' data:; "
+    "font-src 'self' data:; "
+    "connect-src 'self'; "
+    "object-src 'none'; "
+    "base-uri 'none'; "
+    "frame-ancestors 'none'"
+)
+
+
+def _is_same_origin(origin_header: str, host_header: str | None) -> bool:
+    """Return True if an HTTP Origin header matches the serving host or loopback."""
+    try:
+        parsed_origin = urlparse(origin_header)
+    except ValueError:
+        return False
+    if parsed_origin.scheme not in ("http", "https"):
+        return False
+    origin_host = (parsed_origin.hostname or "").lower()
+    if not origin_host:
+        return False
+    origin_port = parsed_origin.port or (443 if parsed_origin.scheme == "https" else 80)
+
+    if host_header:
+        parsed_host = urlparse(f"http://{host_header}")
+        req_host = (parsed_host.hostname or "").lower()
+        req_port = parsed_host.port or 80
+        if origin_port != req_port:
+            return False
+        if origin_host == req_host:
+            return True
+        loopback = {"127.0.0.1", "localhost", "::1"}
+        if origin_host in loopback and req_host in (loopback | {"0.0.0.0"}):
+            return True
+        return False
+    return origin_host in {"127.0.0.1", "localhost", "::1"}
+
+
+def _is_pkde_dashboard_pid(pid: int) -> bool:
+    """Verify that *pid* refers to a running `pkde.cli ... dashboard serve` process."""
+    if pid <= 1:
+        return False
+    cmdline_text = ""
+    proc_cmdline = Path(f"/proc/{pid}/cmdline")
+    if proc_cmdline.is_file():
+        try:
+            raw = proc_cmdline.read_bytes()
+            cmdline_text = " ".join(part.decode("utf-8", errors="ignore") for part in raw.split(b"\x00") if part)
+        except OSError:
+            return False
+    else:
+        try:
+            res = subprocess.run(
+                ["ps", "-p", str(pid), "-o", "args="],
+                capture_output=True,
+                text=True,
+                timeout=1.5,
+                check=False,
+            )
+            if res.returncode != 0:
+                return False
+            cmdline_text = res.stdout.strip()
+        except Exception:
+            return False
+    return "pkde.cli" in cmdline_text and "dashboard" in cmdline_text and "serve" in cmdline_text
+
+
 def resolve_live_project_root(initial_root: Path) -> Path:
     """Resolve the active workspace root for the live HTTP/SSE server."""
     repo = _repo_root()
@@ -2362,7 +2485,7 @@ def resolve_live_project_root(initial_root: Path) -> Path:
                         if cand_path.is_absolute()
                         else (repo / cand_path).resolve()
                     )
-                    if (cand / ".pkde").is_dir():
+                    if cand.is_relative_to(repo) and (cand / ".pkde").is_dir():
                         return cand
             except Exception:
                 pass
@@ -2416,6 +2539,27 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
         def log_message(self, format: str, *args: Any) -> None:
             pass  # Quiet standard logging
 
+        def _send_security_headers(self) -> None:
+            self.send_header("Content-Security-Policy", _DASHBOARD_HTTP_CSP)
+            self.send_header("X-Content-Type-Options", "nosniff")
+            self.send_header("X-Frame-Options", "DENY")
+            self.send_header("Referrer-Policy", "no-referrer")
+            self.send_header("Cross-Origin-Resource-Policy", "same-origin")
+
+        def _reject_cross_origin(self) -> bool:
+            origin = self.headers.get("Origin")
+            if origin and not _is_same_origin(origin, self.headers.get("Host")):
+                body = json.dumps({"error": "Cross-origin request forbidden"}).encode("utf-8")
+                self.send_response(HTTPStatus.FORBIDDEN)
+                self._send_security_headers()
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.end_headers()
+                self.wfile.write(body)
+                return True
+            return False
+
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
             route = parsed.path
@@ -2425,6 +2569,7 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                 dash_path, _ = build_dashboard_html(root, standalone_mode=False)
                 content = dash_path.read_bytes()
                 self.send_response(HTTPStatus.OK)
+                self._send_security_headers()
                 self.send_header("Content-Type", "text/html; charset=utf-8")
                 self.send_header("Content-Length", str(len(content)))
                 self.send_header("Cache-Control", "no-store")
@@ -2433,10 +2578,13 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                 return
 
             if route == "/api/bundle":
+                if self._reject_cross_origin():
+                    return
                 bundle = collect_dashboard_bundle(root)
                 bundle["program"]["standalone_mode"] = False
                 payload = json.dumps(bundle, ensure_ascii=False, default=str).encode("utf-8")
                 self.send_response(HTTPStatus.OK)
+                self._send_security_headers()
                 self.send_header("Content-Type", "application/json; charset=utf-8")
                 self.send_header("Content-Length", str(len(payload)))
                 self.send_header("Cache-Control", "no-store")
@@ -2445,7 +2593,10 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                 return
 
             if route == "/api/stream":
+                if self._reject_cross_origin():
+                    return
                 self.send_response(HTTPStatus.OK)
+                self._send_security_headers()
                 self.send_header("Content-Type", "text/event-stream; charset=utf-8")
                 self.send_header("Cache-Control", "no-cache")
                 self.send_header("Connection", "keep-alive")
@@ -2485,7 +2636,14 @@ def create_dashboard_http_handler(project_root: Path) -> type[BaseHTTPRequestHan
                 except (BrokenPipeError, ConnectionResetError, OSError):
                     return
 
-            self.send_error(HTTPStatus.NOT_FOUND, f"Unknown endpoint: {route}")
+            body = json.dumps({"error": "Unknown endpoint"}).encode("utf-8")
+            self.send_response(HTTPStatus.NOT_FOUND)
+            self._send_security_headers()
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
 
     return DashboardRequestHandler
 
@@ -2516,13 +2674,14 @@ def _server_state_paths(project_root: Path) -> list[Path]:
 
 def get_dashboard_server_status(
     project_root: Path | str | None = None,
-    host: str = "0.0.0.0",
+    host: str | None = None,
     port: int | None = None,
 ) -> dict[str, Any]:
     """Return current status of the background live dashboard server."""
     repo = _repo_root()
     root = Path(project_root or repo / ".pkde-workspace").expanduser().resolve()
     resolved_port = int(port or os.environ.get("PKDE_DASHBOARD_PORT", "8765"))
+    resolved_host = (host or _default_dashboard_host()).strip() or "127.0.0.1"
     saved: dict[str, Any] = {}
     for sp in _server_state_paths(root):
         if sp.is_file():
@@ -2535,9 +2694,9 @@ def get_dashboard_server_status(
                 pass
     if port is None and saved.get("port"):
         resolved_port = int(saved["port"])
-    if saved.get("host"):
-        host = str(saved["host"])
-    listening = _is_port_listening(resolved_port, host)
+    if host is None and saved.get("host"):
+        resolved_host = str(saved["host"])
+    listening = _is_port_listening(resolved_port, resolved_host)
     live_root = resolve_live_project_root(root)
     rel_or_str = (
         str(live_root.relative_to(repo)) or "."
@@ -2547,9 +2706,9 @@ def get_dashboard_server_status(
     return {
         "running": listening,
         "pid": saved.get("pid") if listening else None,
-        "host": host,
+        "host": resolved_host,
         "port": resolved_port,
-        "url": f"http://{host}:{resolved_port}",
+        "url": f"http://{resolved_host}:{resolved_port}",
         "local_url": f"http://127.0.0.1:{resolved_port}",
         "project_root": rel_or_str,
         "started_at": saved.get("started_at"),
@@ -2558,15 +2717,16 @@ def get_dashboard_server_status(
 
 def ensure_dashboard_server(
     project_root: Path | str,
-    host: str = "0.0.0.0",
+    host: str | None = None,
     port: int | None = None,
 ) -> dict[str, Any]:
     """Ensure the live HTTP/SSE dashboard server is running in the background on `host:port`."""
     root = Path(project_root).expanduser().resolve()
     resolved_port = int(port or os.environ.get("PKDE_DASHBOARD_PORT", "8765"))
+    resolved_host = (host or _default_dashboard_host()).strip() or "127.0.0.1"
     record_active_project(root)
 
-    status = get_dashboard_server_status(root, host=host, port=resolved_port)
+    status = get_dashboard_server_status(root, host=resolved_host, port=resolved_port)
     if status["running"]:
         return {"ok": True, "reused": True, **status}
 
@@ -2587,7 +2747,7 @@ def ensure_dashboard_server(
         "dashboard",
         "serve",
         "--host",
-        host,
+        resolved_host,
         "--port",
         str(resolved_port),
     ]
@@ -2605,7 +2765,7 @@ def ensure_dashboard_server(
     deadline = time.monotonic() + 2.5
     listening = False
     while time.monotonic() < deadline:
-        if _is_port_listening(resolved_port, host):
+        if _is_port_listening(resolved_port, resolved_host):
             listening = True
             break
         if proc.poll() is not None:
@@ -2620,9 +2780,9 @@ def ensure_dashboard_server(
     meta = {
         "running": listening,
         "pid": proc.pid,
-        "host": host,
+        "host": resolved_host,
         "port": resolved_port,
-        "url": f"http://{host}:{resolved_port}",
+        "url": f"http://{resolved_host}:{resolved_port}",
         "local_url": f"http://127.0.0.1:{resolved_port}",
         "project_root": rel_or_str,
         "started_at": _utc_now(),
@@ -2639,7 +2799,7 @@ def ensure_dashboard_server(
 
 def stop_dashboard_server(
     project_root: Path | str | None = None,
-    host: str = "0.0.0.0",
+    host: str | None = None,
     port: int | None = None,
 ) -> dict[str, Any]:
     """Stop the background dashboard server if running."""
@@ -2647,7 +2807,7 @@ def stop_dashboard_server(
     status = get_dashboard_server_status(root, host=host, port=port)
     pid = status.get("pid")
     stopped = False
-    if pid:
+    if pid and _is_pkde_dashboard_pid(int(pid)):
         try:
             os.kill(int(pid), signal.SIGTERM)
             stopped = True
@@ -2715,12 +2875,13 @@ def bootstrap_prompt_session(
     indication: str | None = None,
     modality: str | None = None,
     stage: str | int | None = None,
-    host: str = "0.0.0.0",
+    host: str | None = None,
     port: int = 8765,
     fresh: bool = False,
     start_server: bool = True,
 ) -> dict[str, Any]:
     """Initialize `.pkde/program.yaml` from the user prompt, build `dashboard.html`, and start the live server."""
+    resolved_host = (host or _default_dashboard_host()).strip() or "127.0.0.1"
     root = Path(project_root).expanduser().resolve()
     if fresh and root.is_dir():
         for stale_dir in (
@@ -2808,9 +2969,9 @@ def bootstrap_prompt_session(
     record_active_project(root)
     dash_path, bundle = build_dashboard_html(root, standalone_mode=True)
     server_info = (
-        ensure_dashboard_server(root, host=host, port=port)
+        ensure_dashboard_server(root, host=resolved_host, port=port)
         if start_server
-        else get_dashboard_server_status(root, host=host, port=port)
+        else get_dashboard_server_status(root, host=resolved_host, port=port)
     )
 
     return {
@@ -2820,7 +2981,7 @@ def bootstrap_prompt_session(
         "dashboard_html": str(dash_path),
         "program": bundle["program"],
         "server": server_info,
-        "url": server_info.get("url", f"http://{host}:{port}"),
+        "url": server_info.get("url", f"http://{resolved_host}:{port}"),
         "local_url": server_info.get("local_url", f"http://127.0.0.1:{port}"),
     }
 
@@ -2897,9 +3058,8 @@ def build_cmd(
 @click.option("--stage", default=None, help="Optional discovery stage label.")
 @click.option(
     "--host",
-    default="0.0.0.0",
-    show_default=True,
-    help="Host interface to bind the background live SSE server.",
+    default=None,
+    help="Host interface to bind the background live SSE server (default: 127.0.0.1 or $PKDE_DASHBOARD_HOST).",
 )
 @click.option(
     "--port",
@@ -2924,13 +3084,13 @@ def start_cmd(
     indication: str | None,
     modality: str | None,
     stage: str | None,
-    host: str,
+    host: str | None,
     port: int,
     fresh: bool,
     as_json: bool,
     quiet: bool,
 ) -> None:
-    """Bootstrap prompt metadata, build `dashboard.html`, and start the background live server (`0.0.0.0:8765`)."""
+    """Bootstrap prompt metadata, build `dashboard.html`, and start the background live server (`127.0.0.1:8765`)."""
     emit = emitter(as_json, quiet)
     try:
         root = state.project().root
@@ -2984,13 +3144,13 @@ def stop_cmd(
 
 
 @dashboard.command("status")
-@click.option("--host", default="0.0.0.0", show_default=True)
+@click.option("--host", default=None, help="Host interface override (default: saved host or 127.0.0.1).")
 @click.option("--port", default=None, type=int)
 @output_options
 @pass_state
 def status_cmd(
     state: AppState,
-    host: str,
+    host: str | None,
     port: int | None,
     as_json: bool,
     quiet: bool,
@@ -3051,9 +3211,8 @@ def message_cmd(
 @dashboard.command("serve")
 @click.option(
     "--host",
-    default="0.0.0.0",
-    show_default=True,
-    help="Host interface to bind.",
+    default=None,
+    help="Host interface to bind (default: 127.0.0.1 or $PKDE_DASHBOARD_HOST).",
 )
 @click.option(
     "--port",
@@ -3063,17 +3222,18 @@ def message_cmd(
     help="Port to serve the live dashboard on.",
 )
 @pass_state
-def serve_cmd(state: AppState, host: str, port: int) -> None:
+def serve_cmd(state: AppState, host: str | None, port: int) -> None:
     """Start the live PkDE Interactive Dashboard HTTP/SSE server."""
+    resolved_host = (host or _default_dashboard_host()).strip() or "127.0.0.1"
     project = state.project()
     record_active_project(project.root)
     dash_path, _ = build_dashboard_html(project.root, standalone_mode=False)
     handler_cls = create_dashboard_http_handler(project.root)
-    server = ThreadingHTTPServer((host, port), handler_cls)
+    server = ThreadingHTTPServer((resolved_host, port), handler_cls)
     click.echo(f"Serving live PkDE Unified Dashboard for {project.root}")
-    click.echo(f"  Dashboard URL: http://{host}:{port}/")
-    click.echo(f"  Bundle API:    http://{host}:{port}/api/bundle")
-    click.echo(f"  SSE Stream:    http://{host}:{port}/api/stream")
+    click.echo(f"  Dashboard URL: http://{resolved_host}:{port}/")
+    click.echo(f"  Bundle API:    http://{resolved_host}:{port}/api/bundle")
+    click.echo(f"  SSE Stream:    http://{resolved_host}:{port}/api/stream")
     click.echo(f"  Snapshot file: {dash_path}")
     try:
         server.serve_forever()

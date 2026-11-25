@@ -28,8 +28,11 @@ from pkde_plugin.tool_bridge import pkde_bootstrap_session  # noqa: E402
 
 
 def main() -> int:
+    import os
+
+    default_host = os.environ.get("PKDE_DASHBOARD_HOST", "127.0.0.1").strip() or "127.0.0.1"
     parser = argparse.ArgumentParser(
-        description="Bootstrap a PkDE session from the user prompt and start the live dashboard server on 0.0.0.0:8765."
+        description="Bootstrap a PkDE session from the user prompt and start the live dashboard server on 127.0.0.1:8765."
     )
     parser.add_argument(
         "--prompt",
@@ -62,8 +65,8 @@ def main() -> int:
     )
     parser.add_argument(
         "--host",
-        default="0.0.0.0",
-        help="Host interface to bind (default: 0.0.0.0).",
+        default=default_host,
+        help="Host interface to bind (default: 127.0.0.1 or $PKDE_DASHBOARD_HOST).",
     )
     parser.add_argument(
         "--port",

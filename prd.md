@@ -46,6 +46,7 @@ Language model agents operating on biomedical research tasks without determinist
 |-- README.md
 |-- DESIGN.md
 |-- prd.md
+|-- SECURITY_AUDIT.md
 |-- LICENSE
 |-- pyproject.toml
 |-- uv.lock
@@ -147,6 +148,7 @@ Language model agents operating on biomedical research tasks without determinist
 |       '-- skills/
 |           '-- proprietary-cns-scorer/SKILL.md
 |-- docs/
+|   '-- legal/                                     # Draft policy templates (privacy, terms, refunds, cookies)
 |-- .pkde-workspace/
 |-- .agents/
 |   |-- plugins.json
@@ -161,6 +163,7 @@ Language model agents operating on biomedical research tasks without determinist
     |-- test_multi_agent_cohort_and_no_stubs.py
     |-- test_pocket_geometric.py
     |-- test_real_execution_anti_echo.py
+    |-- test_security_and_a11y.py
     |-- test_skill_contract.py
     |-- test_targets_compile.py
     '-- test_tool_bridge.py
@@ -171,11 +174,11 @@ Language model agents operating on biomedical research tasks without determinist
 | Surface | Entrypoint / Location | Description |
 | :--- | :--- | :--- |
 | Root Skill Discovery | `SKILL.md`, `skills/pharmakon-discovery-engine/SKILL.md` | Primary skill entrypoints loaded by agent harnesses to route domain requests and orchestrate work orders. |
-| Bundled Scripts & Playbooks | `scripts/`, `references/`, `skills/pharmakon-discovery-engine/{scripts,references}/` | Top-level and skill-local helper scripts (`start_live_session.py`, `dispatch_workorder.py`, `dispatch_cohort.py`, `pkde_runner.py`) and reference matrices (`role-skill-matrix.md`, `stage0-3-playbook.md`). |
+| Bundled Scripts & Playbooks | `scripts/`, `references/`, `skills/pharmakon-discovery-engine/{scripts,references}/` | Top-level and skill-local helper scripts (`start_live_session.py`, `dispatch_workorder.py`, `pkde_runner.py`) and reference matrices (`role-skill-matrix.md`, `stage0-3-playbook.md`). |
 | Agent Harness Plugin | `.agents/plugins/pharmakon-discovery-engine/` | Compiled plugin directory containing `plugin.json`, `rules/pkde-scientific-integrity.md`, 22 subagent definitions (`agents/*.md`), and 43 skills (`skills/`). |
 | Portable Skill Bundles | `dist/skill-bundles/*.zip` | Standalone zip archives for each skill with bundled scripts and reference documentation. |
 | Python Tool Bridge | `pkde_plugin/tool_bridge.py` | Typed Python functions (`pkde_bootstrap_session`, `pkde_exec`, `pkde_dispatch_workorder`, `pkde_dispatch_cohort`, `pkde_manage_cohort`, `pkde_log_agent_message`, `pkde_validate_and_gate`, `pkde_render_dashboard`) wrapping `bin/pkde` CLI commands and control-plane workflows. |
-| MCP Server | `bin/pkde-mcp`, `pkde_plugin/mcp_server.py`, `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | JSON-RPC 2.0 Model Context Protocol stdio server (`pkde-engine` / `pkde-mcp`) exposing all 8 `pkde_*` tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) and a standard-library JSON-RPC 2.0 stdio fallback when the optional `mcp` Python package is absent. |
+| MCP Server | `bin/pkde-mcp`, `pkde_plugin/mcp_server.py`, `.agents/plugins/pharmakon-discovery-engine/mcp_config.json` | JSON-RPC 2.0 Model Context Protocol stdio server (`pkde-engine` / `pkde-mcp`) exposing all 8 `pkde_*` tools with explicit boolean `ToolAnnotations` (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`) and a strict-schema standard-library JSON-RPC 2.0 stdio fallback when the optional `mcp` Python package is absent. |
 | CLI Engine | `bin/pkde` (`tools/pkde/cli.py`) | Click-based command-line interface implementing 42 domain and operational command groups (including `pkde workorder dispatch`, `dispatch-cohort`, `advance-wave`, `bind-subagent`, `renew-lease`, and `validate-and-gate`) plus dynamic extension loading. |
 | Multi-Architecture Native Binaries | `bin/hypex`, `bin/elo`, `tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/` | POSIX runtime OS/CPU dispatchers backed by pre-compiled static binaries (`CGO_ENABLED=0`) for macOS ARM64, macOS x86_64, Linux x86_64, and Linux ARM64. |
 | Environment Provisioner | `tools/bootstrap-preflight.sh`, `tools/install.sh`, `bin/env.sh` | Cross-platform host prerequisite checker and hermetic provisioner for `.venv`, `[science]` dependencies, `bin/hypex`, `bin/elo`, `bin/prox`, and `tools/ENV_VERSION` stamping on Linux and macOS. |
@@ -208,7 +211,7 @@ All scientific domain commands in `bin/pkde` follow a mandatory two-phase execut
 - **Phase 2 (`analyze`, `analyze-prediction`, `analyze-ism`, `analyze-single-cell`, `analyze-donors`)**: Latched offline at the CLI framework level (`tools/pkde/common.py`). Reads stored Layer 0 artifacts, applies named threshold sets from `tools/pkde/core/thresholds.py` (with optional overrides in `.pkde/thresholds.yaml`), and writes `.analysis.json`.
 - **Built-In Geometric Pocket Detection (`bin/pkde pocket run --backend [auto|fpocket|geometric]`)**:
   - When `--backend auto` (default) is used, `pkde pocket run` invokes the external `fpocket` binary if present on `PATH`, and automatically falls back to a built-in Python/NumPy 3D lattice protein-solvent-protein (PSP) enclosure and alpha-probe cavity detector (`tools/pkde/commands/pocket.py`) when `fpocket` is unavailable. If `numpy` or `gemmi` is absent on the host, the geometric pocket detector and structure parser automatically fall back to pure-Python implementations (`_run_geometric_pocket_detector_pure_python`, `_parse_atoms_fallback`).
-  - The `geometric` backend parses PDB (`.pdb`, `.ent`) and mmCIF (`.cif`, `.mmcif`) structures, clusters buried and cleft cavities via 26-connected breadth-first search, computes volume, residue hydrophobicity, and calibrated druggability scores, and writes a complete `<stem>_fpocket/` output tree (`<stem>_info.txt` and `pockets/pocket{rank}_atm.{pdb,cif}`) compatible with `pkde pocket analyze`, `pkde docking prepare`, `pkde structure annotate-topology`, and the 3Dmol.js dashboard viewer.
+  - The `geometric` backend parses PDB (`.pdb`, `.ent`) and mmCIF (`.cif`, `.mmcif`) structures, clusters buried and cleft cavities via 26-connected breadth-first search, computes volume, residue hydrophobicity, and calibrated druggability scores, and writes a complete `<stem>_fpocket/` output tree (`<stem>_info.txt` and `pockets/pocket{rank}_atm.{pdb,cif}`) compatible with `pkde pocket analyze`, `pkde docking prepare`, `pkde structure annotate-topology`, and the offline 3D dashboard viewer.
   - Whenever the `geometric` backend executes, `pkde pocket run` emits the mandatory relay `pocket.geometric_fallback_backend` in `.pockets.meta.json` (propagated by `pkde pocket analyze` into `.pocket.analysis.json`), and `pkde doctor` classifies missing `fpocket` as a non-blocking `CAVEAT`.
 
 ### 4.3 Mechanical Validation Gate & Multi-Agent Work-Order Orchestration (`bin/pkde validate check` & `bin/pkde workorder`)
@@ -219,7 +222,7 @@ Building on the 4-layer hierarchy, the control plane enforces strict work-order 
    - Requires a non-empty `decision_question`, a non-empty `deliverables.layer_1` list of relative paths under `findings/`, and either a non-empty `deliverables.layer_0_classes` list or `deliverables.synthesis_only: true`.
 2. **Multi-Persona Cohort Dispatch & Dependency Waves (`pkde workorder dispatch-cohort`, `advance-wave`, `bind-subagent`)**:
    - Accepts a multi-persona cohort specification (`COHORT-###`) with symbolic keys and `depends_on` edges, validates the dependency DAG for unknown references and cycles, creates and commits all work orders, starts Wave 1 (`depends_on: []`) specialist runs immediately, and queues dependent waves (`status: "queued_on_dependencies"`).
-   - Emits concrete `invoke_subagent_payload` arrays (`TypeName`, `Role`, `Prompt`, `Model`, `Workspace`) and binds returned subagent `conversation_id` values to `.pkde/control/work-orders/<WO>.yaml` and `.pkde/control/runs/<RUN>.json` (matching by `work_order_id`, `run_id`, or `role`, and reporting any unmatched entries).
+   - Emits concrete `subagent_invocations` arrays (`TypeName`, `Role`, `Prompt`, `Model`, `Workspace`) and binds returned subagent `conversation_id` values to `.pkde/control/work-orders/<WO>.json` and `.pkde/control/runs/<RUN>.json` (matching by `work_order_id`, `run_id`, or `role`, and reporting any unmatched entries).
    - Automatically promotes queued Wave 2+ work orders when upstream dependencies pass `pkde_validate_and_gate`.
 3. **Single-Flight Resource Leases with TTL Expiry (`af3`, `hypex-supervisor`)**:
    - Every resource lease records `acquired_at`, `ttl_seconds` (default `3600` seconds), and `expires_at` in `.pkde/control/leases/<resource>.json`.
@@ -236,7 +239,7 @@ Building on the 4-layer hierarchy, the control plane enforces strict work-order 
      8. `findings_integrity`: Absence of unresolved template placeholders or malformed blocks.
      9. `source_tags_resolve`: All inline `{source: raw/...#$.path}` JSONPath expressions resolve against target JSON files and match numerical claims.
      10. `unrecognized_json`: Absence of untracked JSON files lacking provenance sidecars in `raw/`.
-   - All control-plane state transitions (`complete`, `validate-pass`, `validate-fail`, `Revise`) check the CLI return code and report explicit `TRANSITION_FAILED`, `VALIDATOR_ERROR`, or `ALREADY_VALIDATED` actions on invalid transitions.
+   - All control-plane state transitions (`complete`, `validate-pass`, `validate-fail`, `revise`) check the CLI return code and report explicit `TRANSITION_FAILED`, `VALIDATOR_ERROR`, or `ALREADY_VALIDATED` actions on invalid transitions.
 
 ### 4.4 Specialist Agent Roles (`templates/`)
 The repository defines 22 agent templates, each containing `agent.yaml`, `agents.md`, and `system-prompt.md`:
@@ -245,67 +248,44 @@ The repository defines 22 agent templates, each containing `agent.yaml`, `agents
 - **Operations & Curation (2 roles)**: `bootstrapper`, `project-curator`.
 - **Hypothesis Exploration Subsystem (7 roles)**: `hypex-supervisor`, `hypex-generation`, `hypex-reflection`, `hypex-proximity`, `hypex-tournament`, `hypex-evolution`, `hypex-meta-review`.
 
-### 4.5 Interactive Standalone Dashboard (`dashboard.html`), Theme Specifications & Cross-Platform Failover Rendering
-Running `bin/pkde dashboard build --standalone` (or calling `pkde_render_dashboard`) generates a self-contained HTML application (`dashboard.html`) governed by `DESIGN.md` with dual-mode operation (`STANDALONE SNAPSHOT` when opened as a local file, and `LIVE STREAM (SSE)` with automatic reload when served via `bin/pkde dashboard serve`), Light / Dark / System theme switching, cross-platform 3D/2D rendering failover, and two synchronized panes:
+### 4.5 Interactive Standalone Dashboard (`dashboard.html`), Theme Specifications & Zero-CDN Offline Rendering
+Running `bin/pkde dashboard build --standalone` (or calling `pkde_render_dashboard`) generates a self-contained HTML application (`dashboard.html`) governed by `DESIGN.md` with dual-mode operation (`STANDALONE SNAPSHOT` when opened as a local file, and `LIVE STREAM (SSE)` when served via `bin/pkde dashboard serve`), strict Content-Security-Policy, zero external CDN/font requests, WCAG 2.2 AA contrast and keyboard navigation, Light / Dark / System theme switching, and two synchronized panes:
 
 1. **Theme Selector, Cross-Platform OS Detection & Data Visualization Color Palette Specifications (`DESIGN.md`)**:
-   - **Three-Icon Light / Dark / System Selector (`#theme-selector`)**: Segmented control in the top navigation bar containing three side-by-side SVG icon buttons (`#theme-btn-light` with a sun SVG icon, `#theme-btn-dark` with a crescent moon SVG icon, and `#theme-btn-system` with a computer monitor SVG icon). The selected mode (`light`, `dark`, or `system`) is highlighted via the `active` class (`aria-pressed="true"`) and persisted in `localStorage` (`pkde-theme-mode`).
+   - **Three-Icon Light / Dark / System Selector (`#theme-selector`)**: Segmented control in the top navigation bar containing three side-by-side SVG icon buttons (`#theme-btn-light`, `#theme-btn-dark`, and `#theme-btn-system`). The selected mode (`light`, `dark`, or `system`) is highlighted via the `active` class (`aria-pressed="true"`) and persisted in `localStorage` (`pkde-theme-mode`).
    - **Cross-Platform System Theme Detection (`macOS`, `Linux`, `Windows`)**:
      - **Browser / Webview Layer (`resolveSystemTheme`)**: Queries `window.matchMedia('(prefers-color-scheme: dark)')` and registers a `'change'` listener so operating system appearance changes apply in real time when `system` mode is active.
      - **Host OS Layer (`_detect_host_system_theme` in `tools/pkde/commands/dashboard.py`)**: Queries the host operating system preference (`defaults read -g AppleInterfaceStyle` on macOS, `winreg` `AppsUseLightTheme` on Windows, and `GTK_THEME` / `gsettings` / `kdeglobals` on Linux) and embeds `os_platform` and `system_theme` in `bundle["agent_system"]["environment"]` as a fallback for headless or restricted webviews.
-   - **Light Mode Tokens**: Background `#FAFAF9`, Cards & Surfaces `#FFFFFF`, Borders `#E7E5E4`, Text Primary `#1C1917`, Text Secondary `#787774`.
-   - **Dark Mode Tokens**: Background `#0D0E11`, Cards & Surfaces `#16171D`, Borders `#292A30`, Text Primary `#ECE8E2`, Text Secondary `#9A9895`.
+   - **Light Mode Tokens (WCAG 2.2 AA >= 4.5:1)**: Background `#FAFAF9`, Cards & Surfaces `#FFFFFF`, Borders `#E7E5E4`, Text Primary `#1C1917`, Text Secondary `#575653`, Warning Alert `#B45309`.
+   - **Dark Mode Tokens (WCAG 2.2 AA >= 4.5:1)**: Background `#0D0E11`, Cards & Surfaces `#16171D`, Borders `#292A30`, Text Primary `#ECE8E2`, Text Secondary `#9A9895`.
    - **Semantic Data Visualization Palette**: Teal `#0D9488` (primary series and structural bonds), Amber `#D97706` (secondary series and warnings), Indigo `#4F46E5` (comparison series and molecular groups), Emerald `#059669` (positive/passing metrics), Rose `#E11D48` (negative trends and critical highlights).
 
-2. **Cross-Platform 3D & 2D Failover Rendering Engine**:
-   - **3D Molecular Failover (`canUseWebGL` + `renderSoftware3DMoleculeFallback`)**: Automatically detects whether hardware-accelerated WebGL (`3Dmol.js`) is available. In headless or embedded Linux webviews where WebGL is unavailable or external CDN scripts are restricted by Content Security Policy, the 3D studios (`structure`, `pockets`, `docking`, `sdf`) automatically switch to a built-in interactive software 3D projection engine that parses mmCIF, PDB, PDBQT, and SDF payloads, infers covalent and C-alpha backbone traces, and supports drag-to-rotate, scroll-to-zoom, residue/atom hover coordinate inspection, and `Cartoon` / `Stick` / `Sphere` style switching. Users can also manually toggle between `Auto` and `Software 3D` via the studio toolbar.
-   - **2D Chart Failover (`renderPlotWithFallback` + `renderSvgChartFallback`)**: Automatically uses `Plotly.js` when available and falls back to an inline SVG chart renderer supporting bar charts, line/scatter profiles, radar plots, and 2D heatmaps when offline or under restricted CSP.
+2. **Zero-CDN Offline 3D & 2D Rendering Engine**:
+   - **3D Molecular Engine (`canUseWebGL` + `renderSoftware3DMoleculeFallback`)**: Renders mmCIF, PDB, PDBQT, and SDF payloads locally without loading external CDN scripts, supporting drag-to-rotate, scroll-to-zoom, residue/atom hover coordinate inspection, and `Cartoon` / `Stick` / `Sphere` styles.
+   - **2D Chart Engine (`renderPlotWithFallback` + `renderSvgChartFallback`)**: Renders bar charts, line/scatter profiles, radar plots, and 2D heatmaps via an inline SVG chart engine with zero outbound requests.
 
 3. **Left Pane -- Multi-Agent Lineage & Control Plane**:
-   - **Agent Forest**: Interactive SVG multi-agent lineage DAG with cursor-anchored zoom/pan, live execution status badges, work-order edges, and a collapsible Node Inspector Drawer.
+   - **Agent Forest**: Interactive SVG multi-agent lineage DAG with cursor-anchored zoom/pan, keyboard focusable nodes, explicit textual status tags, work-order edges, and a collapsible Node Inspector Drawer.
    - **Node Inspector Drawer**: Displays the specialist role, work-order state, correction cycle count (`cycle / 2`), dependencies, acceptance criteria checklist, frozen **Dispatch Context Snapshot** (`.pkde/control/contexts/<WO>-r<N>.json` with Layer 2 file SHA-256 hashes), and the 10-check mechanical validation matrix.
    - **Work Orders, Runs, Leases, and Event Stream Tabs**: Detailed tables of work orders (`WO-*`), specialist runs (`RUN-*`), single-flight resource leases (`af3`, `hypex-supervisor`), and an inter-agent event stream filterable by category (`Work Orders`, `Runs`, `Leases`, `Validation`).
 
 4. **Right Pane -- 20 Scientific Studios, Findings, Governance & Readiness**:
-   - **3D & Structure Studios (6 studios)**:
-     1. `structure`: 3Dmol.js / Software 3D protein structure viewer colored by per-residue pLDDT confidence.
-     2. `pockets`: 3Dmol.js / Software 3D fpocket/geometric cavity surface and druggability score table.
-     3. `docking`: 3Dmol.js / Software 3D receptor-ligand 3D binding pose viewer.
-     4. `contacts`: Protein-ligand residue interaction distance chart and contact table.
-     5. `plddt`: Plotly / SVG per-residue pLDDT confidence profile with domain boundaries.
-     6. `pae`: Plotly / SVG 2D Predicted Aligned Error (PAE) heatmap.
-   - **Biology, Genetics & Omics Studios (3 studios)**:
-     7. `constraint`: gnomAD loss-of-function constraint (`pLI`, `LOEUF`, `mis_z`), Open Targets disease association horizontal bar chart, ClinVar pathogenicity summary, and GWAS top loci table.
-     8. `expression`: Human Protein Atlas (`nTPM`) and GTEx (`TPM`) tissue expression bar chart and tau specificity index.
-     9. `omics_studio`: Multi-omics studio rendering AlphaGenome in silico mutagenesis (ISM) and regulatory variant scores, single-cell dataset discovery (`cellxgene`, `scp`, `disco`), disease transcriptomics (`geo`, `disignatlas`, `spatialdb`), Allen Brain Atlas regional expression, MGI/HPO phenotype annotations, and Reactome/STRING pathways.
-   - **Chemistry, ADMET, PK & Toxicology Studios (8 studios)**:
-     10. `sdf`: 3D conformer viewer (3Dmol.js / Software 3D), 2D chemical structure depiction, and physicochemical descriptor table.
-     11. `brics`: BRICS synthetic fragment decomposition viewer.
-     12. `medchem_studio`: Lipinski, Veber, QED, and SA drug-likeness scorecard, PAINS/Brenk/NIH structural alert badges, matched molecular pair (MMP) activity cliff table, multi-parameter optimization (MPO) radar, and PubChem/ChEMBL similarity hits.
-     13. `admet`: Plotly / SVG multi-endpoint ADMET classification radar and parameter table.
-     14. `docking_scores`: AutoDock Vina mode affinity and RMSD comparison chart.
-     15. `pk_studio`: Non-compartmental PK parameter cards (`Cmax`, `AUC`, `t1/2`, `CL`, `Vdss`, `F%`), semi-log concentration-time curve, allometric human dose projection table, and FDA/EMA static DDI `R1` risk table.
-     16. `bioactivity_studio`: 4PL Hill dose-response curve (`IC50`, Hill slope), HTS `Z'` assay quality badge, and off-target selectivity fold-margin table.
-     17. `tox_studio`: Repeat-dose toxicology NOAEL, therapeutic index (`TI`), hERG safety margin cards, ICH S2(R1) genotoxicity battery table, and FAERS adverse event disproportionate reporting table.
-   - **Clinical, Tournaments & Raw Data Studios (3 studios)**:
-     18. `tournament`: Hypothesis ELO leaderboard, pairwise match history, semantic proximity clusters, evolution operator lineage tree (`ground`, `simplify`, `combine`, `oob`), and dual-use safety screen status.
-     19. `competitive_studio`: ClinicalTrials.gov phase/status pipeline breakdown, patent assignee landscape, target product profile (TPP) differentiation matrix, and PubMed/preprint/citation verification records.
-     20. `json`: Interactive collapsible Layer 0 JSON tree and `.meta.json` / `.analysis.json` sidecar inspector.
-   - **Dossier, Governance, Stage Gate & Readiness Views**:
-     - `Findings (L1)`, `Program State (L2)`, and `Executive & Gates (L4)` document viewers with inline citation highlighting.
-     - `Concepts / Assessments / Decisions`: Stage 0-4 therapeutic concept cards (`concepts/`), domain assessment matrices (`assessments/`), and gate decision records (`decisions/`).
-     - `Retrospectives & Readiness`: Specialist run retrospectives (`retrospectives/*.md`) and an environment readiness matrix reporting CLI binary status, Python library availability, and API credential configuration.
+   - **3D & Structure Studios (6 studios)**: `structure`, `pockets`, `docking`, `contacts`, `plddt`, `pae`.
+   - **Biology, Genetics & Omics Studios (3 studios)**: `constraint`, `expression`, `omics_studio`.
+   - **Chemistry, ADMET, PK & Toxicology Studios (8 studios)**: `sdf`, `brics`, `medchem_studio`, `admet`, `docking_scores`, `pk_studio`, `bioactivity_studio`, `tox_studio`.
+   - **Clinical, Tournaments & Raw Data Studios (3 studios)**: `tournament`, `competitive_studio`, `json`.
+   - **Dossier, Governance, Stage Gate & Readiness Views**: `Findings (L1)`, `Program State (L2)`, `Executive & Gates (L4)`, `Concepts / Assessments / Decisions`, and `Retrospectives & Readiness`.
 
 ### 4.6 Model Context Protocol (MCP) Server & Tool Annotations (`pkde_plugin/mcp_server.py`)
-The stdio MCP server (`pkde-engine`, registered via `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`, `./bin/pkde-mcp`, and the `pkde-mcp` console entrypoint) exposes 8 orchestration and execution tools backed by `pkde_plugin/tool_bridge.py`. If the optional `mcp` Python package (`FastMCP`) is not installed on the host, `pkde_plugin/mcp_server.py` automatically falls back to a built-in Python standard-library JSON-RPC 2.0 stdio server (`_run_stdlib_stdio_server`). Every tool declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
+The stdio MCP server (`pkde-engine`, registered via `.agents/plugins/pharmakon-discovery-engine/mcp_config.json`, `./bin/pkde-mcp`, and the `pkde-mcp` console entrypoint) exposes 8 orchestration and execution tools backed by `pkde_plugin/tool_bridge.py`. If the optional `mcp` Python package (`FastMCP`) is not installed on the host, `pkde_plugin/mcp_server.py` automatically falls back to a built-in Python standard-library JSON-RPC 2.0 stdio server with strict argument schema validation (rejecting unknown keys, missing required parameters, and mismatched JSON types with `-32602`). Every tool declares explicit boolean values (`true` / `false`) for all four MCP `ToolAnnotations` hints (`readOnlyHint`, `destructiveHint`, `idempotentHint`, `openWorldHint`):
 
 | MCP Tool Name | Handler Behavior | `readOnlyHint` | `destructiveHint` | `idempotentHint` | `openWorldHint` |
 | :--- | :--- | :---: | :---: | :---: | :---: |
-| `pkde_bootstrap_session` | Initializes `.pkde/program.yaml` from the user prompt, logs `prompt.received`, builds `dashboard.html`, and starts/verifies the non-blocking HTTP+SSE dashboard server on `0.0.0.0:8765`. | `false` | `false` | `false` | `false` |
+| `pkde_bootstrap_session` | Initializes `.pkde/program.yaml` from the user prompt, logs `prompt.received`, builds `dashboard.html`, and starts/verifies the non-blocking HTTP+SSE dashboard server on `127.0.0.1:8765` (overridable via `host` or `PKDE_DASHBOARD_HOST`). | `false` | `false` | `false` | `false` |
 | `pkde_exec` | Executes any two-phase or control-plane `pkde` CLI subcommand (`python -m pkde.cli ...`) and refreshes `dashboard.html`. | `false` | `true` | `false` | `true` |
-| `pkde_dispatch_workorder` | Executes the 4-step Work Order intake ceremony (writes spec YAML, creates/commits `WO-###`, freezes context snapshot, acquires resource lease with TTL, starts `RUN-###`, and returns `specialist_brief` and `invoke_subagent_entry`). | `false` | `false` | `false` | `false` |
-| `pkde_dispatch_cohort` | Dispatches a multi-persona cohort (`COHORT-###`) across up to 22 specialist personas with DAG dependency waves (`depends_on`), starts Wave 1 runs immediately, queues Wave 2+ runs, and returns `invoke_subagent_payload`. | `false` | `false` | `false` | `false` |
-| `pkde_manage_cohort` | Manages an active multi-agent cohort (`action="status"`, `"advance_wave"`, or `"bind_subagents"` to bind harness `conversation_id` values to work orders and runs). | `false` | `false` | `false` | `false` |
+| `pkde_dispatch_workorder` | Executes the 4-step Work Order intake ceremony (writes spec YAML, creates/commits `WO-###`, freezes context snapshot, acquires resource lease with TTL, starts `RUN-###`, and returns `specialist_brief` and `subagent_invocation`). | `false` | `false` | `false` | `false` |
+| `pkde_dispatch_cohort` | Dispatches a multi-persona cohort (`COHORT-###`) across up to 22 specialist personas with DAG dependency waves (`depends_on`), starts Wave 1 runs immediately, queues Wave 2+ runs, and returns `subagent_invocations`. | `false` | `false` | `false` | `false` |
+| `pkde_manage_cohort` | Manages an active multi-agent cohort (`status`, `bind_subagent`, `advance_wave`, `validate_cohort`, `renew_lease`). | `false` | `false` | `false` | `false` |
 | `pkde_log_agent_message` | Appends an inter-agent communication event (`agent.message`) to `.pkde/control/events.ndjson` and refreshes `dashboard.html`. | `false` | `false` | `false` | `false` |
 | `pkde_validate_and_gate` | Runs the 10-check mechanical validation gate (`pkde validate check`), routes to `PASSED` (releases leases and promotes ready Wave 2+ cohort dependents), `CORRECTION_REQUIRED` (up to 2 retry cycles), or `DATA_INTEGRITY_FAILURE`, and verifies state transitions. | `false` | `false` | `false` | `false` |
 | `pkde_render_dashboard` | Deterministically renders the standalone interactive `dashboard.html` from local workspace state without appending control events or calling external APIs. | `false` | `false` | `true` | `false` |
@@ -315,24 +295,30 @@ The stdio MCP server (`pkde-engine`, registered via `.agents/plugins/pharmakon-d
 ## 5. Non-Functional Requirements
 
 1. **Offline Re-Analysis**: All Phase 2 `analyze` commands execute with network sockets blocked (`PKDE_PHASE2_OFFLINE=1`) so any historical Layer 0 artifact can be re-analyzed deterministically without external API dependencies.
-2. **Preflight Readiness, Non-Blocking Missing-Library Handling & Degraded Offline Detection**: `bin/pkde doctor` probes local toolchain integrity and external scientific API reachability (`_check_external_scientific_apis` with a bounded `1.5s` socket timeout and `PKDE_OFFLINE=1` short-circuit), returning `execution_mode` (`"full"` | `"degraded_offline"` | `"blocked"`). Cross-platform environment manifest drift (`env-version`) and missing optional scientific libraries (`rdkit`, `gemmi`, `biopython`, `scipy`, `pubchempy`, `requests`, `jsonpath_ng`, `zstandard`) report as non-blocking `WARN` checks rather than `FAIL` so unaffected domain commands remain operational. When `requests` is absent, `tools/pkde/core/http.py` automatically falls back to Python standard-library `urllib.request`.
-3. **Hermetic Python & Sandbox-Safe File I/O**: `bin/env.sh`, `bin/pkde`, `bin/pkde-mcp`, `bin/prox`, and `pkde_plugin/tool_bridge.py` prefer `$PKDE_ROOT/.venv/bin/python`, set `PYTHONNOUSERSITE=1`, and isolate `PYTHONPATH` (`$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex`) from host site-packages. Dashboard HTML generation (`_safe_write_html` in `tools/pkde/commands/dashboard.py`) falls back from `os.replace()` to direct writes with guaranteed temporary file cleanup in `finally:` blocks when running inside sandboxes that restrict atomic file replacement.
-4. **Path Confinement & Security**: All file operations are confined to the active project workspace (`tools/pkde/core/paths.py`), rejecting directory traversal (`..`) and symlink escapes, and storing only workspace-relative paths in generated artifacts and dashboard bundles.
-5. **Rate Limiting & Pacing**: Outbound HTTP requests to public scientific APIs (gnomAD, UniProt, ChEMBL, PubChem, NCBI E-utilities, Europe PMC, ClinicalTrials.gov) enforce per-host QPS pacing (`tools/pkde/core/qps.py`).
-6. **Environment Reproducibility & Multi-Architecture Binaries**: Every provenance sidecar records the SHA-256 digest of `tools/env-manifest.txt`, capturing the Python interpreter, installed package versions, wrapper scripts (`bin/pkde`, `bin/hypex`, `bin/elo`, `bin/prox`), and all 8 cross-compiled static native binaries (`tools/bin/arch/{darwin-arm64,darwin-amd64,linux-amd64,linux-arm64}/{hypex,elo}` built with `CGO_ENABLED=0 -trimpath`).
+2. **Preflight Readiness, Non-Blocking Missing-Library Handling & Degraded Offline Detection**: `bin/pkde doctor` probes local toolchain integrity and external scientific API reachability (`_check_external_scientific_apis` with a bounded `1.5s` socket timeout and `PKDE_OFFLINE=1` short-circuit), returning `execution_mode` (`"full"` | `"degraded_offline"` | `"blocked"`).
+3. **Hermetic Python & Sandbox-Safe File I/O**: `bin/env.sh`, `bin/pkde`, `bin/pkde-mcp`, `bin/prox`, and `pkde_plugin/tool_bridge.py` prefer `$PKDE_ROOT/.venv/bin/python` and isolate `PYTHONPATH` (`$PKDE_ROOT:$PKDE_ROOT/tools:$PKDE_ROOT/tools/vendor/hypex`) from host site-packages. Dashboard HTML generation (`_safe_write_html`) falls back safely when `os.replace()` is restricted.
+4. **Security, Network Isolation & Path Confinement**:
+   - All file operations are confined to the active project workspace (`tools/pkde/core/paths.py`), and `resolve_live_project_root` confines active workspace pointers inside the repository root.
+   - The local HTTP/SSE dashboard server binds to `127.0.0.1` by default, attaches `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, and `Cross-Origin-Resource-Policy: same-origin` headers, enforces same-origin `Origin` checks on `/api/bundle` and `/api/stream`, and validates process identity before sending `SIGTERM`.
+   - `dashboard.html` and all 14 static HTML viewers operate with zero external CDN or web-font requests, strict `<meta http-equiv="Content-Security-Policy">`, same-origin `?file=` path validation, sanitized Markdown rendering, and delegated event handlers (no inline dynamic `onclick` string interpolation).
+   - Optional cloud prediction backends (`alphafold predict`, `alphagenome`) require explicit environment variable configuration (`PKDE_AF3_PROJECT`, `PKDE_AG_PROJECT`, `PKDE_AG_ENDPOINT_ID`, `PKDE_AG_ENDPOINT_DNS`) with no hardcoded internal project defaults.
+5. **Accessibility (WCAG 2.2 AA)**: Both `dashboard.html` and static dossier pages (`base.html`) enforce >= `4.5:1` normal-text contrast in Light and Dark modes, semantic landmarks (`<header>`, `<nav>`, `<main>`, `<footer>`), non-skipping heading hierarchies, visible `:focus-visible` outlines, keyboard activation on all interactive controls, and explicit textual status prefixes (`[ERROR]`, `[WARN]`, `[FAIL]`).
+6. **Rate Limiting & Environment Reproducibility**: Outbound HTTP requests enforce per-host QPS pacing (`tools/pkde/core/qps.py`), and every provenance sidecar records `tools/ENV_VERSION` covering the Python interpreter, locked packages, wrapper scripts, and multi-architecture static binaries.
 
 ---
 
 ## 6. Verification & Acceptance Criteria
 
-The build and test suite (`tests/`, 57 tests across 8 test modules) verifies:
-- `tests/test_custom_byoa.py` (4 tests): Validates two-phase private CSV ingestion (`pkde custom ingest`), proprietary Python algorithm execution (`pkde custom run`), offline evaluation (`pkde custom analyze`), relay attribution (`pkde relays`), and dynamic Click extension loading.
-- `tests/test_pocket_geometric.py` (3 tests): Validates the built-in Python/NumPy geometric pocket detector (`pkde pocket run --backend [geometric|auto]`) and offline `pkde pocket analyze` (global and `--near`) across PDB and mmCIF structures, `pocket.geometric_fallback_backend` relay propagation, and `pkde docking prepare` grid-box compatibility.
-- `tests/test_targets_compile.py` (5 tests): Validates compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`, verifies parity between root `scripts/` and `references/` and `skills/pharmakon-discovery-engine/{scripts,references}/`, confirms every `scripts/...` and `references/...` path cited in `SKILL.md` resolves across root, skill-local, and compiled plugin locations, and verifies multi-architecture (`darwin-arm64`, `darwin-amd64`, `linux-amd64`, `linux-arm64`) binary headers and wrapper dispatch.
-- `tests/test_tool_bridge.py` (10 tests): Validates `pkde_exec` CLI execution, `pkde_dispatch_workorder` and native `./bin/pkde workorder dispatch` 4-step intake and single-flight resource lease locking, `pkde_validate_and_gate` and `./bin/pkde workorder validate-and-gate` 10-check validation gate, hermetic `PYTHONPATH` isolation against incompatible host site-packages, `pkde doctor` `execution_mode` (`full` vs. `degraded_offline`), cross-platform environment drift and missing-library non-blocking behavior, stdlib MCP server fallback when `mcp` is missing, and `pkde-engine` MCP server exposure of all 8 tools with explicit boolean `ToolAnnotations`.
-- `tests/test_dashboard.py` (10 tests): Validates end-to-end generation of `dashboard.html` and `.pkde-workspace/dashboard.html`, sandbox-safe HTML fallback writing (`_safe_write_html`) when `os.replace` raises `PermissionError` or `OSError`, multi-agent lineage nodes, frozen context snapshots, retrospectives, environment readiness checks (`bootstrap_ready`), cross-platform host OS theme detection (`_detect_host_system_theme` across macOS, Linux, and Windows), the three-icon Light / Dark / System theme selector (`#theme-selector`), cross-platform 3D (`canUseWebGL`, `renderSoftware3DMoleculeFallback`) and 2D (`renderPlotWithFallback`, `renderSvgChartFallback`) failover renderers, Stage 0-4 concept/assessment/decision records, theme and color palette tokens, and all 20 scientific visualization studios.
-- `tests/test_real_execution_anti_echo.py` (5 tests): Validates domain computational engines across positive and negative controls: (1) RDKit descriptor calculation and Lipinski rule evaluation on Aspirin (`MW = 180.16`, `0` violations) vs. a heavy lipopeptide (`MW = 697.96`, `2` violations); (2) non-compartmental PK trapezoidal integration proving exact $2.0\times$ scaling of $\text{C}_{\max}$, $\text{AUC}_{0\text{-}t}$, and $\text{AUC}_{0\text{-}\infty}$ with invariant $t_{1/2} = 1.0\text{ h}$ and $\lambda_z = \ln(2)$; (3) 3D geometric pocket detection positive control (spherical cavity, `n_pockets >= 1`) vs. negative control (1D linear chain, `n_pockets == 0`); (4) end-to-end execution of native `bin/hypex`, `bin/elo`, and `bin/prox` binaries across opposite tournament outcomes (`1520` vs. `1480` Elo) and TF-IDF cosine similarity clustering; and (5) 1-byte Layer 0 SHA-256 tamper detection (`unrecognized_json` and `source_tags_resolve` `DATA_INTEGRITY` failure).
-- `tests/test_multi_agent_cohort_and_no_stubs.py` (6 tests): Validates AST and source-level verification across all Python modules under `tools/pkde/`, `pkde_plugin/`, and `scripts/`, multi-persona cohort dispatch (`pkde_dispatch_cohort`, `pkde workorder dispatch-cohort`), subagent binding (`bind_subagents`), automatic Wave 2 dependency promotion upon Wave 1 validation pass, cycle and unknown-dependency rejection, and MCP registration of `pkde_dispatch_cohort` and `pkde_manage_cohort`.
-- `tests/test_skill_contract.py` (14 tests): Validates CLI-to-bridge-to-MCP parity across `dispatch_workorder.py`, `dispatch_cohort.py`, `tool_bridge.py`, and `mcp_server.py`, work-order role and deliverables specification enforcement, non-overridable `deliverables_schema` validation, checked state transitions (`ALREADY_VALIDATED`, `VALIDATOR_ERROR`), resource lease TTL expiration (`lease.expired`) and renewal (`renew-lease`), subagent binding by `run_id` with unmatched entry reporting, and alignment of every CLI flag documented in `SKILL.md` with the Click command tree.
+The build and test suite (`tests/`, 9 test modules) verifies:
+- `tests/test_custom_byoa.py`: Two-phase private CSV ingestion (`pkde custom ingest`), proprietary algorithm execution (`pkde custom run`), offline evaluation (`pkde custom analyze`), relay attribution (`pkde relays`), and dynamic Click extension loading.
+- `tests/test_pocket_geometric.py`: Built-in Python/NumPy geometric pocket detector (`pkde pocket run --backend [geometric|auto]`), offline `pkde pocket analyze`, relay propagation, and docking grid-box compatibility.
+- `tests/test_targets_compile.py`: Compilation of all 43 skills and 22 agent templates into `.agents/plugins/pharmakon-discovery-engine/` and `dist/skill-bundles/*.zip`, root-vs-skill script/reference parity, and multi-architecture binary verification.
+- `tests/test_tool_bridge.py`: `pkde_exec`, `pkde_dispatch_workorder`, `pkde_validate_and_gate`, hermetic `PYTHONPATH` isolation, `pkde doctor` offline detection, stdlib MCP fallback, and MCP `ToolAnnotations`.
+- `tests/test_dashboard.py`: Standalone `dashboard.html` generation, sandbox-safe atomic writes, live server lifecycle, theme tokens, host OS theme detection, offline 3D/2D rendering, and all 20 scientific visualization studios.
+- `tests/test_real_execution_anti_echo.py`: Positive/negative computational math controls across RDKit, NCA PK integration, geometric pocket detection, native `hypex`/`elo`/`prox` execution, and SHA-256 tamper detection.
+- `tests/test_multi_agent_cohort_and_no_stubs.py`: AST/source surface coverage, multi-persona cohort dispatch waves, subagent binding, Wave 2 promotion, dependency cycle rejection, and MCP cohort registration.
+- `tests/test_skill_contract.py`: CLI-to-bridge-to-MCP parity across `dispatch_workorder.py`, `tool_bridge.py`, and `mcp_server.py`, work-order schema validation, lease TTL expiration/renewal, and Click flag alignment.
+- `tests/test_security_and_a11y.py`: Zero external CDN/font references, repository sanitization and absolute-path checks, HTTP security headers and cross-origin `403` rejection, Markdown XSS blocking, viewer `?file=` same-origin guards, MCP fallback strict argument rejection, cloud env-var requirements, and WCAG 2.2 AA contrast/landmark/heading/focus checks.
+
 
 

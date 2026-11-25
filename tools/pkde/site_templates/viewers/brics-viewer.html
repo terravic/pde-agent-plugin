@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>BRICS Viewer</title>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 1rem; color: #1a1a2e; }
@@ -69,6 +70,7 @@
 
     pre.fallback { background: #f6f8fa; padding: 1rem; border-radius: 6px;
                    border: 1px solid #d0d7de; overflow-x: auto; font-size: 0.875rem; }
+      button:focus-visible, a:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible { outline: 2px solid #1B5E8A; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -83,6 +85,18 @@
     function showError(msg) {
       document.getElementById('error').style.display = 'block';
       document.getElementById('error').textContent = msg;
+    }
+
+    function isSafeRelativeFile(p) {
+      if (!p || typeof p !== 'string') return false;
+      var trimmed = p.trim();
+      if (!trimmed || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return false;
+      try {
+        var resolved = new URL(trimmed, window.location.href);
+        return resolved.origin === window.location.origin && resolved.protocol === window.location.protocol;
+      } catch (e) {
+        return false;
+      }
     }
 
     /* ===== Known BRICS-like fragment patterns ===== */
@@ -405,6 +419,8 @@
     /* ===== Main loader ===== */
     if (!filePath) {
       showError('No file specified. Use ?file=path/to/file');
+    } else if (!isSafeRelativeFile(filePath)) {
+      showError('Invalid file path: only relative same-origin paths are allowed.');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
       document.title = filePath.split('/').pop() + ' -- BRICS Viewer';

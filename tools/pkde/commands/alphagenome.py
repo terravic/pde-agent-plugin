@@ -70,18 +70,12 @@ TOOL = "alphagenome-cloud"
 TOOL_PIP = "alphagenome-api"
 ARTIFACT_CLASS = "genomics"
 
-AG_PROJECT = os.environ.get("PKDE_AG_PROJECT", "pharma-oss-factory")
-AG_REGION = os.environ.get("PKDE_AG_REGION", "us-central1")
-AG_ENDPOINT_ID = os.environ.get(
-    "PKDE_AG_ENDPOINT_ID", "mg-endpoint-5713950e-c097-4470-81e5-fc3db9c9b32a"
-)
+AG_PROJECT = os.environ.get("PKDE_AG_PROJECT", "").strip()
+AG_REGION = os.environ.get("PKDE_AG_REGION", "us-central1").strip()
+AG_ENDPOINT_ID = os.environ.get("PKDE_AG_ENDPOINT_ID", "").strip()
 # Dedicated endpoints are not reachable through the regional Dedicated host;
-# they have their own DNS name, and calling the regional one returns a
-# 404 that reads like the endpoint does not exist.
-AG_ENDPOINT_DNS = os.environ.get(
-    "PKDE_AG_ENDPOINT_DNS",
-    f"{AG_ENDPOINT_ID}.us-central1-826100493373.prediction.cloud.example.org",
-)
+# configure PKDE_AG_ENDPOINT_DNS explicitly for the target deployment.
+AG_ENDPOINT_DNS = os.environ.get("PKDE_AG_ENDPOINT_DNS", "").strip()
 
 OUTPUT_TYPES = [
     "ATAC",
@@ -301,6 +295,20 @@ def _access_token() -> tuple[str, str]:
 
 
 def _rawpredict_url() -> str:
+    missing = [
+        name
+        for name, val in (
+            ("PKDE_AG_PROJECT", AG_PROJECT),
+            ("PKDE_AG_ENDPOINT_ID", AG_ENDPOINT_ID),
+            ("PKDE_AG_ENDPOINT_DNS", AG_ENDPOINT_DNS),
+        )
+        if not val
+    ]
+    if missing:
+        raise UsageError(
+            f"AlphaGenome dedicated cloud endpoint configuration missing: {', '.join(missing)}",
+            remedy="set PKDE_AG_PROJECT, PKDE_AG_ENDPOINT_ID, and PKDE_AG_ENDPOINT_DNS, or use --backend pip with ALPHAGENOME_API_KEY",
+        )
     return (
         f"https://{AG_ENDPOINT_DNS}/v1/projects/{AG_PROJECT}"
         f"/locations/{AG_REGION}/endpoints/{AG_ENDPOINT_ID}:rawPredict"

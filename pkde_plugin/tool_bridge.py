@@ -2003,7 +2003,7 @@ def pkde_bootstrap_session(
     program_name: str | None = None,
     stage: int | None = None,
     project_dir: str | None = None,
-    host: str = "0.0.0.0",
+    host: str | None = None,
     port: int = 8765,
     start_server: bool = True,
     fresh: bool = False,
@@ -2013,6 +2013,7 @@ def pkde_bootstrap_session(
 ) -> dict[str, Any]:
     """Initialize a live PkDE discovery session from the user's prompt and ensure the dashboard server is running."""
     project_root = resolve_project_root(project_dir)
+    resolved_host = (host or os.environ.get("PKDE_DASHBOARD_HOST", "127.0.0.1")).strip() or "127.0.0.1"
     return bootstrap_prompt_session(
         project_root,
         prompt=prompt,
@@ -2021,7 +2022,7 @@ def pkde_bootstrap_session(
         indication=indication,
         modality=modality,
         stage=stage,
-        host=host,
+        host=resolved_host,
         port=port,
         start_server=start_server,
         fresh=fresh,

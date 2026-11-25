@@ -315,7 +315,7 @@ def test_dashboard_theme_and_palette_compliance(tmp_path: Path) -> None:
         "#FFFFFF",  # Light Cards & Surfaces
         "#E7E5E4",  # Light Borders
         "#1C1917",  # Light Text Primary
-        "#787774",  # Light Text Secondary
+        "#575653",  # Light Text Secondary
         "#0D0E11",  # Dark Background
         "#16171D",  # Dark Cards & Surfaces
         "#292A30",  # Dark Borders

@@ -122,32 +122,32 @@ The site includes 13 auto-wired specialized HTML viewers for scientific data fil
 | `tournament-viewer.html` | `.tournament.json` | Hypothesis ranking table |
 | `brics-viewer.html` | `.brics.json` | BRICS decomposition display |
 
-### highlight.js Viewers (CDN: cdn.jsdelivr.net)
+### Formatted & Tree JSON Viewers (Offline Native)
 
 | Viewer | File Pattern | What It Shows |
 |---|---|---|
-| `json-viewer.html` | `.json` (fallback) | Syntax-highlighted JSON |
+| `json-viewer.html` | `.json` (fallback) | Formatted and collapsible JSON tree |
 
-### 3Dmol.js Viewers (CDN: cdn.jsdelivr.net)
-
-| Viewer | File Pattern | What It Shows |
-|---|---|---|
-| `structure-viewer.html` | `.cif` | 3D molecular structure (cartoon) |
-| `sdf-viewer.html` | `.3d.sdf` | 3D molecule (stick model) |
-| `docking-viewer.html` | `.receptor.pdbqt` + `.poses.pdbqt` | Receptor-ligand overlay |
-
-### Plotly.js Viewers (CDN: cdn.jsdelivr.net)
+### Structural Coordinate Viewers (Offline SVG Projection)
 
 | Viewer | File Pattern | What It Shows |
 |---|---|---|
-| `pae-viewer.html` | `.pae.json` | Predicted Aligned Error heatmap |
-| `plddt-viewer.html` | `.afdb.json` | pLDDT confidence chart |
+| `structure-viewer.html` | `.cif` | 3D molecular coordinate projection |
+| `sdf-viewer.html` | `.3d.sdf` | Small-molecule coordinates and SDF property table |
+| `docking-viewer.html` | `.receptor.pdbqt` + `.poses.pdbqt` | Receptor-ligand coordinate overlay and pose scores |
+
+### Chart & Matrix Viewers (Offline Inline SVG / Table)
+
+| Viewer | File Pattern | What It Shows |
+|---|---|---|
+| `pae-viewer.html` | `.pae.json` | Predicted Aligned Error matrix summary |
+| `plddt-viewer.html` | `.afdb.json` | pLDDT confidence profile |
 | `expression-viewer.html` | `.tissue.json` | Tissue expression bar chart |
-| `contacts-viewer.html` | `.contacts.json` *(not yet in VIEWER_MAP)* | Contact heatmap |
-| `admet-viewer.html` | `.predict.json` | ADMET prediction chart |
+| `contacts-viewer.html` | `.contacts.json` *(not yet in VIEWER_MAP)* | Per-residue contact map |
+| `admet-viewer.html` | `.predict.json` | ADMET prediction summary and radar table |
 | `docking-scores-viewer.html` | `.docking_result.json` | Docking score comparison |
 
-**CDN constraint:** All external scripts load from `cdn.jsdelivr.net` only.
+**Network isolation constraint:** All shipped viewers execute completely offline with strict Content-Security-Policy and same-origin `?file=` path validation; zero external CDN requests are issued.
 
 ## Post-Build Processing
 
@@ -253,24 +253,17 @@ pkde site export -o custom-name.zip
 - Uses `--site-dir` to override the default `_site` source directory.
 - If `raw/` is not bundled in the site directory, the command prints a warning to stderr. Viewers in the exported archive may not resolve data files without bundled `raw/`.
 
-### Localizing CDN Resources for Offline Use
+### Offline-Isolated Exports (Zero External CDN Requests)
 
-Exported archives reference external CDN resources by default (Web Fonts, 3Dmol.js, Plotly.js, highlight.js). When opened offline or on restricted networks, viewers may not function correctly. Run [`references/fix_localize_cdn.py`](references/fix_localize_cdn.py) as a post-build step to download these resources into a local `vendor/` directory and rewrite HTML references to use local paths:
+Exported static sites and standalone `dashboard.html` files emit zero external CDN `<script>` or `<link>` requests by default. All 14 static viewers and the dashboard use system typography, strict Content Security Policy headers, and built-in offline SVG/table/coordinate-projection renderers so archives function identically offline and on restricted networks.
+
+If custom user-supplied HTML templates introduce external script or stylesheet URLs, you can optionally localize those assets into a local `vendor/` directory with [`references/fix_localize_cdn.py`](references/fix_localize_cdn.py) before exporting:
 
 ```bash
 pkde site build
 python3 fix_localize_cdn.py _site/
 pkde site export
 ```
-
-The script is idempotent and creates a `vendor/manifest.json` listing all localized resources. See the table below for the known CDN dependencies:
-
-| CDN Domain | Library | Used By |
-|---|---|---|
-| `fonts.cdn.example.org` / `static-fonts.cdn.example.org` | Web Fonts | Theme system, base styles |
-| `cdn.jsdelivr.net/npm/3dmol` | 3Dmol.js | structure-viewer, sdf-viewer, docking-viewer |
-| `cdn.jsdelivr.net/npm/plotly` | Plotly.js | pae-viewer, plddt-viewer, expression-viewer, admet-viewer, docking-scores-viewer |
-| `cdn.jsdelivr.net/gh/highlightjs` | highlight.js | json-viewer |
 
 ## Serving the Generated Site
 
@@ -283,11 +276,11 @@ Python's `http.server` is always available in managed agent environments:
 > **Reserved port:** Port 8080 is reserved by the host environment. Agents must NOT bind port 8080 for any purpose. If the chosen port is already in use, try the next candidate (e.g. 8001, 8002) rather than failing.
 
 ```bash
-# Try ports in order until one binds successfully
+# Try ports in order on loopback until one binds successfully
 for port in 8000 8001 8002 8003; do
-  python3 -m http.server "$port" --directory _site/ &
+  python3 -m http.server "$port" --bind 127.0.0.1 --directory _site/ &
   sleep 1
-  if kill -0 $! 2>/dev/null; then echo "Serving on port $port"; break; fi
+  if kill -0 $! 2>/dev/null; then echo "Serving on http://127.0.0.1:$port"; break; fi
 done
 ```
 

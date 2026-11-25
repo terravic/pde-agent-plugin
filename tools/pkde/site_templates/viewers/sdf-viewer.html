@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none';">
   <title>SDF Viewer</title>
-  <script src="https://cdn.jsdelivr.net/npm/3dmol@2.4.2/build/3Dmol-min.js"></script>
   <style>
     body { font-family: system-ui, sans-serif; margin: 0; padding: 0; color: #1a1a2e; }
     .error { color: #c0392b; padding: 1rem; background: #fdf2f0; border-radius: 4px; margin: 1rem; }
@@ -41,7 +41,84 @@
       color: #fff; padding: 3px 8px; border-radius: 4px;
       font-size: 12px; font-family: monospace; pointer-events: none; white-space: nowrap;
     }
+      button:focus-visible, a:focus-visible, select:focus-visible, [tabindex="0"]:focus-visible { outline: 2px solid #1B5E8A; outline-offset: 2px; }
   </style>
+  <script>
+    /* Offline zero-CDN 3Dmol fallback renderer (SVG projection & coordinate summary) */
+    window.$3Dmol = window.$3Dmol || {
+      SurfaceType: { VDW: 1 },
+      createViewer: function(target) {
+        var el = typeof target === 'string' ? document.getElementById(target) : target;
+        var models = [];
+        function _parseAtoms(text, fmt) {
+          var atoms = [];
+          var lines = String(text || '').split(/\r?\n/);
+          if (fmt === 'sdf') {
+            if (lines.length > 4) {
+              var nAtoms = parseInt(lines[3].slice(0, 3), 10) || 0;
+              for (var i = 4; i < Math.min(lines.length, 4 + nAtoms); i++) {
+                var p = lines[i].trim().split(/\s+/);
+                if (p.length >= 4) atoms.push({ x: parseFloat(p[0])||0, y: parseFloat(p[1])||0, z: parseFloat(p[2])||0, elem: p[3], chain: 'A', resi: 1, b: 0, hetflag: true });
+              }
+            }
+          } else {
+            for (var j = 0; j < lines.length; j++) {
+              var ln = lines[j];
+              if (ln.indexOf('ATOM') === 0 || ln.indexOf('HETATM') === 0) {
+                var parts = ln.trim().split(/\s+/);
+                if (fmt === 'cif' && parts.length >= 13) {
+                  var x = parseFloat(parts[10]), y = parseFloat(parts[11]), z = parseFloat(parts[12]);
+                  if (!isNaN(x) && !isNaN(y)) atoms.push({ x: x, y: y, z: z||0, elem: parts[2]||'C', chain: parts[6]||'A', resi: parseInt(parts[8],10)||1, b: parseFloat(parts[14])||0, hetflag: ln.indexOf('HETATM') === 0 });
+                } else if (ln.length >= 54) {
+                  var px = parseFloat(ln.slice(30, 38)), py = parseFloat(ln.slice(38, 46)), pz = parseFloat(ln.slice(46, 54));
+                  if (!isNaN(px) && !isNaN(py)) atoms.push({ x: px, y: py, z: pz||0, elem: (ln.slice(76,78)||ln.slice(12,16)).trim()||'C', chain: (ln[21]||'A').trim()||'A', resi: parseInt(ln.slice(22,26),10)||1, b: parseFloat(ln.slice(60,66))||0, hetflag: ln.indexOf('HETATM') === 0 });
+                }
+              }
+            }
+          }
+          return atoms;
+        }
+        return {
+          addModel: function(data, fmt) { var m = { atoms: _parseAtoms(data, fmt), fmt: fmt }; models.push(m); return m; },
+          selectedAtoms: function(sel) {
+            if (sel && sel.model && sel.model.atoms) return sel.model.atoms;
+            var all = [];
+            models.forEach(function(m){ all = all.concat(m.atoms); });
+            return all;
+          },
+          setStyle: function() {},
+          addSurface: function() {},
+          removeAllSurfaces: function() {},
+          setHoverable: function() {},
+          spin: function() {},
+          zoomTo: function() {},
+          render: function() {
+            if (!el) return;
+            var all = [];
+            models.forEach(function(m){ all = all.concat(m.atoms); });
+            if (!all.length) { el.textContent = 'Offline structure projection: no atomic coordinates parsed.'; return; }
+            var xs = all.map(function(a){ return a.x; }), ys = all.map(function(a){ return a.y; });
+            var minX = Math.min.apply(null, xs), maxX = Math.max.apply(null, xs);
+            var minY = Math.min.apply(null, ys), maxY = Math.max.apply(null, ys);
+            var span = Math.max(maxX - minX, maxY - minY, 1);
+            var step = Math.max(1, Math.floor(all.length / 500));
+            var circles = [];
+            for (var i = 0; i < all.length; i += step) {
+              var a = all[i];
+              var cx = (40 + ((a.x - minX) / span) * 520).toFixed(1);
+              var cy = (40 + ((a.y - minY) / span) * 320).toFixed(1);
+              var col = a.hetflag ? '#4F46E5' : '#0D9488';
+              circles.push('<circle cx="' + cx + '" cy="' + cy + '" r="' + (a.hetflag ? 3.5 : 2.2) + '" fill="' + col + '" opacity="0.82" />');
+            }
+            el.innerHTML = '<div style="padding:10px;height:100%;display:flex;flex-direction:column;gap:8px;box-sizing:border-box;">' +
+              '<div style="font-size:12px;color:#475569;font-family:monospace;">Offline 2D Coordinate Projection | Models: ' + models.length + ' | Atoms: ' + all.length + '</div>' +
+              '<svg viewBox="0 0 600 400" style="flex:1;width:100%;background:#FAFAF9;border-radius:4px;" role="img" aria-label="Molecular coordinate projection">' +
+              circles.join('') + '</svg></div>';
+          }
+        };
+      }
+    };
+  </script>
 </head>
 <body>
   <h1>SDF Molecule Viewer</h1>
@@ -77,6 +154,18 @@
     function showError(msg) {
       document.getElementById('error').style.display = 'block';
       document.getElementById('error').textContent = msg;
+    }
+
+    function isSafeRelativeFile(p) {
+      if (!p || typeof p !== 'string') return false;
+      var trimmed = p.trim();
+      if (!trimmed || /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return false;
+      try {
+        var resolved = new URL(trimmed, window.location.href);
+        return resolved.origin === window.location.origin && resolved.protocol === window.location.protocol;
+      } catch (e) {
+        return false;
+      }
     }
 
     /** Parse SDF properties: lines matching "> <NAME>" followed by value lines */
@@ -129,6 +218,8 @@
 
     if (!filePath) {
       showError('No file specified. Use ?file=path/to/file.sdf');
+    } else if (!isSafeRelativeFile(filePath)) {
+      showError('Invalid file path: only relative same-origin paths are allowed.');
     } else {
       document.getElementById('filename').textContent = filePath.split('/').pop();
       document.title = filePath.split('/').pop() + ' -- SDF Viewer';
